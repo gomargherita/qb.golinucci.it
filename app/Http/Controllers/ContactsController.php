@@ -16,7 +16,7 @@ class ContactsController extends Controller
         return Inertia::render('Contacts/Index', [
             'filters' => Request::all('search', 'trashed'),
             'contacts' => Auth::user()->account->contacts()
-                ->with('organization')
+                ->with('user_detail')
                 ->orderByName()
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate(10)
@@ -27,7 +27,7 @@ class ContactsController extends Controller
                     'phone' => $contact->phone,
                     'city' => $contact->city,
                     'deleted_at' => $contact->deleted_at,
-                    'organization' => $contact->organization ? $contact->organization->only('name') : null,
+                    'user_detail' => $contact->user_detail ? $contact->user_detail->only('name') : null,
                 ]),
         ]);
     }
@@ -35,8 +35,8 @@ class ContactsController extends Controller
     public function create()
     {
         return Inertia::render('Contacts/Create', [
-            'organizations' => Auth::user()->account
-                ->organizations()
+            'userDetails' => Auth::user()->account
+                ->userDetails()
                 ->orderBy('name')
                 ->get()
                 ->map
@@ -50,7 +50,7 @@ class ContactsController extends Controller
             Request::validate([
                 'first_name' => ['required', 'max:50'],
                 'last_name' => ['required', 'max:50'],
-                'organization_id' => ['nullable', Rule::exists('organizations', 'id')->where(function ($query) {
+                'user_detail_id' => ['nullable', Rule::exists('userDetails', 'id')->where(function ($query) {
                     $query->where('account_id', Auth::user()->account_id);
                 })],
                 'email' => ['nullable', 'max:50', 'email'],
@@ -73,7 +73,7 @@ class ContactsController extends Controller
                 'id' => $contact->id,
                 'first_name' => $contact->first_name,
                 'last_name' => $contact->last_name,
-                'organization_id' => $contact->organization_id,
+                'user_detail_id' => $contact->user_detail_id,
                 'email' => $contact->email,
                 'phone' => $contact->phone,
                 'address' => $contact->address,
@@ -83,7 +83,7 @@ class ContactsController extends Controller
                 'postal_code' => $contact->postal_code,
                 'deleted_at' => $contact->deleted_at,
             ],
-            'organizations' => Auth::user()->account->organizations()
+            'userDetails' => Auth::user()->account->userDetails()
                 ->orderBy('name')
                 ->get()
                 ->map
@@ -97,9 +97,9 @@ class ContactsController extends Controller
             Request::validate([
                 'first_name' => ['required', 'max:50'],
                 'last_name' => ['required', 'max:50'],
-                'organization_id' => [
+                'user_detail_id' => [
                     'nullable',
-                    Rule::exists('organizations', 'id')->where(fn ($query) => $query->where('account_id', Auth::user()->account_id)),
+                    Rule::exists('userDetails', 'id')->where(fn ($query) => $query->where('account_id', Auth::user()->account_id)),
                 ],
                 'email' => ['nullable', 'max:50', 'email'],
                 'phone' => ['nullable', 'max:50'],

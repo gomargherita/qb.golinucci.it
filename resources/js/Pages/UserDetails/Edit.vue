@@ -2,11 +2,11 @@
   <div>
     <Head :title="form.name" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-primary hover:text-secondary-400" href="/organizations">Organizations</Link>
+      <Link class="text-primary hover:text-secondary-400" href="/userDetails">User Details</Link>
       <span class="text-gray font-medium">/</span>
       <span>{{ form.name }}</span>
     </h1>
-    <trashed-message v-if="organization.deleted_at" class="mb-6" @restore="restore"> This organization has been deleted. </trashed-message>
+    <trashed-message v-if="user_detail.deleted_at" class="mb-6" @restore="restore"> This user_detail has been deleted. </trashed-message>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
@@ -24,8 +24,8 @@
           <text-input v-model="form.postal_code" :error="form.errors.postal_code" class="pb-8 pr-6 w-full lg:w-1/2" label="Postal code" />
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
-          <button v-if="!organization.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Delete Organization</button>
-          <loading-button :loading="form.processing" class="btn-gol-primary ml-auto" type="submit">Update Organization</loading-button>
+          <button v-if="!user_detail.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Delete UserDetail</button>
+          <loading-button :loading="form.processing" class="btn-gol-primary ml-auto" type="submit">Update UserDetail</loading-button>
         </div>
       </form>
     </div>
@@ -37,7 +37,7 @@
           <th class="pb-4 pt-6 px-6">City</th>
           <th class="pb-4 pt-6 px-6" colspan="2">Phone</th>
         </tr>
-        <tr v-for="contact in organization.contacts" :key="contact.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
+        <tr v-for="contact in user_detail.contacts" :key="contact.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
             <Link class="flex items-center px-6 py-4 focus:text-primary" :href="`/contacts/${contact.id}/edit`">
               {{ contact.name }}
@@ -60,7 +60,7 @@
             </Link>
           </td>
         </tr>
-        <tr v-if="organization.contacts.length === 0">
+        <tr v-if="user_detail.contacts.length === 0">
           <td class="px-6 py-4 border-t" colspan="4">No contacts found.</td>
         </tr>
       </table>
@@ -89,35 +89,35 @@ export default {
   },
   layout: Layout,
   props: {
-    organization: Object,
+    user_detail: Object,
   },
   remember: 'form',
   data() {
     return {
       form: this.$inertia.form({
-        name: this.organization.name,
-        email: this.organization.email,
-        phone: this.organization.phone,
-        address: this.organization.address,
-        city: this.organization.city,
-        region: this.organization.region,
-        country: this.organization.country,
-        postal_code: this.organization.postal_code,
+        name: this.user_detail.name,
+        email: this.user_detail.email,
+        phone: this.user_detail.phone,
+        address: this.user_detail.address,
+        city: this.user_detail.city,
+        region: this.user_detail.region,
+        country: this.user_detail.country,
+        postal_code: this.user_detail.postal_code,
       }),
     }
   },
   methods: {
     update() {
-      this.form.put(`/organizations/${this.organization.id}`)
+      this.form.put(`/userDetails/${this.user_detail.id}`)
     },
     destroy() {
-      if (confirm('Are you sure you want to delete this organization?')) {
-        this.$inertia.delete(`/organizations/${this.organization.id}`)
+      if (confirm('Are you sure you want to delete this user_detail?')) {
+        this.$inertia.delete(`/userDetails/${this.user_detail.id}`)
       }
     },
     restore() {
-      if (confirm('Are you sure you want to restore this organization?')) {
-        this.$inertia.put(`/organizations/${this.organization.id}/restore`)
+      if (confirm('Are you sure you want to restore this user_detail?')) {
+        this.$inertia.put(`/userDetails/${this.user_detail.id}/restore`)
       }
     },
   },

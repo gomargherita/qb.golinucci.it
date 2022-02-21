@@ -4,7 +4,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImagesController;
-use App\Http\Controllers\OrganizationsController;
+use App\Http\Controllers\UserDetailsController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
@@ -56,34 +56,34 @@ Route::put('users/{user}/restore', [UsersController::class, 'restore'])
     ->name('users.restore')
     ->middleware('auth');
 
-// Organizations
+// UserDetails
 
-Route::get('organizations', [OrganizationsController::class, 'index'])
-    ->name('organizations')
+Route::get('userDetails', [UserDetailsController::class, 'index'])
+    ->name('userDetails')
     ->middleware('auth');
 
-Route::get('organizations/create', [OrganizationsController::class, 'create'])
-    ->name('organizations.create')
+Route::get('userDetails/create', [UserDetailsController::class, 'create'])
+    ->name('userDetails.create')
     ->middleware('auth');
 
-Route::post('organizations', [OrganizationsController::class, 'store'])
-    ->name('organizations.store')
+Route::post('userDetails', [UserDetailsController::class, 'store'])
+    ->name('userDetails.store')
     ->middleware('auth');
 
-Route::get('organizations/{organization}/edit', [OrganizationsController::class, 'edit'])
-    ->name('organizations.edit')
+Route::get('userDetails/{user_detail}/edit', [UserDetailsController::class, 'edit'])
+    ->name('userDetails.edit')
     ->middleware('auth');
 
-Route::put('organizations/{organization}', [OrganizationsController::class, 'update'])
-    ->name('organizations.update')
+Route::put('userDetails/{user_detail}', [UserDetailsController::class, 'update'])
+    ->name('userDetails.update')
     ->middleware('auth');
 
-Route::delete('organizations/{organization}', [OrganizationsController::class, 'destroy'])
-    ->name('organizations.destroy')
+Route::delete('userDetails/{user_detail}', [UserDetailsController::class, 'destroy'])
+    ->name('userDetails.destroy')
     ->middleware('auth');
 
-Route::put('organizations/{organization}/restore', [OrganizationsController::class, 'restore'])
-    ->name('organizations.restore')
+Route::put('userDetails/{user_detail}/restore', [UserDetailsController::class, 'restore'])
+    ->name('userDetails.restore')
     ->middleware('auth');
 
 // Contacts
@@ -127,5 +127,6 @@ Route::get('reports', [ReportsController::class, 'index'])
 Route::get('/img/{path}', [ImagesController::class, 'show'])
     ->where('path', '.*')
     ->name('image');
+
 
 require __DIR__.'/auth.php';

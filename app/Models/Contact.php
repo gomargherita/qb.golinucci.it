@@ -16,9 +16,9 @@ class Contact extends Model
         return $this->where($field ?? 'id', $value)->withTrashed()->firstOrFail();
     }
 
-    public function organization()
+    public function user_detail()
     {
-        return $this->belongsTo(Organization::class);
+        return $this->belongsTo(UserDetail::class);
     }
 
     public function getNameAttribute()
@@ -38,7 +38,7 @@ class Contact extends Model
                 $query->where('first_name', 'like', '%'.$search.'%')
                     ->orWhere('last_name', 'like', '%'.$search.'%')
                     ->orWhere('email', 'like', '%'.$search.'%')
-                    ->orWhereHas('organization', function ($query) use ($search) {
+                    ->orWhereHas('user_detail', function ($query) use ($search) {
                         $query->where('name', 'like', '%'.$search.'%');
                     });
             });

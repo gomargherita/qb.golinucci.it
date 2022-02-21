@@ -20,7 +20,7 @@
       <table class="w-full whitespace-nowrap">
         <tr class="text-left font-bold">
           <th class="pb-4 pt-6 px-6">Name</th>
-          <th class="pb-4 pt-6 px-6">Organization</th>
+          <th class="pb-4 pt-6 px-6">UserDetail</th>
           <th class="pb-4 pt-6 px-6">City</th>
           <th class="pb-4 pt-6 px-6" colspan="2">Phone</th>
         </tr>
@@ -33,8 +33,8 @@
           </td>
           <td class="border-t">
             <Link class="flex items-center px-6 py-4" :href="`/contacts/${contact.id}/edit`" tabindex="-1">
-              <div v-if="contact.organization">
-                {{ contact.organization.name }}
+              <div v-if="contact.user_detail">
+                {{ contact.user_detail.name }}
               </div>
             </Link>
           </td>
