@@ -2,9 +2,9 @@
   <div>
     <Head :title="form.name" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-indigo-400 hover:text-indigo-600" href="/organizations">Organizations</Link>
-      <span class="text-indigo-400 font-medium">/</span>
-      {{ form.name }}
+      <Link class="text-primary hover:text-secondary-400" href="/organizations">Organizations</Link>
+      <span class="text-gray font-medium">/</span>
+      <span>{{ form.name }}</span>
     </h1>
     <trashed-message v-if="organization.deleted_at" class="mb-6" @restore="restore"> This organization has been deleted. </trashed-message>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
@@ -25,7 +25,7 @@
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
           <button v-if="!organization.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Delete Organization</button>
-          <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">Update Organization</loading-button>
+          <loading-button :loading="form.processing" class="btn-gol-primary ml-auto" type="submit">Update Organization</loading-button>
         </div>
       </form>
     </div>
@@ -39,7 +39,7 @@
         </tr>
         <tr v-for="contact in organization.contacts" :key="contact.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
-            <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/contacts/${contact.id}/edit`">
+            <Link class="flex items-center px-6 py-4 focus:text-primary" :href="`/contacts/${contact.id}/edit`">
               {{ contact.name }}
               <icon v-if="contact.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />
             </Link>

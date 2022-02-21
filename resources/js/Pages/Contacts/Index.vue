@@ -11,7 +11,7 @@
           <option value="only">Only Trashed</option>
         </select>
       </search-filter>
-      <Link class="btn-indigo" href="/contacts/create">
+      <Link class="btn-gol-primary" href="/contacts/create">
         <span>Create</span>
         <span class="hidden md:inline">&nbsp;Contact</span>
       </Link>
@@ -26,7 +26,7 @@
         </tr>
         <tr v-for="contact in contacts.data" :key="contact.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
-            <Link class="flex items-center px-6 py-4 focus:text-indigo-500" :href="`/contacts/${contact.id}/edit`">
+            <Link class="flex items-center px-6 py-4 focus:text-primary" :href="`/contacts/${contact.id}/edit`">
               {{ contact.name }}
               <icon v-if="contact.deleted_at" name="trash" class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400" />
             </Link>

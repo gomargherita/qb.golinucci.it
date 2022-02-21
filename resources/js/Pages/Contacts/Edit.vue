@@ -2,9 +2,9 @@
   <div>
     <Head :title="`${form.first_name} ${form.last_name}`" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-indigo-400 hover:text-indigo-600" href="/contacts">Contacts</Link>
-      <span class="text-indigo-400 font-medium">/</span>
-      {{ form.first_name }} {{ form.last_name }}
+      <Link class="text-primary hover:text-secondary-400" href="/contacts">Contacts</Link>
+      <span class="text-gray font-medium">/</span>
+      <span>{{ form.first_name }} {{ form.last_name }}</span>
     </h1>
     <trashed-message v-if="contact.deleted_at" class="mb-6" @restore="restore"> This contact has been deleted. </trashed-message>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
@@ -30,7 +30,7 @@
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
           <button v-if="!contact.deleted_at" class="text-red-600 hover:underline" tabindex="-1" type="button" @click="destroy">Delete Contact</button>
-          <loading-button :loading="form.processing" class="btn-indigo ml-auto" type="submit">Update Contact</loading-button>
+          <loading-button :loading="form.processing" class="btn-gol-primary ml-auto" type="submit">Update Contact</loading-button>
         </div>
       </form>
     </div>
