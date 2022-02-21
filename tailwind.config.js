@@ -7,14 +7,15 @@ module.exports = {
         './resources/views/**/*.blade.php',
         './resources/js/**/*.vue',
     ],
-
     theme: {
         extend: {
             fontFamily: {
                 sans: ['Nunito', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                primary: '#822622'
+            },
         },
     },
-
     plugins: [require('@tailwindcss/forms')],
 };
