@@ -3,9 +3,15 @@
     "Manage Users": "Manage Users",
     "Logout": "Logout",
     "Dashboard": "Dashboard",
-    "User Details": "User Details",
+    "User detail": "User detail",
+    "User details": "User details",
+    "No user details found": "No user details found",
+    "This user detail has been deleted": "This user detail has been deleted",
     "Contacts": "Contacts",
     "Reports": "Reports",
     "error": "Error",
-    "Text example": "Text example"
+    "Text example": "Text example",
+    "Create": "Create",
+    "Update": "Update",
+    "Delete": "Delete"
 }

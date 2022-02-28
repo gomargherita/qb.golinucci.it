@@ -1,7 +1,7 @@
 <template>
   <div>
     <Head title="Contacts" />
-    <h1 class="mb-8 text-3xl font-bold">Contacts</h1>
+    <h1 class="mb-8 text-3xl font-bold">{{ __('Contacts') }}</h1>
     <div class="flex items-center justify-between mb-6">
       <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
         <label class="block text-gray-700">Trashed:</label>
@@ -20,7 +20,7 @@
       <table class="w-full whitespace-nowrap">
         <tr class="text-left font-bold">
           <th class="pb-4 pt-6 px-6">Name</th>
-          <th class="pb-4 pt-6 px-6">UserDetail</th>
+          <th class="pb-4 pt-6 px-6">User detail</th>
           <th class="pb-4 pt-6 px-6">City</th>
           <th class="pb-4 pt-6 px-6" colspan="2">Phone</th>
         </tr>

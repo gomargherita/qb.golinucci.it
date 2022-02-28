@@ -34,7 +34,7 @@
               <template #dropdown>
                 <div class="mt-2 py-2 text-sm bg-white rounded shadow-xl">
                   <Link class="block px-6 py-2 hover:text-white hover:bg-primary" :href="`/users/${auth.user.id}/edit`">{{ __('My Profile') }}</Link>
-                  <Link class="block px-6 py-2 hover:text-white hover:bg-primary" href="/users">{{ __('Manage Users') }}</Link>
+                  <Link class="block px-6 py-2 hover:text-white hover:bg-primary" href="/users">{{ __('Manage users') }}</Link>
                   <Link class="block px-6 py-2 w-full text-left hover:text-white hover:bg-primary" href="/logout" method="delete" as="button">{{ __('Logout') }}</Link>
                 </div>
               </template>
