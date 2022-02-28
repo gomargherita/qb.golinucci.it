@@ -13,6 +13,7 @@ createInertiaApp({
         return createApp({ render: () => h(app, props) })
             .use(plugin)
             .mixin({ methods: { route } })
+            .mixin(require('./lang'))
             .mount(el);
     },
 });

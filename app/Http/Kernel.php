@@ -2,7 +2,11 @@
 
 namespace App\Http;
 
+use App\Http\Middleware\AccountsPermission;
+use App\Http\Middleware\SetLocale;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use Illuminate\Routing\Router;
 
 class Kernel extends HttpKernel
 {
@@ -34,6 +38,7 @@ class Kernel extends HttpKernel
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Session\Middleware\StartSession::class,
             // \Illuminate\Session\Middleware\AuthenticateSession::class,
+            \App\Http\Middleware\SetLocale::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
@@ -65,4 +70,11 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
     ];
+
+    public function __construct(Application $app, Router $router)
+    {
+        parent::__construct($app, $router);
+        $this->prependToMiddlewarePriority(AccountsPermission::class);
+        $this->appendToMiddlewarePriority(SetLocale::class);
+    }
 }

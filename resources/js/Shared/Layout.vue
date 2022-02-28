@@ -33,17 +33,19 @@
               </template>
               <template #dropdown>
                 <div class="mt-2 py-2 text-sm bg-white rounded shadow-xl">
-                  <Link class="block px-6 py-2 hover:text-white hover:bg-primary" :href="`/users/${auth.user.id}/edit`">My Profile</Link>
-                  <Link class="block px-6 py-2 hover:text-white hover:bg-primary" href="/users">Manage Users</Link>
-                  <Link class="block px-6 py-2 w-full text-left hover:text-white hover:bg-primary" href="/logout" method="delete" as="button">Logout</Link>
+                  <Link class="block px-6 py-2 hover:text-white hover:bg-primary" :href="`/users/${auth.user.id}/edit`">{{ __('My Profile') }}</Link>
+                  <Link class="block px-6 py-2 hover:text-white hover:bg-primary" href="/users">{{ __('Manage Users') }}</Link>
+                  <Link class="block px-6 py-2 w-full text-left hover:text-white hover:bg-primary" href="/logout" method="delete" as="button">{{ __('Logout') }}</Link>
                 </div>
               </template>
             </dropdown>
+            <!--language-selector /-->
           </div>
         </div>
         <div class="md:flex md:flex-grow md:overflow-hidden">
           <main-menu class="hidden flex-shrink-0 p-12 w-56 bg-white overflow-y-auto md:block" />
           <div class="px-4 py-8 md:flex-1 md:p-12 md:overflow-y-auto" scroll-region>
+            
             <flash-messages />
             <slot />
           </div>
@@ -60,6 +62,7 @@ import Logo from '@/Shared/Logo'
 import Dropdown from '@/Shared/Dropdown'
 import MainMenu from '@/Shared/MainMenu'
 import FlashMessages from '@/Shared/FlashMessages'
+import LanguageSelector from '@/Shared/LanguageSelector'
 
 export default {
   components: {
@@ -69,6 +72,7 @@ export default {
     Link,
     Logo,
     MainMenu,
+    LanguageSelector
   },
   props: {
     auth: Object,

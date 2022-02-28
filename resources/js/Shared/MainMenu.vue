@@ -3,25 +3,25 @@
     <div class="mb-4">
       <Link class="group flex items-center py-3" href="/">
         <icon name="dashboard" class="mr-2 w-4 h-4" :class="isUrl('') ? 'fill-primary' : 'fill-gray-900 group-hover:fill-primary'" />
-        <div :class="isUrl('') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'">Dashboard</div>
+        <div :class="isUrl('') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'">{{ __('Dashboard') }}</div>
       </Link>
     </div>
     <div class="mb-4">
       <Link class="group flex items-center py-3" href="/userDetails">
         <icon name="office" class="mr-2 w-4 h-4" :class="isUrl('userDetails') ? 'fill-primary' : 'fill-gray-900 group-hover:fill-primary'" />
-        <div :class="isUrl('userDetails') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'">UserDetails</div>
+        <div :class="isUrl('userDetails') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'">{{ __('User details') }}</div>
       </Link>
     </div>
     <div class="mb-4">
       <Link class="group flex items-center py-3" href="/contacts">
         <icon name="users" class="mr-2 w-4 h-4" :class="isUrl('contacts') ? 'fill-primary' : 'fill-gray-900 group-hover:fill-primary'" />
-        <div :class="isUrl('contacts') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'">Contacts</div>
+        <div :class="isUrl('contacts') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'">{{ __('Contacts') }}</div>
       </Link>
     </div>
     <div class="mb-4">
       <Link class="group flex items-center py-3" href="/reports">
         <icon name="printer" class="mr-2 w-4 h-4" :class="isUrl('reports') ? 'fill-primary' : 'fill-gray-900 group-hover:fill-primary'" />
-        <div :class="isUrl('reports') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'">Reports</div>
+        <div :class="isUrl('reports') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'">{{ __('Reports') }}</div>
       </Link>
     </div>
   </div>

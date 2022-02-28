@@ -128,5 +128,12 @@ Route::get('/img/{path}', [ImagesController::class, 'show'])
     ->where('path', '.*')
     ->name('image');
 
+// Language selector
+// https://devonmather.dev/posts/localizing-a-laravel-app-using-vuejs-and-inertiajs-without-any-dependencies
+Route::get('language/{language}', function ($language) {
+    Session()->put('locale', $language);
+
+    return redirect()->back();
+})->name('language');
 
 require __DIR__.'/auth.php';
