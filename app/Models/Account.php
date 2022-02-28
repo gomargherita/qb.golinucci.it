@@ -6,14 +6,31 @@ use Illuminate\Database\Eloquent\Model;
 
 class Account extends Model
 {
+    // public static function boot()
+    // {
+    //     parent::boot();
+
+    //     // here assign this team to a global user with global default role
+    //     self::created(function ($model) {
+    //         // get session account_id for restore it later
+    //         $session_account_id = getPermissionsTeamId();
+    //         // set actual new account_id to package instance
+    //         setPermissionsTeamId($model);
+    //         // get the admin user and assign roles/permissions on new team model
+    //         User::find(1)->assignRole(Role::ROLE_SUPERADMIN);
+    //         // restore session account_id to package instance
+    //         setPermissionsTeamId($session_account_id);
+    //     });
+    // }
+
     public function users()
     {
         return $this->hasMany(User::class);
     }
 
-    public function userDetails()
+    public function clientDetails()
     {
-        return $this->hasMany(UserDetail::class);
+        return $this->hasMany(ClientDetail::class);
     }
 
     public function contacts()

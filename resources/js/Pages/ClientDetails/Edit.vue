@@ -2,13 +2,13 @@
   <div>
     <Head :title="form.name" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-primary hover:text-secondary-400" href="/userDetails">{{
-        __("User details")
+      <Link class="text-primary hover:text-secondary-400" href="/clientDetails">{{
+        __("Client details")
       }}</Link>
       <span class="text-gray font-medium">/</span>
       <span>{{ form.name }}</span>
     </h1>
-    <trashed-message v-if="user_detail.deleted_at" class="mb-6" @restore="restore"
+    <trashed-message v-if="client_detail.deleted_at" class="mb-6" @restore="restore"
       >{{ __("This user detail has been deleted") }}.</trashed-message
     >
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
@@ -69,19 +69,19 @@
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
           <button
-            v-if="!user_detail.deleted_at"
+            v-if="!client_detail.deleted_at"
             class="text-red-600 hover:underline"
             tabindex="-1"
             type="button"
             @click="destroy"
           >
-            {{ __("Delete") }} {{ __("User detail") }}
+            {{ __("Delete") }} {{ __("Client detail") }}
           </button>
           <loading-button
             :loading="form.processing"
             class="btn-gol-primary ml-auto"
             type="submit"
-            >{{ __("Update") }} {{ __("User detail") }}</loading-button
+            >{{ __("Update") }} {{ __("Client detail") }}</loading-button
           >
         </div>
       </form>
@@ -95,7 +95,7 @@
           <th class="pb-4 pt-6 px-6" colspan="2">Phone</th>
         </tr>
         <tr
-          v-for="contact in user_detail.contacts"
+          v-for="contact in client_detail.contacts"
           :key="contact.id"
           class="hover:bg-gray-100 focus-within:bg-gray-100"
         >
@@ -140,7 +140,7 @@
             </Link>
           </td>
         </tr>
-        <tr v-if="user_detail.contacts.length === 0">
+        <tr v-if="client_detail.contacts.length === 0">
           <td class="px-6 py-4 border-t" colspan="4">No contacts found.</td>
         </tr>
       </table>
@@ -169,35 +169,35 @@ export default {
   },
   layout: Layout,
   props: {
-    user_detail: Object,
+    client_detail: Object,
   },
   remember: "form",
   data() {
     return {
       form: this.$inertia.form({
-        name: this.user_detail.name,
-        email: this.user_detail.email,
-        phone: this.user_detail.phone,
-        address: this.user_detail.address,
-        city: this.user_detail.city,
-        region: this.user_detail.region,
-        country: this.user_detail.country,
-        postal_code: this.user_detail.postal_code,
+        name: this.client_detail.name,
+        email: this.client_detail.email,
+        phone: this.client_detail.phone,
+        address: this.client_detail.address,
+        city: this.client_detail.city,
+        region: this.client_detail.region,
+        country: this.client_detail.country,
+        postal_code: this.client_detail.postal_code,
       }),
     };
   },
   methods: {
     update() {
-      this.form.put(`/userDetails/${this.user_detail.id}`);
+      this.form.put(`/clientDetails/${this.client_detail.id}`);
     },
     destroy() {
-      if (confirm("Are you sure you want to delete this user_detail?")) {
-        this.$inertia.delete(`/userDetails/${this.user_detail.id}`);
+      if (confirm("Are you sure you want to delete this client_detail?")) {
+        this.$inertia.delete(`/clientDetails/${this.client_detail.id}`);
       }
     },
     restore() {
-      if (confirm("Are you sure you want to restore this user_detail?")) {
-        this.$inertia.put(`/userDetails/${this.user_detail.id}/restore`);
+      if (confirm("Are you sure you want to restore this client_detail?")) {
+        this.$inertia.put(`/clientDetails/${this.client_detail.id}/restore`);
       }
     },
   },

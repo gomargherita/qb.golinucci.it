@@ -7,9 +7,9 @@
       </Link>
     </div>
     <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/userDetails">
-        <icon name="office" class="mr-2 w-4 h-4" :class="isUrl('userDetails') ? 'fill-primary' : 'fill-gray-900 group-hover:fill-primary'" />
-        <div :class="isUrl('userDetails') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'">{{ __('User details') }}</div>
+      <Link class="group flex items-center py-3" href="/clientDetails">
+        <icon name="office" class="mr-2 w-4 h-4" :class="isUrl('clientDetails') ? 'fill-primary' : 'fill-gray-900 group-hover:fill-primary'" />
+        <div :class="isUrl('clientDetails') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'">{{ __('Client details') }}</div>
       </Link>
     </div>
     <div class="mb-4">

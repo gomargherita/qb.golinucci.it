@@ -4,7 +4,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImagesController;
-use App\Http\Controllers\UserDetailsController;
+use App\Http\Controllers\ClientDetailsController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UsersController;
 use Illuminate\Support\Facades\Route;
@@ -56,34 +56,34 @@ Route::put('users/{user}/restore', [UsersController::class, 'restore'])
     ->name('users.restore')
     ->middleware('auth');
 
-// UserDetails
+// ClientDetails
 
-Route::get('userDetails', [UserDetailsController::class, 'index'])
-    ->name('userDetails')
+Route::get('clientDetails', [ClientDetailsController::class, 'index'])
+    ->name('clientDetails')
     ->middleware('auth');
 
-Route::get('userDetails/create', [UserDetailsController::class, 'create'])
-    ->name('userDetails.create')
+Route::get('clientDetails/create', [ClientDetailsController::class, 'create'])
+    ->name('clientDetails.create')
     ->middleware('auth');
 
-Route::post('userDetails', [UserDetailsController::class, 'store'])
-    ->name('userDetails.store')
+Route::post('clientDetails', [ClientDetailsController::class, 'store'])
+    ->name('clientDetails.store')
     ->middleware('auth');
 
-Route::get('userDetails/{user_detail}/edit', [UserDetailsController::class, 'edit'])
-    ->name('userDetails.edit')
+Route::get('clientDetails/{client_detail}/edit', [ClientDetailsController::class, 'edit'])
+    ->name('clientDetails.edit')
     ->middleware('auth');
 
-Route::put('userDetails/{user_detail}', [UserDetailsController::class, 'update'])
-    ->name('userDetails.update')
+Route::put('clientDetails/{client_detail}', [ClientDetailsController::class, 'update'])
+    ->name('clientDetails.update')
     ->middleware('auth');
 
-Route::delete('userDetails/{user_detail}', [UserDetailsController::class, 'destroy'])
-    ->name('userDetails.destroy')
+Route::delete('clientDetails/{client_detail}', [ClientDetailsController::class, 'destroy'])
+    ->name('clientDetails.destroy')
     ->middleware('auth');
 
-Route::put('userDetails/{user_detail}/restore', [UserDetailsController::class, 'restore'])
-    ->name('userDetails.restore')
+Route::put('clientDetails/{client_detail}/restore', [ClientDetailsController::class, 'restore'])
+    ->name('clientDetails.restore')
     ->middleware('auth');
 
 // Contacts

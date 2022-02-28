@@ -10,9 +10,9 @@
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <text-input v-model="form.first_name" :error="form.errors.first_name" class="pb-8 pr-6 w-full lg:w-1/2" label="First name" />
           <text-input v-model="form.last_name" :error="form.errors.last_name" class="pb-8 pr-6 w-full lg:w-1/2" label="Last name" />
-          <select-input v-model="form.user_detail_id" :error="form.errors.user_detail_id" class="pb-8 pr-6 w-full lg:w-1/2" label="UserDetail">
+          <select-input v-model="form.client_detail_id" :error="form.errors.client_detail_id" class="pb-8 pr-6 w-full lg:w-1/2" label="ClientDetail">
             <option :value="null" />
-            <option v-for="user_detail in userDetails" :key="user_detail.id" :value="user_detail.id">{{ user_detail.name }}</option>
+            <option v-for="client_detail in clientDetails" :key="client_detail.id" :value="client_detail.id">{{ client_detail.name }}</option>
           </select-input>
           <text-input v-model="form.email" :error="form.errors.email" class="pb-8 pr-6 w-full lg:w-1/2" label="Email" />
           <text-input v-model="form.phone" :error="form.errors.phone" class="pb-8 pr-6 w-full lg:w-1/2" label="Phone" />
@@ -51,7 +51,7 @@ export default {
   },
   layout: Layout,
   props: {
-    userDetails: Array,
+    clientDetails: Array,
   },
   remember: 'form',
   data() {
@@ -59,7 +59,7 @@ export default {
       form: this.$inertia.form({
         first_name: '',
         last_name: '',
-        user_detail_id: null,
+        client_detail_id: null,
         email: '',
         phone: '',
         address: '',
