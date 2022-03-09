@@ -20,11 +20,13 @@ class UsersController extends Controller
             'users' => Auth::user()->account->users()
                 ->orderByName()
                 ->filter(Request::only('search', 'role', 'trashed'))
-                ->get()
+                ->paginate(10)
+                ->withQueryString()
                 ->transform(fn ($user) => [
                     'id' => $user->id,
                     'name' => $user->name,
                     'email' => $user->email,
+                    'account' => $user->account->name,
                     'owner' => $user->owner,
                     'photo' => $user->photo_path ? URL::route('image', ['path' => $user->photo_path, 'w' => 40, 'h' => 40, 'fit' => 'crop']) : null,
                     'deleted_at' => $user->deleted_at,

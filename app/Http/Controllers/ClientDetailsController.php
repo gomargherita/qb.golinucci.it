@@ -15,12 +15,13 @@ class ClientDetailsController extends Controller
         return Inertia::render('ClientDetails/Index', [
             'filters' => Request::all('search', 'trashed'),
             'clientDetails' => Auth::user()->account->clientDetails()
-                ->orderBy('name')
+                ->orderByName()
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($client_detail) => [
                     'id' => $client_detail->id,
+                    'user_id' => $client_detail->user_id,
                     'name' => $client_detail->name,
                     'phone' => $client_detail->phone,
                     'city' => $client_detail->city,
@@ -38,8 +39,8 @@ class ClientDetailsController extends Controller
     {
         Auth::user()->account->clientDetails()->create(
             Request::validate([
-                'name' => ['required', 'max:100'],
-                'email' => ['nullable', 'max:50', 'email'],
+                'first_name' => ['required', 'max:100'],
+                'last_name' => ['required', 'max:100'],
                 'phone' => ['nullable', 'max:50'],
                 'address' => ['nullable', 'max:150'],
                 'city' => ['nullable', 'max:50'],
@@ -57,16 +58,15 @@ class ClientDetailsController extends Controller
         return Inertia::render('ClientDetails/Edit', [
             'client_detail' => [
                 'id' => $client_detail->id,
-                'name' => $client_detail->name,
-                'email' => $client_detail->email,
+                'first_name' => $client_detail->first_name,
+                'last_name' => $client_detail->last_name,
                 'phone' => $client_detail->phone,
                 'address' => $client_detail->address,
                 'city' => $client_detail->city,
                 'region' => $client_detail->region,
                 'country' => $client_detail->country,
                 'postal_code' => $client_detail->postal_code,
-                'deleted_at' => $client_detail->deleted_at,
-                'contacts' => $client_detail->contacts()->orderByName()->get()->map->only('id', 'name', 'city', 'phone'),
+                'deleted_at' => $client_detail->deleted_at
             ],
         ]);
     }
@@ -75,8 +75,8 @@ class ClientDetailsController extends Controller
     {
         $client_detail->update(
             Request::validate([
-                'name' => ['required', 'max:100'],
-                'email' => ['nullable', 'max:50', 'email'],
+                'first_name' => ['required', 'max:100'],
+                'last_name' => ['required', 'max:100'],
                 'phone' => ['nullable', 'max:50'],
                 'address' => ['nullable', 'max:150'],
                 'city' => ['nullable', 'max:50'],

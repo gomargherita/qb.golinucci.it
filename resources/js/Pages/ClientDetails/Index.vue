@@ -16,6 +16,7 @@
         <span class="hidden md:inline">&nbsp;{{ __("Client detail") }}</span>
       </Link>
     </div>
+    <pagination class="mb-6" :links="clientDetails.links" />
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <thead>
@@ -73,7 +74,9 @@
             </td>
           </tr>
           <tr v-if="clientDetails.data.length === 0">
-            <td class="px-6 py-4 border-t" colspan="4">{{ __("No user details found") }}.</td>
+            <td class="px-6 py-4 border-t" colspan="4">
+              {{ __("No user details found") }}.
+            </td>
           </tr>
         </tbody>
       </table>

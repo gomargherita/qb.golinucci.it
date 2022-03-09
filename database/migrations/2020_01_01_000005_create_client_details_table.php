@@ -15,9 +15,9 @@ class CreateClientDetailsTable extends Migration
     {
         Schema::create('client_details', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('account_id')->index();
-            $table->string('name', 100);
-            $table->string('email', 50)->nullable();
+            $table->integer('user_id')->index();
+            $table->string('first_name', 25);
+            $table->string('last_name', 25);
             $table->string('phone', 50)->nullable();
             $table->string('address', 150)->nullable();
             $table->string('city', 50)->nullable();

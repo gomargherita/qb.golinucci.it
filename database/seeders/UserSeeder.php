@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Account;
-use App\Models\Contact;
 use App\Models\ClientDetail;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -19,7 +18,7 @@ class UserSeeder extends Seeder
     {
         $account = Account::create(['name' => 'Golinucci']);
 
-        User::factory()->create([
+        $user = User::factory()->create([
             'account_id' => $account->id,
             'first_name' => 'Marco',
             'last_name' => 'Masi',
@@ -28,33 +27,63 @@ class UserSeeder extends Seeder
             'owner' => true,
         ]);
 
-        User::factory(2)->create(['account_id' => $account->id]);
+        ClientDetail::factory(3)
+            ->create([
+                'user_id' => $user->id
+            ]);
 
-        $clientDetails = ClientDetail::factory(40)
-            ->create(['account_id' => $account->id]);
+        $user = User::factory()->create([
+            'account_id' => $account->id,
+            'first_name' => 'Francesco',
+            'last_name' => 'Golinucci',
+            'owner' => true,
+        ]);
 
-        Contact::factory(50)
-            ->create(['account_id' => $account->id])
-            ->each(function ($contact) use ($clientDetails) {
-                $contact->update(['client_detail_id' => $clientDetails->random()->id]);
+        ClientDetail::factory(5)
+            ->create([
+                'user_id' => $user->id
+            ]);
+
+        User::factory()->create([
+            'account_id' => $account->id,
+            'first_name' => 'Nadia',
+            'last_name' => 'Golinucci',
+            'owner' => true,
+        ]);
+
+        // create clients
+        $users = User::factory(21)->create([
+            'account_id' => $account->id,
+            'owner' => false,
+        ]);
+
+        // assign multiple clientDetails to prev clients
+        ClientDetail::factory(40)
+            ->create()
+            ->each(function ($clientDetail) use ($users) {
+                $clientDetail->update(['user_id' => $users->random()->id]);
             });
 
+        // new account for agents
         $account_ext = Account::create(['name' => 'Prisma Broker']);
 
         User::factory()->create([
             'account_id' => $account_ext->id,
             'email' => 'masiorama+prisma@gmail.com',
             'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+            'owner' => true,
+        ]);
+
+        // create agent clients
+        $users_ext = User::factory(21)->create([
+            'account_id' => $account_ext->id,
             'owner' => false,
         ]);
 
-        $clientDetails_ext = ClientDetail::factory(10)
-            ->create(['account_id' => $account_ext->id]);
-
-        Contact::factory(50)
-            ->create(['account_id' => $account_ext->id])
-            ->each(function ($contact) use ($clientDetails_ext) {
-                $contact->update(['client_detail_id' => $clientDetails_ext->random()->id]);
+        ClientDetail::factory(25)
+            ->create()
+            ->each(function ($clientDetail) use ($users_ext) {
+                $clientDetail->update(['user_id' => $users_ext->random()->id]);
             });
     }
 }

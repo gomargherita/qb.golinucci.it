@@ -16,15 +16,21 @@ class ClientDetail extends Model
         return $this->where($field ?? 'id', $value)->withTrashed()->firstOrFail();
     }
 
-    public function contacts()
+    public function scopeOrderByName($query)
     {
-        return $this->hasMany(Contact::class);
+        $query->orderBy('last_name')->orderBy('first_name');
+    }
+
+    public function getNameAttribute()
+    {
+        return $this->last_name . ' ' . $this->first_name;
     }
 
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where('name', 'like', '%'.$search.'%');
+            $query->where('client_details.first_name', 'like', '%' . $search . '%')
+                ->orWhere('client_details.last_name', 'like', '%' . $search . '%');
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {
                 $query->withTrashed();
@@ -33,5 +39,4 @@ class ClientDetail extends Model
             }
         });
     }
-
 }

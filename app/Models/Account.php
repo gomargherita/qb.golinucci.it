@@ -30,11 +30,7 @@ class Account extends Model
 
     public function clientDetails()
     {
-        return $this->hasMany(ClientDetail::class);
+        return $this->hasManyThrough(ClientDetail::class, User::class);
     }
 
-    public function contacts()
-    {
-        return $this->hasMany(Contact::class);
-    }
 }

@@ -14,9 +14,10 @@ class ClientDetailFactory extends Factory
     public function definition()
     {
         return [
-            'name' => $this->faker->company,
-            'email' => $this->faker->companyEmail,
+            'user_id' => $this->faker->numerify,
             'phone' => $this->faker->tollFreePhoneNumber,
+            'first_name' => $this->faker->firstName,
+            'last_name' => $this->faker->lastName,
             'address' => $this->faker->streetAddress,
             'city' => $this->faker->city,
             'region' => $this->faker->state,
