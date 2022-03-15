@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ClientDetail extends Model
@@ -14,6 +15,11 @@ class ClientDetail extends Model
     public function resolveRouteBinding($value, $field = null)
     {
         return $this->where($field ?? 'id', $value)->withTrashed()->firstOrFail();
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function scopeOrderByName($query)
@@ -30,7 +36,9 @@ class ClientDetail extends Model
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
             $query->where('client_details.first_name', 'like', '%' . $search . '%')
-                ->orWhere('client_details.last_name', 'like', '%' . $search . '%');
+                ->orWhere('client_details.last_name', 'like', '%' . $search . '%')
+                ->orWhere('users.first_name', 'like', '%' . $search . '%')
+                ->orWhere('users.last_name', 'like', '%' . $search . '%');
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {
                 $query->withTrashed();

@@ -7,13 +7,16 @@
     "Client details": "Anagrafiche",
     "No user details found": "Nessuna anagrafica trovata",
     "This user detail has been deleted": "Questa anagrafica è stata cancellata",
-    "Contacts": "Contatti",
     "Reports": "Report",
     "error": "Errore",
     "Text example": "Esempio testo",
     "Create": "Crea",
+    "Create for": "Crea per",
     "Update": "Aggiorna",
     "Delete": "Cancella",
     "Forgot password": "Password dimenticata",
-    "Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.": "Password dimenticata? Nessun problema. Inserisci il tuo indirizzo email e ti invieremo un link di reset della password che ti permetterà di sceglierne una nuova."
+    "Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.": "Password dimenticata? Nessun problema. Inserisci il tuo indirizzo email e ti invieremo un link di reset della password che ti permetterà di sceglierne una nuova.",
+    "Name": "Nome",
+    "City": "Città",
+    "Phone": "Telefono"
 }

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\ClientDetail;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Http\Request as Req;
 use Inertia\Inertia;
 
 class ClientDetailsController extends Controller
@@ -26,19 +28,28 @@ class ClientDetailsController extends Controller
                     'phone' => $client_detail->phone,
                     'city' => $client_detail->city,
                     'deleted_at' => $client_detail->deleted_at,
+                    'user' => $client_detail->user ? $client_detail->user->only('id', 'name') : null,
                 ]),
         ]);
     }
-
-    public function create()
+    /**
+     * Creo anagrafica solo associata a uno specifico user
+     */
+    public function create(User $user)
     {
-        return Inertia::render('ClientDetails/Create');
+        $user_id = $user->id;
+        if(empty($user_id)){
+            abort(404);
+        }
+
+        return Inertia::render('ClientDetails/Create', ['user' => $user]);
     }
 
     public function store()
     {
         Auth::user()->account->clientDetails()->create(
             Request::validate([
+                'user_id' => ['required'],
                 'first_name' => ['required', 'max:100'],
                 'last_name' => ['required', 'max:100'],
                 'phone' => ['nullable', 'max:50'],
@@ -66,8 +77,9 @@ class ClientDetailsController extends Controller
                 'region' => $client_detail->region,
                 'country' => $client_detail->country,
                 'postal_code' => $client_detail->postal_code,
-                'deleted_at' => $client_detail->deleted_at
+                'deleted_at' => $client_detail->deleted_at,
             ],
+            'user' => $client_detail->user ? $client_detail->user : null,
         ]);
     }
 

@@ -1,12 +1,12 @@
 <template>
   <div>
-    <Head :title="form.name" />
+    <Head :title="`${form.first_name} ${form.last_name}`" />
     <h1 class="mb-8 text-3xl font-bold">
       <Link class="text-primary hover:text-secondary-400" href="/clientDetails">{{
         __("Client details")
       }}</Link>
       <span class="text-gray font-medium">/</span>
-      <span>{{ form.name }}</span>
+      <span>{{ form.last_name }} {{ form.first_name }}</span>
     </h1>
     <trashed-message v-if="client_detail.deleted_at" class="mb-6" @restore="restore"
       >{{ __("This user detail has been deleted") }}.</trashed-message
@@ -15,16 +15,16 @@
       <form @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <text-input
-            v-model="form.name"
-            :error="form.errors.name"
+            v-model="form.first_name"
+            :error="form.errors.first_name"
             class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Name"
+            label="First Name"
           />
           <text-input
-            v-model="form.email"
-            :error="form.errors.email"
+            v-model="form.last_name"
+            :error="form.errors.last_name"
             class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Email"
+            label="Last Name"
           />
           <text-input
             v-model="form.phone"
@@ -86,27 +86,23 @@
         </div>
       </form>
     </div>
-    <h2 class="mt-12 text-2xl font-bold">Contacts</h2>
+    <h2 class="mt-12 text-2xl font-bold">{{ __("Related User") }}</h2>
     <div class="mt-6 bg-white rounded shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <tr class="text-left font-bold">
-          <th class="pb-4 pt-6 px-6">Name</th>
-          <th class="pb-4 pt-6 px-6">City</th>
-          <th class="pb-4 pt-6 px-6" colspan="2">Phone</th>
+          <th class="pb-4 pt-6 px-6">Last Name</th>
+          <th class="pb-4 pt-6 px-6">First Name</th>
+          <th class="pb-4 pt-6 px-6" colspan="2">Email</th>
         </tr>
-        <tr
-          v-for="contact in client_detail.contacts"
-          :key="contact.id"
-          class="hover:bg-gray-100 focus-within:bg-gray-100"
-        >
+        <tr v-if="user" :key="user.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4 focus:text-primary"
-              :href="`/contacts/${contact.id}/edit`"
+              :href="`/users/${user.id}/edit`"
             >
-              {{ contact.name }}
+              {{ user.last_name }}
               <icon
-                v-if="contact.deleted_at"
+                v-if="user.deleted_at"
                 name="trash"
                 class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400"
               />
@@ -115,33 +111,33 @@
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4"
-              :href="`/contacts/${contact.id}/edit`"
+              :href="`/users/${user.id}/edit`"
               tabindex="-1"
             >
-              {{ contact.city }}
+              {{ user.first_name }}
             </Link>
           </td>
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4"
-              :href="`/contacts/${contact.id}/edit`"
+              :href="`/users/${user.id}/edit`"
               tabindex="-1"
             >
-              {{ contact.phone }}
+              {{ user.email }}
             </Link>
           </td>
           <td class="w-px border-t">
             <Link
               class="flex items-center px-4"
-              :href="`/contacts/${contact.id}/edit`"
+              :href="`/users/${user.id}/edit`"
               tabindex="-1"
             >
               <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />
             </Link>
           </td>
         </tr>
-        <tr v-if="client_detail.contacts.length === 0">
-          <td class="px-6 py-4 border-t" colspan="4">No contacts found.</td>
+        <tr v-if="user.length === 0">
+          <td class="px-6 py-4 border-t" colspan="4">No users found.</td>
         </tr>
       </table>
     </div>
@@ -170,13 +166,14 @@ export default {
   layout: Layout,
   props: {
     client_detail: Object,
+    user: Object,
   },
   remember: "form",
   data() {
     return {
       form: this.$inertia.form({
-        name: this.client_detail.name,
-        email: this.client_detail.email,
+        first_name: this.client_detail.first_name,
+        last_name: this.client_detail.last_name,
         phone: this.client_detail.phone,
         address: this.client_detail.address,
         city: this.client_detail.city,

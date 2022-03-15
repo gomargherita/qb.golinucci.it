@@ -3,13 +3,14 @@
     <Head title="Create ClientDetail" />
     <h1 class="mb-8 text-3xl font-bold">
       <Link class="text-primary hover:text-secondary-400" href="/clientDetails">{{ __('Client details') }}</Link>
-      <span class="text-gray font-medium">/</span> {{ __('Create') }}
+      <span class="text-gray font-medium">/</span>{{ __('Create for') }}<span class="ml-2">{{ user.email }}</span>
     </h1>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="store">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <text-input v-model="form.name" :error="form.errors.name" class="pb-8 pr-6 w-full lg:w-1/2" label="Name" />
-          <text-input v-model="form.email" :error="form.errors.email" class="pb-8 pr-6 w-full lg:w-1/2" label="Email" />
+          <input type="hidden" v-model="form.user_id" :error="form.errors.user_id" class="pb-8 pr-6 w-full lg:w-1/2" value="user.id" />
+          <text-input v-model="form.first_name" :error="form.errors.first_name" class="pb-8 pr-6 w-full lg:w-1/2" label="First Name" />
+          <text-input v-model="form.last_name" :error="form.errors.last_name" class="pb-8 pr-6 w-full lg:w-1/2" label="Last Name" />
           <text-input v-model="form.phone" :error="form.errors.phone" class="pb-8 pr-6 w-full lg:w-1/2" label="Phone" />
           <text-input v-model="form.address" :error="form.errors.address" class="pb-8 pr-6 w-full lg:w-1/2" label="Address" />
           <text-input v-model="form.city" :error="form.errors.city" class="pb-8 pr-6 w-full lg:w-1/2" label="City" />
@@ -46,11 +47,15 @@ export default {
   },
   layout: Layout,
   remember: 'form',
+  props: {
+    user: Object,
+  },
   data() {
     return {
       form: this.$inertia.form({
-        name: null,
-        email: null,
+        user_id: this.$props.user.id,
+        first_name: null,
+        last_name: null,
         phone: null,
         address: null,
         city: null,

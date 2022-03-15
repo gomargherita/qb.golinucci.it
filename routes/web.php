@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\ContactsController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\ClientDetailsController;
@@ -62,7 +61,7 @@ Route::get('clientDetails', [ClientDetailsController::class, 'index'])
     ->name('clientDetails')
     ->middleware('auth');
 
-Route::get('clientDetails/create', [ClientDetailsController::class, 'create'])
+Route::get('clientDetails/{user}/create', [ClientDetailsController::class, 'create'])
     ->name('clientDetails.create')
     ->middleware('auth');
 
@@ -84,36 +83,6 @@ Route::delete('clientDetails/{client_detail}', [ClientDetailsController::class, 
 
 Route::put('clientDetails/{client_detail}/restore', [ClientDetailsController::class, 'restore'])
     ->name('clientDetails.restore')
-    ->middleware('auth');
-
-// Contacts
-
-Route::get('contacts', [ContactsController::class, 'index'])
-    ->name('contacts')
-    ->middleware('auth');
-
-Route::get('contacts/create', [ContactsController::class, 'create'])
-    ->name('contacts.create')
-    ->middleware('auth');
-
-Route::post('contacts', [ContactsController::class, 'store'])
-    ->name('contacts.store')
-    ->middleware('auth');
-
-Route::get('contacts/{contact}/edit', [ContactsController::class, 'edit'])
-    ->name('contacts.edit')
-    ->middleware('auth');
-
-Route::put('contacts/{contact}', [ContactsController::class, 'update'])
-    ->name('contacts.update')
-    ->middleware('auth');
-
-Route::delete('contacts/{contact}', [ContactsController::class, 'destroy'])
-    ->name('contacts.destroy')
-    ->middleware('auth');
-
-Route::put('contacts/{contact}/restore', [ContactsController::class, 'restore'])
-    ->name('contacts.restore')
     ->middleware('auth');
 
 // Reports

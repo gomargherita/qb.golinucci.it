@@ -7,13 +7,16 @@
     "Client details": "Client details",
     "No user details found": "No user details found",
     "This user detail has been deleted": "This user detail has been deleted",
-    "Contacts": "Contacts",
     "Reports": "Reports",
     "error": "Error",
     "Text example": "Text example",
     "Create": "Create",
+    "Create for": "Crea for",
     "Update": "Update",
     "Delete": "Delete",
     "Forgot password": "Forgot password",
-    "Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.": "Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one."
+    "Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.": "Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.",
+    "Name": "Name",
+    "City": "City",
+    "Phone": "Phone"
 }

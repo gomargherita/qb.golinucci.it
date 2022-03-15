@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
@@ -57,6 +58,11 @@ class User extends Authenticatable
         return $this->belongsTo(Account::class);
     }
 
+    public function clientDetails(): HasMany
+    {
+        return $this->hasMany(ClientDetail::class);
+    }
+
     public function getNameAttribute()
     {
         return $this->last_name . ' ' . $this->first_name;
@@ -95,8 +101,8 @@ class User extends Authenticatable
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
             $query->where(function ($query) use ($search) {
-                $query->where('first_name', 'like', '%' . $search . '%')
-                    ->orWhere('last_name', 'like', '%' . $search . '%')
+                $query->where('users.first_name', 'like', '%' . $search . '%')
+                    ->orWhere('users.last_name', 'like', '%' . $search . '%')
                     ->orWhere('email', 'like', '%' . $search . '%');
             });
         })->when($filters['role'] ?? null, function ($query, $role) {

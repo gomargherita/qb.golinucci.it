@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Head :title="`${form.first_name} ${form.last_name}`" />
+    <Head :title="`${form.last_name} ${form.first_name}`" />
     <h1 class="mb-8 text-3xl font-bold">
       <Link class="text-primary hover:text-secondary-400" href="/contacts">Contacts</Link>
       <span class="text-gray font-medium">/</span>
