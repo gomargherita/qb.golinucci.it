@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Http\Request as Req;
+use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class ClientDetailsController extends Controller
@@ -37,19 +37,27 @@ class ClientDetailsController extends Controller
      */
     public function create(User $user)
     {
-        $user_id = $user->id;
-        if(empty($user_id)){
+        if (empty($user)) {
             abort(404);
         }
 
-        return Inertia::render('ClientDetails/Create', ['user' => $user]);
+        // check if user belongs to account
+        $checkedUser = Auth::user()->account->users()->where('id', $user->id)->first();
+
+        if (empty($checkedUser)) {
+            abort(302);
+        }
+
+        return Inertia::render('ClientDetails/Create', ['user' => $checkedUser]);
     }
 
     public function store()
     {
         Auth::user()->account->clientDetails()->create(
             Request::validate([
-                'user_id' => ['required'],
+                'user_id' => ['required', Rule::exists('users', 'id')->where(function ($query) {
+                    $query->where('account_id', Auth::user()->account_id);
+                })],
                 'first_name' => ['required', 'max:100'],
                 'last_name' => ['required', 'max:100'],
                 'phone' => ['nullable', 'max:50'],
