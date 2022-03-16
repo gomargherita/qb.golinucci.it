@@ -1,5 +1,9 @@
 {
+    "Yes": "Sì",
+    "No": "No",
+    "Filter": "Filtra",
     "My Profile": "Il mio profilo",
+    "Photo": "Foto",
     "Manage users": "Gestisci utenti",
     "Logout": "Logout",
     "Dashboard": "Dashboard",
@@ -7,6 +11,8 @@
     "Client details": "Anagrafiche",
     "No user details found": "Nessuna anagrafica trovata",
     "This user detail has been deleted": "Questa anagrafica è stata cancellata",
+    "Users": "Utenti",
+    "User": "Utente",
     "Reports": "Report",
     "error": "Errore",
     "Text example": "Esempio testo",
@@ -17,6 +23,9 @@
     "Forgot password": "Password dimenticata",
     "Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.": "Password dimenticata? Nessun problema. Inserisci il tuo indirizzo email e ti invieremo un link di reset della password che ti permetterà di sceglierne una nuova.",
     "Name": "Nome",
+    "First name": "Nome",
+    "Last name": "Cognome",
     "City": "Città",
-    "Phone": "Telefono"
+    "Phone": "Telefono",
+    "Browse": "Cerca"
 }
