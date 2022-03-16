@@ -23,7 +23,6 @@ class ClientDetailsController extends Controller
                 ->withQueryString()
                 ->through(fn ($client_detail) => [
                     'id' => $client_detail->id,
-                    'user_id' => $client_detail->user_id,
                     'name' => $client_detail->name,
                     'phone' => $client_detail->phone,
                     'city' => $client_detail->city,
@@ -75,6 +74,9 @@ class ClientDetailsController extends Controller
     public function edit(ClientDetail $client_detail)
     {
         return Inertia::render('ClientDetails/Edit', [
+            // 'can' => [
+            //     'delete_client_detail' => auth()->user()->can('delete_client_detail', $client_detail)
+            // ],
             'client_detail' => [
                 'id' => $client_detail->id,
                 'first_name' => $client_detail->first_name,
