@@ -113,7 +113,7 @@ export default {
   layout: Layout,
   props: {
     filters: Object,
-    clientDetails: Object,
+    clientDetails: Object
   },
   data() {
     return {

@@ -3,12 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Notifications\Notifiable;
 use \Spatie\Permission\Models\Role as BaseRole;
 
 class Role extends BaseRole
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     const ROLE_SUPERADMIN = 'superadmin';
     const ROLE_OPERATOR = 'admin_operator'; // golinucci operators
@@ -42,6 +44,21 @@ class Role extends BaseRole
         ];
     }
 
+    public function resolveRouteBinding($value, $field = null)
+    {
+        return $this->where($field ?? 'id', $value)->firstOrFail();
+    }
+
+    public function scopeOrderByName($query)
+    {
+        $query->orderBy('name');
+    }
+
+    public function account(): BelongsTo
+    {
+        return $this->belongsTo(Account::class);
+    }
+
     public function permissions(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -50,5 +67,14 @@ class Role extends BaseRole
             'role_id',
             'permission_id'
         );
+    }
+
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['search'] ?? null, function ($query, $search) {
+            $query->where(function ($query) use ($search) {
+                $query->where('roles.name', 'like', '%' . $search . '%');
+            });
+        });
     }
 }

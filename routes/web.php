@@ -6,6 +6,7 @@ use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\ClientDetailsController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\RolesController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,6 +24,32 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [DashboardController::class, 'index'])
     ->name('dashboard')
+    ->middleware('auth');
+
+// Roles
+
+Route::get('roles', [RolesController::class, 'index'])
+    ->name('roles')
+    ->middleware('auth');
+
+Route::get('roles/create', [RolesController::class, 'create'])
+    ->name('roles.create')
+    ->middleware('auth');
+
+Route::post('roles', [RolesController::class, 'store'])
+    ->name('roles.store')
+    ->middleware('auth');
+
+Route::get('roles/{role}/edit', [RolesController::class, 'edit'])
+    ->name('roles.edit')
+    ->middleware('auth');
+
+Route::put('roles/{role}', [RolesController::class, 'update'])
+    ->name('roles.update')
+    ->middleware('auth');
+
+Route::delete('roles/{role}', [RolesController::class, 'destroy'])
+    ->name('roles.destroy')
     ->middleware('auth');
 
 // Users
@@ -105,4 +132,4 @@ Route::get('language/{language}', function ($language) {
     return redirect()->back();
 })->name('language');
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

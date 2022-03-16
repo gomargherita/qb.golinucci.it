@@ -27,5 +27,7 @@
     "Last name": "Last name",
     "City": "City",
     "Phone": "Phone",
-    "Browse": "Browse"
+    "Browse": "Browse",
+    "Roles": "Roles",
+    "Role": "Role"
 }

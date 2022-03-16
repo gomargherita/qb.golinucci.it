@@ -14,6 +14,24 @@
         </div>
       </Link>
     </div>
+    <div v-if="can('manage roles')" class="mb-4">
+      <Link class="group flex items-center py-3" href="/roles">
+        <icon
+          name="users"
+          class="mr-2 w-4 h-4"
+          :class="
+            isUrl('roles') ? 'fill-primary' : 'fill-gray-900 group-hover:fill-primary'
+          "
+        />
+        <div
+          :class="
+            isUrl('roles') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'
+          "
+        >
+          {{ __("Roles") }}
+        </div>
+      </Link>
+    </div>
     <div class="mb-4">
       <Link class="group flex items-center py-3" href="/users">
         <icon
@@ -28,7 +46,7 @@
             isUrl('users') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'
           "
         >
-          {{ __("Utenti") }}
+          {{ __("Users") }}
         </div>
       </Link>
     </div>
@@ -83,6 +101,9 @@ export default {
   components: {
     Icon,
     Link,
+  },
+  props: {
+    can: Object
   },
   methods: {
     isUrl(...urls) {

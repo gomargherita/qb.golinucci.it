@@ -33,4 +33,8 @@ class Account extends Model
         return $this->hasManyThrough(ClientDetail::class, User::class);
     }
 
+    public function roles()
+    {
+        return $this->hasMany(Role::class);
+    }
 }

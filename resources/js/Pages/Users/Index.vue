@@ -8,7 +8,7 @@
         <select v-model="form.role" class="form-select mt-1 w-full">
           <option :value="null" />
           <option value="user">User</option>
-          <option value="owner">Owner</option>
+          <option value="owner">Admin</option>
         </select>
         <label class="block mt-4 text-gray-700">Trashed:</label>
         <select v-model="form.trashed" class="form-select mt-1 w-full">
@@ -78,7 +78,7 @@
               :href="`/users/${user.id}/edit`"
               tabindex="-1"
             >
-              {{ user.owner ? "Owner" : "User" }}
+              {{ user.owner ? "Admin" : "User" }}
             </Link>
           </td>
           <td class="w-px border-t">
