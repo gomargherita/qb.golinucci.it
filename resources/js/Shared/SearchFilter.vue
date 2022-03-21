@@ -36,7 +36,7 @@
         autocomplete="off"
         type="text"
         name="search"
-        placeholder="Search…"
+        :placeholder="this.$page.props.language['Search']"
         :value="modelValue"
         @input="$emit('update:modelValue', $event.target.value)"
       />
