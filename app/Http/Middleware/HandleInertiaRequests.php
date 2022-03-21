@@ -2,7 +2,9 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Role;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -33,6 +35,11 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request)
     {
+        // set permission team based on user roles
+        if ($request->user()) {
+            setPermissionsTeamId($request->user()->account_id);
+        }
+
         return array_merge(parent::share($request), [
             'auth' => [
                 'user' => $request->user() ? [
@@ -45,6 +52,8 @@ class HandleInertiaRequests extends Middleware
                         'id' => $request->user()->account->id,
                         'name' => $request->user()->account->name,
                     ],
+                    // 'roles' => $request->user()->roles,
+                    'is_superadmin' => $request->user()->can(Role::ROLE_SUPERADMIN)
                 ] : null,
             ],
             'flash' => function () use ($request) {

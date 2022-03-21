@@ -14,7 +14,7 @@
         </div>
       </Link>
     </div>
-    <div v-if="can('manage roles')" class="mb-4">
+    <div v-if="isSuperadmin" class="mb-4">
       <Link class="group flex items-center py-3" href="/roles">
         <icon
           name="users"
@@ -102,8 +102,10 @@ export default {
     Icon,
     Link,
   },
-  props: {
-    can: Object
+  computed: {
+    isSuperadmin() {
+      return this.$page.props.auth.user.is_superadmin;
+    },
   },
   methods: {
     isUrl(...urls) {
