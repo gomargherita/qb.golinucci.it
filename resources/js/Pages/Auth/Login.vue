@@ -28,7 +28,7 @@
           />
           <label class="flex items-center mt-6 select-none" for="remember">
             <input id="remember" v-model="form.remember" class="mr-1" type="checkbox" />
-            <span class="text-sm">Remember Me</span>
+            <span class="text-sm">{{ __("Remember me") }}</span>
           </label>
         </div>
         <div class="flex px-10 py-4 bg-gray-100 border-t border-gray-100">

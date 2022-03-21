@@ -3,7 +3,9 @@
     <Head :title="`${form.first_name} ${form.last_name}`" />
     <div class="flex justify-start mb-8 max-w-3xl">
       <h1 class="text-3xl font-bold">
-        <Link class="text-primary hover:text-secondary-400" href="/users">Users</Link>
+        <Link class="text-primary hover:text-secondary-400" href="/users">{{
+          __("Users")
+        }}</Link>
         <span class="text-gray font-medium">/</span>
         <span>{{ form.first_name }} {{ form.last_name }}</span>
       </h1>
@@ -45,7 +47,7 @@
             v-model="form.owner"
             :error="form.errors.owner"
             class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Owner"
+            label="Admin"
           >
             <option :value="true">Yes</option>
             <option :value="false">No</option>
@@ -67,24 +69,25 @@
             type="button"
             @click="destroy"
           >
-            Delete User
+            {{ __("Delete") }} {{ __("User") }}
           </button>
           <loading-button
             :loading="form.processing"
             class="btn-gol-primary ml-auto"
             type="submit"
-            >Update User</loading-button
           >
+            {{ __("Update") }} {{ __("User") }}
+          </loading-button>
         </div>
       </form>
     </div>
-    <h2 class="mt-12 text-2xl font-bold">{{ __("Client Details") }}</h2>
+    <h2 class="mt-12 text-2xl font-bold">{{ __("Client details") }}</h2>
     <div class="flex items-center justify-between mb-6">
       <div class=""></div>
       <div class="">
         <Link class="btn-gol-primary" :href="`/clientDetails/${user.id}/create`">
           <span>{{ __("Create") }}</span>
-          <span class="hidden md:inline">&nbsp;{{ __("Client detail") }}</span>
+          <span class="hidden md:inline">&nbsp;{{ __("Client details") }}</span>
         </Link>
       </div>
     </div>
@@ -105,7 +108,7 @@
               class="flex items-center px-6 py-4 focus:text-primary"
               :href="`/clientDetails/${clientDetail.id}/edit`"
             >
-              {{ clientDetail.name }}
+              {{ clientDetail.last_name }} {{ clientDetail.first_name }}
               <icon
                 v-if="clientDetail.deleted_at"
                 name="trash"
