@@ -20,33 +20,58 @@
   <svg
     v-else-if="name === 'dashboard'"
     xmlns="http://www.w3.org/2000/svg"
+    class="h-6 w-6"
     viewBox="0 0 20 20"
+    fill="currentColor"
   >
     <path
-      d="M10 20a10 10 0 1 1 0-20 10 10 0 0 1 0 20zm-5.6-4.29a9.95 9.95 0 0 1 11.2 0 8 8 0 1 0-11.2 0zm6.12-7.64l3.02-3.02 1.41 1.41-3.02 3.02a2 2 0 1 1-1.41-1.41z"
+      fill-rule="evenodd"
+      d="M5 3a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2H5zm9 4a1 1 0 10-2 0v6a1 1 0 102 0V7zm-3 2a1 1 0 10-2 0v4a1 1 0 102 0V9zm-3 3a1 1 0 10-2 0v1a1 1 0 102 0v-1z"
+      clip-rule="evenodd"
     />
   </svg>
   <svg
     v-else-if="name === 'office'"
     xmlns="http://www.w3.org/2000/svg"
-    width="100"
-    height="100"
-    viewBox="0 0 100 100"
+    class="h-6 w-6"
+    viewBox="0 0 20 20"
+    fill="currentColor"
   >
+    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
     <path
       fill-rule="evenodd"
-      d="M7 0h86v100H57.108V88.418H42.892V100H7V0zm9 64h11v15H16V64zm57 0h11v15H73V64zm-19 0h11v15H54V64zm-19 0h11v15H35V64zM16 37h11v15H16V37zm57 0h11v15H73V37zm-19 0h11v15H54V37zm-19 0h11v15H35V37zM16 11h11v15H16V11zm57 0h11v15H73V11zm-19 0h11v15H54V11zm-19 0h11v15H35V11z"
+      d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z"
+      clip-rule="evenodd"
     />
   </svg>
   <svg
     v-else-if="name === 'printer'"
     xmlns="http://www.w3.org/2000/svg"
+    class="h-6 w-6"
     viewBox="0 0 20 20"
+    fill="currentColor"
   >
     <path
-      d="M4 16H0V6h20v10h-4v4H4v-4zm2-4v6h8v-6H6zM4 0h12v5H4V0zM2 8v2h2V8H2zm4 0v2h2V8H6z"
+      fill-rule="evenodd"
+      d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z"
+      clip-rule="evenodd"
     />
   </svg>
+  <svg
+    v-else-if="name === 'external-link'"
+    xmlns="http://www.w3.org/2000/svg"
+    class="h-6 w-6"
+    viewBox="0 0 20 20"
+    fill="currentColor"
+  >
+    <path
+      d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z"
+    />
+    <path
+      d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z"
+    />
+  </svg>
+
   <svg
     v-else-if="name === 'trash'"
     xmlns="http://www.w3.org/2000/svg"
@@ -59,10 +84,23 @@
   <svg
     v-else-if="name === 'users'"
     xmlns="http://www.w3.org/2000/svg"
+    class="h-6 w-6"
     viewBox="0 0 20 20"
+    fill="currentColor"
   >
     <path
-      d="M7 8a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm0 1c2.15 0 4.2.4 6.1 1.09L12 16h-1.25L10 20H4l-.75-4H2L.9 10.09A17.93 17.93 0 0 1 7 9zm8.31.17c1.32.18 2.59.48 3.8.92L18 16h-1.25L16 20h-3.96l.37-2h1.25l1.65-8.83zM13 0a4 4 0 1 1-1.33 7.76 5.96 5.96 0 0 0 0-7.52C12.1.1 12.53 0 13 0z"
+      d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"
+    />
+  </svg>
+  <svg
+    v-else-if="name === 'roles'"
+    xmlns="http://www.w3.org/2000/svg"
+    class="h-6 w-6"
+    viewBox="0 0 20 20"
+    fill="currentColor"
+  >
+    <path
+      d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"
     />
   </svg>
   <svg

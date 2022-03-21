@@ -7,6 +7,7 @@ use App\Http\Controllers\ClientDetailsController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\RolesController;
+use App\Http\Controllers\SiteController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -132,5 +133,15 @@ Route::get('language/{language}', function ($language) {
 
     return redirect()->back();
 })->name('language');
+
+// public frontend
+
+Route::controller(SiteController::class)->group(function () {
+    Route::get('/sites', 'home');
+    Route::get('/sites/about-us', 'aboutUs');
+    Route::get('/sites/products', 'products');
+    Route::get('/sites/products/{id}', 'product');
+    Route::post('/sites/products/{id}/funnel', 'buy');
+});
 
 require __DIR__ . '/auth.php';

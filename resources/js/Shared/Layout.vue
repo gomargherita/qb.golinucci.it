@@ -14,7 +14,7 @@
               </template>
               <template #dropdown>
                 <div class="mt-2 px-8 py-4 bg-gray-100 rounded shadow-lg">
-                  <main-menu />
+                  <admin-menu />
                 </div>
               </template>
             </dropdown>
@@ -43,7 +43,7 @@
           </div>
         </div>
         <div class="md:flex md:flex-grow md:overflow-hidden">
-          <main-menu class="hidden flex-shrink-0 p-12 w-56 bg-white overflow-y-auto md:block" />
+          <admin-menu class="hidden flex-shrink-0 p-12 w-56 bg-white overflow-y-auto md:block" />
           <div class="px-4 py-8 md:flex-1 md:p-12 md:overflow-y-auto" scroll-region>
             
             <flash-messages />
@@ -60,7 +60,7 @@ import { Link } from '@inertiajs/inertia-vue3'
 import Icon from '@/Shared/Icon'
 import Logo from '@/Shared/Logo'
 import Dropdown from '@/Shared/Dropdown'
-import MainMenu from '@/Shared/MainMenu'
+import AdminMenu from '@/Shared/AdminMenu'
 import FlashMessages from '@/Shared/FlashMessages'
 import LanguageSelector from '@/Shared/LanguageSelector'
 
@@ -71,7 +71,7 @@ export default {
     Icon,
     Link,
     Logo,
-    MainMenu,
+    AdminMenu,
     LanguageSelector
   },
   props: {

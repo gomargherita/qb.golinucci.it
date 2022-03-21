@@ -1,92 +1,33 @@
 <template>
   <div>
     <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/">
-        <icon
-          name="dashboard"
-          class="mr-2 w-4 h-4"
-          :class="isUrl('') ? 'fill-primary' : 'fill-gray-900 group-hover:fill-primary'"
-        />
+      <Link class="group flex items-center py-3" href="/sites">
         <div
-          :class="isUrl('') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'"
+          :class="isUrl('sites') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'"
         >
-          {{ __("Dashboard") }}
-        </div>
-      </Link>
-    </div>
-    <div v-if="isSuperadmin" class="mb-4">
-      <Link class="group flex items-center py-3" href="/roles">
-        <icon
-          name="users"
-          class="mr-2 w-4 h-4"
-          :class="
-            isUrl('roles') ? 'fill-primary' : 'fill-gray-900 group-hover:fill-primary'
-          "
-        />
-        <div
-          :class="
-            isUrl('roles') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'
-          "
-        >
-          {{ __("Roles") }}
+          {{ __("Home") }}
         </div>
       </Link>
     </div>
     <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/users">
-        <icon
-          name="users"
-          class="mr-2 w-4 h-4"
-          :class="
-            isUrl('users') ? 'fill-primary' : 'fill-gray-900 group-hover:fill-primary'
-          "
-        />
+      <Link class="group flex items-center py-3" href="/sites/about-us">
         <div
           :class="
-            isUrl('users') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'
+            isUrl('sites/about-us') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'
           "
         >
-          {{ __("Users") }}
+          {{ __("About us") }}
         </div>
       </Link>
     </div>
     <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/clientDetails">
-        <icon
-          name="office"
-          class="mr-2 w-4 h-4"
-          :class="
-            isUrl('clientDetails')
-              ? 'fill-primary'
-              : 'fill-gray-900 group-hover:fill-primary'
-          "
-        />
+      <Link class="group flex items-center py-3" href="/sites/products">
         <div
           :class="
-            isUrl('clientDetails')
-              ? 'text-primary'
-              : 'text-gray-900 group-hover:text-primary'
+            isUrl('sites/products') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'
           "
         >
-          {{ __("Client details") }}
-        </div>
-      </Link>
-    </div>
-    <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/reports">
-        <icon
-          name="printer"
-          class="mr-2 w-4 h-4"
-          :class="
-            isUrl('reports') ? 'fill-primary' : 'fill-gray-900 group-hover:fill-primary'
-          "
-        />
-        <div
-          :class="
-            isUrl('reports') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'
-          "
-        >
-          {{ __("Reports") }}
+          {{ __("Products") }}
         </div>
       </Link>
     </div>
@@ -101,11 +42,6 @@ export default {
   components: {
     Icon,
     Link,
-  },
-  computed: {
-    isSuperadmin() {
-      return this.$page.props.auth.user.is_superadmin;
-    },
   },
   methods: {
     isUrl(...urls) {
