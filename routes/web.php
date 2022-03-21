@@ -27,30 +27,31 @@ Route::get('/', [DashboardController::class, 'index'])
     ->middleware('auth');
 
 // Roles
+Route::group(['middleware' => ['role:superadmin']], function () {
+    Route::get('roles', [RolesController::class, 'index'])
+        ->name('roles')
+        ->middleware('auth');
 
-Route::get('roles', [RolesController::class, 'index'])
-    ->name('roles')
-    ->middleware('auth');
+    Route::get('roles/create', [RolesController::class, 'create'])
+        ->name('roles.create')
+        ->middleware('auth');
 
-Route::get('roles/create', [RolesController::class, 'create'])
-    ->name('roles.create')
-    ->middleware('auth');
+    Route::post('roles', [RolesController::class, 'store'])
+        ->name('roles.store')
+        ->middleware('auth');
 
-Route::post('roles', [RolesController::class, 'store'])
-    ->name('roles.store')
-    ->middleware('auth');
+    Route::get('roles/{role}/edit', [RolesController::class, 'edit'])
+        ->name('roles.edit')
+        ->middleware('auth');
 
-Route::get('roles/{role}/edit', [RolesController::class, 'edit'])
-    ->name('roles.edit')
-    ->middleware('auth');
+    Route::put('roles/{role}', [RolesController::class, 'update'])
+        ->name('roles.update')
+        ->middleware('auth');
 
-Route::put('roles/{role}', [RolesController::class, 'update'])
-    ->name('roles.update')
-    ->middleware('auth');
-
-Route::delete('roles/{role}', [RolesController::class, 'destroy'])
-    ->name('roles.destroy')
-    ->middleware('auth');
+    Route::delete('roles/{role}', [RolesController::class, 'destroy'])
+        ->name('roles.destroy')
+        ->middleware('auth');
+});
 
 // Users
 

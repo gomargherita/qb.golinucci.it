@@ -7,8 +7,6 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Validation\Rule;
 use Inertia\Inertia;
 
 class RolesController extends Controller
@@ -26,7 +24,10 @@ class RolesController extends Controller
                     'id' => $role->id,
                     'name' => $role->name,
                     'guard_name' => $role->guard_name,
-                    'account' => $role->account->name
+                    'account' => $role->account->name,
+                    // 'can' => [
+                    //     'viewAny' => Auth::user()->can('viewAny', $role)
+                    // ]
                 ]),
         ]);
     }
@@ -93,5 +94,4 @@ class RolesController extends Controller
 
         return Redirect::back()->with('success', 'Role deleted.');
     }
-
 }

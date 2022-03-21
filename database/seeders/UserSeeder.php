@@ -36,7 +36,7 @@ class UserSeeder extends Seeder
         $user = User::factory()->create([
             'account_id' => $account->id,
             'first_name' => 'Francesco',
-            'last_name' => 'Golinucci',
+            'last_name' => 'Croatti',
             'owner' => true,
         ]);
 
@@ -48,7 +48,7 @@ class UserSeeder extends Seeder
         User::factory()->create([
             'account_id' => $account->id,
             'first_name' => 'Nadia',
-            'last_name' => 'Golinucci',
+            'last_name' => 'Rossi',
             'owner' => true,
         ]);
 
