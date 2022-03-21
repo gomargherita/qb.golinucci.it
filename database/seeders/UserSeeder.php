@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Account;
 use App\Models\ClientDetail;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -85,5 +86,26 @@ class UserSeeder extends Seeder
             ->each(function ($clientDetail) use ($users_ext) {
                 $clientDetail->update(['user_id' => $users_ext->random()->id]);
             });
+
+
+        // first will be our superadmin
+        $users = User::where('owner', 1);
+        $users->map(function ($user) {
+            switch ($user->id) {
+                case 1:
+                    setPermissionsTeamId(1);
+                    $user->assignRole(Role::ROLE_SUPERADMIN);
+                    break;
+                case 2:
+                case 3:
+                    setPermissionsTeamId(1);
+                    $user->assignRole(Role::ROLE_OPERATOR);
+                    break;
+                case 4:
+                    setPermissionsTeamId(2);
+                    $user->assignRole(Role::ROLE_AGENT);
+                    break;
+            }
+        });
     }
 }

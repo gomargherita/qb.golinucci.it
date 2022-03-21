@@ -11,17 +11,20 @@ class Account extends Model
     {
         parent::boot();
 
+        // TODO non funziona poiché presuppone che esista già l'utente, e nella fase di sviluppo prima di crea l'account e poi il set utenti. 
+        // L'utente stesso per esistere deve avere un account id assegnato... sembra una logica circolare da cui non si esce
         // here assign this team to a global user with global default role
-        self::created(function ($model) {
-            // get session account_id for restore it later
-            $session_account_id = getPermissionsTeamId();
-            // set actual new account_id to package instance
-            setPermissionsTeamId($model);
-            // get the admin user and assign roles/permissions on new team model
-            User::find(1)->assignRole(Role::ROLE_SUPERADMIN);
-            // restore session account_id to package instance
-            setPermissionsTeamId($session_account_id);
-        });
+        // self::created(function ($model) {
+        //     // get session account_id for restore it later
+        //     $session_account_id = getPermissionsTeamId();
+        //     var_dump($session_account_id);
+        //     // set actual new account_id to package instance
+        //     setPermissionsTeamId($model);
+        //     // get the admin user and assign roles/permissions on new team model
+        //     User::find(1)->assignRole(Role::ROLE_SUPERADMIN);
+        //     // restore session account_id to package instance
+        //     setPermissionsTeamId($session_account_id);
+        // });
     }
 
     public function users()

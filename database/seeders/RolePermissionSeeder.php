@@ -39,26 +39,5 @@ class RolePermissionSeeder extends Seeder
                     $role->syncPermissions($permissions);
                 }
             });
-
-        // first will be our superadmin
-        $users = User::all();
-        $users->map(function ($user) {
-            switch ($user->id) {
-                case 1:
-                    setPermissionsTeamId(1);
-                    $user->assignRole(Role::ROLE_SUPERADMIN);
-                    break;
-                case 2:
-                case 3:
-                    setPermissionsTeamId(1);
-                    $user->assignRole(Role::ROLE_OPERATOR);
-                    break;
-                case 4:
-                case 5:
-                    setPermissionsTeamId(2);
-                    $user->assignRole(Role::ROLE_AGENT);
-                    break;
-            }
-        });
     }
 }
