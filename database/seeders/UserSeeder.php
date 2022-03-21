@@ -89,7 +89,7 @@ class UserSeeder extends Seeder
 
 
         // first will be our superadmin
-        $users = User::where('owner', 1);
+        $users = User::where('owner', 1)->get();
         $users->map(function ($user) {
             switch ($user->id) {
                 case 1:
