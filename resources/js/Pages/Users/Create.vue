@@ -2,7 +2,7 @@
   <div>
     <Head title="Create User" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-primary hover:text-secondary-400" href="/users">{{ __("Users") }}</Link>
+      <Link class="text-primary hover:text-secondary-400" href="/admin/users">{{ __("Users") }}</Link>
       <span class="text-gray font-medium">/</span>{{ __("Create") }} 
     </h1>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
@@ -97,7 +97,7 @@ export default {
   },
   methods: {
     store() {
-      this.form.post("/users");
+      this.form.post("/admin/users");
     },
   },
 };

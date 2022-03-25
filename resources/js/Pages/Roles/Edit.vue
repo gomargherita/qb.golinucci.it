@@ -2,7 +2,7 @@
   <div>
     <Head :title="`${form.name}`" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-primary hover:text-secondary-400" href="/roles">{{
+      <Link class="text-primary hover:text-secondary-400" href="/admin/roles">{{
         __("Roles")
       }}</Link>
       <span class="text-gray font-medium">/</span>
@@ -89,11 +89,11 @@ export default {
   },
   methods: {
     update() {
-      this.form.put(`/roles/${this.contact.id}`);
+      this.form.put(`/admin/roles/${this.role.id}`);
     },
     destroy() {
       if (confirm("Are you sure you want to delete this role?")) {
-        this.$inertia.delete(`/roles/${this.contact.id}`);
+        this.$inertia.delete(`/admin/roles/${this.role.id}`);
       }
     },
   },

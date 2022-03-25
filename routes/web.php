@@ -21,104 +21,82 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Dashboard
+Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
 
-Route::get('/', [DashboardController::class, 'index'])
-    ->name('dashboard')
-    ->middleware('auth');
+    Route::get('/', function () {
+        return redirect()->route('dashboard');
+    })->name('admin');
 
-// Roles
-Route::group(['middleware' => ['role:superadmin']], function () {
-    Route::get('roles', [RolesController::class, 'index'])
-        ->name('roles')
-        ->middleware('auth');
+    Route::get('dashboard', [DashboardController::class, 'index'])
+        ->name('dashboard');
 
-    Route::get('roles/create', [RolesController::class, 'create'])
-        ->name('roles.create')
-        ->middleware('auth');
+    Route::group(['middleware' => ['role:superadmin']], function () {
+        Route::get('roles', [RolesController::class, 'index'])
+            ->name('roles');
 
-    Route::post('roles', [RolesController::class, 'store'])
-        ->name('roles.store')
-        ->middleware('auth');
+        Route::get('roles/create', [RolesController::class, 'create'])
+            ->name('roles.create');
 
-    Route::get('roles/{role}/edit', [RolesController::class, 'edit'])
-        ->name('roles.edit')
-        ->middleware('auth');
+        Route::post('roles', [RolesController::class, 'store'])
+            ->name('roles.store');
 
-    Route::put('roles/{role}', [RolesController::class, 'update'])
-        ->name('roles.update')
-        ->middleware('auth');
+        Route::get('roles/{role}/edit', [RolesController::class, 'edit'])
+            ->name('roles.edit');
 
-    Route::delete('roles/{role}', [RolesController::class, 'destroy'])
-        ->name('roles.destroy')
-        ->middleware('auth');
+        Route::put('roles/{role}', [RolesController::class, 'update'])
+            ->name('roles.update');
+
+        Route::delete('roles/{role}', [RolesController::class, 'destroy'])
+            ->name('roles.destroy');
+    });
+
+    Route::get('users', [UsersController::class, 'index'])
+        ->name('users');
+
+    Route::get('users/create', [UsersController::class, 'create'])
+        ->name('users.create');
+
+    Route::post('users', [UsersController::class, 'store'])
+        ->name('users.store');
+
+    Route::get('users/{user}/edit', [UsersController::class, 'edit'])
+        ->name('users.edit');
+
+    Route::put('users/{user}', [UsersController::class, 'update'])
+        ->name('users.update');
+
+    Route::delete('users/{user}', [UsersController::class, 'destroy'])
+        ->name('users.destroy');
+
+    Route::put('users/{user}/restore', [UsersController::class, 'restore'])
+        ->name('users.restore');
+
+    Route::get('clientDetails', [ClientDetailsController::class, 'index'])
+        ->name('clientDetails');
+
+    Route::get('clientDetails/{user}/create', [ClientDetailsController::class, 'create'])
+        ->name('clientDetails.create');
+
+    Route::post('clientDetails', [ClientDetailsController::class, 'store'])
+        ->name('clientDetails.store');
+
+    Route::get('clientDetails/{client_detail}/edit', [ClientDetailsController::class, 'edit'])
+        ->name('clientDetails.edit');
+
+    Route::put('clientDetails/{client_detail}', [ClientDetailsController::class, 'update'])
+        ->name('clientDetails.update');
+
+    Route::delete('clientDetails/{client_detail}', [ClientDetailsController::class, 'destroy'])
+        ->name('clientDetails.destroy');
+
+    Route::put('clientDetails/{client_detail}/restore', [ClientDetailsController::class, 'restore'])
+        ->name('clientDetails.restore');
+
+    Route::get('reports', [ReportsController::class, 'index'])
+        ->name('reports');
 });
 
-// Users
 
-Route::get('users', [UsersController::class, 'index'])
-    ->name('users')
-    ->middleware('auth');
-
-Route::get('users/create', [UsersController::class, 'create'])
-    ->name('users.create')
-    ->middleware('auth');
-
-Route::post('users', [UsersController::class, 'store'])
-    ->name('users.store')
-    ->middleware('auth');
-
-Route::get('users/{user}/edit', [UsersController::class, 'edit'])
-    ->name('users.edit')
-    ->middleware('auth');
-
-Route::put('users/{user}', [UsersController::class, 'update'])
-    ->name('users.update')
-    ->middleware('auth');
-
-Route::delete('users/{user}', [UsersController::class, 'destroy'])
-    ->name('users.destroy')
-    ->middleware('auth');
-
-Route::put('users/{user}/restore', [UsersController::class, 'restore'])
-    ->name('users.restore')
-    ->middleware('auth');
-
-// ClientDetails
-
-Route::get('clientDetails', [ClientDetailsController::class, 'index'])
-    ->name('clientDetails')
-    ->middleware('auth');
-
-Route::get('clientDetails/{user}/create', [ClientDetailsController::class, 'create'])
-    ->name('clientDetails.create')
-    ->middleware('auth');
-
-Route::post('clientDetails', [ClientDetailsController::class, 'store'])
-    ->name('clientDetails.store')
-    ->middleware('auth');
-
-Route::get('clientDetails/{client_detail}/edit', [ClientDetailsController::class, 'edit'])
-    ->name('clientDetails.edit')
-    ->middleware('auth');
-
-Route::put('clientDetails/{client_detail}', [ClientDetailsController::class, 'update'])
-    ->name('clientDetails.update')
-    ->middleware('auth');
-
-Route::delete('clientDetails/{client_detail}', [ClientDetailsController::class, 'destroy'])
-    ->name('clientDetails.destroy')
-    ->middleware('auth');
-
-Route::put('clientDetails/{client_detail}/restore', [ClientDetailsController::class, 'restore'])
-    ->name('clientDetails.restore')
-    ->middleware('auth');
-
-// Reports
-
-Route::get('reports', [ReportsController::class, 'index'])
-    ->name('reports')
-    ->middleware('auth');
 
 // Images
 
@@ -137,11 +115,11 @@ Route::get('language/{language}', function ($language) {
 // public frontend
 
 Route::controller(SiteController::class)->group(function () {
-    Route::get('/sites', 'home');
-    Route::get('/sites/about-us', 'aboutUs');
-    Route::get('/sites/products', 'products');
-    Route::get('/sites/products/{id}', 'product');
-    Route::post('/sites/products/{id}/funnel', 'buy');
+    Route::get('/', 'home');
+    Route::get('/about-us', 'aboutUs');
+    Route::get('/products', 'products');
+    Route::get('/products/{id}', 'product');
+    Route::post('/products/{id}/funnel', 'buy');
 });
 
 require __DIR__ . '/auth.php';

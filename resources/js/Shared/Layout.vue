@@ -5,7 +5,7 @@
       <div class="md:flex md:flex-col md:h-screen">
         <div class="md:flex md:flex-shrink-0">
           <div class="flex items-center justify-between px-6 py-4 bg-secondary-400 md:flex-shrink-0 md:justify-center md:w-56">
-            <Link class="mt-1" href="/">
+            <Link class="mt-1" href="/admin">
               <logo class="fill-white" width="120" height="28" />
             </Link>
             <dropdown class="md:hidden" placement="bottom-end">
@@ -33,7 +33,7 @@
               </template>
               <template #dropdown>
                 <div class="mt-2 py-2 text-sm bg-white rounded shadow-xl">
-                  <Link class="block px-6 py-2 hover:text-white hover:bg-primary" :href="`/users/${auth.user.id}/edit`">{{ __('My Profile') }}</Link>
+                  <Link class="block px-6 py-2 hover:text-white hover:bg-primary" :href="`/admin/users/${auth.user.id}/edit`">{{ __('My Profile') }}</Link>
                   
                   <Link class="block px-6 py-2 w-full text-left hover:text-white hover:bg-primary" href="/logout" method="delete" as="button">{{ __('Logout') }}</Link>
                 </div>

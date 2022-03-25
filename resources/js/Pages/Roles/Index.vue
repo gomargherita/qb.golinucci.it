@@ -5,7 +5,7 @@
     <div class="flex items-center justify-between mb-6">
       <search-filter :withDropdown="false" v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
       </search-filter>
-      <Link class="btn-gol-primary" href="/roles/create">
+      <Link class="btn-gol-primary" href="/admin/roles/create">
         <span>{{ __("Create") }}</span><span class="hidden md:inline ml-1">{{ __("Role") }}</span>
       </Link>
     </div>
@@ -25,7 +25,7 @@
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4 focus:text-primary"
-              :href="`/roles/${role.id}/edit`"
+              :href="`/admin/roles/${role.id}/edit`"
             >
               {{ role.name }}
             </Link>
@@ -33,7 +33,7 @@
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4"
-              :href="`/roles/${role.id}/edit`"
+              :href="`/admin/roles/${role.id}/edit`"
               tabindex="-1"
             >
               {{ role.guard_name }}
@@ -42,7 +42,7 @@
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4"
-              :href="`/roles/${role.id}/edit`"
+              :href="`/admin/roles/${role.id}/edit`"
               tabindex="-1"
             >
               {{ role.account }}
@@ -51,7 +51,7 @@
           <td class="w-px border-t">
             <Link
               class="flex items-center px-4"
-              :href="`/roles/${role.id}/edit`"
+              :href="`/admin/roles/${role.id}/edit`"
               tabindex="-1"
             >
               <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />
@@ -101,7 +101,7 @@ export default {
     form: {
       deep: true,
       handler: throttle(function () {
-        this.$inertia.get("/roles", pickBy(this.form), { preserveState: true });
+        this.$inertia.get("/admin/roles", pickBy(this.form), { preserveState: true });
       }, 150),
     },
   },

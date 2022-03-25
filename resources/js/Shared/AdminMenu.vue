@@ -1,31 +1,43 @@
 <template>
   <div>
     <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/">
+      <Link class="group flex items-center py-3" href="/admin/dashboard">
         <icon
           name="dashboard"
           class="mr-2 w-4 h-4"
-          :class="isUrl('') ? 'fill-primary' : 'fill-gray-900 group-hover:fill-primary'"
+          :class="
+            isUrl('admin/dashboard')
+              ? 'fill-primary'
+              : 'fill-gray-900 group-hover:fill-primary'
+          "
         />
         <div
-          :class="isUrl('') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'"
+          :class="
+            isUrl('admin/dashboard')
+              ? 'text-primary'
+              : 'text-gray-900 group-hover:text-primary'
+          "
         >
           {{ __("Dashboard") }}
         </div>
       </Link>
     </div>
     <div v-if="isSuperadmin" class="mb-4">
-      <Link class="group flex items-center py-3" href="/roles">
+      <Link class="group flex items-center py-3" href="/admin/roles">
         <icon
           name="roles"
           class="mr-2 w-4 h-4"
           :class="
-            isUrl('roles') ? 'fill-primary' : 'fill-gray-900 group-hover:fill-primary'
+            isUrl('admin/roles')
+              ? 'fill-primary'
+              : 'fill-gray-900 group-hover:fill-primary'
           "
         />
         <div
           :class="
-            isUrl('roles') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'
+            isUrl('admin/roles')
+              ? 'text-primary'
+              : 'text-gray-900 group-hover:text-primary'
           "
         >
           {{ __("Roles") }}
@@ -33,17 +45,21 @@
       </Link>
     </div>
     <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/users">
+      <Link class="group flex items-center py-3" href="/admin/users">
         <icon
           name="users"
           class="mr-2 w-4 h-4"
           :class="
-            isUrl('users') ? 'fill-primary' : 'fill-gray-900 group-hover:fill-primary'
+            isUrl('admin/users')
+              ? 'fill-primary'
+              : 'fill-gray-900 group-hover:fill-primary'
           "
         />
         <div
           :class="
-            isUrl('users') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'
+            isUrl('admin/users')
+              ? 'text-primary'
+              : 'text-gray-900 group-hover:text-primary'
           "
         >
           {{ __("Users") }}
@@ -51,19 +67,19 @@
       </Link>
     </div>
     <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/clientDetails">
+      <Link class="group flex items-center py-3" href="/admin/clientDetails">
         <icon
           name="office"
           class="mr-2 w-4 h-4"
           :class="
-            isUrl('clientDetails')
+            isUrl('admin/clientDetails')
               ? 'fill-primary'
               : 'fill-gray-900 group-hover:fill-primary'
           "
         />
         <div
           :class="
-            isUrl('clientDetails')
+            isUrl('admin/clientDetails')
               ? 'text-primary'
               : 'text-gray-900 group-hover:text-primary'
           "
@@ -73,17 +89,21 @@
       </Link>
     </div>
     <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/reports">
+      <Link class="group flex items-center py-3" href="/admin/reports">
         <icon
           name="printer"
           class="mr-2 w-4 h-4"
           :class="
-            isUrl('reports') ? 'fill-primary' : 'fill-gray-900 group-hover:fill-primary'
+            isUrl('admin/reports')
+              ? 'fill-primary'
+              : 'fill-gray-900 group-hover:fill-primary'
           "
         />
         <div
           :class="
-            isUrl('reports') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'
+            isUrl('admin/reports')
+              ? 'text-primary'
+              : 'text-gray-900 group-hover:text-primary'
           "
         >
           {{ __("Reports") }}
@@ -91,22 +111,15 @@
       </Link>
     </div>
     <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/sites">
+      <a class="group flex items-center py-3" href="/" target="_blank">
         <icon
           name="external-link"
-          class="mr-2 w-4 h-4"
-          :class="
-            isUrl('sites') ? 'fill-primary' : 'fill-gray-900 group-hover:fill-primary'
-          "
+          class="mr-2 w-4 h-4 fill-gray-900 group-hover:fill-primary"
         />
-        <div
-          :class="
-            isUrl('sites') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'
-          "
-        >
-          {{ __("Sites") }}
+        <div class="text-gray-900 group-hover:text-primary">
+          {{ __("Public") }}
         </div>
-      </Link>
+      </a>
     </div>
   </div>
 </template>

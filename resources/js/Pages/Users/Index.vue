@@ -17,7 +17,7 @@
           <option value="only">Only Trashed</option>
         </select>
       </search-filter>
-      <Link class="btn-gol-primary" href="/users/create">
+      <Link class="btn-gol-primary" href="/admin/users/create">
         <span>{{ __("Create") }}</span>
         <span class="hidden md:inline">&nbsp;{{ __("User") }}</span>
       </Link>
@@ -39,7 +39,7 @@
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4 focus:text-primary"
-              :href="`/users/${user.id}/edit`"
+              :href="`/admin/users/${user.id}/edit`"
             >
               <img
                 v-if="user.photo"
@@ -57,7 +57,7 @@
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4"
-              :href="`/users/${user.id}/edit`"
+              :href="`/admin/users/${user.id}/edit`"
               tabindex="-1"
             >
               {{ user.email }}
@@ -66,7 +66,7 @@
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4"
-              :href="`/users/${user.id}/edit`"
+              :href="`/admin/users/${user.id}/edit`"
               tabindex="-1"
             >
               {{ user.account }}
@@ -75,7 +75,7 @@
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4"
-              :href="`/users/${user.id}/edit`"
+              :href="`/admin/users/${user.id}/edit`"
               tabindex="-1"
             >
               {{ user.owner ? "Admin" : "User" }}
@@ -84,7 +84,7 @@
           <td class="w-px border-t">
             <Link
               class="flex items-center px-4"
-              :href="`/users/${user.id}/edit`"
+              :href="`/admin/users/${user.id}/edit`"
               tabindex="-1"
             >
               <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />
@@ -136,7 +136,7 @@ export default {
     form: {
       deep: true,
       handler: throttle(function () {
-        this.$inertia.get("/users", pickBy(this.form), { preserveState: true });
+        this.$inertia.get("/admin/users", pickBy(this.form), { preserveState: true });
       }, 150),
     },
   },

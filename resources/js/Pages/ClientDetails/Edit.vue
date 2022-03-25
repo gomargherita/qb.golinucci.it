@@ -2,7 +2,7 @@
   <div>
     <Head :title="`${form.first_name} ${form.last_name}`" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-primary hover:text-secondary-400" href="/clientDetails">{{
+      <Link class="text-primary hover:text-secondary-400" href="/admin/clientDetails">{{
         __("Client details")
       }}</Link>
       <span class="text-gray font-medium">/</span>
@@ -98,7 +98,7 @@
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4 focus:text-primary"
-              :href="`/users/${user.id}/edit`"
+              :href="`/admin/users/${user.id}/edit`"
             >
               {{ user.last_name }}
               <icon
@@ -111,7 +111,7 @@
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4"
-              :href="`/users/${user.id}/edit`"
+              :href="`/admin/users/${user.id}/edit`"
               tabindex="-1"
             >
               {{ user.first_name }}
@@ -120,7 +120,7 @@
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4"
-              :href="`/users/${user.id}/edit`"
+              :href="`/admin/users/${user.id}/edit`"
               tabindex="-1"
             >
               {{ user.email }}
@@ -129,7 +129,7 @@
           <td class="w-px border-t">
             <Link
               class="flex items-center px-4"
-              :href="`/users/${user.id}/edit`"
+              :href="`/admin/users/${user.id}/edit`"
               tabindex="-1"
             >
               <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />
