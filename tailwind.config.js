@@ -14,7 +14,7 @@ module.exports = {
                 sans: ['Nunito', ...defaultTheme.fontFamily.sans],
             },
             colors: {
-                primary: '#822622',
+                primary: "var(--primary-color)",
                 secondary: colors.orange
             },
         },
