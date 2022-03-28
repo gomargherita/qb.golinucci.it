@@ -1,32 +1,15 @@
 <template>
-  <div>
-    <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/sites">
-        <div
-          :class="isUrl('sites') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'"
-        >
-          {{ __("Home") }}
+  <div class="uppercase text-white">
+    <div class="mb-4 md:mb-0 md:inline-block">
+      <Link class="group flex items-center py-3 md:px-6" href="/about-us">
+        <div :class="isUrl('about-us') ? 'text-primary' : 'group-hover:text-primary'">
+          {{ __("About Us") }}
         </div>
       </Link>
     </div>
-    <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/sites/about-us">
-        <div
-          :class="
-            isUrl('sites/about-us') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'
-          "
-        >
-          {{ __("About us") }}
-        </div>
-      </Link>
-    </div>
-    <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/sites/products">
-        <div
-          :class="
-            isUrl('sites/products') ? 'text-primary' : 'text-gray-900 group-hover:text-primary'
-          "
-        >
+    <div class="mb-4 md:mb-0 md:inline-block">
+      <Link class="group flex items-center py-3 md:px-6" href="/products">
+        <div :class="isUrl('products') ? 'text-primary' : 'group-hover:text-primary'">
           {{ __("Products") }}
         </div>
       </Link>
