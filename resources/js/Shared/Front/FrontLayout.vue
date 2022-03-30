@@ -1,4 +1,12 @@
 <template>
+  <Head>
+    <title>Golinucci Q&amp;B</title>
+    <meta
+      head-key="description"
+      name="description"
+      content="Golinucci Q&B default meta description"
+    />
+  </Head>
   <div>
     <section>
       <PreHeader />

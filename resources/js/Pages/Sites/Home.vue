@@ -1,5 +1,12 @@
 <template>
-  <Head title="Dal 1952 assicuriamo la vostra serenità" />
+  <Head>
+    <title>Dal 1952 assicuriamo la vostra serenità</title>
+    <meta
+      head-key="description"
+      name="description"
+      content="Golinucci Q&B home meta description"
+    />
+  </Head>
   <section id="home-swiper" class="relative shadow-md">
     <swiper
       :pagination="true"
