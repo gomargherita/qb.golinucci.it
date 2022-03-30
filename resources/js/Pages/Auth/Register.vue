@@ -42,7 +42,7 @@ import BreezeGuestLayout from '@/Shared/Guest.vue'
 import BreezeInput from '@/Shared/TextInput.vue'
 import BreezeLabel from '@/Shared/Label.vue'
 import BreezeValidationErrors from '@/Shared/ValidationErrors.vue'
-import { Head, Link } from '@inertiajs/inertia-vue3';
+import { Head } from '@inertiajs/inertia-vue3';
 
 export default {
     layout: BreezeGuestLayout,
@@ -53,7 +53,6 @@ export default {
         BreezeLabel,
         BreezeValidationErrors,
         Head,
-        Link,
     },
 
     data() {

@@ -7,12 +7,11 @@
 </template>
 
 <script>
-import { Link, usePage } from "@inertiajs/inertia-vue3";
+import { usePage } from "@inertiajs/inertia-vue3";
 import Icon from "@/Shared/Icon";
 
 export default {
   components: {
-    Link,
     Icon,
   },
   computed: {

@@ -82,7 +82,6 @@
 </template>
 
 <script>
-import { Link } from "@inertiajs/inertia-vue3";
 import Icon from "@/Shared/Icon";
 import Logo from "@/Shared/Logo";
 import Dropdown from "@/Shared/Dropdown";
@@ -95,7 +94,6 @@ export default {
     Dropdown,
     FlashMessages,
     Icon,
-    Link,
     Logo,
     AdminMenu,
     LanguageSelector,

@@ -80,7 +80,6 @@
   </div>
 </template>
 <script>
-import { Link } from "@inertiajs/inertia-vue3";
 import Icon from "@/Shared/Icon";
 import Logo from "@/Shared/Logo";
 import Dropdown from "@/Shared/Dropdown";
@@ -90,7 +89,6 @@ import LanguageSelector from "@/Shared/LanguageSelector";
 
 export default {
   components: {
-    Link,
     Icon,
     Logo,
     Dropdown,

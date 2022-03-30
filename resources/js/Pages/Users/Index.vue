@@ -101,7 +101,7 @@
 </template>
 
 <script>
-import { Head, Link } from "@inertiajs/inertia-vue3";
+import { Head } from "@inertiajs/inertia-vue3";
 import Icon from "@/Shared/Icon";
 import pickBy from "lodash/pickBy";
 import Layout from "@/Shared/Layout";
@@ -114,7 +114,6 @@ export default {
   components: {
     Head,
     Icon,
-    Link,
     Pagination,
     SearchFilter,
   },

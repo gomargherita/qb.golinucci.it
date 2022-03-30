@@ -145,7 +145,7 @@
 </template>
 
 <script>
-import { Head, Link } from "@inertiajs/inertia-vue3";
+import { Head } from "@inertiajs/inertia-vue3";
 import Icon from "@/Shared/Icon";
 import Layout from "@/Shared/Layout";
 import TextInput from "@/Shared/TextInput";
@@ -157,7 +157,6 @@ export default {
   components: {
     Head,
     Icon,
-    Link,
     LoadingButton,
     SelectInput,
     TextInput,
@@ -167,6 +166,7 @@ export default {
   props: {
     client_detail: Object,
     user: Object,
+    can: Object
   },
   remember: "form",
   data() {

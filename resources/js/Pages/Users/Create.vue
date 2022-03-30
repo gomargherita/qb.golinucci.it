@@ -65,7 +65,7 @@
 </template>
 
 <script>
-import { Head, Link } from "@inertiajs/inertia-vue3";
+import { Head } from "@inertiajs/inertia-vue3";
 import Layout from "@/Shared/Layout";
 import FileInput from "@/Shared/FileInput";
 import TextInput from "@/Shared/TextInput";
@@ -76,7 +76,6 @@ export default {
   components: {
     FileInput,
     Head,
-    Link,
     LoadingButton,
     SelectInput,
     TextInput,
