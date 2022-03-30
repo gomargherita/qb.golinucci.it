@@ -133,7 +133,10 @@ export default {
     form: {
       deep: true,
       handler: throttle(function () {
-        this.$inertia.get("/admin/users", pickBy(this.form), { preserveState: true });
+        this.$inertia.get("/admin/users", pickBy(this.form), {
+          preserveState: true,
+          replace: true,
+        });
       }, 150),
     },
   },

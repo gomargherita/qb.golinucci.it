@@ -115,7 +115,7 @@ export default {
   },
   methods: {
     store() {
-      this.form.post("/clientDetails");
+      this.form.post("/admin/clientDetails");
     },
   },
 };

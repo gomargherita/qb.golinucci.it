@@ -183,16 +183,16 @@ export default {
   },
   methods: {
     update() {
-      this.form.put(`/clientDetails/${this.client_detail.id}`);
+      this.form.put(`/admin/clientDetails/${this.client_detail.id}`);
     },
     destroy() {
       if (confirm("Are you sure you want to delete this client_detail?")) {
-        this.$inertia.delete(`/clientDetails/${this.client_detail.id}`);
+        this.$inertia.delete(`/admin/clientDetails/${this.client_detail.id}`);
       }
     },
     restore() {
       if (confirm("Are you sure you want to restore this client_detail?")) {
-        this.$inertia.put(`/clientDetails/${this.client_detail.id}/restore`);
+        this.$inertia.put(`/admin/clientDetails/${this.client_detail.id}/restore`);
       }
     },
   },

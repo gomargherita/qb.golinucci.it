@@ -11,7 +11,6 @@
           <option value="only">{{ __("Only Trashed") }}</option>
         </select>
       </search-filter>
-      
     </div>
     <pagination class="mb-6" :links="clientDetails.links" />
     <div class="bg-white rounded-md shadow overflow-x-auto">
@@ -110,7 +109,7 @@ export default {
   layout: Layout,
   props: {
     filters: Object,
-    clientDetails: Object
+    clientDetails: Object,
   },
   data() {
     return {
@@ -124,7 +123,10 @@ export default {
     form: {
       deep: true,
       handler: throttle(function () {
-        this.$inertia.get("/clientDetails", pickBy(this.form), { preserveState: true });
+        this.$inertia.get("/clientDetails", pickBy(this.form), {
+          preserveState: true,
+          replace: true,
+        });
       }, 150),
     },
   },

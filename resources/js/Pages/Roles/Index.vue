@@ -3,10 +3,16 @@
     <Head title="Users" />
     <h1 class="mb-8 text-3xl font-bold">{{ __("Roles") }}</h1>
     <div class="flex items-center justify-between mb-6">
-      <search-filter :withDropdown="false" v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
+      <search-filter
+        :withDropdown="false"
+        v-model="form.search"
+        class="mr-4 w-full max-w-md"
+        @reset="reset"
+      >
       </search-filter>
       <Link class="btn-gol-primary" href="/admin/roles/create">
-        <span>{{ __("Create") }}</span><span class="hidden md:inline ml-1">{{ __("Role") }}</span>
+        <span>{{ __("Create") }}</span
+        ><span class="hidden md:inline ml-1">{{ __("Role") }}</span>
       </Link>
     </div>
     <pagination class="my-6" :links="roles.links" />
@@ -98,7 +104,10 @@ export default {
     form: {
       deep: true,
       handler: throttle(function () {
-        this.$inertia.get("/admin/roles", pickBy(this.form), { preserveState: true });
+        this.$inertia.get("/admin/roles", pickBy(this.form), {
+          preserveState: true,
+          replace: true,
+        });
       }, 150),
     },
   },
