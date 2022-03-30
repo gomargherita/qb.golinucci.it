@@ -26,40 +26,36 @@
 </template>
 
 <script>
-import BreezeButton from '@/Shared/Button.vue'
-import BreezeGuestLayout from '@/Shared/Guest.vue'
-import BreezeInput from '@/Shared/TextInput.vue'
-import BreezeLabel from '@/Shared/Label.vue'
-import BreezeValidationErrors from '@/Shared/ValidationErrors.vue'
-import { Head } from '@inertiajs/inertia-vue3';
+import BreezeGuestLayout from "@/Shared/Guest.vue";
+import BreezeInput from "@/Shared/TextInput.vue";
+import BreezeLabel from "@/Shared/Label.vue";
+import BreezeValidationErrors from "@/Shared/ValidationErrors.vue";
 
 export default {
-    layout: BreezeGuestLayout,
+  layout: BreezeGuestLayout,
 
-    components: {
-        BreezeButton,
-        BreezeInput,
-        BreezeLabel,
-        BreezeValidationErrors,
-        Head,
+  components: {
+    BreezeInput,
+    BreezeLabel,
+    BreezeValidationErrors,
+  },
+
+  props: {
+    status: String,
+  },
+
+  data() {
+    return {
+      form: this.$inertia.form({
+        email: "",
+      }),
+    };
+  },
+
+  methods: {
+    submit() {
+      this.form.post(this.route("password.email"));
     },
-
-    props: {
-        status: String,
-    },
-
-    data() {
-        return {
-            form: this.$inertia.form({
-                email: ''
-            })
-        }
-    },
-
-    methods: {
-        submit() {
-            this.form.post(this.route('password.email'))
-        }
-    }
-}
+  },
+};
 </script>

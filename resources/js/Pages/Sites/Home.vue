@@ -74,7 +74,6 @@
 </template>
 
 <script>
-import { Head } from "@inertiajs/inertia-vue3";
 import MainMenu from "@/Shared/MainMenu";
 import UserMenu from "@/Shared/UserMenu";
 import Logo from "@/Shared/Logo";
@@ -88,7 +87,6 @@ import "swiper/css/scrollbar";
 
 export default {
   components: {
-    Head,
     Logo,
     MainMenu,
     UserMenu,

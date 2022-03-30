@@ -23,14 +23,12 @@
 <script>
 import BreezeButton from '@/Shared/Button.vue'
 import BreezeGuestLayout from '@/Shared/Guest.vue'
-import { Head } from '@inertiajs/inertia-vue3';
 
 export default {
     layout: BreezeGuestLayout,
 
     components: {
         BreezeButton,
-        Head,
     },
 
     props: {

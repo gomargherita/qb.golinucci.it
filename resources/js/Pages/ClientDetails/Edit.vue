@@ -145,7 +145,6 @@
 </template>
 
 <script>
-import { Head } from "@inertiajs/inertia-vue3";
 import Icon from "@/Shared/Icon";
 import Layout from "@/Shared/Layout";
 import TextInput from "@/Shared/TextInput";
@@ -155,7 +154,6 @@ import TrashedMessage from "@/Shared/TrashedMessage";
 
 export default {
   components: {
-    Head,
     Icon,
     LoadingButton,
     SelectInput,

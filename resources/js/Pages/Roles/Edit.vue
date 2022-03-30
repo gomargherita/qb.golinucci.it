@@ -57,7 +57,6 @@
 </template>
 
 <script>
-import { Head } from "@inertiajs/inertia-vue3";
 import Layout from "@/Shared/Layout";
 import TextInput from "@/Shared/TextInput";
 import SelectInput from "@/Shared/SelectInput";
@@ -66,7 +65,6 @@ import TrashedMessage from "@/Shared/TrashedMessage";
 
 export default {
   components: {
-    Head,
     LoadingButton,
     SelectInput,
     TextInput,

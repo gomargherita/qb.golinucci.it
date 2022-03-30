@@ -1,5 +1,5 @@
 import { createApp, h } from 'vue';
-import { createInertiaApp, Link } from '@inertiajs/inertia-vue3';
+import { createInertiaApp, Link, Head } from '@inertiajs/inertia-vue3';
 import { InertiaProgress } from '@inertiajs/progress';
 import FrontLayout from "@/Shared/Front/FrontLayout";
 
@@ -18,6 +18,7 @@ createInertiaApp({
         return createApp({ render: () => h(app, props) })
             .use(plugin)
             // make Link a global component
+            .component('Head', Head)
             .component('Link', Link)
             .mixin({ methods: { route } })
             .mixin(require('./lang'))

@@ -153,7 +153,6 @@
 </template>
 
 <script>
-import { Head } from "@inertiajs/inertia-vue3";
 import Layout from "@/Shared/Layout";
 import TextInput from "@/Shared/TextInput";
 import FileInput from "@/Shared/FileInput";
@@ -164,7 +163,6 @@ import TrashedMessage from "@/Shared/TrashedMessage";
 export default {
   components: {
     FileInput,
-    Head,
     LoadingButton,
     SelectInput,
     TextInput,

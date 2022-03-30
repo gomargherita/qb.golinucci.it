@@ -93,7 +93,6 @@
 </template>
 
 <script>
-import { Head } from "@inertiajs/inertia-vue3";
 import Icon from "@/Shared/Icon";
 import pickBy from "lodash/pickBy";
 import Layout from "@/Shared/Layout";
@@ -104,7 +103,6 @@ import SearchFilter from "@/Shared/SearchFilter";
 
 export default {
   components: {
-    Head,
     Icon,
     Pagination,
     SearchFilter,
