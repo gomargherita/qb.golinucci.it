@@ -75,7 +75,6 @@
 
 <script>
 import { Head } from "@inertiajs/inertia-vue3";
-import FrontLayout from "@/Shared/Front/FrontLayout";
 import MainMenu from "@/Shared/MainMenu";
 import UserMenu from "@/Shared/UserMenu";
 import Logo from "@/Shared/Logo";
@@ -88,7 +87,6 @@ import "swiper/css/pagination";
 import "swiper/css/scrollbar";
 
 export default {
-  layout: FrontLayout,
   components: {
     Head,
     Logo,

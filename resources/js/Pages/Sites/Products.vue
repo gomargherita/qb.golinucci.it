@@ -10,10 +10,8 @@
 
 <script>
 import { Head } from "@inertiajs/inertia-vue3";
-import FrontLayout from "@/Shared/Front/FrontLayout";
 
 export default {
-  layout: FrontLayout,
   components: {
     Head,
   },
