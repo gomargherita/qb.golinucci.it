@@ -19,7 +19,7 @@
         </swiper-slide>
       </swiper>
     </section>
-    <section class="container mx-auto bg-white mt-8">
+    <section class="container mx-auto p-2 bg-white mt-8">
       <h1 class="text-5xl text-center capitalize">Le nostre polizze</h1>
     </section>
 
