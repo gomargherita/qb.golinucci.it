@@ -8,12 +8,8 @@
 
 <script>
 import { usePage } from "@inertiajs/inertia-vue3";
-import Icon from "@/Shared/Icon";
 
 export default {
-  components: {
-    Icon,
-  },
   computed: {
     selectable_locale() {
       if (usePage().props.value.locale == "it") {

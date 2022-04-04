@@ -145,7 +145,6 @@
 </template>
 
 <script>
-import Icon from "@/Shared/Icon";
 import Layout from "@/Shared/Layout";
 import TextInput from "@/Shared/TextInput";
 import SelectInput from "@/Shared/SelectInput";
@@ -154,7 +153,6 @@ import TrashedMessage from "@/Shared/TrashedMessage";
 
 export default {
   components: {
-    Icon,
     LoadingButton,
     SelectInput,
     TextInput,

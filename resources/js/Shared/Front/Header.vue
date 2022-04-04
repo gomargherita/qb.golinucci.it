@@ -80,7 +80,6 @@
   </div>
 </template>
 <script>
-import Icon from "@/Shared/Icon";
 import Logo from "@/Shared/Logo";
 import Dropdown from "@/Shared/Dropdown";
 import MainMenu from "@/Shared/MainMenu";
@@ -89,7 +88,6 @@ import LanguageSelector from "@/Shared/LanguageSelector";
 
 export default {
   components: {
-    Icon,
     Logo,
     Dropdown,
     MainMenu,

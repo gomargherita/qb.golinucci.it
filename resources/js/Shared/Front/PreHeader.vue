@@ -14,12 +14,8 @@
     </div>
   </div>
 </template>
-<script>
-import Icon from "@/Shared/Icon";
 
+<script>
 export default {
-  components: {
-    Icon,
-  },
 };
 </script>

@@ -74,7 +74,6 @@
 </template>
 
 <script>
-import Icon from "@/Shared/Icon";
 import pickBy from "lodash/pickBy";
 import Layout from "@/Shared/Layout";
 import throttle from "lodash/throttle";
@@ -84,7 +83,6 @@ import SearchFilter from "@/Shared/SearchFilter";
 
 export default {
   components: {
-    Icon,
     Pagination,
     SearchFilter,
   },

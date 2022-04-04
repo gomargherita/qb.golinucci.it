@@ -2,6 +2,7 @@ import { createApp, h } from 'vue';
 import { createInertiaApp, Link, Head } from '@inertiajs/inertia-vue3';
 import { InertiaProgress } from '@inertiajs/progress';
 import FrontLayout from "@/Shared/Front/FrontLayout";
+import Icon from "@/Shared/Icon";
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Q&B Golinucci';
 
@@ -20,6 +21,7 @@ createInertiaApp({
             // make Link a global component
             .component('Head', Head)
             .component('Link', Link)
+            .component('Icon', Icon)
             .mixin({ methods: { route } })
             .mixin(require('./lang'))
             .mount(el);

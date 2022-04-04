@@ -11,12 +11,7 @@
 </template>
 
 <script>
-import Icon from '@/Shared/Icon'
-
 export default {
-  components: {
-    Icon,
-  },
-  emits: ['restore'],
-}
+  emits: ["restore"],
+};
 </script>
