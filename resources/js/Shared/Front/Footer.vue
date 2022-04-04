@@ -7,7 +7,7 @@
             <p class="py-4">
               <icon
                 name="golinucci-logo"
-                class="mx-auto object-scale-down h-16 w-48 sm:w-56"
+                class="mx-auto object-scale-down h-16 w-full sm:w-56"
               />
             </p>
             <p class="bg-customgray text-white p-1 mx-0 md:mx-2 text-xs">
@@ -20,7 +20,7 @@
             <p class="py-4">
               <icon
                 name="golinucci-logo-legacy"
-                class="mx-auto object-scale-down h-24 w-56 sm:w-64"
+                class="mx-auto object-scale-down h-24 w-full sm:w-64"
               />
             </p>
           </div>

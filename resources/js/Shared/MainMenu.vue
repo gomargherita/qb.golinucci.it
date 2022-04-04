@@ -8,7 +8,7 @@
         :standardStyle="'group-hover:underline'"
         :activeStyle="'text-yellow-400'"
       >
-        {{ __("About Us") }}
+        {{ __("About us") }}
       </NavLink>
     </div>
     <div class="mb-4 md:mb-0 md:inline-block">

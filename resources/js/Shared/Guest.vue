@@ -6,7 +6,7 @@
   >
     <div>
       <Link href="/">
-        <BreezeApplicationLogo class="w-20 h-20 fill-current text-gray-500" />
+        <icon name="golinucci-logo" class="w-20 h-20 fill-current text-gray-500" />
       </Link>
     </div>
 
@@ -17,13 +17,3 @@
     </div>
   </div>
 </template>
-
-<script>
-import BreezeApplicationLogo from "@/Shared/Logo.vue";
-
-export default {
-  components: {
-    BreezeApplicationLogo,
-  },
-};
-</script>

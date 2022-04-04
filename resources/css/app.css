@@ -17,6 +17,14 @@
 
 body { 
     font-family: 'Poppins', sans-serif;
+
+    h1{
+        @apply text-4xl text-center capitalize text-primary font-semibold mt-8;
+    }
+
+    hr.gol-hr {
+        @apply mt-4 w-20 mx-auto px-8 border-b-2 border-primary;
+    }
 }
 
 #gol-header-bg {
