@@ -1,9 +1,9 @@
 <template>
-  <footer id="footer" class="w-full mx-auto bg-white my-8 border-t-8 border-customgray">
-    <div class="container mx-auto flex px-3 md:px-0 py-12">
+  <footer id="footer" class="w-full mx-auto bg-white py-8 border-t-8 border-customgray">
+    <div class="container mx-auto flex px-3 md:px-0 pb-8">
       <div class="w-full flex flex-wrap">
         <div class="flex w-full mx-auto md:w-1/2">
-          <div class="px-3 mx-auto md:mx-0 md:px-0">
+          <div class="mx-auto md:mx-0 md:px-0">
             <p class="py-4">
               <icon
                 name="golinucci-logo"
@@ -16,7 +16,7 @@
           </div>
         </div>
         <div class="flex w-full md:w-1/2 md:justify-end md:text-right">
-          <div class="px-3 mx-auto md:mx-0 md:px-0">
+          <div class="mx-auto md:mx-0 md:px-0">
             <p class="py-4">
               <icon
                 name="golinucci-logo-legacy"
@@ -79,7 +79,7 @@
         </div>
       </div>
     </div>
-    <div class="flex py-8 bg-white">
+    <div class="flex mt-8 bg-white">
       <div class="container mx-auto">
         <div class="px-6 break-words text-xs">
           <p>
@@ -99,4 +99,3 @@
     </div>
   </footer>
 </template>
-
