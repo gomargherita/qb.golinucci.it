@@ -41,9 +41,9 @@
           >
             <dropdown class="bg-primary" placement="bottom-end">
               <template #default>
-                <div class="group flex items-center cursor-pointer select-none">
+                <Link as="button" class="group flex items-center cursor-pointer select-none">
                   <div
-                    class="mr-1 text-white group-hover:text-primary focus:text-primary whitespace-nowrap"
+                    class="mr-1 text-white focus:text-primary whitespace-nowrap"
                   >
                     <span>{{ current_user.first_name }}</span>
                     <span class="hidden md:inline"
@@ -54,18 +54,18 @@
                     class="w-5 h-5 fill-white group-hover:fill-secondary focus:fill-secondary"
                     name="cheveron-down"
                   />
-                </div>
+                </Link>
               </template>
               <template #dropdown>
-                <div class="mt-2 py-2 text-sm bg-white rounded shadow-xl">
+                <div class="mt-2 py-2 text-sm bg-primary rounded shadow-xl">
                   <Link
-                    class="block px-6 py-2 hover:text-white hover:bg-primary"
+                    class="block px-6 py-2 text-white hover:bg-primary"
                     :href="`/admin/current_users/${current_user.id}/edit`"
                     >{{ __("My Profile") }}</Link
                   >
 
                   <Link
-                    class="block px-6 py-2 w-full text-left hover:text-white hover:bg-primary"
+                    class="block px-6 py-2 w-full text-left text-white hover:bg-primary"
                     href="/logout"
                     method="delete"
                     as="button"

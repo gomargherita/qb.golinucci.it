@@ -1,5 +1,5 @@
 <template>
-  <div id="pre-header" class="hidden md:block bg-gray-600">
+  <div id="pre-header" class="hidden md:block bg-customgray">
     <div class="container mx-auto">
       <div class="text-white text-right">
         <Link class="group flex inline-flex items-center p-3" href="mailto:asdsd@sds.lds">

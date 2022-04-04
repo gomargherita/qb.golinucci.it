@@ -4,7 +4,7 @@
     <meta
       head-key="description"
       name="description"
-      content="Golinucci Q&B default meta description"
+      content="Golinucci Q&amp;B default meta description"
     />
   </Head>
   <div>
@@ -15,7 +15,7 @@
       <Header :current_user="current_user" />
     </section>
 
-    <section class="bg-white" scroll-region>
+    <section class="mt-1 bg-white" scroll-region>
       <flash-messages />
       <slot />
     </section>
