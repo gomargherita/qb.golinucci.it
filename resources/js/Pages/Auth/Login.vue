@@ -2,7 +2,11 @@
   <Head title="Login" />
   <div class="flex items-center justify-center p-6 min-h-screen bg-primary-800">
     <div class="w-full max-w-md">
-      <logo class="block mx-auto w-full max-w-xs fill-white" height="50" />
+      <icon
+        name="golinucci-logo"
+        class="block mx-auto w-full max-w-xs fill-white"
+        height="50"
+      />
       <form
         class="mt-8 bg-white rounded-lg shadow-xl overflow-hidden"
         @submit.prevent="login"
@@ -48,14 +52,12 @@
 </template>
 
 <script>
-import Logo from "@/Shared/Logo";
 import TextInput from "@/Shared/TextInput";
 import LoadingButton from "@/Shared/LoadingButton";
 
 export default {
   components: {
     LoadingButton,
-    Logo,
     TextInput,
   },
   data() {

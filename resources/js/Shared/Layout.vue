@@ -82,7 +82,6 @@
 </template>
 
 <script>
-import Logo from "@/Shared/Logo";
 import Dropdown from "@/Shared/Dropdown";
 import AdminMenu from "@/Shared/AdminMenu";
 import FlashMessages from "@/Shared/FlashMessages";
@@ -92,7 +91,6 @@ export default {
   components: {
     Dropdown,
     FlashMessages,
-    Logo,
     AdminMenu,
     LanguageSelector,
   },

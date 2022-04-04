@@ -16,7 +16,7 @@ module.exports = {
             colors: {
                 primary: "var(--primary-color)",
                 secondary: colors.orange,
-                customgray:  "var(--custom-gray-color)",
+                customgray: "var(--custom-gray-color)",
             },
         },
     },

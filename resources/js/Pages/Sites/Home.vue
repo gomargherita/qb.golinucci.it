@@ -83,7 +83,6 @@
 <script>
 import MainMenu from "@/Shared/MainMenu";
 import UserMenu from "@/Shared/UserMenu";
-import Logo from "@/Shared/Logo";
 import { Navigation, Pagination, Scrollbar, A11y } from "swiper";
 
 import { Swiper, SwiperSlide } from "swiper/vue";
@@ -94,7 +93,6 @@ import "swiper/css/scrollbar";
 
 export default {
   components: {
-    Logo,
     MainMenu,
     UserMenu,
     Swiper,

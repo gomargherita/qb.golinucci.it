@@ -5,8 +5,18 @@
       <div class="container mx-auto">
         <div class="flex items-center justify-between px-8 md:px-0 py-6 md:flex-shrink-0">
           <Link href="/">
-            <logo class="hidden md:block fill-white" width="240" height="56" />
-            <logo class="md:hidden fill-white" width="120" height="28" />
+            <icon
+              name="golinucci-logo"
+              class="hidden md:block fill-white"
+              width="240"
+              height="56"
+            />
+            <icon
+              name="golinucci-logo"
+              class="md:hidden fill-white"
+              width="120"
+              height="28"
+            />
           </Link>
           <main-menu class="hidden md:block flex-shrink-0 p-4" />
           <dropdown class="md:hidden" placement="bottom-end">
@@ -80,7 +90,6 @@
   </div>
 </template>
 <script>
-import Logo from "@/Shared/Logo";
 import Dropdown from "@/Shared/Dropdown";
 import MainMenu from "@/Shared/MainMenu";
 import UserMenu from "@/Shared/UserMenu";
@@ -88,7 +97,6 @@ import LanguageSelector from "@/Shared/LanguageSelector";
 
 export default {
   components: {
-    Logo,
     Dropdown,
     MainMenu,
     UserMenu,
