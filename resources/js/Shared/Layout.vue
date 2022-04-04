@@ -8,7 +8,7 @@
             class="flex items-center justify-between px-6 py-4 bg-secondary-400 md:flex-shrink-0 md:justify-center md:w-56"
           >
             <Link class="mt-1" href="/admin">
-              <logo class="fill-white" width="120" height="28" />
+              <icon name="golinucci-logo" class="fill-white" width="120" height="28" />
             </Link>
             <dropdown class="md:hidden" placement="bottom-end">
               <template #default>
