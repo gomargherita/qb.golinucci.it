@@ -7,12 +7,21 @@
       content="Golinucci Q&B about us meta description"
     />
   </Head>
-  <section class="container mx-auto p-2 bg-white">
-    <h1>{{ __("About us") }}</h1>
-    <hr class="gol-hr" />
+  <HOne :title="`About us`" />
+
+  <section class="container mx-auto p-2">
+    <ProductBox> </ProductBox>
   </section>
 </template>
 
 <script>
-export default {};
+import HOne from "@/Shared/Front/HOne";
+import ProductBox from "@/Shared/Front/ProductBox";
+
+export default {
+  components: {
+    HOne,
+    ProductBox,
+  },
+};
 </script>

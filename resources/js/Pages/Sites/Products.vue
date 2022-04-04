@@ -7,12 +7,30 @@
       content="Golinucci Q&B products meta description"
     />
   </Head>
-  <section class="container mx-auto p-2 bg-white">
-    <h1>{{ __("Products") }}</h1>
-    <hr class="gol-hr" />
+  <HOne :title="`Products`" />
+
+  <section class="container mx-auto p-2">
+    <ProductBox> </ProductBox>
   </section>
 </template>
 
 <script>
-export default {};
+import HOne from "@/Shared/Front/HOne";
+import ProductBox from "@/Shared/Front/ProductBox";
+// import headingBgImg from "@/../img/sign.jpg";
+
+export default {
+  components: {
+    HOne,
+    ProductBox,
+  },
+  //   data() {
+  //     return {
+  //       headingBgImg2: {
+  //         backgroundImage: `url(${headingBgImg})`,
+  //         textAlign: "center",
+  //       },
+  //     };
+  //   },
+};
 </script>

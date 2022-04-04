@@ -96,8 +96,6 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth']], function () {
         ->name('reports');
 });
 
-
-
 // Images
 
 Route::get('/img/{path}', [ImagesController::class, 'show'])
