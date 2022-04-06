@@ -15,7 +15,7 @@
       </Link>
     </div>
     <div class="mb-4 md:mb-0 md:inline-block">
-      <Link class="group flex items-center py-3 md:px-6" href="/logout">
+      <Link class="group flex items-center py-3 md:px-6" :href="route('logout')">
         <div class="text-primary">
           {{ __("Logout") }}
         </div>

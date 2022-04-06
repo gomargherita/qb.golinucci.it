@@ -31,6 +31,27 @@ class SiteController extends Controller
 
     public function products()
     {
-        return Inertia::render('Sites/Products');
+        $products = [
+            0 => [
+                'icon' => 'icon1',
+                'title' => 'title1',
+                'description' => 'description1',
+                'label' => 'label1',
+                'url' => 'url1',
+                'img' => 'img1',
+                'color' => '#6CB8EB'
+            ],
+            1 => [
+                'icon' => 'icon2',
+                'title' => 'title2',
+                'description' => 'description2',
+                'label' => 'label2',
+                'url' => 'url2',
+                'img' => 'img2',
+                'color' => '#F17831'
+            ],
+        ];
+
+        return Inertia::render('Sites/Products', compact('products'));
     }
 }

@@ -10,7 +10,6 @@
   <HOne :title="`About us`" />
 
   <section class="container mx-auto p-2">
-    <ProductBox> </ProductBox>
   </section>
 </template>
 
