@@ -113,11 +113,11 @@ Route::get('language/{language}', function ($language) {
 // public frontend
 
 Route::controller(SiteController::class)->group(function () {
-    Route::get('/', 'home');
-    Route::get('/about-us', 'aboutUs');
-    Route::get('/products', 'products');
-    Route::get('/products/{id}', 'product');
-    Route::post('/products/{id}/funnel', 'buy');
+    Route::get('/', 'home')->name('front.home');
+    Route::get('/about-us', 'aboutUs')->name('front.aboutus');
+    Route::get('/products', 'products')->name('front.products');
+    Route::get('/products/{id}', 'product')->name('front.product');
+    Route::post('/products/{id}/funnel', 'buy')->name('front.buyproduct');
 });
 
 require __DIR__ . '/auth.php';

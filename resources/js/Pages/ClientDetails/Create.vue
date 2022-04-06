@@ -2,7 +2,7 @@
   <div>
     <Head title="Create ClientDetail" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-primary hover:text-secondary-400" href="/admin/clientDetails">{{
+      <Link class="text-primary hover:text-secondary-400" :href="route('clientDetails')">{{
         __("Client details")
       }}</Link>
       <span class="text-gray font-medium">/</span>{{ __("Create for")

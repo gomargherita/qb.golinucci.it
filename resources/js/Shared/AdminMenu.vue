@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/admin/dashboard">
+      <Link class="group flex items-center py-3" :href="route('dashboard')">
         <icon
           name="dashboard"
           class="mr-2 w-4 h-4"
@@ -23,7 +23,7 @@
       </Link>
     </div>
     <div v-if="isSuperadmin" class="mb-4">
-      <Link class="group flex items-center py-3" href="/admin/roles">
+      <Link class="group flex items-center py-3" :href="route('roles')">
         <icon
           name="roles"
           class="mr-2 w-4 h-4"
@@ -45,7 +45,7 @@
       </Link>
     </div>
     <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/admin/users">
+      <Link class="group flex items-center py-3" :href="route('users')">
         <icon
           name="users"
           class="mr-2 w-4 h-4"
@@ -67,7 +67,7 @@
       </Link>
     </div>
     <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/admin/clientDetails">
+      <Link class="group flex items-center py-3" :href="route('clientDetails')">
         <icon
           name="office"
           class="mr-2 w-4 h-4"
@@ -89,7 +89,7 @@
       </Link>
     </div>
     <div class="mb-4">
-      <Link class="group flex items-center py-3" href="/admin/reports">
+      <Link class="group flex items-center py-3" :href="route('reports')">
         <icon
           name="printer"
           class="mr-2 w-4 h-4"

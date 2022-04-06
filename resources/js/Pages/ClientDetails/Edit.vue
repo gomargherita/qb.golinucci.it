@@ -2,9 +2,11 @@
   <div>
     <Head :title="`${form.first_name} ${form.last_name}`" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-primary hover:text-secondary-400" href="/admin/clientDetails">{{
-        __("Client details")
-      }}</Link>
+      <Link
+        class="text-primary hover:text-secondary-400"
+        :href="route('clientDetails')"
+        >{{ __("Client details") }}</Link
+      >
       <span class="text-gray font-medium">/</span>
       <span>{{ form.last_name }} {{ form.first_name }}</span>
     </h1>
@@ -98,7 +100,7 @@
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4 focus:text-primary"
-              :href="`/admin/users/${user.id}/edit`"
+              :href="route('users.edit', user.id)"
             >
               {{ user.last_name }}
               <icon
@@ -111,7 +113,7 @@
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4"
-              :href="`/admin/users/${user.id}/edit`"
+              :href="route('users.edit', user.id)"
               tabindex="-1"
             >
               {{ user.first_name }}
@@ -120,7 +122,7 @@
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4"
-              :href="`/admin/users/${user.id}/edit`"
+              :href="route('users.edit', user.id)"
               tabindex="-1"
             >
               {{ user.email }}
@@ -129,7 +131,7 @@
           <td class="w-px border-t">
             <Link
               class="flex items-center px-4"
-              :href="`/admin/users/${user.id}/edit`"
+              :href="route('users.edit', user.id)"
               tabindex="-1"
             >
               <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />
@@ -162,7 +164,7 @@ export default {
   props: {
     client_detail: Object,
     user: Object,
-    can: Object
+    can: Object,
   },
   remember: "form",
   data() {

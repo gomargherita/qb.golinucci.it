@@ -3,7 +3,7 @@
     <Head :title="`${form.first_name} ${form.last_name}`" />
     <div class="flex justify-start mb-8 max-w-3xl">
       <h1 class="text-3xl font-bold">
-        <Link class="text-primary hover:text-secondary-400" href="/admin/users">{{
+        <Link class="text-primary hover:text-secondary-400" :href="route('users')">{{
           __("Users")
         }}</Link>
         <span class="text-gray font-medium">/</span>
@@ -85,7 +85,7 @@
     <div class="flex items-center justify-between mb-6">
       <div class=""></div>
       <div class="">
-        <Link class="btn-gol-primary" :href="`/admin/clientDetails/${user.id}/create`">
+        <Link class="btn-gol-primary" :href="route('clientDetails.create', user.id)">
           <span>{{ __("Create") }}</span>
           <span class="hidden md:inline">&nbsp;{{ __("Client details") }}</span>
         </Link>
@@ -106,7 +106,7 @@
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4 focus:text-primary"
-              :href="`/admin/clientDetails/${clientDetail.id}/edit`"
+              :href="route('clientDetails.edit', clientDetail.id)"
             >
               {{ clientDetail.last_name }} {{ clientDetail.first_name }}
               <icon
@@ -119,7 +119,7 @@
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4"
-              :href="`/admin/clientDetails/${clientDetail.id}/edit`"
+              :href="route('clientDetails.edit', clientDetail.id)"
               tabindex="-1"
             >
               {{ clientDetail.city }}
@@ -128,7 +128,7 @@
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4"
-              :href="`/admin/clientDetails/${clientDetail.id}/edit`"
+              :href="route('clientDetails.edit', clientDetail.id)"
               tabindex="-1"
             >
               {{ clientDetail.phone }}
@@ -137,7 +137,7 @@
           <td class="w-px border-t">
             <Link
               class="flex items-center px-4"
-              :href="`/admin/clientDetails/${clientDetail.id}/edit`"
+              :href="route('clientDetails.edit', clientDetail.id)"
               tabindex="-1"
             >
               <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />

@@ -32,7 +32,7 @@
             <td class="border-t">
               <Link
                 class="flex items-center px-6 py-4 focus:text-primary"
-                :href="`/admin/clientDetails/${clientDetail.id}/edit`"
+                :href="route('clientDetails.edit', clientDetail.id)"
               >
                 {{ clientDetail.name }}
                 <icon
@@ -45,7 +45,7 @@
             <td class="border-t">
               <Link
                 class="flex items-center px-6 py-4"
-                :href="`/admin/clientDetails/${clientDetail.id}/edit`"
+                :href="route('clientDetails.edit', clientDetail.id)"
                 tabindex="-1"
               >
                 {{ clientDetail.city }}
@@ -54,7 +54,7 @@
             <td class="border-t">
               <Link
                 class="flex items-center px-6 py-4"
-                :href="`/admin/clientDetails/${clientDetail.id}/edit`"
+                :href="route('clientDetails.edit', clientDetail.id)"
                 tabindex="-1"
               >
                 {{ clientDetail.phone }}
@@ -63,7 +63,7 @@
             <td class="border-t">
               <Link
                 class="flex items-center px-6 py-4 bg-orange-100"
-                :href="`/admin/users/${clientDetail.user.id}/edit`"
+                :href="route('clientDetails.edit', clientDetail.id)"
                 tabindex="-1"
               >
                 {{ clientDetail.user.name }}
@@ -72,7 +72,7 @@
             <td class="w-px border-t">
               <Link
                 class="flex items-center px-4"
-                :href="`/admin/clientDetails/${clientDetail.id}/edit`"
+                :href="route('clientDetails.edit', clientDetail.id)"
                 tabindex="-1"
               >
                 <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />

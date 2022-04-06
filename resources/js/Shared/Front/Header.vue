@@ -4,7 +4,7 @@
     <div id="gol-header-bg" class="">
       <div class="container mx-auto">
         <div class="flex items-center justify-between px-8 md:px-0 py-6 md:flex-shrink-0">
-          <Link href="/">
+          <Link :href="route('front.home')">
             <icon
               name="golinucci-logo"
               class="hidden md:block fill-white"
@@ -60,13 +60,13 @@
                 <div class="mt-2 py-2 text-sm bg-primary rounded shadow-xl">
                   <Link
                     class="block px-6 py-2 text-white hover:bg-primary"
-                    :href="`/admin/current_users/${current_user.id}/edit`"
+                    :href="route('users.edit', current_user.id)"
                     >{{ __("My Profile") }}</Link
                   >
 
                   <Link
                     class="block px-6 py-2 w-full text-left text-white hover:bg-primary"
-                    href="/logout"
+                    :href="route('logout')"
                     method="delete"
                     as="button"
                     >{{ __("Logout") }}</Link
@@ -80,7 +80,7 @@
             v-if="!current_user"
             class="hidden md:inline-block md:text-md flex items-center justify-between p-4 text-sm"
           >
-            <Link class="block px-6 py-2 text-white hover:underline" :href="`/login`">{{
+            <Link class="block px-6 py-2 text-white hover:underline" :href="route('login')">{{
               __("Login")
             }}</Link>
           </div>

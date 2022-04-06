@@ -2,7 +2,7 @@
   <div>
     <Head title="Create Contact" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-primary hover:text-secondary-400" href="/admin/roles">Roles</Link>
+      <Link class="text-primary hover:text-secondary-400" :href="route('roles')">Roles</Link>
       <span class="text-gray font-medium">/</span> Create
     </h1>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">

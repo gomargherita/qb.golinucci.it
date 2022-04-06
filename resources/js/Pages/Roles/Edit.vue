@@ -2,7 +2,7 @@
   <div>
     <Head :title="`${form.name}`" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-primary hover:text-secondary-400" href="/admin/roles">{{
+      <Link class="text-primary hover:text-secondary-400" :href="route('roles')">{{
         __("Roles")
       }}</Link>
       <span class="text-gray font-medium">/</span>

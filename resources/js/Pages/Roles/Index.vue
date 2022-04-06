@@ -10,7 +10,7 @@
         @reset="reset"
       >
       </search-filter>
-      <Link class="btn-gol-primary" href="/admin/roles/create">
+      <Link class="btn-gol-primary" :href="route('roles.create')">
         <span>{{ __("Create") }}</span
         ><span class="hidden md:inline ml-1">{{ __("Role") }}</span>
       </Link>
@@ -31,7 +31,7 @@
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4 focus:text-primary"
-              :href="`/admin/roles/${role.id}/edit`"
+              :href="route('roles.edit', role.id)"
             >
               {{ role.name }}
             </Link>
@@ -39,7 +39,7 @@
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4"
-              :href="`/admin/roles/${role.id}/edit`"
+              :href="route('roles.edit', role.id)"
               tabindex="-1"
             >
               {{ role.guard_name }}
@@ -48,7 +48,7 @@
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4"
-              :href="`/admin/roles/${role.id}/edit`"
+              :href="route('roles.edit', role.id)"
               tabindex="-1"
             >
               {{ role.account }}
@@ -57,7 +57,7 @@
           <td class="w-px border-t">
             <Link
               class="flex items-center px-4"
-              :href="`/admin/roles/${role.id}/edit`"
+              :href="route('roles.edit', role.id)"
               tabindex="-1"
             >
               <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />

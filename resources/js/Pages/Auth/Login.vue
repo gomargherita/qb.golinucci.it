@@ -36,7 +36,7 @@
           </label>
         </div>
         <div class="flex px-10 py-4 bg-gray-100 border-t border-gray-100">
-          <Link href="/forgot-password" class="mt-3">
+          <Link :href="route('password.request')" class="mt-3">
             {{ __("Forgot password") }}
           </Link>
           <loading-button
