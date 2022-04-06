@@ -52,10 +52,12 @@
 </template>
 
 <script>
+import EmptyLayout from "@/Shared/EmptyLayout";
 import TextInput from "@/Shared/TextInput";
 import LoadingButton from "@/Shared/LoadingButton";
 
 export default {
+  layout: EmptyLayout,
   components: {
     LoadingButton,
     TextInput,
