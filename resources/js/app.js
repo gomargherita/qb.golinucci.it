@@ -1,7 +1,7 @@
 import { createApp, h } from 'vue';
 import { createInertiaApp, Link, Head } from '@inertiajs/inertia-vue3';
 import { InertiaProgress } from '@inertiajs/progress';
-import FrontLayout from "@/Shared/Front/FrontLayout";
+import FrontLayout from "@/Shared/Layouts/FrontLayout";
 import Icon from "@/Shared/Icon";
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Q&B Golinucci';

@@ -81,7 +81,7 @@
 
 <script>
 import { Head } from "@inertiajs/inertia-vue3";
-import Layout from "@/Shared/Layout";
+import Layout from "@/Shared/Layouts/Layout";
 import TextInput from "@/Shared/TextInput";
 import SelectInput from "@/Shared/SelectInput";
 import LoadingButton from "@/Shared/LoadingButton";

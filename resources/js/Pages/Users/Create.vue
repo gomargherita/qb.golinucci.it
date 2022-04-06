@@ -67,7 +67,7 @@
 </template>
 
 <script>
-import Layout from "@/Shared/Layout";
+import Layout from "@/Shared/Layouts/Layout";
 import FileInput from "@/Shared/FileInput";
 import TextInput from "@/Shared/TextInput";
 import SelectInput from "@/Shared/SelectInput";

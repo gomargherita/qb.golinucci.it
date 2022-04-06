@@ -153,7 +153,7 @@
 </template>
 
 <script>
-import Layout from "@/Shared/Layout";
+import Layout from "@/Shared/Layouts/Layout";
 import TextInput from "@/Shared/TextInput";
 import FileInput from "@/Shared/FileInput";
 import SelectInput from "@/Shared/SelectInput";

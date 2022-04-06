@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import EmptyLayout from "@/Shared/EmptyLayout";
+import EmptyLayout from "@/Shared/Layouts/EmptyLayout";
 import TextInput from "@/Shared/TextInput";
 import LoadingButton from "@/Shared/LoadingButton";
 

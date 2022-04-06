@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="admin-layout">
     <div id="dropdown" />
     <div class="md:flex md:flex-col">
       <div class="md:flex md:flex-col md:h-screen">

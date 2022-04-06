@@ -75,7 +75,7 @@
 
 <script>
 import pickBy from "lodash/pickBy";
-import Layout from "@/Shared/Layout";
+import Layout from "@/Shared/Layouts/Layout";
 import throttle from "lodash/throttle";
 import mapValues from "lodash/mapValues";
 import Pagination from "@/Shared/Pagination";
