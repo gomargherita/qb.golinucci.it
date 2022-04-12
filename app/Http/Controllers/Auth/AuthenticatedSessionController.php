@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\Role;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -37,7 +38,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(RouteServiceProvider::HOME);
+        return redirect()->intended($this->redirectByRoleTo());
     }
 
     /**
@@ -55,5 +56,16 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('login');
+    }
+
+    private function redirectByRoleTo()
+    {
+        $user = auth()->user();
+        $role = $user->getRoleNames()->first();
+        if (in_array($role, [Role::ROLE_SUPERADMIN, Role::ROLE_OPERATOR, Role::ROLE_AGENT])) {
+            return route('admin');
+        } else {
+            return RouteServiceProvider::HOME;
+        }
     }
 }
