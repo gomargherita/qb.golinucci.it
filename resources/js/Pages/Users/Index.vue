@@ -26,10 +26,12 @@
     <div class="bg-white rounded-md shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <tr class="text-left font-bold">
-          <th class="pb-4 pt-6 px-6">Name</th>
-          <th class="pb-4 pt-6 px-6">Email</th>
-          <th class="pb-4 pt-6 px-6">Account</th>
-          <th class="pb-4 pt-6 px-6">Role</th>
+          <th class="pb-4 pt-6 px-6">{{ __("Name") }}</th>
+          <th class="pb-4 pt-6 px-6">{{ __("Email") }}</th>
+          <th v-if="this.$page.props.auth.user.is_superadmin" class="pb-4 pt-6 px-6">
+            {{ __("Account") }}
+          </th>
+          <th class="pb-4 pt-6 px-6">{{ __("Role") }}</th>
         </tr>
         <tr
           v-for="user in users.data"
@@ -63,7 +65,7 @@
               {{ user.email }}
             </Link>
           </td>
-          <td class="border-t">
+          <td v-if="this.$page.props.auth.user.is_superadmin" class="border-t">
             <Link
               class="flex items-center px-6 py-4"
               :href="route('users.edit', user.id)"

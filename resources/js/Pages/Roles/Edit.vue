@@ -73,6 +73,7 @@ export default {
   layout: Layout,
   props: {
     role: Object,
+    accounts: Array
   },
   remember: "form",
   data() {

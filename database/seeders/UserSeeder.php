@@ -89,7 +89,7 @@ class UserSeeder extends Seeder
 
 
         // first will be our superadmin
-        $users = User::where('owner', 1)->get();
+        $users = User::all();
         $users->map(function ($user) {
             switch ($user->id) {
                 case 1:
@@ -105,6 +105,9 @@ class UserSeeder extends Seeder
                     setPermissionsTeamId(2);
                     $user->assignRole(Role::ROLE_AGENT);
                     break;
+                default:
+                    setPermissionsTeamId(1);
+                    $user->assignRole(Role::ROLE_USER);
             }
         });
     }

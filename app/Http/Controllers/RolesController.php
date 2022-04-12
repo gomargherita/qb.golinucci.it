@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreRoleRequest;
+use App\Models\Account;
 use App\Models\Role;
-use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
@@ -63,27 +64,13 @@ class RolesController extends Controller
                 'name' => $role->name,
                 'guard_name' => $role->guard_name,
             ],
-            'accounts' => [],
+            'accounts' => Account::all(),
         ]);
     }
 
-    public function update(Role $role)
+    public function update(StoreRoleRequest $request, Role $role)
     {
-        Request::validate([
-            'name' => ['required', 'max:50'],
-            'guard_name' => ['required', 'max:50'],
-            'account_id' => ['required', 'max:50'],
-        ]);
-
-        $role->update(Request::only('first_name', 'last_name', 'email', 'owner'));
-
-        if (Request::file('photo')) {
-            $role->update(['photo_path' => Request::file('photo')->store('users')]);
-        }
-
-        if (Request::get('password')) {
-            $role->update(['password' => Request::get('password')]);
-        }
+        $role->update($request->validated());
 
         return Redirect::back()->with('success', 'Role updated.');
     }

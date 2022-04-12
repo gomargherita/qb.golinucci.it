@@ -12,7 +12,7 @@
       <img v-if="user.photo" class="block ml-4 w-8 h-8 rounded-full" :src="user.photo" />
     </div>
     <trashed-message v-if="user.deleted_at" class="mb-6" @restore="restore">
-      This user has been deleted.
+      {{ __("This user has been deleted") }}.
     </trashed-message>
     <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="update">
@@ -49,17 +49,32 @@
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Admin"
           >
-            <option :value="true">Yes</option>
-            <option :value="false">No</option>
+            <option :value="true">{{ __("Yes") }}</option>
+            <option :value="false">{{ __("No") }}</option>
           </select-input>
-          <file-input
+          <select-input
+            v-model="form.role"
+            :error="form.errors.role"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="Role"
+          >
+            <option></option>
+            <option
+              v-for="role in roles"
+              :value="role.name"
+              :selected="role.name == form.role"
+            >
+              {{ __(role.name) }}
+            </option>
+          </select-input>
+          <!--file-input
             v-model="form.photo"
             :error="form.errors.photo"
             class="pb-8 pr-6 w-full lg:w-1/2"
             type="file"
             accept="image/*"
             label="Photo"
-          />
+          /-->
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
           <button
@@ -171,6 +186,7 @@ export default {
   layout: Layout,
   props: {
     user: Object,
+    roles: Array,
   },
   remember: "form",
   data() {
@@ -182,7 +198,8 @@ export default {
         email: this.user.email,
         password: "",
         owner: this.user.owner,
-        photo: null,
+        role: this.user.role,
+        // photo: null,
       }),
     };
   },

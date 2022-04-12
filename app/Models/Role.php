@@ -12,8 +12,8 @@ class Role extends BaseRole
 {
     use HasFactory, Notifiable;
 
-    const ROLE_SUPERADMIN = 'superadmin';
-    const ROLE_OPERATOR = 'admin_operator'; // golinucci operators
+    const ROLE_SUPERADMIN = 'Superadmin';
+    const ROLE_OPERATOR = 'Admin Operator'; // golinucci operators
     /**
      * TODO 
      * ​I “sottoprodotti” delle polizze collettive o di quelle individuali generate 
@@ -31,8 +31,8 @@ class Role extends BaseRole
      * nel “sottoprodotto”. Nell’area riservata PRISMABROKER puo’ “leggere” il suo 
      * portafoglio di clienti e/o apportare modifiche su anagrafiche, invio email avviso, 
      */
-    const ROLE_AGENT = 'admin_agent'; // external operators
-    const ROLE_USER = 'client_user'; // client users
+    const ROLE_AGENT = 'Admin Agent'; // external operators
+    const ROLE_USER = 'Client User'; // client users
 
     public static function defaultRoles()
     {

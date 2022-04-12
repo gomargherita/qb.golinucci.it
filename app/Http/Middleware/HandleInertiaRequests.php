@@ -4,7 +4,6 @@ namespace App\Http\Middleware;
 
 use App\Models\Role;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -52,7 +51,7 @@ class HandleInertiaRequests extends Middleware
                         'id' => $request->user()->account->id,
                         'name' => $request->user()->account->name,
                     ],
-                    // 'roles' => $request->user()->roles,
+                    'roles' => $request->user()->roles,
                     'is_superadmin' => $request->user()->can(Role::ROLE_SUPERADMIN)
                 ] : null,
             ],
