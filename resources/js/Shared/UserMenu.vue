@@ -10,8 +10,10 @@
     </div>
     <div class="mb-2 md:mb-0">
       <NavLink
-        class="block py-2 text-white hover:bg-primary"
         :href="route('front.useraccount', current_user.id)"
+        class="block py-2 text-white hover:bg-primary"
+        :active="$page.component === 'Sites/User-account'"
+        :activeStyle="'text-yellow-400'"
         >{{ __("My Profile") }}
       </NavLink>
     </div>
