@@ -45,10 +45,7 @@
           >
             <dropdown class="bg-primary" placement="bottom-end">
               <template #default>
-                <Link
-                  as="button"
-                  class="group flex items-center cursor-pointer select-none"
-                >
+                <div class="group flex items-center cursor-pointer select-none">
                   <div class="mr-1 text-white focus:text-primary whitespace-nowrap">
                     <span>{{ current_user.first_name }}</span>
                     <span class="hidden md:inline"
@@ -59,7 +56,7 @@
                     class="w-5 h-5 fill-white group-hover:fill-secondary focus:fill-secondary"
                     name="cheveron-down"
                   />
-                </Link>
+                </div>
               </template>
               <template #dropdown>
                 <div class="mt-2 px-8 py-2 text-sm bg-primary rounded shadow-xl">

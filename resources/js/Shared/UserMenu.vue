@@ -10,7 +10,7 @@
     </div>
     <div class="mb-2 md:mb-0">
       <NavLink
-        :href="route('front.useraccount', current_user.id)"
+        :href="route('front.useraccount')"
         class="block py-2 text-white hover:bg-primary"
         :active="$page.component === 'Sites/User-account'"
         :activeStyle="'text-yellow-400'"

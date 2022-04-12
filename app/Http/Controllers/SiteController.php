@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreSiteRequest;
 use App\Http\Requests\UpdateSiteRequest;
 use App\Models\Site;
+use App\Models\User;
 use Inertia\Inertia;
 
 class SiteController extends Controller
@@ -29,8 +30,23 @@ class SiteController extends Controller
         return Inertia::render('Sites/About-us');
     }
 
-    public function userAccount() {
-        return Inertia::render('Sites/User-account');
+    public function userAccount()
+    {
+        $user = auth()->user();
+
+        return Inertia::render('Sites/User-account', [
+            'user' => [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'owner' => $user->owner,
+                //'photo' => $user->photo_path ? URL::route('image', ['path' => $user->photo_path, 'w' => 60, 'h' => 60, 'fit' => 'crop']) : null,
+                'deleted_at' => $user->deleted_at,
+                'role' => $user->getRoleNames()->first(),
+                'client_details' => $user->clientDetails ? $user->clientDetails : null,
+            ]
+        ]);
     }
 
     public function products()
