@@ -101,7 +101,7 @@ class UserSeeder extends Seeder
                     setPermissionsTeamId(1);
                     $user->assignRole(Role::ROLE_OPERATOR);
                     break;
-                case 4:
+                case 25:
                     setPermissionsTeamId(2);
                     $user->assignRole(Role::ROLE_AGENT);
                     break;

@@ -28,9 +28,6 @@
 </template>
 
 <script>
-import medicImg from "@/../img/medic.jpg";
-import bankersImg from "@/../img/bankers.jpg";
-
 export default {
   props: {
     products: Array,
