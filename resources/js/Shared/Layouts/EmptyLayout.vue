@@ -10,7 +10,6 @@
     </Head>
     <div>
       <section class="mt-1 bg-white" scroll-region>
-        <flash-messages />
         <slot />
       </section>
     </div>
