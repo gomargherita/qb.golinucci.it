@@ -1,29 +1,47 @@
 <template>
-  <div class="uppercase text-white">
-    <div class="mb-4 md:mb-0 md:inline-block">
-      <Link class="group flex items-center py-3 md:px-6" href="/account">
-        <div class="text-primary">
-          {{ __("Account") }}
-        </div>
+  <div>
+    <div class="mb-2 md:mb-0">
+      <Link
+        v-if="!isClient"
+        class="block py-2 text-white hover:bg-primary"
+        :href="route('admin')"
+        >{{ __("Admin") }}
       </Link>
     </div>
-    <div class="mb-4 md:mb-0 md:inline-block">
-      <Link class="group flex items-center py-3 md:px-6" href="/account/products">
-        <div class="text-primary">
-          {{ __("My Products") }}
-        </div>
-      </Link>
+    <div class="mb-2 md:mb-0">
+      <NavLink
+        class="block py-2 text-white hover:bg-primary"
+        :href="route('front.useraccount', current_user.id)"
+        >{{ __("My Profile") }}
+      </NavLink>
     </div>
-    <div class="mb-4 md:mb-0 md:inline-block">
-      <Link class="group flex items-center py-3 md:px-6" :href="route('logout')">
-        <div class="text-primary">
-          {{ __("Logout") }}
-        </div>
+    <div class="mb-2 md:mb-0">
+      <Link
+        class="block py-2 w-full text-left text-white hover:bg-primary"
+        :href="route('logout')"
+        method="delete"
+        as="button"
+        >{{ __("Logout") }}
       </Link>
     </div>
   </div>
 </template>
 
 <script>
-export default {};
+import NavLink from "@/Shared/NavLink";
+
+export default {
+  components: {
+    NavLink,
+  },
+  props: {
+    current_user: Object,
+  },
+  computed: {
+    isClient() {
+      let role = this.current_user.roles[0];
+      return role.name == "Client User";
+    },
+  },
+};
 </script>

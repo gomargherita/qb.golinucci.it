@@ -32,6 +32,10 @@
             <template #dropdown>
               <div class="mt-2 px-8 py-4 bg-primary rounded shadow-lg">
                 <main-menu />
+                <div v-if="current_user">
+                  <hr />
+                  <user-menu :current_user="current_user" class="mt-4" />
+                </div>
               </div>
             </template>
           </dropdown>
@@ -41,10 +45,11 @@
           >
             <dropdown class="bg-primary" placement="bottom-end">
               <template #default>
-                <Link as="button" class="group flex items-center cursor-pointer select-none">
-                  <div
-                    class="mr-1 text-white focus:text-primary whitespace-nowrap"
-                  >
+                <Link
+                  as="button"
+                  class="group flex items-center cursor-pointer select-none"
+                >
+                  <div class="mr-1 text-white focus:text-primary whitespace-nowrap">
                     <span>{{ current_user.first_name }}</span>
                     <span class="hidden md:inline"
                       >&nbsp;{{ current_user.last_name }}</span
@@ -57,20 +62,8 @@
                 </Link>
               </template>
               <template #dropdown>
-                <div class="mt-2 py-2 text-sm bg-primary rounded shadow-xl">
-                  <Link
-                    class="block px-6 py-2 text-white hover:bg-primary"
-                    :href="route('users.edit', current_user.id)"
-                    >{{ __("My Profile") }}</Link
-                  >
-
-                  <Link
-                    class="block px-6 py-2 w-full text-left text-white hover:bg-primary"
-                    :href="route('logout')"
-                    method="delete"
-                    as="button"
-                    >{{ __("Logout") }}</Link
-                  >
+                <div class="mt-2 px-8 py-2 text-sm bg-primary rounded shadow-xl">
+                  <user-menu v-if="current_user" :current_user="current_user" />
                 </div>
               </template>
             </dropdown>
@@ -80,9 +73,11 @@
             v-if="!current_user"
             class="hidden md:inline-block md:text-md flex items-center justify-between p-4 text-sm"
           >
-            <Link class="block px-6 py-2 text-white hover:underline" :href="route('login')">{{
-              __("Login")
-            }}</Link>
+            <Link
+              class="block px-6 py-2 text-white hover:underline"
+              :href="route('login')"
+              >{{ __("Login") }}</Link
+            >
           </div>
         </div>
       </div>

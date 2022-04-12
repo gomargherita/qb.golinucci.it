@@ -113,6 +113,7 @@ Route::get('language/{language}', function ($language) {
 
 Route::controller(SiteController::class)->group(function () {
     Route::get('/', 'home')->name('front.home');
+    Route::get('/user-account', 'userAccount')->name('front.useraccount');
     Route::get('/about-us', 'aboutUs')->name('front.aboutus');
     Route::get('/products', 'products')->name('front.products');
     Route::get('/products/{id}', 'product')->name('front.product');

@@ -29,6 +29,10 @@ class SiteController extends Controller
         return Inertia::render('Sites/About-us');
     }
 
+    public function userAccount() {
+        return Inertia::render('Sites/User-account');
+    }
+
     public function products()
     {
         $products = [
