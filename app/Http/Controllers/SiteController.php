@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Library\Services\LloydsDoPrint;
+use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class SiteController extends Controller
@@ -64,38 +66,35 @@ class SiteController extends Controller
 
     public function products()
     {
-        $products = [
-            0 => [
-                'icon' => 'icon1',
-                'title' => 'title1',
-                'description' => 'description1',
-                'label' => 'label1',
-                'url' => 'url1',
-                'img' => 'img1',
-                'color' => '#6CB8EB'
-            ],
-            1 => [
-                'icon' => 'icon2',
-                'title' => 'title2',
-                'description' => 'description2',
-                'label' => 'label2',
-                'url' => 'url2',
-                'img' => 'img2',
-                'color' => '#F17831'
-            ],
-        ];
-
-        return Inertia::render('Sites/Products', compact('products'));
+        return Inertia::render('Sites/Products', [
+            'products' => Auth::user()->account->products()->get()
+                ->map(fn ($product) => [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'description' => $product->description,
+                    'icon' => $product->icon,
+                    'hex_color' => $product->hex_color,
+                    'deleted_at' => $product->deleted_at,
+                ])
+        ]);
     }
 
     public function product(Product $product)
     {
-        return Inertia::render('Sites/Product', compact('product'));
+        return Inertia::render('Sites/Product', [
+            'product' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'icon' => $product->icon,
+                'hex_color' => $product->hex_color,
+                'deleted_at' => $product->deleted_at,
+            ]
+        ]);
     }
 
     public function buy(Product $product)
     {
         return Inertia::render('Sites/Product', compact('product'));
     }
-
 }

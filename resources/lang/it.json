@@ -3,6 +3,7 @@
     "No": "No",
     "Search": "Cerca",
     "Filter": "Filtra",
+    "More": "Scopri di più",
     "Remember me": "Ricordami",
     "My Profile": "Il mio profilo",
     "Photo": "Foto",
@@ -34,5 +35,6 @@
     "Role": "Ruolo",
 
     "About us": "Chi siamo",
-    "Products": "Prodotti"
+    "Products": "Prodotti",
+    "Product": "Prodotto"
 }

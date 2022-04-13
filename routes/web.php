@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\ClientDetailsController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\RolesController;
@@ -28,6 +29,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'check_role']], func
 
     Route::get('dashboard', [DashboardController::class, 'index'])
         ->name('dashboard');
+
+    Route::resource('products', ProductController::class)->names([
+        'index' => 'products'
+    ]);
 
     Route::group(['middleware' => ['role:superadmin']], function () {
         Route::get('roles', [RolesController::class, 'index'])
@@ -116,7 +121,7 @@ Route::controller(SiteController::class)->group(function () {
     Route::get('/user-account', 'userAccount')->name('front.useraccount')->middleware(['auth']);
     Route::get('/about-us', 'aboutUs')->name('front.aboutus');
     Route::get('/products', 'products')->name('front.products');
-    Route::get('/products/{procuct}', 'product')->name('front.product');
+    Route::get('/products/{product}', 'product')->name('front.product');
     Route::post('/products/{product}/buy', 'buy')->name('front.buyproduct');
     Route::get('/test-lloyds', 'testLloyds')->name('front.testlloyds');
 });
