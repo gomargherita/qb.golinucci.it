@@ -116,8 +116,9 @@ Route::controller(SiteController::class)->group(function () {
     Route::get('/user-account', 'userAccount')->name('front.useraccount')->middleware(['auth']);
     Route::get('/about-us', 'aboutUs')->name('front.aboutus');
     Route::get('/products', 'products')->name('front.products');
-    Route::get('/products/{id}', 'product')->name('front.product');
-    Route::post('/products/{id}/funnel', 'buy')->name('front.buyproduct');
+    Route::get('/products/{procuct}', 'product')->name('front.product');
+    Route::post('/products/{product}/buy', 'buy')->name('front.buyproduct');
+    Route::get('/test-lloyds', 'testLloyds')->name('front.testlloyds');
 });
 
 require __DIR__ . '/auth.php';

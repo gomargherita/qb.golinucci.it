@@ -2,10 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreSiteRequest;
-use App\Http\Requests\UpdateSiteRequest;
-use App\Models\Site;
-use App\Models\User;
+use App\Library\Services\LloydsDoPrint;
 use Inertia\Inertia;
 
 class SiteController extends Controller
@@ -49,6 +46,22 @@ class SiteController extends Controller
         ]);
     }
 
+    public function testLloyds(LloydsDoPrint $lloydsDoPrint)
+    {
+        // DoPrint Login
+        $SessionToken = $lloydsDoPrint->HandShake();
+        // Setup Policy using the xml and MD5 file hashes
+        // $lloydsDoPrint->ValidationRequest($SessionToken, $nextvalue . '-LB', $customer, $start_date, $end_date, $arr, $wording, $prop);
+        // Upload the wording
+        //$lloydsDoPrint->UploadRequest($SessionToken, $wording);
+        // Upload Proposal form
+        //$lloydsDoPrint->UploadRequest($SessionToken, $prop);
+        // Create the policy
+        //$lloydsDoPrint->TransactionRequest($SessionToken);
+        // Download the certificate
+        //$lloydsDoPrint->DownloadRequest($SessionToken, $filename);
+    }
+
     public function products()
     {
         $products = [
@@ -74,4 +87,15 @@ class SiteController extends Controller
 
         return Inertia::render('Sites/Products', compact('products'));
     }
+
+    public function product(Product $product)
+    {
+        return Inertia::render('Sites/Product', compact('product'));
+    }
+
+    public function buy(Product $product)
+    {
+        return Inertia::render('Sites/Product', compact('product'));
+    }
+
 }
