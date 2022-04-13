@@ -2,7 +2,6 @@
 
 namespace App\Http\Middleware;
 
-use App\Models\Role;
 use App\Providers\RouteServiceProvider;
 use Closure;
 use Illuminate\Http\Request;
@@ -24,13 +23,7 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                $user = auth()->user();
-                $role = $user->getRoleNames()->first();
-                if (in_array($role, [Role::ROLE_SUPERADMIN, Role::ROLE_OPERATOR, Role::ROLE_AGENT])) {
-                    return redirect(route('admin'));
-                } else {
-                    return redirect(RouteServiceProvider::HOME);
-                }
+                return redirect(RouteServiceProvider::HOME);
             }
         }
 

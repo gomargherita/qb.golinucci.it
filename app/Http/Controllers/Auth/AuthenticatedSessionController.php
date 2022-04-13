@@ -38,7 +38,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended($this->redirectByRoleTo());
+        return redirect()->intended(RouteServiceProvider::HOME);
     }
 
     /**
@@ -56,16 +56,5 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerateToken();
 
         return redirect('login');
-    }
-
-    private function redirectByRoleTo()
-    {
-        $user = auth()->user();
-        $role = $user->getRoleNames()->first();
-        if (in_array($role, [Role::ROLE_SUPERADMIN, Role::ROLE_OPERATOR, Role::ROLE_AGENT])) {
-            return route('admin');
-        } else {
-            return RouteServiceProvider::HOME;
-        }
     }
 }

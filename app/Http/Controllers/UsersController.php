@@ -29,7 +29,7 @@ class UsersController extends Controller
                     'email' => $user->email,
                     'account' => $user->account->name,
                     'owner' => $user->owner,
-                    'photo' => $user->photo_path ? URL::route('image', ['path' => $user->photo_path, 'w' => 40, 'h' => 40, 'fit' => 'crop']) : null,
+                    //'photo' => $user->photo_path ? URL::route('image', ['path' => $user->photo_path, 'w' => 40, 'h' => 40, 'fit' => 'crop']) : null,
                     'deleted_at' => $user->deleted_at,
                 ]),
         ]);
@@ -62,7 +62,7 @@ class UsersController extends Controller
                 'last_name' => $user->last_name,
                 'email' => $user->email,
                 'owner' => $user->owner,
-                'photo' => $user->photo_path ? URL::route('image', ['path' => $user->photo_path, 'w' => 60, 'h' => 60, 'fit' => 'crop']) : null,
+                //'photo' => $user->photo_path ? URL::route('image', ['path' => $user->photo_path, 'w' => 60, 'h' => 60, 'fit' => 'crop']) : null,
                 'deleted_at' => $user->deleted_at,
                 'role' => $user->getRoleNames()->first(),
                 'client_details' => $user->clientDetails ? $user->clientDetails : null,

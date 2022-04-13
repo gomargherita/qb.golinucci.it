@@ -12,8 +12,8 @@ class CheckRole
     public function handle($request, Closure $next)
     {
         $user = auth()->user();
-        $role = $user->getRoleNames()->first();
-        if (in_array($role, [Role::ROLE_SUPERADMIN, Role::ROLE_OPERATOR, Role::ROLE_AGENT])) {
+        $role = $user->hasRole(Role::ROLE_USER);
+        if (!$role) {
             return $next($request);
         } else {
             return redirect(RouteServiceProvider::HOME);
