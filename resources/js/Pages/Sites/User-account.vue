@@ -10,17 +10,27 @@
   <HOne :title="`User account`" />
 
   <section class="container mx-auto p-2">
+    <h2>
+      {{ __("User data") }}
+    </h2>
+    <div class="">asd</div>
+    <h2>
+      {{ __("My products") }}
+    </h2>
+    <div class="">asd</div>
+    <h2>
+      {{ __("My documents") }}
+    </h2>
+    <div class="">asd</div>
   </section>
 </template>
 
 <script>
 import HOne from "@/Shared/Front/HOne";
-import ProductBox from "@/Shared/Front/ProductBox";
 
 export default {
   components: {
     HOne,
-    ProductBox,
   },
 };
 </script>

@@ -83,11 +83,8 @@ export default {
   },
   methods: {
     scrollMeTo(refName) {
-      console.log(this.$refs.refName);
       var element = this.$refs[refName];
-      var top = element.offsetTop;
-
-      window.scrollTo(0, top);
+      element.scrollIntoView({ block: "start", behavior: "smooth" });
     },
   },
 };
