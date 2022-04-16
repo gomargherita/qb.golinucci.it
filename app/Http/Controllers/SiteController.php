@@ -88,7 +88,7 @@ class SiteController extends Controller
                 'id' => $product->id,
                 'name' => $product->name,
                 'type' => Str::slug($product->product_type->name, '-'),
-                'description' => $product->description,
+                'detailed_description' => $product->detailed_description,
                 'icon' => $product->icon,
                 'hex_color' => $product->hex_color,
                 'deleted_at' => $product->deleted_at,

@@ -20,6 +20,7 @@ class CreateProductsTable extends Migration
             $table->foreignIdFor(ProductType::class)->constrained();
             $table->string('name')->unique();
             $table->text('description');
+            $table->text('detailed_description');
             $table->string('icon');
             $table->string('hex_color');
             $table->timestamps();
