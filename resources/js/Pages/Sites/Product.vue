@@ -9,19 +9,19 @@
   </Head>
   <HOne :title="product.name" />
 
-  <section class="container mx-auto p-2">
-    <ProductDetailBox :product="product"> </ProductDetailBox>
+  <section id="main-content" class="container mx-auto p-2">
+    <ProductDetail :product="product"> </ProductDetail>
   </section>
 </template>
 
 <script>
 import HOne from "@/Shared/Front/HOne";
-import ProductDetailBox from "@/Shared/Front/ProductDetailBox";
+import ProductDetail from "@/Shared/Front/ProductDetail";
 
 export default {
   components: {
     HOne,
-    ProductDetailBox
+    ProductDetail,
   },
   props: {
     product: Object,

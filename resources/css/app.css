@@ -27,7 +27,11 @@ body {
     }
 
     div#front-layout h1{
-        @apply text-4xl text-center capitalize text-primary font-semibold mt-8;
+        @apply text-2xl text-center capitalize text-primary font-semibold mt-8;
+    }
+
+    div#front-layout #main-content h2{
+        @apply text-xl text-center capitalize text-primary font-semibold mt-2;
     }
 
     div#front-layout #gol-header-bg {
@@ -51,6 +55,14 @@ body {
     @screen md {
         div#front-layout #gol-header-bg {
         background: linear-gradient(110deg, white 40%, var(--primary-color) 40%);
+        }
+
+        div#front-layout h1{
+            @apply text-4xl;
+        }
+    
+        div#front-layout #main-content h2{
+            @apply text-3xl mt-8;
         }
     }
 

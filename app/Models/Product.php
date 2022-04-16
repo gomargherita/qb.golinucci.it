@@ -17,6 +17,7 @@ class Product extends Model
     protected $fillable = [
         'name',
         'description',
+        'detailed_description',
         'hex_color',
         'icon',
     ];
