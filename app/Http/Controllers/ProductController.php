@@ -28,7 +28,7 @@ class ProductController extends Controller
                 ->through(fn ($product) => [
                     'id' => $product->id,
                     'name' => $product->name,
-                    'description' => $product->description,
+                    'type' =>  $product->product_type->name,
                     'deleted_at' => $product->deleted_at,
                 ]),
         ]);

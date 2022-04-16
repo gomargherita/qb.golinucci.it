@@ -21,7 +21,7 @@
       <table class="w-full whitespace-nowrap">
         <tr class="text-left font-bold">
           <th class="pb-4 pt-6 px-6">{{ __("Name") }}</th>
-          <th class="pb-4 pt-6 px-6">{{ __("Description") }}</th>
+          <th class="pb-4 pt-6 px-6">{{ __("Type") }}</th>
         </tr>
         <tr
           v-for="product in products.data"
@@ -47,7 +47,7 @@
               :href="route('products.edit', product.id)"
               tabindex="-1"
             >
-              {{ product.description }}
+              {{ product.type }}
             </Link>
           </td>
           <td class="w-px border-t">

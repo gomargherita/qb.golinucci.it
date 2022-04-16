@@ -17,12 +17,11 @@ class ProductSeeder extends Seeder
         Product::factory()->create([
             'name' => 'Polizza Singola Medici e Personale Sanitario',
             'account_id' => '1',
+            'product_type_id' => '1',
             'hex_color' => '#6CB8EB',
         ]);
 
-        Product::factory(3)
-            ->create([
-
-            ]);
+        Product::factory(5)
+            ->create();
     }
 }

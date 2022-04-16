@@ -31,6 +31,11 @@ class Product extends Model
         return $this->belongsTo(Account::class);
     }
 
+    public function product_type(): BelongsTo
+    {
+        return $this->belongsTo(ProductType::class);
+    }
+
     public function scopeOrderByName($query)
     {
         $query->orderBy('name');

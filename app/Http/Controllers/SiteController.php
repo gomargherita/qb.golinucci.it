@@ -6,6 +6,7 @@ use App\Library\Services\LloydsDoPrint;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 
 class SiteController extends Controller
 {
@@ -50,18 +51,18 @@ class SiteController extends Controller
 
     public function testLloyds(LloydsDoPrint $lloydsDoPrint)
     {
-        // DoPrint Login
-        $SessionToken = $lloydsDoPrint->HandShake();
-        // Setup Policy using the xml and MD5 file hashes
-        // $lloydsDoPrint->ValidationRequest($SessionToken, $nextvalue . '-LB', $customer, $start_date, $end_date, $arr, $wording, $prop);
-        // Upload the wording
-        //$lloydsDoPrint->UploadRequest($SessionToken, $wording);
-        // Upload Proposal form
-        //$lloydsDoPrint->UploadRequest($SessionToken, $prop);
-        // Create the policy
-        //$lloydsDoPrint->TransactionRequest($SessionToken);
-        // Download the certificate
-        //$lloydsDoPrint->DownloadRequest($SessionToken, $filename);
+    //     // DoPrint Login
+    //     $SessionToken = $lloydsDoPrint->HandShake();
+    //     // Setup Policy using the xml and MD5 file hashes
+    //     // $lloydsDoPrint->ValidationRequest($SessionToken, $nextvalue . '-LB', $customer, $start_date, $end_date, $arr, $wording, $prop);
+    //     // Upload the wording
+    //     //$lloydsDoPrint->UploadRequest($SessionToken, $wording);
+    //     // Upload Proposal form
+    //     //$lloydsDoPrint->UploadRequest($SessionToken, $prop);
+    //     // Create the policy
+    //     //$lloydsDoPrint->TransactionRequest($SessionToken);
+    //     // Download the certificate
+    //     //$lloydsDoPrint->DownloadRequest($SessionToken, $filename);
     }
 
     public function products()
@@ -71,6 +72,7 @@ class SiteController extends Controller
                 ->map(fn ($product) => [
                     'id' => $product->id,
                     'name' => $product->name,
+                    'type' => Str::slug($product->product_type->name, '-'),
                     'description' => $product->description,
                     'icon' => $product->icon,
                     'hex_color' => $product->hex_color,
@@ -85,6 +87,7 @@ class SiteController extends Controller
             'product' => [
                 'id' => $product->id,
                 'name' => $product->name,
+                'type' => Str::slug($product->product_type->name, '-'),
                 'description' => $product->description,
                 'icon' => $product->icon,
                 'hex_color' => $product->hex_color,

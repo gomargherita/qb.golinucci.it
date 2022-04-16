@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\ProductType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,6 +17,7 @@ class CreateProductsTable extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->integer('account_id')->index();
+            $table->foreignIdFor(ProductType::class)->constrained();
             $table->string('name')->unique();
             $table->text('description');
             $table->string('icon');
