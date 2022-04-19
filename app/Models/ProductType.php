@@ -10,8 +10,5 @@ class ProductType extends Model
 {
     use HasFactory;
 
-    public function type(): HasMany
-    {
-        return $this->hasMany(ProductType::class);
-    }
+    
 }
