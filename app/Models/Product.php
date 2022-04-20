@@ -38,6 +38,10 @@ class Product extends Model
         return $this->belongsTo(ProductType::class);
     }
 
+    public function productConditions(): HasMany
+    {
+        return $this->hasMany(ProductCondition::class);
+    }
 
     public function productOffers(): HasMany
     {
