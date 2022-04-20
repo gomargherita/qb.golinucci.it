@@ -1,31 +1,40 @@
 <template>
   <div class="my-8">
-    <table class="table-auto">
-      <thead>
-        <tr>
-          <th>Song</th>
-          <th>Artist</th>
-          <th>Year</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>The Sliding Mr. Bones (Next Stop, Pottersville)</td>
-          <td>Malcolm Lockyer</td>
-          <td>1961</td>
-        </tr>
-        <tr>
-          <td>Witchy Woman</td>
-          <td>The Eagles</td>
-          <td>1972</td>
-        </tr>
-        <tr>
-          <td>Shining Star</td>
-          <td>Earth, Wind, and Fire</td>
-          <td>1975</td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="offer-filters">Dynamic filters to add (related only to the offers)</div>
+    <div class="overflow-x-auto p-1 w-full">
+      <table
+        class="offer-table text-primary table-auto w-5/6 mx-auto border-collapse border border-primary shadow rounded-lg mt-8 overflow-hidden"
+      >
+        <thead class="rounded-lg">
+          <tr class="uppercase bg-primary text-white">
+            <th class="p-4 font-light"></th>
+            <th class="p-4 font-light">Massimale per Sinistro/Anno</th>
+            <th class="p-4 font-light">Franchigia</th>
+            <th class="p-4 font-light">Retroattività</th>
+            <th class="p-4 font-light">R.C. Patrimoniale</th>
+            <th class="p-4 font-light">Costo Annuo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-if="!product.offers.length">
+            <td colspan="6" class="p-4">
+              {{ __("No data") }}
+            </td>
+          </tr>
+          <tr
+            v-for="(offer, index) in product.offers"
+            class="odd:bg-white even:bg-slate-100"
+          >
+            <td class="p-4 border border-primary">{{ index }}</td>
+            <td class="p-4 border border-primary">{{ offer.product_id }}</td>
+            <td class="p-4 border border-primary">{{ offer.total_payable }}</td>
+            <td class="p-4 border border-primary">{{ offer.price_with_tax }}</td>
+            <td class="p-4 border border-primary">{{ offer.admin_fee }}</td>
+            <td class="p-4 border border-primary">{{ offer.price }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 

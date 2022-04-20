@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Library\Services\LloydsDoPrint;
+use App\Models\Account;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -67,17 +68,21 @@ class SiteController extends Controller
 
     public function products()
     {
+        // per ora estraggo solo i prodotti di golinucci
+        $account = Account::with('products');
+        $products = $account->find(1)->products
+            ->map(fn ($product) => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'type' => Str::slug($product->productType->name, '-'),
+                'description' => $product->description,
+                'icon' => $product->icon,
+                'hex_color' => $product->hex_color,
+                'deleted_at' => $product->deleted_at,
+            ]);
+
         return Inertia::render('Sites/Products', [
-            'products' => Auth::user()->account->products()->get()
-                ->map(fn ($product) => [
-                    'id' => $product->id,
-                    'name' => $product->name,
-                    'type' => Str::slug($product->product_type->name, '-'),
-                    'description' => $product->description,
-                    'icon' => $product->icon,
-                    'hex_color' => $product->hex_color,
-                    'deleted_at' => $product->deleted_at,
-                ])
+            'products' => $products
         ]);
     }
 
@@ -87,10 +92,11 @@ class SiteController extends Controller
             'product' => [
                 'id' => $product->id,
                 'name' => $product->name,
-                'type' => Str::slug($product->product_type->name, '-'),
+                'type' => Str::slug($product->productType->name, '-'),
                 'detailed_description' => $product->detailed_description,
                 'icon' => $product->icon,
                 'hex_color' => $product->hex_color,
+                'offers' => $product->productOffers,
                 'deleted_at' => $product->deleted_at,
             ]
         ]);
