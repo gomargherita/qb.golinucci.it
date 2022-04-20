@@ -97,6 +97,7 @@ class SiteController extends Controller
                 'icon' => $product->icon,
                 'hex_color' => $product->hex_color,
                 'offers' => $product->productOffers,
+                'conditions' => $product->conditionalFields,
                 'deleted_at' => $product->deleted_at,
             ]
         ]);

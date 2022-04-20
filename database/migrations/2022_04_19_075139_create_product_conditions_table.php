@@ -16,10 +16,14 @@ class CreateProductConditionsTable extends Migration
     public function up()
     {
         Schema::create('product_conditions', function (Blueprint $table) {
-            $table->id();
             $table->foreignIdFor(Product::class)->constrained();
             $table->foreignIdFor(ConditionalField::class)->constrained();
             $table->timestamps();
+
+            $table->index('product_id');
+            $table->index('conditional_field_id');
+
+            $table->primary(['product_id', 'conditional_field_id'], 'pcf_product_id_conditional_field_id_primary')->index('pcf_p_id_c_id_primary');
         });
     }
 

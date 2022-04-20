@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\ConditionalField;
 use App\Models\Product;
 use Illuminate\Database\Seeder;
 
@@ -14,7 +15,11 @@ class ProductSeeder extends Seeder
      */
     public function run()
     {
-        Product::factory()->create([
+        $conditionalFields = ConditionalField::all();
+
+        Product::factory()
+        ->hasAttached($conditionalFields)
+        ->create([
             'name' => 'Polizza Singola Medici e Personale Sanitario',
             'account_id' => '1',
             'product_type_id' => '1',
