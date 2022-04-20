@@ -45,7 +45,7 @@ body {
     }
 
     div#front-layout .gol-btn {
-        @apply w-full block py-2 text-lg font-bold shadow text-white rounded-full mt-8 [text-shadow:0_4px_8px_rgba(0,0,0,0.12)];
+        @apply w-full block py-2 text-lg font-bold shadow text-white rounded-full [text-shadow:0_4px_8px_rgba(0,0,0,0.12)];
     }
 
     hr.gol-hr {

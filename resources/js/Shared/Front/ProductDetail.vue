@@ -36,7 +36,7 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 md:gap-4">
                   <button
                     type="button"
-                    class="gol-btn text-center"
+                    class="gol-btn text-center mt-8"
                     :style="`background-color: ${product.hex_color};`"
                     @click="scrollMeTo('offers')"
                   >
@@ -44,7 +44,7 @@
                   </button>
                   <button
                     type="button"
-                    class="gol-btn text-center"
+                    class="gol-btn text-center mt-8"
                     :style="`background-color: ${product.hex_color};`"
                     @click="scrollMeTo('buy')"
                   >

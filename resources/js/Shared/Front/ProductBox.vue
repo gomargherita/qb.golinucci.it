@@ -33,7 +33,7 @@
                 </h2>
                 <div class="mt-4">{{ product.description }}</div>
                 <Link
-                  class="gol-btn"
+                  class="gol-btn mt-8"
                   :style="`background-color: ${product.hex_color};`"
                   :href="route('front.product', product.id)"
                   tabindex="-1"
