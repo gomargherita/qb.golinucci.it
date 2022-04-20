@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -32,9 +33,15 @@ class Product extends Model
         return $this->belongsTo(Account::class);
     }
 
-    public function product_type(): BelongsTo
+    public function productType(): BelongsTo
     {
         return $this->belongsTo(ProductType::class);
+    }
+
+
+    public function productOffers(): HasMany
+    {
+        return $this->hasMany(ProductOffer::class);
     }
 
     public function scopeOrderByName($query)
