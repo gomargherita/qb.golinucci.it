@@ -23,6 +23,7 @@ class CreateProductsTable extends Migration
             $table->text('detailed_description');
             $table->string('icon');
             $table->string('hex_color');
+            $table->boolean('active');
             $table->timestamps();
             $table->softDeletes();
         });

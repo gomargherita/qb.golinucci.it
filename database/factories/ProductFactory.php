@@ -19,13 +19,14 @@ class ProductFactory extends Factory
         $product_type_number = ProductType::count();
 
         return [
-            'name' => $this->faker->unique()->domainName(),
             'account_id' => $this->faker->numberBetween(1, $accounts_number),
             'product_type_id' => $this->faker->numberBetween(1, $product_type_number),
+            'name' => $this->faker->unique()->domainName(),
             'description' => $this->faker->paragraph(3),
             'detailed_description' => $this->faker->paragraph(12),
             'icon' => $this->faker->image(),
             'hex_color' => $this->faker->hexColor(),
+            'active' => $this->faker->boolean()
         ];
     }
 }

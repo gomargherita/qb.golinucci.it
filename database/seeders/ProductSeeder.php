@@ -19,6 +19,7 @@ class ProductSeeder extends Seeder
             'account_id' => '1',
             'product_type_id' => '1',
             'hex_color' => '#6CB8EB',
+            'active' => 1
         ]);
 
         Product::factory(5)
