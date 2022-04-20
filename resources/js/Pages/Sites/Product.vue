@@ -1,6 +1,6 @@
 <template>
   <Head>
-    <title>{{ __("Product") }}</title>
+    <title>{{ product.name }} - {{ __("Products") }}</title>
     <meta
       head-key="description"
       name="description"
