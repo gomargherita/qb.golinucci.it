@@ -69,9 +69,6 @@ export default {
     return {
       filter_conditions: {},
       objectToCompare: {},
-      //     1: "1",
-      //     2: "2",
-      //   },
     };
   },
   computed: {
@@ -92,6 +89,7 @@ export default {
     filter() {
       return this.product.offers.filter((offer) => {
         let conditional_fields_flag = false;
+        this.objectToCompareEdit = {};
         offer.conditional_fields.forEach((conditional_field) => {
           this.objectToCompareEdit[conditional_field.id] =
             conditional_field.pivot.selected_field_value;
