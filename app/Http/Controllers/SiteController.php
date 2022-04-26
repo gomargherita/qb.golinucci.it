@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Library\Services\LloydsDoPrint;
 use App\Models\Account;
 use App\Models\Product;
+use App\Notifications\InvoicePaid;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
@@ -52,18 +53,18 @@ class SiteController extends Controller
 
     public function testLloyds(LloydsDoPrint $lloydsDoPrint)
     {
-    //     // DoPrint Login
-    //     $SessionToken = $lloydsDoPrint->HandShake();
-    //     // Setup Policy using the xml and MD5 file hashes
-    //     // $lloydsDoPrint->ValidationRequest($SessionToken, $nextvalue . '-LB', $customer, $start_date, $end_date, $arr, $wording, $prop);
-    //     // Upload the wording
-    //     //$lloydsDoPrint->UploadRequest($SessionToken, $wording);
-    //     // Upload Proposal form
-    //     //$lloydsDoPrint->UploadRequest($SessionToken, $prop);
-    //     // Create the policy
-    //     //$lloydsDoPrint->TransactionRequest($SessionToken);
-    //     // Download the certificate
-    //     //$lloydsDoPrint->DownloadRequest($SessionToken, $filename);
+        //     // DoPrint Login
+        //     $SessionToken = $lloydsDoPrint->HandShake();
+        //     // Setup Policy using the xml and MD5 file hashes
+        //     // $lloydsDoPrint->ValidationRequest($SessionToken, $nextvalue . '-LB', $customer, $start_date, $end_date, $arr, $wording, $prop);
+        //     // Upload the wording
+        //     //$lloydsDoPrint->UploadRequest($SessionToken, $wording);
+        //     // Upload Proposal form
+        //     //$lloydsDoPrint->UploadRequest($SessionToken, $prop);
+        //     // Create the policy
+        //     //$lloydsDoPrint->TransactionRequest($SessionToken);
+        //     // Download the certificate
+        //     //$lloydsDoPrint->DownloadRequest($SessionToken, $filename);
     }
 
     public function products()
@@ -88,6 +89,8 @@ class SiteController extends Controller
 
     public function product(Product $product)
     {
+        // $invoice = 'invoice';
+        // auth()->user()->notify(new InvoicePaid($invoice));
         // TODO necessario rieseguire così le query per avere le relazioni?
         $product = $product->with('productOffers.conditionalFields')->find($product->id);
 

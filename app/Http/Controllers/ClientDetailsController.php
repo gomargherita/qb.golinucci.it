@@ -73,9 +73,11 @@ class ClientDetailsController extends Controller
 
     public function edit(ClientDetail $client_detail)
     {
+        $currentUser = Auth::user();
+
         return Inertia::render('ClientDetails/Edit', [
             // 'can' => [
-            //     'delete_client_detail' => auth()->user()->can('delete_client_detail', $client_detail)
+            //     'delete_client_detail' => $currentUser->can('client_details.delete')
             // ],
             'client_detail' => [
                 'id' => $client_detail->id,

@@ -9,8 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ClientDetail extends Model
 {
-    use HasFactory;
-    use SoftDeletes;
+    use HasFactory, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -56,6 +55,9 @@ class ClientDetail extends Model
                 ->orWhere('client_details.last_name', 'like', '%' . $search . '%')
                 ->orWhere('users.first_name', 'like', '%' . $search . '%')
                 ->orWhere('users.last_name', 'like', '%' . $search . '%');
+                // ->orWhereHas('accounts', function($query) use ($search){
+                //     $query->where('name', 'like', '%' . $search . '%');
+                // });
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {
                 $query->withTrashed();
