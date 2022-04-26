@@ -80,7 +80,6 @@ export default {
         return this.objectToCompare;
       },
       set(v) {
-        console.log("fff");
         this.objectToCompare = v;
       },
     },
@@ -94,9 +93,9 @@ export default {
           this.objectToCompareEdit[conditional_field.id] =
             conditional_field.pivot.selected_field_value;
         });
-        console.log(this.filter_conditions, this.objectToCompare);
+        // console.log(this.filter_conditions, this.objectToCompare);
         conditional_fields_flag = isEqual(this.objectToCompare, this.filter_conditions);
-        console.log("equal ", conditional_fields_flag);
+        // console.log("equal ", conditional_fields_flag);
         return conditional_fields_flag;
       });
     },
