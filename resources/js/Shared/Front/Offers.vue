@@ -35,9 +35,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-if="!product.offers.length">
+          <tr v-if="!filteredRows.length">
             <td colspan="6" class="p-4">
-              {{ __("No data") }}
+              {{ __("No available offer for this combination") }}
             </td>
           </tr>
           <tr
