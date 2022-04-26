@@ -1,21 +1,28 @@
 <template>
   <div class="my-8">
-    <div v-if="product.conditions.length" class="offer-filters grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div v-for="condition in product.conditions" class="inline-block">
-        <label v-text="condition.field_name"></label>
-        <div v-if="condition.field_type == 'select'">
-          <select :name="`condition_id_${condition.id}`">
-            <option v-for="(option_value, option_key) in JSON.parse(condition.field_value)" :value="option_key" v-text="option_value"></option>
-          </select>
+    <div v-if="conditions.length">
+      <div class="text-center">{{ __("Filtra tra le nostre offerte di polizza") }}</div>
+      <div
+        :class="`offer-filters grid grid-cols-1 md:grid-cols-${conditions.length} mx-auto text-center gap-4`"
+      >
+        <div v-for="condition in conditions" class="inline-block">
+          <label v-text="condition.field_name"></label>
+          <div v-if="condition.field_type == 'select'">
+            <select v-model="filter_conditions[condition.id]" @change="change">
+              <option
+                v-for="(option_value, option_key) in JSON.parse(condition.field_value)"
+                :value="option_key"
+                v-text="option_value"
+                :selected="option_key == 1"
+              ></option>
+            </select>
+          </div>
         </div>
-      </div>
-      <div>
-      <button type="button" as="button" class="gol-btn bg-primary mt-4">Mostra l'Offerta</button>
       </div>
     </div>
     <div class="overflow-x-auto p-1 w-full">
       <table
-        class="offer-table text-primary table-auto w-5/6 mx-auto border-collapse border border-primary shadow rounded-lg mt-8 overflow-hidden"
+        class="offer-table text-primary table-auto w-full mx-auto border-collapse border border-primary shadow rounded-lg mt-8 overflow-hidden"
       >
         <thead class="rounded-lg">
           <tr class="uppercase bg-primary text-white">
@@ -34,7 +41,7 @@
             </td>
           </tr>
           <tr
-            v-for="(offer, index) in product.offers"
+            v-for="(offer, index) in filteredRows"
             class="odd:bg-white even:bg-slate-100"
           >
             <td class="p-4 border border-primary">{{ index + 1 }}</td>
@@ -51,9 +58,53 @@
 </template>
 
 <script>
+import isEqual from "lodash/isEqual";
+
 export default {
   props: {
     product: Object,
+    conditions: Array,
+  },
+  data() {
+    return {
+      filter_conditions: {},
+      objectToCompare: {},
+      //     1: "1",
+      //     2: "2",
+      //   },
+    };
+  },
+  computed: {
+    filteredRows() {
+      return this.filter();
+    },
+    objectToCompareEdit: {
+      get() {
+        return this.objectToCompare;
+      },
+      set(v) {
+        console.log("fff");
+        this.objectToCompare = v;
+      },
+    },
+  },
+  methods: {
+    filter() {
+      return this.product.offers.filter((offer) => {
+        let conditional_fields_flag = false;
+        offer.conditional_fields.forEach((conditional_field) => {
+          this.objectToCompareEdit[conditional_field.id] =
+            conditional_field.pivot.selected_field_value;
+        });
+        console.log(this.filter_conditions, this.objectToCompare);
+        conditional_fields_flag = isEqual(this.objectToCompare, this.filter_conditions);
+        console.log("equal ", conditional_fields_flag);
+        return conditional_fields_flag;
+      });
+    },
+    change: function (evt) {
+      this.$emit("change", evt);
+    },
   },
 };
 </script>

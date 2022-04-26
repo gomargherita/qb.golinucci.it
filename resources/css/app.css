@@ -48,6 +48,14 @@ body {
         @apply w-full block py-2 text-lg font-bold shadow text-white rounded-full [text-shadow:0_4px_8px_rgba(0,0,0,0.12)];
     }
 
+    div#front-layout label{
+        @apply text-primary;
+    }
+
+    div#front-layout input, div#front-layout select  {
+        @apply rounded border border-primary text-primary;
+    }
+
     hr.gol-hr {
         @apply mt-4 w-20 mx-auto px-8 border-b-2 border-primary;
     }

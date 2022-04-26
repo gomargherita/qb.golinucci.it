@@ -61,7 +61,7 @@
 
   <div ref="offers">
     <HTwo :title="__('Our Offers')" />
-    <Offers :product="product"> </Offers>
+    <Offers :product="product" :conditions="conditions"> </Offers>
   </div>
   <div ref="buy">
     <HTwo :title="__('Buy this Product')" />
@@ -80,6 +80,7 @@ export default {
   },
   props: {
     product: Object,
+    conditions: Array,
   },
   methods: {
     scrollMeTo(refName) {

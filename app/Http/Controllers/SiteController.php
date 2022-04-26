@@ -88,6 +88,9 @@ class SiteController extends Controller
 
     public function product(Product $product)
     {
+        // TODO necessario rieseguire così le query per avere le relazioni?
+        $product = $product->with('productOffers.conditionalFields')->find($product->id);
+
         return Inertia::render('Sites/Product', [
             'product' => [
                 'id' => $product->id,
@@ -96,10 +99,10 @@ class SiteController extends Controller
                 'detailed_description' => $product->detailed_description,
                 'icon' => $product->icon,
                 'hex_color' => $product->hex_color,
-                'offers' => $product->productOffers,
-                'conditions' => $product->conditionalFields,
+                'offers' => $product->productOffers, //->with(['conditionalFields']),
                 'deleted_at' => $product->deleted_at,
-            ]
+            ],
+            'conditions' => $product->conditionalFields,
         ]);
     }
 
