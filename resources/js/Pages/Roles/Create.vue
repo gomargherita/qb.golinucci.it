@@ -12,13 +12,13 @@
             v-model="form.first_name"
             :error="form.errors.first_name"
             class="pb-8 pr-6 w-full lg:w-1/2"
-            label="First name"
+            label="First Name"
           />
           <text-input
             v-model="form.last_name"
             :error="form.errors.last_name"
             class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Last name"
+            label="Last Name"
           />
           <select-input
             v-model="form.client_detail_id"

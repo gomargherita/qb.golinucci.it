@@ -18,11 +18,12 @@ class ClientDetailFactory extends Factory
             'phone' => $this->faker->tollFreePhoneNumber,
             'first_name' => $this->faker->firstName,
             'last_name' => $this->faker->lastName,
+            'fiscal_code' => $this->faker->bothify('??????##?##?###?'),
             'address' => $this->faker->streetAddress,
             'city' => $this->faker->city,
             'region' => $this->faker->state,
             'country' => 'IT',
-            'postal_code' => $this->faker->postcode,
+            'postal_code' => $this->faker->bothify('#####'),
         ];
     }
 }

@@ -17,7 +17,7 @@
       </section>
 
       <section class="mt-1 bg-white" scroll-region>
-        <flash-messages />
+        <!-- <flash-messages /> -->
         <slot />
       </section>
       <section>

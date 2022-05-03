@@ -26,10 +26,6 @@
     "Forgot password": "Password dimenticata",
     "Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.": "Password dimenticata? Nessun problema. Inserisci il tuo indirizzo email e ti invieremo un link di reset della password che ti permetterà di sceglierne una nuova.",
     "Name": "Nome",
-    "First name": "Nome",
-    "Last name": "Cognome",
-    "City": "Città",
-    "Phone": "Telefono",
     "Browse": "Cerca",
     "Roles": "Ruoli",
     "Role": "Ruolo",
@@ -41,5 +37,14 @@
     "Discover our Offers": "Scopri le nostre Offerte",
     "Buy Now": "Acquista Ora",
     "Buy this Product": "Acquista questa Polizza",
-    "No available offer for this combination": "Nessun offerta disponibile per questa combinazione"
+    "No available offer for this combination": "Nessun offerta disponibile per questa combinazione",
+    "First Name": "First Name",
+    "Last Name": "Last Name",
+    "Fiscal Code": "Fiscal Code",
+    "Address": "Address",
+    "City": "City",
+    "Region": "Region",
+    "Postal Code": "Postal Code",
+    "Phone": "Phone",
+    "I confirm the correctness of the above data": "I confirm the correctness of the above data"
 }

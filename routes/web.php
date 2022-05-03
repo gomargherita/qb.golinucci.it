@@ -121,8 +121,11 @@ Route::controller(SiteController::class)->group(function () {
     Route::get('/user-account', 'userAccount')->name('front.useraccount')->middleware(['auth']);
     Route::get('/about-us', 'aboutUs')->name('front.aboutus');
     Route::get('/products', 'products')->name('front.products');
-    Route::get('/products/{product}', 'product')->name('front.product');
-    Route::post('/products/{product}/buy', 'buy')->name('front.buyproduct');
+    Route::get('/products/{product}', 'product')->name('front.product'); // landing e step1?
+    Route::get('/products/{product}/step1', 'step1')->name('front.product.step1')->middleware(['auth']);
+    Route::post('/products/{product}/store_step1', 'store_step1')->name('front.product.store_step1')->middleware(['auth']);
+    Route::get('/products/{product}/step2', 'step2')->name('front.product.step2')->middleware(['auth']);
+    Route::post('/products/{product}/store_step2', 'store_step2')->name('front.product.store_step2')->middleware(['auth']);
     Route::get('/test-lloyds', 'testLloyds')->name('front.testlloyds');
 });
 

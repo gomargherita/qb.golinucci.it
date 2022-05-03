@@ -65,7 +65,12 @@
   </div>
   <div ref="buy">
     <HTwo :title="__('Buy this Product')" />
-    <div>Buy</div>
+
+    <div>
+    <Link :href="route('front.product.step1', product.id)">
+        Buy this product
+        </Link>
+    </div>
   </div>
 </template>
 

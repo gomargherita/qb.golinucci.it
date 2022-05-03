@@ -26,10 +26,6 @@
     "Forgot password": "Forgot password",
     "Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.": "Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.",
     "Name": "Name",
-    "First name": "First name",
-    "Last name": "Last name",
-    "City": "City",
-    "Phone": "Phone",
     "Browse": "Browse",
     "Roles": "Roles",
     "Role": "Role",
@@ -41,5 +37,14 @@
     "Discover our Offers": "Discover our Offers",
     "Buy Now": "Buy Now",
     "Buy this Product": "Buy this Product",
-    "No available offer for this combination": "No available offer for this combination"
+    "No available offer for this combination": "No available offer for this combination",
+    "First Name": "First Name",
+    "Last Name": "Last Name",
+    "Fiscal Code": "Fiscal Code",
+    "Address": "Address",
+    "City": "City",
+    "Region": "Region",
+    "Postal Code": "Postal Code",
+    "Phone": "Phone",
+    "I confirm the correctness of the above data": "I confirm the correctness of the above data"
 }

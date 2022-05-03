@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Library\Services\LloydsDoPrint;
 use App\Models\Account;
+use App\Models\ClientDetail;
 use App\Models\Product;
 use App\Notifications\InvoicePaid;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
@@ -109,8 +111,66 @@ class SiteController extends Controller
         ]);
     }
 
-    public function buy(Product $product)
+    public function step1(Product $product)
     {
-        return Inertia::render('Sites/Product', compact('product'));
+        $user = auth()->user();
+        $clientDetails = ClientDetail::query()
+            ->where([
+                'user_id' => $user->id
+            ])->latest('id')->first();
+
+        return Inertia::render('Sites/BuyProduct', compact('product', 'clientDetails'));
+    }
+
+    public function store_step1(Product $product, Request $request)
+    {
+        $validated = $request->validate([
+            'user_id' => ['required'],
+            'first_name' => ['required'],
+            'last_name' => ['required'],
+            'fiscal_code' => ['required'],
+            'address' => ['required'],
+            'city' => ['required'],
+            'region' => ['required'],
+            'country' => ['required'],
+            'postal_code' => ['required'],
+            'phone' => ['required'],
+            'correctness_of_data' => ['required']
+        ]);
+
+        ClientDetail::create($validated);
+
+        return redirect()->route('front.product.step2', compact('product'));
+    }
+
+    public function step2(Product $product)
+    {
+        $user = auth()->user();
+        $clientDetails = ClientDetail::query()
+            ->where([
+                'user_id' => $user->id
+            ])->latest('id')->first();
+
+        return Inertia::render('Sites/BuyProduct', compact('product', 'clientDetails'));
+    }
+
+    public function store_step2(Request $request)
+    {
+        $validated = $request->validate([
+            'first_name' => ['required'],
+            'last_name' => ['required'],
+            'fiscal_code' => ['required'],
+            'address' => ['required'],
+            'region' => ['required'],
+            'postal_code' => ['required'],
+            'phone' => ['required'],
+            'qualification' => ['required'],
+            'authority' => ['required'],
+            'correctness_of_data' => ['required']
+        ]);
+
+        ClientDetail::create($validated);
+
+        return redirect()->route('front.product.step2');
     }
 }
