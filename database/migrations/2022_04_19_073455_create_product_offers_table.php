@@ -25,6 +25,8 @@ class CreateProductOffersTable extends Migration
             $table->decimal('tax');
             $table->decimal('price');
             $table->text('description');
+            $table->integer('indemnity_limit');
+            $table->tinyInteger('months')->unsigned();
             $table->boolean('active');
             $table->timestamps();
             $table->softDeletes();

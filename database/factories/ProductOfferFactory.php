@@ -28,6 +28,8 @@ class ProductOfferFactory extends Factory
             'tax' => $this->faker->numberBetween(0, 30000),
             'price' => $this->faker->numberBetween(0, 30000),
             'description' => $this->faker->paragraph(3),
+            'indemnity_limit' => $this->faker->numberBetween(0, 10000000),
+            'months' => $this->faker->numberBetween(1, 12),
             'active' => $this->faker->boolean(),
         ];
     }

@@ -67,9 +67,12 @@
     <HTwo :title="__('Buy this Product')" />
 
     <div>
-    <Link :href="route('front.product.step1', product.id)">
-        Buy this product
-        </Link>
+      <Link
+        :href="route('front.product.step1', product.id)"
+        class="gol-btn my-8 bg-primary text-center"
+      >
+        {{ __('Buy this Product') }}
+      </Link>
     </div>
   </div>
 </template>

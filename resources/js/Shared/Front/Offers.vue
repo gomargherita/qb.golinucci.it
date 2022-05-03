@@ -37,12 +37,12 @@
         <tbody>
           <tr v-if="!filteredRows.length">
             <td colspan="6" class="p-4">
-              {{ __("No available offer for this combination") }}
+              {{ __("Select a combination using filters above") }}
             </td>
           </tr>
           <tr
             v-for="(offer, index) in filteredRows"
-            class="odd:bg-white even:bg-slate-100"
+            class="odd:bg-white even:bg-slate-100 uppercase"
           >
             <td class="p-4 border border-primary">{{ index + 1 }}</td>
             <td class="p-4 border border-primary">{{ offer.product_id }}</td>
