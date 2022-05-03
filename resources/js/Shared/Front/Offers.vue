@@ -1,5 +1,5 @@
 <template>
-  <div class="my-8">
+  <div class="mt-8">
     <div v-if="conditions.length">
       <div class="text-center">{{ __("Filtra tra le nostre offerte di polizza") }}</div>
       <div
@@ -27,10 +27,14 @@
         <thead class="rounded-lg">
           <tr class="uppercase bg-primary text-white">
             <th class="p-4 font-light"></th>
-            <th class="p-4 font-light">Massimale per Sinistro/Anno</th>
+            <th class="p-4 font-light">
+              Massimale per Danni Materiali e Immateriali per la Professione Sanitaria
+            </th>
+            <th class="p-4 font-light">
+              Massimale R.C Patrimoniale da funzioni di carattere amminstrativo e/o
+              organizzativo
+            </th>
             <th class="p-4 font-light">Franchigia</th>
-            <th class="p-4 font-light">Retroattività</th>
-            <th class="p-4 font-light">R.C. Patrimoniale</th>
             <th class="p-4 font-light">Costo Annuo</th>
           </tr>
         </thead>
@@ -45,15 +49,43 @@
             class="odd:bg-white even:bg-slate-100 uppercase"
           >
             <td class="p-4 border border-primary">{{ index + 1 }}</td>
-            <td class="p-4 border border-primary">{{ offer.product_id }}</td>
-            <td class="p-4 border border-primary">{{ offer.total_payable }}</td>
-            <td class="p-4 border border-primary">{{ offer.price_with_tax }}</td>
-            <td class="p-4 border border-primary">{{ offer.admin_fee }}</td>
-            <td class="p-4 border border-primary">{{ offer.price }}</td>
+            <td class="p-4 border border-primary" v-text="$filters.formatPrice(offer.indemnity_limit)"></td>
+            <td class="p-4 border border-primary" v-text="$filters.formatPrice(1000000)"></td>
+            <!-- TODO Massimale RC Patrimoniale solo per i rinnovi 1.000.000, i nuovi è 500.000 -->
+            <td class="p-4 border border-primary">Zero</td>
+            <td class="p-4 border border-primary" v-text="$filters.formatPrice(parseFloat(offer.total_payable))"></td>
           </tr>
         </tbody>
       </table>
     </div>
+  </div>
+  <div class="my-8">
+    <p>
+      La polizza è aggiornata alle disposizioni contenute nella Legge 24/17 (Legge Gelli),
+      prevede:
+    </p>
+    <ol class="list-decimal list-inside">
+      <li>
+        <b>Apertura del sinistro fin dalla ricezione di comunicazione</b> da parte
+        dell’Azienda di appartenenza, riguardante l’inizio delle trattative stragiudiziali
+        con il paziente ai sensi dell’<b>art. 13 della Legge Gelli</b>, con maggiore
+        tutela dell’assicurato in quanto non deve aspettare anni per dare comunicazione
+        dell’eventuale ricezione di un “invito a dedurre” da parte della Corte dei Conti o
+        altro tribunale competente.
+      </li>
+      <li>
+        <b>Copertura per i danni di natura patrimoniale</b> (non lesioni a persona ma di
+        natura “immateriale”) <b>inclusa la violazione privacy</b>.
+      </li>
+      <li>
+        <b>Continuità assicurativa</b>: l’effettiva retroattività della copertura è di 10
+        anni + i precedenti anni di copertura con Golinucci Srl.
+      </li>
+      <li>
+        Previsione di una <b>copertura “postuma” di ultra attività di 10 anni</b>, da
+        attivare alla cessazione del rapporto di lavoro dipendente.
+      </li>
+    </ol>
   </div>
 </template>
 

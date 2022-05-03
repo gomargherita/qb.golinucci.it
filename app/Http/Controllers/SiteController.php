@@ -71,7 +71,8 @@ class SiteController extends Controller
 
     public function products()
     {
-        // per ora estraggo solo i prodotti di golinucci
+        // TODO rendere dinamica questa sezione
+        // Per ora estraggo solo i prodotti di golinucci
         $account = Account::with('products');
         $products = $account->find(1)->products
             ->map(fn ($product) => [
@@ -104,7 +105,7 @@ class SiteController extends Controller
                 'detailed_description' => $product->detailed_description,
                 'icon' => $product->icon,
                 'hex_color' => $product->hex_color,
-                'offers' => $product->productOffers, //->with(['conditionalFields']),
+                'offers' => $product->productOffers,
                 'deleted_at' => $product->deleted_at,
             ],
             'conditions' => $product->conditionalFields,
@@ -120,6 +121,23 @@ class SiteController extends Controller
             ])->latest('id')->first();
 
         return Inertia::render('Sites/BuyProduct', compact('product', 'clientDetails'));
+
+        // return Inertia::render('Sites/BuyProduct', [
+        //     [
+        //         'product' => [
+        //             'id' => $product->id,
+        //             'name' => $product->name,
+        //             'type' => Str::slug($product->productType->name, '-'),
+        //             'detailed_description' => $product->detailed_description,
+        //             'icon' => $product->icon,
+        //             'hex_color' => $product->hex_color,
+        //             'offers' => $product->productOffers, //->with(['conditionalFields']),
+        //             'deleted_at' => $product->deleted_at,
+        //         ],
+        //         'conditions' => $product->conditionalFields,
+        //         'clientDetails' => $clientDetails
+        //     ]
+        // ]);
     }
 
     public function store_step1(Product $product, Request $request)
@@ -135,8 +153,18 @@ class SiteController extends Controller
             'country' => ['required'],
             'postal_code' => ['required'],
             'phone' => ['required'],
-            'correctness_of_data' => ['required']
+            'confirmation' => ['required']
         ]);
+
+        // TODO salvo una nuova anagrafica solo se vengono cambiati i dati
+        // $user = auth()->user();
+        // $clientDetails = ClientDetail::query()
+        //     ->where([
+        //         'user_id' => $user->id
+        //     ])->latest('id')->first();
+        // if ($clientDetails->isDirty()) {
+        // ClientDetail::create($validated);
+        // }
 
         ClientDetail::create($validated);
 
@@ -154,7 +182,7 @@ class SiteController extends Controller
         return Inertia::render('Sites/BuyProduct', compact('product', 'clientDetails'));
     }
 
-    public function store_step2(Request $request)
+    public function store_step2(Product $product, Request $request)
     {
         $validated = $request->validate([
             'first_name' => ['required'],
@@ -173,4 +201,59 @@ class SiteController extends Controller
 
         return redirect()->route('front.product.step2');
     }
+
+    public function step3(Product $product)
+    {
+        return Inertia::render('Sites/BuyProduct', compact('product'));
+    }
+
+    public function store_step3(Product $product, Request $request)
+    {
+        $validated = $request->validate([]);
+
+        return redirect()->route('front.product.step3');
+    }
+
+    // public function step4(Product $product)
+    // {
+    //     return Inertia::render('Sites/BuyProduct', compact('product'));
+    // }
+
+    // public function store_step4(Product $product, Request $request)
+    // {
+    //     $validated = $request->validate([
+
+    //     ]);
+
+    //     return redirect()->route('front.product.step3');
+    // }
+
+    // public function step5(Product $product)
+    // {
+    //     return Inertia::render('Sites/BuyProduct', compact('product'));
+    // }
+
+    // public function store_step5(Product $product, Request $request)
+    // {
+    //     $validated = $request->validate([
+
+    //     ]);
+
+    //     return redirect()->route('front.product.step3');
+    // }
+
+    // public function step6(Product $product)
+    // {
+    //     return Inertia::render('Sites/BuyProduct', compact('product'));
+    // }
+
+    // public function store_step6(Product $product, Request $request)
+    // {
+    //     $validated = $request->validate([
+
+    //     ]);
+
+    //     return redirect()->route('front.product.step3');
+    // }
+
 }

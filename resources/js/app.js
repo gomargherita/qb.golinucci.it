@@ -16,15 +16,29 @@ createInertiaApp({
         return page;
     },
     setup({ el, app, props, plugin }) {
-        return createApp({ render: () => h(app, props) })
+        const appp = createApp({ render: () => h(app, props) })
             .use(plugin)
             // make Link a global component
             .component('Head', Head)
             .component('Link', Link)
             .component('Icon', Icon)
             .mixin({ methods: { route } })
-            .mixin(require('./lang'))
-            .mount(el);
+            .mixin(require('./lang'));
+        appp.config.globalProperties.$filters = {
+            formatPrice(value) {
+                if (typeof value !== "number") {
+                    return value;
+                }
+                const formatter = new Intl.NumberFormat("it-IT", {
+                    style: "currency",
+                    currency: "EUR",
+                    minimumFractionDigits: 2,
+                });
+                return formatter.format(value);
+            },
+        }
+
+        return appp.mount(el);
     },
 });
 
