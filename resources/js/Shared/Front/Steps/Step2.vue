@@ -1,7 +1,7 @@
 <template>
-  <Head title="Client Detail" />
+  <Head :title="__('Scelta Polizza e Tempi')" />
   <HTwo :title="__('Scelta Polizza e Tempi')" />
-  <Offers :product="product" :conditions="conditions"> </Offers>
+  <!-- <Offers :product="product" :conditions="conditions"> </Offers> -->
 </template>
 
 <script>

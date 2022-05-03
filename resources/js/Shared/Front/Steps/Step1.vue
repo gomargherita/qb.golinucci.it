@@ -1,6 +1,6 @@
 <template>
-  <Head title="Client Details" />
-  <HTwo :title="__('Client Details')" />
+  <Head :title="__('Client detail')" />
+  <HTwo :title="__('Client detail')" />
 
   <BreezeValidationErrors class="mb-4" />
 
@@ -155,6 +155,7 @@ export default {
         this.route("front.product.store_step1", this.$page.props.product.id),
         {
           // onSuccess: () => this.form.reset('password', 'password_confirmation'),
+          preserveScroll: (page) => Object.keys(page.props.errors).length,
         }
       );
     },
