@@ -38,13 +38,13 @@
     "Buy Now": "Acquista Ora",
     "Buy this Product": "Acquista questa Polizza",
     "No available offer for this combination": "Nessun offerta disponibile per questa combinazione",
-    "First Name": "First Name",
-    "Last Name": "Last Name",
-    "Fiscal Code": "Fiscal Code",
-    "Address": "Address",
-    "City": "City",
-    "Region": "Region",
-    "Postal Code": "Postal Code",
-    "Phone": "Phone",
-    "I confirm the correctness of the above data": "I confirm the correctness of the above data"
+    "First Name": "Nome",
+    "Last Name": "Cognome",
+    "Fiscal Code": "Codice Fiscale",
+    "Address": "Indirizzo",
+    "City": "Città",
+    "Region": "Provincia",
+    "Postal Code": "CAP",
+    "Phone": "Telefono",
+    "I confirm the correctness of the above data": "Confermo la correttezza dei dati inseriti"
 }
