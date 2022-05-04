@@ -49,44 +49,26 @@
             class="odd:bg-white even:bg-slate-100 uppercase"
           >
             <td class="p-4 border border-primary">{{ index + 1 }}</td>
-            <td class="p-4 border border-primary" v-text="$filters.formatPrice(offer.indemnity_limit)"></td>
-            <td class="p-4 border border-primary" v-text="$filters.formatPrice(1000000)"></td>
+            <td
+              class="p-4 border border-primary"
+              v-text="$filters.formatPrice(offer.indemnity_limit)"
+            ></td>
+            <td
+              class="p-4 border border-primary"
+              v-text="$filters.formatPrice(1000000)"
+            ></td>
             <!-- TODO Massimale RC Patrimoniale solo per i rinnovi 1.000.000, i nuovi è 500.000 -->
             <td class="p-4 border border-primary">Zero</td>
-            <td class="p-4 border border-primary" v-text="$filters.formatPrice(parseFloat(offer.total_payable))"></td>
+            <td
+              class="p-4 border border-primary"
+              v-text="$filters.formatPrice(parseFloat(offer.total_payable))"
+            ></td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
-  <div class="my-8">
-    <p>
-      La polizza è aggiornata alle disposizioni contenute nella Legge 24/17 (Legge Gelli),
-      prevede:
-    </p>
-    <ol class="list-decimal list-inside">
-      <li>
-        <b>Apertura del sinistro fin dalla ricezione di comunicazione</b> da parte
-        dell’Azienda di appartenenza, riguardante l’inizio delle trattative stragiudiziali
-        con il paziente ai sensi dell’<b>art. 13 della Legge Gelli</b>, con maggiore
-        tutela dell’assicurato in quanto non deve aspettare anni per dare comunicazione
-        dell’eventuale ricezione di un “invito a dedurre” da parte della Corte dei Conti o
-        altro tribunale competente.
-      </li>
-      <li>
-        <b>Copertura per i danni di natura patrimoniale</b> (non lesioni a persona ma di
-        natura “immateriale”) <b>inclusa la violazione privacy</b>.
-      </li>
-      <li>
-        <b>Continuità assicurativa</b>: l’effettiva retroattività della copertura è di 10
-        anni + i precedenti anni di copertura con Golinucci Srl.
-      </li>
-      <li>
-        Previsione di una <b>copertura “postuma” di ultra attività di 10 anni</b>, da
-        attivare alla cessazione del rapporto di lavoro dipendente.
-      </li>
-    </ol>
-  </div>
+  <div class="my-8" v-html="product.conditions"></div>
 </template>
 
 <script>

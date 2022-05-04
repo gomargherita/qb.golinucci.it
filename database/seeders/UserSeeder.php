@@ -65,27 +65,27 @@ class UserSeeder extends Seeder
                 $clientDetail->update(['user_id' => $users->random()->id]);
             });
 
-        // new account for agents
-        $account_ext = Account::create(['name' => 'Prisma Broker']);
+        // // new account for agents
+        // $account_ext = Account::create(['name' => 'Prisma Broker']);
 
-        User::factory()->create([
-            'account_id' => $account_ext->id,
-            'email' => 'masiorama+prisma@gmail.com',
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
-            'owner' => true,
-        ]);
+        // User::factory()->create([
+        //     'account_id' => $account_ext->id,
+        //     'email' => 'masiorama+prisma@gmail.com',
+        //     'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+        //     'owner' => true,
+        // ]);
 
-        // create agent clients
-        $users_ext = User::factory(21)->create([
-            'account_id' => $account_ext->id,
-            'owner' => false,
-        ]);
+        // // create agent clients
+        // $users_ext = User::factory(21)->create([
+        //     'account_id' => $account_ext->id,
+        //     'owner' => false,
+        // ]);
 
-        ClientDetail::factory(25)
-            ->create()
-            ->each(function ($clientDetail) use ($users_ext) {
-                $clientDetail->update(['user_id' => $users_ext->random()->id]);
-            });
+        // ClientDetail::factory(25)
+        //     ->create()
+        //     ->each(function ($clientDetail) use ($users_ext) {
+        //         $clientDetail->update(['user_id' => $users_ext->random()->id]);
+        //     });
 
 
         // first will be our superadmin

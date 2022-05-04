@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Models\Product;
+use App\Models\ProductType;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -28,7 +31,7 @@ class ProductController extends Controller
                 ->through(fn ($product) => [
                     'id' => $product->id,
                     'name' => $product->name,
-                    'type' =>  $product->product_type->name,
+                    'type' =>  $product->productType->name,
                     'deleted_at' => $product->deleted_at,
                 ]),
         ]);
@@ -41,7 +44,8 @@ class ProductController extends Controller
      */
     public function create()
     {
-        //
+        $product_types = ProductType::all();
+        return Inertia::render('Products/Create', compact('product_types'));
     }
 
     /**
@@ -52,18 +56,10 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
-        //
-    }
+        Auth::user()->account->products()->create($request->validated());
+        $icon = Request::file('icon') ? Request::file('icon')->store('products') : null;
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Product $product)
-    {
-        //
+        return Redirect::route('products')->with('success', 'Product created.');
     }
 
     /**
@@ -74,7 +70,24 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        //
+        $product_types = ProductType::all();
+
+        return Inertia::render('Products/Edit', [
+            'product' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'description' => $product->description,
+                'detailed_description' => $product->detailed_description,
+                'conditions' => $product->conditions,
+                'hex_color' => $product->hex_color,
+                'owner' => $product->owner,
+                'active' => $product->active,
+                'icon' => $product->icon ? URL::route('image', ['path' => $product->icon, 'w' => 40, 'h' => 40, 'fit' => 'crop']) : null,
+                'product_type_id' => $product->productType()->first()->id,
+                'deleted_at' => $product->deleted_at,
+            ],
+            'product_types' => $product_types
+        ]);
     }
 
     /**
@@ -86,7 +99,14 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request, Product $product)
     {
-        //
+        $product->update($request->validated());
+
+        // TODO fare il sync con tutte le entità necessarie, tipo offerte, ecc
+        // if ($request->get('role')) {
+        //     $user->syncRoles($request->get('role'));
+        // }
+
+        return Redirect::back()->with('success', 'Product updated.');
     }
 
     /**
@@ -97,6 +117,15 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        $product->delete();
+
+        return Redirect::back()->with('success', 'Product deleted.');
+    }
+
+    public function restore(Product $product)
+    {
+        $product->restore();
+
+        return Redirect::back()->with('success', 'Product restored.');
     }
 }

@@ -24,10 +24,36 @@ class ProductSeeder extends Seeder
             'account_id' => '1',
             'product_type_id' => '1',
             'hex_color' => '#6CB8EB',
+            'conditions' => '<p>
+            La polizza è aggiornata alle disposizioni contenute nella Legge 24/17 (Legge Gelli),
+            prevede:
+          </p>
+          <ol class="list-decimal list-inside">
+            <li>
+              <b>Apertura del sinistro fin dalla ricezione di comunicazione</b> da parte
+              dell’Azienda di appartenenza, riguardante l’inizio delle trattative stragiudiziali
+              con il paziente ai sensi dell’<b>art. 13 della Legge Gelli</b>, con maggiore
+              tutela dell’assicurato in quanto non deve aspettare anni per dare comunicazione
+              dell’eventuale ricezione di un “invito a dedurre” da parte della Corte dei Conti o
+              altro tribunale competente.
+            </li>
+            <li>
+              <b>Copertura per i danni di natura patrimoniale</b> (non lesioni a persona ma di
+              natura “immateriale”) <b>inclusa la violazione privacy</b>.
+            </li>
+            <li>
+              <b>Continuità assicurativa</b>: l’effettiva retroattività della copertura è di 10
+              anni + i precedenti anni di copertura con Golinucci Srl.
+            </li>
+            <li>
+              Previsione di una <b>copertura “postuma” di ultra attività di 10 anni</b>, da
+              attivare alla cessazione del rapporto di lavoro dipendente.
+            </li>
+          </ol>',
             'active' => 1
         ]);
 
-        Product::factory(5)
-            ->create();
+        // Product::factory(5)
+        //     ->create();
     }
 }

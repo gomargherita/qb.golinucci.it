@@ -58,7 +58,6 @@
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Role"
           >
-            <option></option>
             <option
               v-for="role in roles"
               :value="role.name"

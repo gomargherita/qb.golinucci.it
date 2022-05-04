@@ -1,71 +1,112 @@
 <template>
-    <Head title="Reset Password" />
+  <Head title="Reset Password" />
+  <div class="flex items-center justify-center p-6 min-h-screen bg-primary-800">
+    <div class="w-full max-w-md">
+      <icon
+        name="golinucci-logo"
+        class="block mx-auto w-full max-w-xs fill-white"
+        height="50"
+      />
 
-    <BreezeValidationErrors class="mb-4" />
+      <div class="my-8 text-sm text-gray-600">
+        {{
+          __(
+            "Choose you new password"
+          )
+        }}
+      </div>
 
-    <form @submit.prevent="submit">
+      <BreezeValidationErrors class="mb-4" />
+
+      <form @submit.prevent="submit">
         <div>
-            <BreezeLabel for="email" value="Email" />
-            <BreezeInput id="email" type="email" class="mt-1 block w-full" v-model="form.email" required autofocus autocomplete="username" />
+          <TextInput
+            id="email"
+            type="email"
+            class="mt-1 block w-full"
+            v-model="form.email"
+            label="Email"
+            required
+            autofocus
+            autocomplete="username"
+          />
         </div>
 
         <div class="mt-4">
-            <BreezeLabel for="password" value="Password" />
-            <BreezeInput id="password" type="password" class="mt-1 block w-full" v-model="form.password" required autocomplete="new-password" />
+          <TextInput
+            id="password"
+            type="password"
+            class="mt-1 block w-full"
+            label="Password"
+            v-model="form.password"
+            required
+            autocomplete="new-password"
+          />
         </div>
 
         <div class="mt-4">
-            <BreezeLabel for="password_confirmation" value="Confirm Password" />
-            <BreezeInput id="password_confirmation" type="password" class="mt-1 block w-full" v-model="form.password_confirmation" required autocomplete="new-password" />
+          <TextInput
+            id="password_confirmation"
+            type="password"
+            class="mt-1 block w-full"
+            label="Confirm Password"
+            v-model="form.password_confirmation"
+            required
+            autocomplete="new-password"
+          />
         </div>
 
         <div class="flex items-center justify-end mt-4">
-            <BreezeButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                Reset Password
-            </BreezeButton>
+          <loading-button
+            :loading="form.processing"
+            class="btn-gol-primary ml-auto"
+            type="submit"
+            :disabled="form.processing"
+          >
+            {{ __("Reset Password") }}
+          </loading-button>
         </div>
-    </form>
+      </form>
+    </div>
+  </div>
 </template>
 
 <script>
-import BreezeButton from '@/Shared/Button.vue'
-import BreezeGuestLayout from '@/Shared/Guest.vue'
-import BreezeInput from '@/Shared/TextInput.vue'
-import BreezeLabel from '@/Shared/Label.vue'
-import BreezeValidationErrors from '@/Shared/ValidationErrors.vue'
+import EmptyLayout from "@/Shared/Layouts/EmptyLayout";
+import TextInput from "@/Shared/TextInput.vue";
+import LoadingButton from "@/Shared/LoadingButton";
+import BreezeValidationErrors from "@/Shared/ValidationErrors.vue";
 
 export default {
-    layout: BreezeGuestLayout,
+  layout: EmptyLayout,
+  components: {
+    LoadingButton,
+    TextInput,
+    BreezeValidationErrors,
+  },
 
-    components: {
-        BreezeButton,
-        BreezeInput,
-        BreezeLabel,
-        BreezeValidationErrors,
+  props: {
+    email: String,
+    token: String,
+  },
+
+  data() {
+    return {
+      form: this.$inertia.form({
+        token: this.token,
+        email: this.email,
+        password: "",
+        password_confirmation: "",
+      }),
+    };
+  },
+
+  methods: {
+    submit() {
+      this.form.post(this.route("password.update"), {
+        onFinish: () => this.form.reset("password", "password_confirmation"),
+      });
     },
-
-    props: {
-        email: String,
-        token: String,
-    },
-
-    data() {
-        return {
-            form: this.$inertia.form({
-                token: this.token,
-                email: this.email,
-                password: '',
-                password_confirmation: '',
-            })
-        }
-    },
-
-    methods: {
-        submit() {
-            this.form.post(this.route('password.update'), {
-                onFinish: () => this.form.reset('password', 'password_confirmation'),
-            })
-        }
-    }
-}
+  },
+};
 </script>

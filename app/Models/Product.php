@@ -20,7 +20,10 @@ class Product extends Model
         'name',
         'description',
         'detailed_description',
+        'product_type_id',
+        'conditions',
         'hex_color',
+        'active',
         'icon',
     ];
 

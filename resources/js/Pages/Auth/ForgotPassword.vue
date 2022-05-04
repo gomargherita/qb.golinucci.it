@@ -11,7 +11,7 @@
       <div class="my-8 text-sm text-gray-600">
         {{
           __(
-            "Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one."
+            "Forgot your password? Just let us know your email address and we will email you a password reset link that will allow you to choose a new one."
           )
         }}
       </div>
@@ -29,6 +29,7 @@
             type="email"
             class="mt-1 block w-full"
             v-model="form.email"
+            :error="form.errors.email"
             label="Email"
             required
             autofocus

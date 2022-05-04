@@ -21,6 +21,7 @@ class CreateProductsTable extends Migration
             $table->string('name')->unique();
             $table->text('description');
             $table->text('detailed_description');
+            $table->text('conditions');
             $table->string('icon');
             $table->string('hex_color');
             $table->boolean('active');
