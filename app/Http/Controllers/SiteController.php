@@ -275,16 +275,10 @@ class SiteController extends Controller
             'country' => ['required'],
             'postal_code' => ['required'],
             'phone' => ['required'],
-            'confirmation' => ['required', 'boolean']
+            'confirmation' => ['accepted']
         ]);
 
-        $clientDetail = ClientDetail::query()
-            ->where(['user_id' => $user->id]);
-        if ($clientDetail) {
-            $clientDetail->update($validated);
-        } else {
-            ClientDetail::create($validated);
-        }
+        ClientDetail::updateOrCreate($validated);
 
         $cart->product_step_id = 2;
         $cart->save();
@@ -292,26 +286,35 @@ class SiteController extends Controller
         return redirect()->route('front.product.buy', compact('product', 'cart'));
     }
 
-    public function store_step2(Product $product, Request $request)
+    public function store_step2(Product $product, Cart $cart, Request $request)
     {
+        $user = auth()->user();
+
+        if (!empty($cart)) {
+            // recupero il carrello verificando se è ancora attivo
+            $cart = Cart::query()
+                ->where([
+                    'user_id' => $user->id,
+                    'cart_ref' => $cart->cart_ref,
+                    'locked' => 'N'
+                ])->first();
+        }
+
+        if (empty($cart)) {
+            redirect()->route('front.product.buy', ['product' => $product]);
+        }
+
         $validated = $request->validate([
-            'first_name' => ['required'],
-            'last_name' => ['required'],
-            'fiscal_code' => ['required'],
-            'address' => ['required'],
-            'region' => ['required'],
-            'postal_code' => ['required'],
-            'phone' => ['required'],
-            'qualification' => ['required'],
-            'authority' => ['required'],
+            'product_offer_id_selected' => ['required','integer'],
         ]);
 
-        ClientDetail::create($validated);
+        $cart->product_step_id = 3;
+        $cart->save();
 
-        return redirect()->route('front.product.step2');
+        return redirect()->route('front.product.buy', compact('product', 'cart'));
     }
 
-    
+
 
     public function store_step3(Product $product, Request $request)
     {
