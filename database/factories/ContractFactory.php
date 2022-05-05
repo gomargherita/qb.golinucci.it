@@ -14,7 +14,7 @@ class ContractFactory extends Factory
     public function definition()
     {
         return [
-            'contract_filepath' => $this->faker->file(),
+            'contract_filepath' => $this->faker->filePath(), //(storage_path('files/uploads'), public_path('files/uploads'), false),
             'contract_prop' => null
         ];
     }

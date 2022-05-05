@@ -28,4 +28,9 @@ class ProductOffer extends Model
         ->withPivot('selected_field_value')
         ->withTimestamps();
     }
+
+    public function contract(): BelongsTo
+    {
+        return $this->belongsTo(Contract::class);
+    }
 }

@@ -96,7 +96,10 @@ class SiteController extends Controller
         // $invoice = 'invoice';
         // auth()->user()->notify(new InvoicePaid($invoice));
         // TODO necessario rieseguire così le query per avere le relazioni?
-        $product = $product->with('productOffers.conditionalFields')->find($product->id);
+        $product = $product->with([
+            'productOffers.conditionalFields',
+            'productOffers.contract',
+        ])->find($product->id);
 
         return Inertia::render('Sites/Product', [
             'product' => [
@@ -255,8 +258,6 @@ class SiteController extends Controller
 
         return redirect()->route('front.product.buy', compact('product', 'cart'));
     }
-
-   
 
     public function store_step2(Product $product, Request $request)
     {
