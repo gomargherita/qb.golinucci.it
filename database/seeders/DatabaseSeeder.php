@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             ConditionalFieldSeeder::class,
             ProductSeeder::class,
             ProductOfferSeeder::class,
+            ProductStepSeeder::class,
             ProductDeclarationSeeder::class,
         ]);
     }
