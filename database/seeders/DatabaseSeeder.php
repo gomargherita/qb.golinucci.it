@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             ProductTypeSeeder::class,
             ConditionalFieldSeeder::class,
             ProductSeeder::class,
+            PaymentGatewaySeeder::class,
             ContractSeeder::class,
             ProductOfferSeeder::class,
             ProductStepSeeder::class,
