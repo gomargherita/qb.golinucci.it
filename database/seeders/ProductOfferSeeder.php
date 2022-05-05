@@ -631,8 +631,16 @@ class ProductOfferSeeder extends Seeder
         ];
 
         foreach ($productOffers as $productOffer) {
+
+            if ($productOffer['product_group'] == 6) {
+                $contract_id = 1;
+            } else if ($productOffer['product_group'] == 8) {
+                $contract_id = 2;
+            }
+
             $productOfferCreated = ProductOffer::factory()->create([
                 'product_id' => 1,
+                'contract_id' => $contract_id,
                 'name' => $productOffer['product_name'],
                 'total_payable' => $productOffer['total_payable'],
                 'admin_fee' => $productOffer['admin_fee'],

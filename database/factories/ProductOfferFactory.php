@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\ConditionalField;
+use App\Models\Contract;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -16,12 +17,14 @@ class ProductOfferFactory extends Factory
     public function definition()
     {
         $products_number = Product::count();
-        $conditional_fields_number = ConditionalField::count();
+        $contracts_number = Contract::count();
+        //$conditional_fields_number = ConditionalField::count();
 
         return [
             'name' => $this->faker->unique()->domainName(),
             'sku' => $this->faker->ean13(),
             'product_id' => $this->faker->numberBetween(1, $products_number),
+            'contract_id' => $this->faker->numberBetween(1, $contracts_number),
             'total_payable' => $this->faker->numberBetween(0, 30000),
             'admin_fee' => $this->faker->numberBetween(0, 30000),
             'gross_premium' => $this->faker->numberBetween(0, 30000),

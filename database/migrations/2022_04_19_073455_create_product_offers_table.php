@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Contract;
 use App\Models\Product;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -17,6 +18,7 @@ class CreateProductOffersTable extends Migration
         Schema::create('product_offers', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Product::class)->constrained();
+            $table->foreignIdFor(Contract::class)->constrained();
             $table->string('name')->unique();
             $table->string('sku');
             $table->decimal('total_payable'); // quanto il cliente paga

@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             ProductTypeSeeder::class,
             ConditionalFieldSeeder::class,
             ProductSeeder::class,
+            ContractSeeder::class,
             ProductOfferSeeder::class,
             ProductStepSeeder::class,
             ProductDeclarationSeeder::class,
