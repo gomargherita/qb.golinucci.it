@@ -24,6 +24,7 @@ class ClientDetailFactory extends Factory
             'region' => $this->faker->state,
             'country' => 'IT',
             'postal_code' => $this->faker->bothify('#####'),
+            'confirmation' => false
         ];
     }
 }

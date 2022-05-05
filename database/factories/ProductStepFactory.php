@@ -18,7 +18,7 @@ class ProductStepFactory extends Factory
 
         return [
             'product_id' => $this->faker->numberBetween(1, $products_number),
-            'step_number' => $this->faker->integer()
+            'step_number' => $this->faker->numberBetween(1, 6)
         ];
     }
 }

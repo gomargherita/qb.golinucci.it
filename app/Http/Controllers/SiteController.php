@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Library\Services\LloydsDoPrint;
 use App\Models\Account;
+use App\Models\Cart;
 use App\Models\ClientDetail;
 use App\Models\Product;
 use App\Notifications\InvoicePaid;
@@ -113,7 +114,64 @@ class SiteController extends Controller
         ]);
     }
 
-    public function step1(Product $product)
+    // contiene lo step successivo passo $product Cart $cart
+    public function buy(Product $product, Cart $cart = null)
+    {
+        $user = auth()->user();
+
+        if (!empty($cart)) {
+            // recupero il carrello verificando se è ancora attivo
+            $cart = Cart::query()
+                ->where([
+                    'user_id' => $user->id,
+                    'cart_ref' => $cart->cart_ref,
+                    'locked' => 'N'
+                ])->first();
+
+            // verifico se il carrello esiste o è ancora attivo altrimenti forzo a null per crearne uno nuovo
+            if (empty($cart)) {
+                return redirect()->route('front.product.buy', ['product' => $product, 'cart' => null]);
+            } else {
+                $next_step = $cart->product_step_id;
+
+                switch ($next_step) {
+                    case 1:
+                        return $this->step1($product, $cart);
+                        break;
+                    case 2:
+                        return $this->step2($product, $cart);
+                        break;
+                    case 3:
+                        return $this->step3($product, $cart);
+                        break;
+                    case 4:
+                        return $this->step4($product, $cart);
+                        break;
+                    case 5:
+                        return $this->step5($product, $cart);
+                        break;
+                    case 6:
+                        return $this->step6($product, $cart);
+                        break;
+                }
+            }
+        } else {
+            // se cart assente o locked, genero un cart ref e creo il carrello
+            $cart = Cart::create([
+                'user_id' => $user->id,
+                'product_id' => $product->id,
+                'product_step_id' => 1,
+                'cart_start_time' => now(),
+                'cart_expiry_time' => now(),
+                'locked' => 'N',
+                'cart_ref' => uniqid()
+            ]);
+
+            return redirect()->route('front.product.buy', ['product' => $product, 'cart' => $cart]);
+        }
+    }
+
+    private function step1(Product $product, Cart $cart)
     {
         $user = auth()->user();
         $clientDetails = ClientDetail::query()
@@ -121,7 +179,7 @@ class SiteController extends Controller
                 'user_id' => $user->id
             ])->latest('id')->first();
 
-        return Inertia::render('Sites/BuyProduct', compact('product', 'clientDetails'));
+        return Inertia::render('Sites/BuyProduct', compact('product', 'clientDetails', 'cart'));
 
         // return Inertia::render('Sites/BuyProduct', [
         //     [
@@ -141,8 +199,35 @@ class SiteController extends Controller
         // ]);
     }
 
-    public function store_step1(Product $product, Request $request)
+    private function step2(Product $product, Cart $cart)
     {
+        $user = auth()->user();
+        $clientDetails = ClientDetail::query()
+            ->where([
+                'user_id' => $user->id
+            ])->latest('id')->first();
+
+        return Inertia::render('Sites/BuyProduct', compact('product', 'clientDetails'));
+    }
+
+    public function store_step1(Product $product, Cart $cart, Request $request)
+    {
+        $user = auth()->user();
+
+        if (!empty($cart)) {
+            // recupero il carrello verificando se è ancora attivo
+            $cart = Cart::query()
+                ->where([
+                    'user_id' => $user->id,
+                    'cart_ref' => $cart->cart_ref,
+                    'locked' => 'N'
+                ])->first();
+        }
+
+        if (empty($cart)) {
+            redirect()->route('front.product.buy', ['product' => $product]);
+        }
+
         $validated = $request->validate([
             'user_id' => ['required'],
             'first_name' => ['required'],
@@ -157,31 +242,21 @@ class SiteController extends Controller
             'confirmation' => ['required']
         ]);
 
-        // TODO salvo una nuova anagrafica solo se vengono cambiati i dati
-        // $user = auth()->user();
-        // $clientDetails = ClientDetail::query()
-        //     ->where([
-        //         'user_id' => $user->id
-        //     ])->latest('id')->first();
-        // if ($clientDetails->isDirty()) {
-        // ClientDetail::create($validated);
-        // }
+        $clientDetail = ClientDetail::query()
+            ->where(['user_id' => $user->id]);
+        if ($clientDetail) {
+            $clientDetail->update($validated);
+        } else {
+            ClientDetail::create($validated);
+        }
 
-        ClientDetail::create($validated);
+        $cart->product_step_id = 2;
+        $cart->save();
 
-        return redirect()->route('front.product.step2', compact('product'));
+        return redirect()->route('front.product.buy', compact('product', 'cart'));
     }
 
-    public function step2(Product $product)
-    {
-        $user = auth()->user();
-        $clientDetails = ClientDetail::query()
-            ->where([
-                'user_id' => $user->id
-            ])->latest('id')->first();
-
-        return Inertia::render('Sites/BuyProduct', compact('product', 'clientDetails'));
-    }
+   
 
     public function store_step2(Product $product, Request $request)
     {
@@ -195,7 +270,6 @@ class SiteController extends Controller
             'phone' => ['required'],
             'qualification' => ['required'],
             'authority' => ['required'],
-            'correctness_of_data' => ['required']
         ]);
 
         ClientDetail::create($validated);
@@ -203,7 +277,7 @@ class SiteController extends Controller
         return redirect()->route('front.product.step2');
     }
 
-    public function step3(Product $product)
+    private function step3(Product $product)
     {
         return Inertia::render('Sites/BuyProduct', compact('product'));
     }
@@ -215,7 +289,7 @@ class SiteController extends Controller
         return redirect()->route('front.product.step3');
     }
 
-    // public function step4(Product $product)
+    // private function step4(Product $product)
     // {
     //     return Inertia::render('Sites/BuyProduct', compact('product'));
     // }
@@ -229,7 +303,7 @@ class SiteController extends Controller
     //     return redirect()->route('front.product.step3');
     // }
 
-    // public function step5(Product $product)
+    // private function step5(Product $product)
     // {
     //     return Inertia::render('Sites/BuyProduct', compact('product'));
     // }
@@ -243,7 +317,7 @@ class SiteController extends Controller
     //     return redirect()->route('front.product.step3');
     // }
 
-    // public function step6(Product $product)
+    // private function step6(Product $product)
     // {
     //     return Inertia::render('Sites/BuyProduct', compact('product'));
     // }

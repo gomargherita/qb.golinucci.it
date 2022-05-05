@@ -1,0 +1,58 @@
+<?php
+
+use App\Models\Contract;
+use App\Models\Product;
+use App\Models\ProductOffer;
+use App\Models\ProductStep;
+use App\Models\User;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateCartsTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('carts', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(User::class)->constrained();
+            $table->foreignIdFor(Product::class)->constrained();
+            $table->foreignIdFor(ProductStep::class)->constrained();
+            // $table->foreignId('product_offer_id')->nullable()->constrained();
+            $table->foreignIdFor(ProductOffer::class)->nullable()->constrained();
+            $table->foreignIdFor(Contract::class)->nullable()->constrained();
+            $table->datetime('cart_start_time');
+            $table->datetime('cart_expiry_time');
+            $table->char('locked', 1)->default('N');
+            $table->string('cart_ref', 13); // uniqueid
+            $table->datetime('renewal_date')->nullable();
+            $table->decimal('total_payable')->nullable(); // quanto il cliente paga
+            $table->decimal('admin_fee')->nullable(); // commissione golinucci
+            $table->decimal('gross_premium')->nullable(); // ex price_with_tax; total_payable - admin_fee
+            $table->decimal('tax')->nullable(); // calcolato sul net_plus_access_premium
+            $table->decimal('net_premium')->nullable(); // netto base;
+            $table->decimal('accessory')->nullable(); // netto accessori
+            $table->decimal('net_plus_access_premium')->nullable(); // accessory + net premium; ex price
+            $table->integer('indemnity_limit')->nullable();
+            // data di pagamento?
+            // altri dati mancanti?
+            $table->timestamps();
+            $table->softDeletes();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('carts');
+    }
+}

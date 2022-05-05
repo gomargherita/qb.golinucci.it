@@ -28,7 +28,7 @@ class UserSeeder extends Seeder
             'owner' => true,
         ]);
 
-        ClientDetail::factory(3)
+        ClientDetail::factory(1)
             ->create([
                 'user_id' => $user->id
             ]);
@@ -40,7 +40,7 @@ class UserSeeder extends Seeder
             'owner' => true,
         ]);
 
-        ClientDetail::factory(5)
+        ClientDetail::factory(1)
             ->create([
                 'user_id' => $user->id
             ]);
@@ -59,11 +59,11 @@ class UserSeeder extends Seeder
         ]);
 
         // assign multiple clientDetails to prev clients
-        ClientDetail::factory(40)
-            ->create()
-            ->each(function ($clientDetail) use ($users) {
-                $clientDetail->update(['user_id' => $users->random()->id]);
-            });
+        // ClientDetail::factory(40)
+        //     ->create()
+        //     ->each(function ($clientDetail) use ($users) {
+        //         $clientDetail->update(['user_id' => $users->random()->id]);
+        //     });
 
         // // new account for agents
         // $account_ext = Account::create(['name' => 'Prisma Broker']);

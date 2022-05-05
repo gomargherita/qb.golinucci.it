@@ -26,7 +26,8 @@ class ClientDetail extends Model
         'city',
         'region',
         'country',
-        'postal_code'
+        'postal_code',
+        'confirmation'
     ];
 
     public function resolveRouteBinding($value, $field = null)
@@ -56,9 +57,9 @@ class ClientDetail extends Model
                 ->orWhere('client_details.last_name', 'like', '%' . $search . '%')
                 ->orWhere('users.first_name', 'like', '%' . $search . '%')
                 ->orWhere('users.last_name', 'like', '%' . $search . '%');
-                // ->orWhereHas('accounts', function($query) use ($search){
-                //     $query->where('name', 'like', '%' . $search . '%');
-                // });
+            // ->orWhereHas('accounts', function($query) use ($search){
+            //     $query->where('name', 'like', '%' . $search . '%');
+            // });
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {
                 $query->withTrashed();
@@ -67,4 +68,5 @@ class ClientDetail extends Model
             }
         });
     }
+
 }

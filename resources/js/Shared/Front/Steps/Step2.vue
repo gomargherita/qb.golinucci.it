@@ -1,7 +1,7 @@
 <template>
   <Head :title="__('Scelta Polizza e Tempi')" />
   <HTwo :title="__('Scelta Polizza e Tempi')" />
-  <!-- <Offers :product="product" :conditions="conditions"> </Offers> -->
+  <Offers :product="product" :conditions="conditions" :cart="cart"> </Offers>
 </template>
 
 <script>
@@ -14,6 +14,7 @@ export default {
     Offers,
   },
   props: {
+    cart: Object,
     product: Object,
     conditions: Array,
   },

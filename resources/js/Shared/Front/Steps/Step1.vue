@@ -87,10 +87,10 @@
         />
       </div>
       <div>
-        <label class="flex items-center mt-6 select-none" for="correctness_of_data">
+        <label class="flex items-center mt-6 select-none" for="confirmation">
           <input
-            id="correctness_of_data"
-            v-model="form.correctness_of_data"
+            id="confirmation"
+            v-model="form.confirmation"
             class="mr-1"
             type="checkbox"
           />
@@ -128,6 +128,7 @@ export default {
     HTwo,
   },
   props: {
+    cart: Object,
     product: Object,
     conditions: Array,
   },
@@ -144,7 +145,7 @@ export default {
         postal_code: this.$page.props.clientDetails.postal_code,
         country: "IT",
         phone: this.$page.props.clientDetails.phone,
-        correctness_of_data: false,
+        confirmation: false,
       }),
     };
   },
@@ -152,7 +153,10 @@ export default {
   methods: {
     submit() {
       this.form.post(
-        this.route("front.product.store_step1", this.$page.props.product.id),
+        this.route("front.product.store_step1", {
+          product: this.$page.props.product.id,
+          cart: this.$page.props.cart.cart_ref,
+        }),
         {
           // onSuccess: () => this.form.reset('password', 'password_confirmation'),
           preserveScroll: (page) => Object.keys(page.props.errors).length,

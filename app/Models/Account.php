@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Account extends Model
 {
+
+    use HasFactory;
+
     // https://spatie.be/docs/laravel-permission/v5/basic-usage/teams-permissions
     public static function boot()
     {
@@ -41,6 +45,12 @@ class Account extends Model
     {
         return $this->hasManyThrough(ClientDetail::class, User::class);
     }
+
+    // TODO prevedere di assegnare i tipi prodotto all'account
+    // public function productTypes()
+    // {
+    //     return $this->hasMany(ProductType::class);
+    // }
 
     public function roles()
     {

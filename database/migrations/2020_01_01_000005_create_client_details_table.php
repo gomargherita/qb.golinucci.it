@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,8 +15,8 @@ class CreateClientDetailsTable extends Migration
     public function up()
     {
         Schema::create('client_details', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('user_id')->index();
+            $table->id();
+            $table->foreignIdFor(User::class)->constrained();
             $table->string('first_name', 25);
             $table->string('last_name', 25);
             $table->string('fiscal_code', 16);
@@ -25,6 +26,7 @@ class CreateClientDetailsTable extends Migration
             $table->string('region', 50);
             $table->string('country', 2);
             $table->string('postal_code', 5);
+            $table->boolean('confirmation')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });

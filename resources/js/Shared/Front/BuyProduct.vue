@@ -17,33 +17,39 @@
     </div>
 
     <Step1
-      v-if="route().current('front.product.step1')"
+      v-if="current_step == 1"
       :product="product"
+      :cart="cart"
       :conditions="conditions"
     />
     <Step2
-      v-if="route().current('front.product.step2')"
+      v-if="current_step == 2"
       :product="product"
+      :cart="cart"
       :conditions="conditions"
     />
     <Step3
-      v-if="route().current('front.product.step3')"
+      v-if="current_step == 3"
       :product="product"
+      :cart="cart"
       :conditions="conditions"
     />
     <Step4
-      v-if="route().current('front.product.step4')"
+      v-if="current_step == 4"
       :product="product"
+      :cart="cart"
       :conditions="conditions"
     />
     <Step5
-      v-if="route().current('front.product.step5')"
+      v-if="current_step == 5"
       :product="product"
+      :cart="cart"
       :conditions="conditions"
     />
     <Step6
-      v-if="route().current('front.product.step6')"
+      v-if="current_step == 6"
       :product="product"
+      :cart="cart"
       :conditions="conditions"
     />
   </div>
@@ -70,6 +76,7 @@ export default {
   },
   props: {
     product: Object,
+    cart: Object,
     conditions: Array,
     numSteps: {
       type: Number,
@@ -80,7 +87,8 @@ export default {
     current_step() {
       // console.log(this.$inertia.page.url.slice(-1));
       // ATTENTION: it only works with max 9 steps
-      return this.$inertia.page.url.slice(-1);
+      //return this.$inertia.page.url.slice(-1);
+      return this.$page.props.cart.product_step_id;
     },
   },
 };

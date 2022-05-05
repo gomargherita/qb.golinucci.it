@@ -68,7 +68,7 @@
 
     <div>
       <Link
-        :href="route('front.product.step1', product.id)"
+        :href="route('front.product.buy', product.id, null)"
         class="gol-btn my-8 bg-primary text-center"
       >
         {{ __('Buy this Product') }}
