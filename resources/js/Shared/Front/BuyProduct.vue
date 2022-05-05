@@ -2,17 +2,17 @@
   <div ref="buy">
     <HTwo :title="__('Buy this Product')" />
 
-    <div class="flex items-center gap-4">
+    <div class="flex items-center justify-between mx-auto gap2 md:gap-4">
       <template v-for="(num, key) in numSteps" :key="key">
         <div class="flex items-center text-primary relative">
           <div
-            class="rounded-full h-12 w-12 py-3 border-2 border-gray-300"
+            class="rounded-full h-6 w-6 md:h-12 md:w-12 md:py-3 border-2 border-gray-300"
             :class="{ 'border-primary bg-primary text-white': current_step == num }"
           >
             <div class="text-center font-bold" v-text="num"></div>
           </div>
         </div>
-        <div v-if="key + 1 != numSteps" class="flex-auto border-t-2"></div>
+        <div v-if="key + 1 != numSteps" class="hidden md:block flex-auto border-t-2"></div>
       </template>
     </div>
 

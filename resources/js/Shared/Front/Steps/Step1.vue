@@ -12,6 +12,7 @@
           type="text"
           class="mt-1 block w-full"
           v-model="form.first_name"
+          :error="form.errors.first_name"
           label="First Name"
           autofocus
         />
@@ -23,6 +24,7 @@
           type="text"
           class="mt-1 block w-full"
           v-model="form.last_name"
+          :error="form.errors.last_name"
           label="Last Name"
         />
       </div>
@@ -33,6 +35,7 @@
           type="text"
           class="mt-1 block w-full"
           v-model="form.fiscal_code"
+          :error="form.errors.fiscal_code"
           label="Fiscal Code"
         />
       </div>
@@ -43,6 +46,7 @@
           type="text"
           class="mt-1 block w-full"
           v-model="form.address"
+          :error="form.errors.address"
           label="Address"
         />
       </div>
@@ -53,6 +57,7 @@
           type="text"
           class="mt-1 block w-full"
           v-model="form.city"
+          :error="form.errors.city"
           label="City"
         />
       </div>
@@ -63,6 +68,7 @@
           type="text"
           class="mt-1 block w-full"
           v-model="form.region"
+          :error="form.errors.region"
           label="Region"
         />
       </div>
@@ -73,6 +79,7 @@
           type="text"
           class="mt-1 block w-full"
           v-model="form.postal_code"
+          :error="form.errors.postal_code"
           label="Postal Code"
         />
       </div>
@@ -83,6 +90,7 @@
           type="text"
           class="mt-1 block w-full"
           v-model="form.phone"
+          :error="form.errors.phone"
           label="Phone"
         />
       </div>

@@ -21,12 +21,12 @@ class ClientDetail extends Model
         'first_name',
         'last_name',
         'fiscal_code',
-        'phone',
         'address',
         'city',
         'region',
         'country',
         'postal_code',
+        'phone',
         'confirmation'
     ];
 

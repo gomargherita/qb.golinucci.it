@@ -204,13 +204,46 @@ class SiteController extends Controller
 
     private function step2(Product $product, Cart $cart)
     {
-        $user = auth()->user();
-        $clientDetails = ClientDetail::query()
-            ->where([
-                'user_id' => $user->id
-            ])->latest('id')->first();
+        $product = $product->with([
+            'productOffers.conditionalFields',
+            'productOffers.contract',
+        ])->find($product->id);
 
-        return Inertia::render('Sites/BuyProduct', compact('product', 'clientDetails'));
+        return Inertia::render('Sites/BuyProduct', [
+            'product' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'type' => Str::slug($product->productType->name, '-'),
+                'detailed_description' => $product->detailed_description,
+                'conditions' => $product->conditions,
+                'icon' => $product->icon,
+                'hex_color' => $product->hex_color,
+                'offers' => $product->productOffers,
+                'deleted_at' => $product->deleted_at,
+            ],
+            'conditions' => $product->conditionalFields,
+            'cart' => $cart
+        ]);
+    }
+
+    private function step3(Product $product, Cart $cart)
+    {
+        // TODO retrieve declarations
+
+        return Inertia::render('Sites/BuyProduct', [
+            'product' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'type' => Str::slug($product->productType->name, '-'),
+                'conditions' => $product->conditions,
+                'icon' => $product->icon,
+                'hex_color' => $product->hex_color,
+                'offers' => $product->productOffers,
+                'deleted_at' => $product->deleted_at,
+            ],
+            'conditions' => $product->conditionalFields,
+            'cart' => $cart
+        ]);
     }
 
     public function store_step1(Product $product, Cart $cart, Request $request)
@@ -242,7 +275,7 @@ class SiteController extends Controller
             'country' => ['required'],
             'postal_code' => ['required'],
             'phone' => ['required'],
-            'confirmation' => ['required']
+            'confirmation' => ['required', 'boolean']
         ]);
 
         $clientDetail = ClientDetail::query()
@@ -278,10 +311,7 @@ class SiteController extends Controller
         return redirect()->route('front.product.step2');
     }
 
-    private function step3(Product $product)
-    {
-        return Inertia::render('Sites/BuyProduct', compact('product'));
-    }
+    
 
     public function store_step3(Product $product, Request $request)
     {

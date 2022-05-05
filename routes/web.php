@@ -122,7 +122,7 @@ Route::controller(SiteController::class)->group(function () {
     Route::get('/about-us', 'aboutUs')->name('front.aboutus');
     Route::get('/products', 'products')->name('front.products');
     Route::get('/products/{product}', 'product')->name('front.product');
-    // Route::scopeBindings()->group(function () {
+    Route::scopeBindings()->group(function () {
         Route::get('/products/{product}/buy/{cart:cart_ref?}', 'buy')->name('front.product.buy')->middleware(['auth']); // pagina per il flusso di acquisto
         Route::post('/products/{product}/store_step1/{cart:cart_ref}', 'store_step1')->name('front.product.store_step1')->middleware(['auth']);
         Route::post('/products/{product}/store_step2/{cart:cart_ref}', 'store_step2')->name('front.product.store_step2')->middleware(['auth']);
@@ -130,7 +130,7 @@ Route::controller(SiteController::class)->group(function () {
         Route::post('/products/{product}/store_step4', 'store_step4')->name('front.product.store_step4')->middleware(['auth']);
         Route::post('/products/{product}/store_step5', 'store_step5')->name('front.product.store_step5')->middleware(['auth']);
         Route::post('/products/{product}/store_step6', 'store_step6')->name('front.product.store_step6')->middleware(['auth']);
-    // });
+    });
 
     //Route::get('/test-lloyds', 'testLloyds')->name('front.testlloyds');
 });
