@@ -34,6 +34,8 @@ class ProductOfferFactory extends Factory
             'net_plus_access_premium' => $this->faker->numberBetween(0, 30000),
             'description' => $this->faker->paragraph(3),
             'indemnity_limit' => $this->faker->numberBetween(0, 10000000),
+            'indemnity_limit_patrimonial' => $this->faker->numberBetween(0, 10000000),
+            'flag_prev_2022' => 0,
             'months' => $this->faker->numberBetween(1, 12),
             'active' => $this->faker->boolean(),
         ];

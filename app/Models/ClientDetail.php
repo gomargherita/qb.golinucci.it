@@ -31,7 +31,8 @@ class ClientDetail extends Model
         'contact_ref',
         'version_ref',
         'note',
-        'with_accident'
+        'with_accident',
+        'flag_prev_2022'
     ];
 
     public function resolveRouteBinding($value, $field = null)

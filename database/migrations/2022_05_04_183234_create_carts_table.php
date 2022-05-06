@@ -34,6 +34,7 @@ class CreateCartsTable extends Migration
             $table->decimal('accessory')->nullable(); // netto accessori
             $table->decimal('net_plus_access_premium')->nullable(); // accessory + net premium; ex price
             $table->integer('indemnity_limit')->nullable();
+            $table->integer('indemnity_limit_patrimonial')->nullable();
             // data di pagamento?
             // altri dati mancanti?
             $table->char('locked', 1)->default('N');

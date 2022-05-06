@@ -30,6 +30,8 @@ class CreateProductOffersTable extends Migration
             $table->decimal('net_plus_access_premium'); // accessory + net premium; ex price
             $table->text('description');
             $table->integer('indemnity_limit');
+            $table->integer('indemnity_limit_patrimonial');
+            $table->boolean('flag_prev_2022')->default(0);
             $table->tinyInteger('months')->unsigned();
             $table->boolean('active');
             $table->timestamps();

@@ -9,6 +9,7 @@ use App\Models\ClientDetail;
 use App\Models\Product;
 use App\Models\ProductOffer;
 use App\Notifications\InvoicePaid;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -81,11 +82,12 @@ class SiteController extends Controller
     {
         // $invoice = 'invoice';
         // auth()->user()->notify(new InvoicePaid($invoice));
-        // TODO necessario rieseguire così le query per avere le relazioni?
-        $product = $product->with([
-            'productOffers.conditionalFields',
-            'productOffers.contract',
-        ])->find($product->id);
+        $product = $product->load([
+            'productOffers' => function ($query) {
+                $flag_prev_2022 = 0;
+                $query->with(['conditionalFields', 'contract'])->where('flag_prev_2022', $flag_prev_2022);
+            }
+        ]);
 
         return Inertia::render('Sites/Product', [
             'product' => [
@@ -167,10 +169,19 @@ class SiteController extends Controller
 
     private function step2(Product $product, Cart $cart)
     {
-        $product = $product->with([
-            'productOffers.conditionalFields',
-            'productOffers.contract',
-        ])->find($product->id);
+        $user = auth()->user();
+        $clientDetails = ClientDetail::select(['flag_prev_2022'])
+            ->where([
+                'user_id' => $user->id
+            ])->latest('id')->first();
+
+        $flag_prev_2022 = $clientDetails->flag_prev_2022;
+
+        $product = $product->load([
+            'productOffers' => function ($query) use ($flag_prev_2022) {
+                $query->with(['conditionalFields', 'contract'])->where('flag_prev_2022', $flag_prev_2022);
+            }
+        ]);
 
         return Inertia::render('Sites/BuyProduct', [
             'product' => [
@@ -197,8 +208,8 @@ class SiteController extends Controller
                 'name' => $product->name,
                 'type' => Str::slug($product->productType->name, '-'),
                 'conditions' => $product->conditions,
-                'pre_declarations'=> $product->pre_declarations,
-                'post_declarations'=> $product->post_declarations,
+                'pre_declarations' => $product->pre_declarations,
+                'post_declarations' => $product->post_declarations,
                 'declarations' => $product->productDeclarations, // TODO retrieve declarations
                 'icon' => $product->icon,
                 'hex_color' => $product->hex_color,
@@ -268,8 +279,8 @@ class SiteController extends Controller
         $cart->net_premium = $productOffer->net_premium;
         $cart->accessory = $productOffer->accessory;
         $cart->net_plus_access_premium = $productOffer->net_plus_access_premium;
-        // TODO da definire con Francesco la logica per cui indernity limit può essere diverso
         $cart->indemnity_limit = $productOffer->indemnity_limit;
+        $cart->indemnity_limit_patrimonial = $productOffer->indemnity_limit_patrimonial;
 
         $cart->product_offer_id = $request->product_offer_id_selected;
         $cart->save();

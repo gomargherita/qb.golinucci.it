@@ -28,7 +28,8 @@ class ClientDetailFactory extends Factory
             'contact_ref' => null,
             'version_ref' => null,
             'note' => null,
-            'with_accident' => 0
+            'with_accident' => 0,
+            'flag_prev_2022' => 0
         ];
     }
 }
