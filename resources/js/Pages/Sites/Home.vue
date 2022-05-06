@@ -25,7 +25,7 @@
       </swiper-slide>
     </swiper>
   </section>
-  <section class="container mx-auto p-2 bg-white mt-8">
+  <section id="main-content" class="container mx-auto p-2 bg-white mt-8">
     <h1>Le nostre polizze</h1>
     <hr class="gol-hr" />
   </section>

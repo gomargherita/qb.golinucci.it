@@ -9,7 +9,7 @@
   </Head>
   <HOne :title="`User account`" />
 
-  <section class="container mx-auto p-2">
+  <section id="main-content" class="container mx-auto p-2">
     <h2>
       {{ __("User data") }}
     </h2>

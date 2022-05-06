@@ -9,7 +9,7 @@
   </Head>
   <HOne :title="`Products`" />
 
-  <section class="container mx-auto p-2">
+  <section id="main-content" class="container mx-auto p-2">
     <ProductBox :products="products"> </ProductBox>
   </section>
 </template>

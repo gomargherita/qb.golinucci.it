@@ -9,7 +9,7 @@
   </Head>
   <HOne :title="`About us`" />
 
-  <section class="container mx-auto p-2">
+  <section id="main-content" class="container mx-auto p-2">
   </section>
 </template>
 
