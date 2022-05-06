@@ -65,6 +65,8 @@ class ClientDetailsController extends Controller
                 'region' => ['nullable', 'max:50'],
                 'country' => ['nullable', 'max:2'],
                 'postal_code' => ['nullable', 'max:25'],
+                'contact_ref' => ['nullable', 'max:25'],
+                'varsion_ref' => ['nullable', 'max:25'],
             ])
         );
 
@@ -89,6 +91,8 @@ class ClientDetailsController extends Controller
                 'region' => $client_detail->region,
                 'country' => $client_detail->country,
                 'postal_code' => $client_detail->postal_code,
+                'contact_ref' => $client_detail->contact_ref,
+                'varsion_ref' => $client_detail->version_ref,
                 'deleted_at' => $client_detail->deleted_at,
             ],
             'user' => $client_detail->user ? $client_detail->user : null,
@@ -107,6 +111,8 @@ class ClientDetailsController extends Controller
                 'region' => ['nullable', 'max:50'],
                 'country' => ['nullable', 'max:2'],
                 'postal_code' => ['nullable', 'max:25'],
+                'contact_ref' => ['nullable', 'max:25'],
+                'varsion_ref' => ['nullable', 'max:25'],
             ])
         );
 

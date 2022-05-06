@@ -27,6 +27,8 @@ class CreateClientDetailsTable extends Migration
             $table->string('country', 2);
             $table->string('postal_code', 5);
             $table->boolean('confirmation')->default(false);
+            $table->string('contact_ref', 25)->nullable();
+            $table->string('version_ref', 25)->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
