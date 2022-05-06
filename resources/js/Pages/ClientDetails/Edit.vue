@@ -188,7 +188,7 @@ export default {
         postal_code: this.client_detail.postal_code,
         note: this.client_detail.note,
         with_accident: this.client_detail.with_accident,
-        flag_prev_2022: this.client_detail.flag_prev_2022
+        flag_prev_2022: this.client_detail.flag_prev_2022,
       }),
     };
   },

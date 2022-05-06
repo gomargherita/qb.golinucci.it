@@ -122,7 +122,7 @@ export default {
         postal_code: null,
         note: null,
         with_accident: null,
-        flag_prev_2022: null
+        flag_prev_2022: null,
       }),
     };
   },

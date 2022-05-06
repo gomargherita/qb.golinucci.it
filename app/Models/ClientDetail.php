@@ -73,5 +73,4 @@ class ClientDetail extends Model
             }
         });
     }
-
 }
