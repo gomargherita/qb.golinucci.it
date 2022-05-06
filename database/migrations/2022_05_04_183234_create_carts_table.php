@@ -23,12 +23,7 @@ class CreateCartsTable extends Migration
             $table->foreignIdFor(User::class)->constrained();
             $table->foreignIdFor(Product::class)->constrained();
             $table->foreignIdFor(ProductStep::class)->constrained();
-            // $table->foreignId('product_offer_id')->nullable()->constrained();
             $table->foreignIdFor(ProductOffer::class)->nullable()->constrained();
-            $table->foreignIdFor(Contract::class)->nullable()->constrained();
-            $table->datetime('cart_start_time');
-            $table->datetime('cart_expiry_time');
-            $table->char('locked', 1)->default('N');
             $table->string('cart_ref', 13); // uniqueid
             $table->datetime('renewal_date')->nullable();
             $table->decimal('total_payable')->nullable(); // quanto il cliente paga
@@ -41,6 +36,8 @@ class CreateCartsTable extends Migration
             $table->integer('indemnity_limit')->nullable();
             // data di pagamento?
             // altri dati mancanti?
+            $table->char('locked', 1)->default('N');
+            $table->datetime('expired_at');
             $table->timestamps();
             $table->softDeletes();
         });

@@ -14,9 +14,7 @@ class Cart extends Model
         'user_id',
         'product_id',
         'product_step_id',
-        'cart_start_time',
-        'cart_expiry_time',
-        'locked',
+        'product_offer_id',
         'cart_ref',
         'renewal_date',
         'total_payable',
@@ -27,5 +25,7 @@ class Cart extends Model
         'accessory',
         'net_plus_access_premium',
         'indemnity_limit',
+        'expired_at',
+        'locked',
     ];
 }
