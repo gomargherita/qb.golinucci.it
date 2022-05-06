@@ -18,7 +18,7 @@ class ProductDeclarationFactory extends Factory
 
         return [
             'product_id' => $this->faker->numberBetween(1, $product_number),
-            'declaration' => $this->faker->paragraph(1) . '?',
+            'declaration' => $this->faker->paragraph(1),
             'notes' => $this->faker->paragraph(random_int(1, 2)),
             'sort' => $this->faker->numberBetween(1, 10),
         ];

@@ -24,6 +24,8 @@ class ProductFactory extends Factory
             'name' => $this->faker->unique()->domainName(),
             'description' => $this->faker->paragraph(3),
             'detailed_description' => $this->faker->paragraph(12),
+            'pre_declarations' => $this->faker->paragraph(12),
+            'post_declarations' => $this->faker->paragraph(12),
             'conditions' => $this->faker->paragraph(12),
             'icon' => $this->faker->image(),
             'hex_color' => $this->faker->hexColor(),

@@ -62,6 +62,11 @@ class Product extends Model
         return $this->hasMany(Cart::class);
     }
 
+    public function productDeclarations(): HasMany
+    {
+        return $this->hasMany(ProductDeclaration::class);
+    }
+
     public function scopeOrderByName($query)
     {
         $query->orderBy('name');
