@@ -56,22 +56,6 @@ class SiteController extends Controller
         ]);
     }
 
-    public function testLloyds(LloydsDoPrint $lloydsDoPrint)
-    {
-        //     // DoPrint Login
-        //     $SessionToken = $lloydsDoPrint->HandShake();
-        //     // Setup Policy using the xml and MD5 file hashes
-        //     // $lloydsDoPrint->ValidationRequest($SessionToken, $nextvalue . '-LB', $customer, $start_date, $end_date, $arr, $wording, $prop);
-        //     // Upload the wording
-        //     //$lloydsDoPrint->UploadRequest($SessionToken, $wording);
-        //     // Upload Proposal form
-        //     //$lloydsDoPrint->UploadRequest($SessionToken, $prop);
-        //     // Create the policy
-        //     //$lloydsDoPrint->TransactionRequest($SessionToken);
-        //     // Download the certificate
-        //     //$lloydsDoPrint->DownloadRequest($SessionToken, $filename);
-    }
-
     public function products()
     {
         // TODO rendere dinamica questa sezione
@@ -207,14 +191,15 @@ class SiteController extends Controller
 
     private function step3(Product $product, Cart $cart)
     {
-        // TODO retrieve declarations
-
         return Inertia::render('Sites/BuyProduct', [
             'product' => [
                 'id' => $product->id,
                 'name' => $product->name,
                 'type' => Str::slug($product->productType->name, '-'),
                 'conditions' => $product->conditions,
+                'pre_declarations'=> $product->pre_declarations,
+                'post_declarations'=> $product->post_declarations,
+                'declarations' => $product->productDeclarations, // TODO retrieve declarations
                 'icon' => $product->icon,
                 'hex_color' => $product->hex_color,
                 'offers' => $product->productOffers,
@@ -380,5 +365,21 @@ class SiteController extends Controller
                 'cart_ref' => $cart->cart_ref,
                 'locked' => 'N'
             ])->first();
+    }
+
+    public function testLloyds(LloydsDoPrint $lloydsDoPrint)
+    {
+        //     // DoPrint Login
+        //     $SessionToken = $lloydsDoPrint->HandShake();
+        //     // Setup Policy using the xml and MD5 file hashes
+        //     // $lloydsDoPrint->ValidationRequest($SessionToken, $nextvalue . '-LB', $customer, $start_date, $end_date, $arr, $wording, $prop);
+        //     // Upload the wording
+        //     //$lloydsDoPrint->UploadRequest($SessionToken, $wording);
+        //     // Upload Proposal form
+        //     //$lloydsDoPrint->UploadRequest($SessionToken, $prop);
+        //     // Create the policy
+        //     //$lloydsDoPrint->TransactionRequest($SessionToken);
+        //     // Download the certificate
+        //     //$lloydsDoPrint->DownloadRequest($SessionToken, $filename);
     }
 }

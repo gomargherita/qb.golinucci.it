@@ -26,12 +26,16 @@ body {
 
     }
 
-    div#front-layout h1{
+    div#front-layout h1 {
         @apply text-2xl text-center capitalize text-primary font-semibold mt-8;
     }
 
-    div#front-layout #main-content h2{
+    div#front-layout #main-content h2 {
         @apply text-xl text-center capitalize text-primary font-semibold mt-2;
+    }
+
+    div#front-layout #main-content a {
+        @apply text-secondary-400 hover:text-primary;
     }
 
     div#front-layout #gol-header-bg {
@@ -44,8 +48,8 @@ body {
         }
     }
 
-    div#front-layout .gol-btn {
-        @apply w-full block py-2 text-lg font-bold shadow text-white rounded-full [text-shadow:0_4px_8px_rgba(0,0,0,0.12)];
+    div#front-layout #main-content .gol-btn {
+        @apply w-full block py-2 text-lg font-bold shadow text-white hover:text-gray-200 rounded-full [text-shadow:0_4px_8px_rgba(0,0,0,0.12)];
     }
 
     div#front-layout label{
