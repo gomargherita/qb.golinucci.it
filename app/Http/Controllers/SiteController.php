@@ -7,7 +7,9 @@ use App\Models\Account;
 use App\Models\Cart;
 use App\Models\ClientDetail;
 use App\Models\Product;
+use App\Models\ProductOffer;
 use App\Notifications\InvoicePaid;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -124,12 +126,7 @@ class SiteController extends Controller
 
         if (!empty($cart)) {
             // recupero il carrello verificando se è ancora attivo
-            $cart = Cart::query()
-                ->where([
-                    'user_id' => $user->id,
-                    'cart_ref' => $cart->cart_ref,
-                    'locked' => 'N'
-                ])->first();
+            $cart = $this->verifyAndGrabCart($user, $cart);
 
             // verifico se il carrello esiste o è ancora attivo altrimenti forzo a null per crearne uno nuovo
             if (empty($cart)) {
@@ -164,8 +161,7 @@ class SiteController extends Controller
                 'user_id' => $user->id,
                 'product_id' => $product->id,
                 'product_step_id' => 1,
-                'cart_start_time' => now(),
-                'cart_expiry_time' => now(),
+                'expired_at' => now(), // TODO Francesco come calcolare?
                 'locked' => 'N',
                 'cart_ref' => uniqid()
             ]);
@@ -183,23 +179,6 @@ class SiteController extends Controller
             ])->latest('id')->first();
 
         return Inertia::render('Sites/BuyProduct', compact('product', 'clientDetails', 'cart'));
-
-        // return Inertia::render('Sites/BuyProduct', [
-        //     [
-        //         'product' => [
-        //             'id' => $product->id,
-        //             'name' => $product->name,
-        //             'type' => Str::slug($product->productType->name, '-'),
-        //             'detailed_description' => $product->detailed_description,
-        //             'icon' => $product->icon,
-        //             'hex_color' => $product->hex_color,
-        //             'offers' => $product->productOffers, //->with(['conditionalFields']),
-        //             'deleted_at' => $product->deleted_at,
-        //         ],
-        //         'conditions' => $product->conditionalFields,
-        //         'clientDetails' => $clientDetails
-        //     ]
-        // ]);
     }
 
     private function step2(Product $product, Cart $cart)
@@ -246,23 +225,25 @@ class SiteController extends Controller
         ]);
     }
 
+    // private function step4(Product $product)
+    // {
+    //     return Inertia::render('Sites/BuyProduct', compact('product'));
+    // }
+
+    // private function step5(Product $product)
+    // {
+    //     return Inertia::render('Sites/BuyProduct', compact('product'));
+    // }
+
+    // private function step6(Product $product)
+    // {
+    //     return Inertia::render('Sites/BuyProduct', compact('product'));
+    // }
+
     public function store_step1(Product $product, Cart $cart, Request $request)
     {
         $user = auth()->user();
-
-        if (!empty($cart)) {
-            // recupero il carrello verificando se è ancora attivo
-            $cart = Cart::query()
-                ->where([
-                    'user_id' => $user->id,
-                    'cart_ref' => $cart->cart_ref,
-                    'locked' => 'N'
-                ])->first();
-        }
-
-        if (empty($cart)) {
-            redirect()->route('front.product.buy', ['product' => $product]);
-        }
+        $cart = $this->prepareBeforeStore($user, $product, $cart);
 
         $validated = $request->validate([
             'user_id' => ['required'],
@@ -278,10 +259,9 @@ class SiteController extends Controller
             'confirmation' => ['accepted']
         ]);
 
-        ClientDetail::updateOrCreate($validated);
+        ClientDetail::updateOrCreate(['user_id'   => $user->id], $validated);
 
-        $cart->product_step_id = 2;
-        $cart->save();
+        $this->updateCartStep($cart, 2);
 
         return redirect()->route('front.product.buy', compact('product', 'cart'));
     }
@@ -289,80 +269,116 @@ class SiteController extends Controller
     public function store_step2(Product $product, Cart $cart, Request $request)
     {
         $user = auth()->user();
+        $cart = $this->prepareBeforeStore($user, $product, $cart);
 
+        $validated = $request->validate([
+            'product_offer_id_selected' => ['required', 'integer'],
+        ]);
+
+        $productOffer = ProductOffer::findOrFail($request->product_offer_id_selected);
+        $cart->total_payable = $productOffer->total_payable;
+        $cart->admin_fee = $productOffer->admin_fee;
+        $cart->gross_premium = $productOffer->gross_premium;
+        $cart->tax = $productOffer->tax;
+        $cart->net_premium = $productOffer->net_premium;
+        $cart->accessory = $productOffer->accessory;
+        $cart->net_plus_access_premium = $productOffer->net_plus_access_premium;
+        // TODO da definire con Francesco la logica per cui indernity limit può essere diverso
+        $cart->indemnity_limit = $productOffer->indemnity_limit;
+
+        $cart->product_offer_id = $request->product_offer_id_selected;
+        $cart->save();
+
+        $this->updateCartStep($cart, 3);
+
+        return redirect()->route('front.product.buy', compact('product', 'cart'));
+    }
+
+    // TODO
+    public function store_step3(Product $product, Cart $cart, Request $request)
+    {
+        $user = auth()->user();
+        $cart = $this->prepareBeforeStore($user, $product, $cart);
+
+        $validated = $request->validate([]);
+
+        $this->updateCartStep($cart, 4);
+
+        return redirect()->route('front.product.buy', compact('product', 'cart'));
+    }
+
+    // TODO
+    public function store_step4(Product $product, Cart $cart, Request $request)
+    {
+        $user = auth()->user();
+        $cart = $this->prepareBeforeStore($user, $product, $cart);
+
+        $validated = $request->validate([]);
+
+        $this->updateCartStep($cart, 5);
+
+        return redirect()->route('front.product.buy', compact('product', 'cart'));
+    }
+
+    // TODO
+    public function store_step5(Product $product, Cart $cart, Request $request)
+    {
+        $user = auth()->user();
+        $cart = $this->prepareBeforeStore($user, $product, $cart);
+
+        $validated = $request->validate([]);
+
+        $this->updateCartStep($cart, 6);
+
+        return redirect()->route('front.product.buy', compact('product', 'cart'));
+    }
+
+    // TODO
+    public function store_step6(Product $product, Cart $cart, Request $request)
+    {
+        $user = auth()->user();
+        $cart = $this->prepareBeforeStore($user, $product, $cart);
+
+        $validated = $request->validate([]);
+
+        // TODO
+        $this->finalizeCart($cart);
+
+        return redirect()->route('front.product.buy', compact('product', 'cart'));
+    }
+
+    private function prepareBeforeStore(User $user, Product $product, Cart $cart)
+    {
         if (!empty($cart)) {
             // recupero il carrello verificando se è ancora attivo
-            $cart = Cart::query()
-                ->where([
-                    'user_id' => $user->id,
-                    'cart_ref' => $cart->cart_ref,
-                    'locked' => 'N'
-                ])->first();
+            $cart = $this->verifyAndGrabCart($user, $cart);
         }
 
         if (empty($cart)) {
             redirect()->route('front.product.buy', ['product' => $product]);
         }
 
-        $validated = $request->validate([
-            'product_offer_id_selected' => ['required','integer'],
-        ]);
-
-        $cart->product_step_id = 3;
-        $cart->save();
-
-        return redirect()->route('front.product.buy', compact('product', 'cart'));
+        return $cart;
     }
 
-
-
-    public function store_step3(Product $product, Request $request)
+    private function updateCartStep(Cart $cart, int $next_step)
     {
-        $validated = $request->validate([]);
-
-        return redirect()->route('front.product.step3');
+        $cart->product_step_id = $next_step;
+        return $cart->save();
     }
 
-    // private function step4(Product $product)
-    // {
-    //     return Inertia::render('Sites/BuyProduct', compact('product'));
-    // }
+    // TODO
+    private function finalizeCart(Cart $cart)
+    {
+    }
 
-    // public function store_step4(Product $product, Request $request)
-    // {
-    //     $validated = $request->validate([
-
-    //     ]);
-
-    //     return redirect()->route('front.product.step3');
-    // }
-
-    // private function step5(Product $product)
-    // {
-    //     return Inertia::render('Sites/BuyProduct', compact('product'));
-    // }
-
-    // public function store_step5(Product $product, Request $request)
-    // {
-    //     $validated = $request->validate([
-
-    //     ]);
-
-    //     return redirect()->route('front.product.step3');
-    // }
-
-    // private function step6(Product $product)
-    // {
-    //     return Inertia::render('Sites/BuyProduct', compact('product'));
-    // }
-
-    // public function store_step6(Product $product, Request $request)
-    // {
-    //     $validated = $request->validate([
-
-    //     ]);
-
-    //     return redirect()->route('front.product.step3');
-    // }
-
+    private function verifyAndGrabCart(User $user, Cart $cart)
+    {
+        return Cart::query()
+            ->where([
+                'user_id' => $user->id,
+                'cart_ref' => $cart->cart_ref,
+                'locked' => 'N'
+            ])->first();
+    }
 }

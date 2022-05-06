@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
@@ -60,9 +60,9 @@ class User extends Authenticatable
         return $this->belongsTo(Account::class);
     }
 
-    public function clientDetails(): HasMany
+    public function clientDetails(): HasOne
     {
-        return $this->hasMany(ClientDetail::class);
+        return $this->hasOne(ClientDetail::class);
     }
 
     public function getNameAttribute()
