@@ -68,6 +68,12 @@
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Postal code"
           />
+          <textarea-input
+            v-model="form.note"
+            :error="form.errors.note"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="Note"
+          />
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
           <button
@@ -150,6 +156,7 @@
 import Layout from "@/Shared/Layouts/Layout";
 import TextInput from "@/Shared/TextInput";
 import SelectInput from "@/Shared/SelectInput";
+import TextareaInput from "@/Shared/TextareaInput";
 import LoadingButton from "@/Shared/LoadingButton";
 import TrashedMessage from "@/Shared/TrashedMessage";
 
@@ -157,6 +164,7 @@ export default {
   components: {
     LoadingButton,
     SelectInput,
+    TextareaInput,
     TextInput,
     TrashedMessage,
   },
@@ -178,6 +186,7 @@ export default {
         region: this.client_detail.region,
         country: this.client_detail.country,
         postal_code: this.client_detail.postal_code,
+        note: this.client_detail.note,
       }),
     };
   },

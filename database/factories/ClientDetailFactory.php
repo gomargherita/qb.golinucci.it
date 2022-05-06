@@ -26,7 +26,8 @@ class ClientDetailFactory extends Factory
             'postal_code' => $this->faker->bothify('#####'),
             'confirmation' => false,
             'contact_ref' => null,
-            'version_ref' => null
+            'version_ref' => null,
+            'note' => null
         ];
     }
 }

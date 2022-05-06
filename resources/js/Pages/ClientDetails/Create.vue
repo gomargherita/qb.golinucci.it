@@ -2,9 +2,11 @@
   <div>
     <Head title="Create ClientDetail" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-primary hover:text-secondary-400" :href="route('clientDetails')">{{
-        __("Client details")
-      }}</Link>
+      <Link
+        class="text-primary hover:text-secondary-400"
+        :href="route('clientDetails')"
+        >{{ __("Client details") }}</Link
+      >
       <span class="text-gray font-medium">/</span>{{ __("Create for")
       }}<span class="ml-2">{{ user.email }}</span>
     </h1>
@@ -66,6 +68,12 @@
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Postal code"
           />
+          <textarea-input
+            v-model="form.note"
+            :error="form.errors.note"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="Note"
+          />
         </div>
         <div
           class="flex items-center justify-end px-8 py-4 bg-gray-50 border-t border-gray-100"
@@ -84,6 +92,7 @@ import { Head } from "@inertiajs/inertia-vue3";
 import Layout from "@/Shared/Layouts/Layout";
 import TextInput from "@/Shared/TextInput";
 import SelectInput from "@/Shared/SelectInput";
+import TextareaInput from "@/Shared/TextareaInput";
 import LoadingButton from "@/Shared/LoadingButton";
 
 export default {
@@ -91,6 +100,7 @@ export default {
     Head,
     LoadingButton,
     SelectInput,
+    TextareaInput,
     TextInput,
   },
   layout: Layout,
@@ -110,6 +120,7 @@ export default {
         region: null,
         country: null,
         postal_code: null,
+        note: null,
       }),
     };
   },
