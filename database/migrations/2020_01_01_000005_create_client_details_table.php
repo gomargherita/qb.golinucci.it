@@ -29,6 +29,8 @@ class CreateClientDetailsTable extends Migration
             $table->boolean('confirmation')->default(false);
             $table->string('contact_ref', 25)->nullable();
             $table->string('version_ref', 25)->nullable();
+            $table->boolean('with_accident')->default(0);
+            $table->text('note')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

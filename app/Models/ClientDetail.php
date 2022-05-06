@@ -29,7 +29,9 @@ class ClientDetail extends Model
         'phone',
         'confirmation',
         'contact_ref',
-        'version_ref'
+        'version_ref',
+        'note',
+        'with_accident'
     ];
 
     public function resolveRouteBinding($value, $field = null)
