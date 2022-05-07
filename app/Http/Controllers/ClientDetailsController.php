@@ -93,6 +93,8 @@ class ClientDetailsController extends Controller
                 'postal_code' => $client_detail->postal_code,
                 'contact_ref' => $client_detail->contact_ref,
                 'varsion_ref' => $client_detail->version_ref,
+                'with_accident' => $client_detail->with_accident,
+                'flag_prev_2022' => $client_detail->flag_prev_2022,
                 'deleted_at' => $client_detail->deleted_at,
             ],
             'user' => $client_detail->user ? $client_detail->user : null,
@@ -105,14 +107,15 @@ class ClientDetailsController extends Controller
             Request::validate([
                 'first_name' => ['required', 'max:100'],
                 'last_name' => ['required', 'max:100'],
-                'phone' => ['nullable', 'max:50'],
-                'address' => ['nullable', 'max:150'],
-                'city' => ['nullable', 'max:50'],
-                'region' => ['nullable', 'max:50'],
-                'country' => ['nullable', 'max:2'],
-                'postal_code' => ['nullable', 'max:25'],
+                'phone' => ['required', 'max:50'],
+                'address' => ['required', 'max:150'],
+                'city' => ['required', 'max:50'],
+                'region' => ['required', 'max:50'],
+                'country' => ['required', 'max:2'],
+                'postal_code' => ['required', 'max:25'],
                 'contact_ref' => ['nullable', 'max:25'],
                 'varsion_ref' => ['nullable', 'max:25'],
+                'with_accident' => ['boolean']
             ])
         );
 

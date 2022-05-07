@@ -186,7 +186,6 @@ export default {
           cart: this.$page.props.cart.cart_ref,
         }),
         {
-          // onSuccess: () => this.form.reset('password', 'password_confirmation'),
           preserveScroll: (page) => Object.keys(page.props.errors).length,
         }
       );

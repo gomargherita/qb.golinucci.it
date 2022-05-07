@@ -74,6 +74,13 @@
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Note"
           />
+          <checkbox-input
+            v-model="form.with_accident"
+            :error="form.errors.with_accident"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="With accident"
+            :checked="form.with_accident"
+          />
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
           <button
@@ -155,6 +162,7 @@
 <script>
 import Layout from "@/Shared/Layouts/Layout";
 import TextInput from "@/Shared/TextInput";
+import CheckboxInput from "@/Shared/CheckboxInput";
 import SelectInput from "@/Shared/SelectInput";
 import TextareaInput from "@/Shared/TextareaInput";
 import LoadingButton from "@/Shared/LoadingButton";
@@ -164,6 +172,7 @@ export default {
   components: {
     LoadingButton,
     SelectInput,
+    CheckboxInput,
     TextareaInput,
     TextInput,
     TrashedMessage,
