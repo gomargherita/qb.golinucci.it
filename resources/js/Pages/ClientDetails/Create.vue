@@ -29,6 +29,12 @@
             label="Last Name"
           />
           <text-input
+            v-model="form.fiscal_code"
+            :error="form.errors.fiscal_code"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="Fiscal Code"
+          />
+          <text-input
             v-model="form.phone"
             :error="form.errors.phone"
             class="pb-8 pr-6 w-full lg:w-1/2"
@@ -59,8 +65,7 @@
             label="Country"
           >
             <option :value="null" />
-            <option value="CA">Canada</option>
-            <option value="US">United States</option>
+            <option value="IT">Italia</option>
           </select-input>
           <text-input
             v-model="form.postal_code"
@@ -114,6 +119,7 @@ export default {
         user_id: this.$props.user.id,
         first_name: null,
         last_name: null,
+        fiscal_code: null,
         phone: null,
         address: null,
         city: null,

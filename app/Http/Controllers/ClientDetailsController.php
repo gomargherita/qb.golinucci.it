@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreClientDetailsRequest;
+use App\Http\Requests\UpdateClientDetailsRequest;
 use App\Models\ClientDetail;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -50,35 +52,15 @@ class ClientDetailsController extends Controller
         return Inertia::render('ClientDetails/Create', ['user' => $checkedUser]);
     }
 
-    public function store()
+    public function store(StoreClientDetailsRequest $request)
     {
-        Auth::user()->account->clientDetails()->create(
-            Request::validate([
-                'user_id' => ['required', Rule::exists('users', 'id')->where(function ($query) {
-                    $query->where('account_id', Auth::user()->account_id);
-                })],
-                'first_name' => ['required', 'max:100'],
-                'last_name' => ['required', 'max:100'],
-                'phone' => ['required', 'max:50'],
-                'address' => ['required', 'max:150'],
-                'city' => ['required', 'max:50'],
-                'region' => ['required', 'max:50'],
-                'country' => ['required', 'max:2'],
-                'postal_code' => ['required', 'max:25'],
-                'contact_ref' => ['nullable', 'max:25'],
-                'varsion_ref' => ['nullable', 'max:25'],
-                'with_accident' => ['boolean'],
-                'flag_pre_2022' => ['boolean'],
-            ])
-        );
+        Auth::user()->account->clientDetails()->create($request->validated());
 
         return Redirect::route('clientDetails')->with('success', 'ClientDetail created.');
     }
 
     public function edit(ClientDetail $client_detail)
     {
-        $currentUser = Auth::user();
-
         return Inertia::render('ClientDetails/Edit', [
             // 'can' => [
             //     'delete_client_detail' => $currentUser->can('client_details.delete')
@@ -87,6 +69,7 @@ class ClientDetailsController extends Controller
                 'id' => $client_detail->id,
                 'first_name' => $client_detail->first_name,
                 'last_name' => $client_detail->last_name,
+                'fiscal_code' => $client_detail->fiscal_code,
                 'phone' => $client_detail->phone,
                 'address' => $client_detail->address,
                 'city' => $client_detail->city,
@@ -95,6 +78,7 @@ class ClientDetailsController extends Controller
                 'postal_code' => $client_detail->postal_code,
                 'contact_ref' => $client_detail->contact_ref,
                 'varsion_ref' => $client_detail->version_ref,
+                'note' => $client_detail->note,
                 'with_accident' => $client_detail->with_accident,
                 'flag_prev_2022' => $client_detail->flag_prev_2022,
                 'deleted_at' => $client_detail->deleted_at,
@@ -103,24 +87,9 @@ class ClientDetailsController extends Controller
         ]);
     }
 
-    public function update(ClientDetail $client_detail)
+    public function update(UpdateClientDetailsRequest $request, ClientDetail $client_detail)
     {
-        $client_detail->update(
-            Request::validate([
-                'first_name' => ['required', 'max:100'],
-                'last_name' => ['required', 'max:100'],
-                'phone' => ['required', 'max:50'],
-                'address' => ['required', 'max:150'],
-                'city' => ['required', 'max:50'],
-                'region' => ['required', 'max:50'],
-                'country' => ['required', 'max:2'],
-                'postal_code' => ['required', 'max:25'],
-                'contact_ref' => ['nullable', 'max:25'],
-                'varsion_ref' => ['nullable', 'max:25'],
-                'with_accident' => ['boolean'],
-                'flag_prev_2022' => ['boolean'],
-            ])
-        );
+        $client_detail->update($request->validated());
 
         return Redirect::back()->with('success', 'ClientDetail updated.');
     }
