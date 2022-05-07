@@ -121,7 +121,7 @@ export default {
     form: {
       deep: true,
       handler: throttle(function () {
-        this.$inertia.get("/clientDetails", pickBy(this.form), {
+        this.$inertia.get("/admin/clientDetails", pickBy(this.form), {
           preserveState: true,
           replace: true,
         });
