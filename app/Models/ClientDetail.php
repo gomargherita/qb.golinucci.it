@@ -35,6 +35,12 @@ class ClientDetail extends Model
         'flag_prev_2022'
     ];
 
+    protected $casts = [
+        'confirmation' => 'boolean',
+        'with_accident' => 'boolean',
+        'flag_prev_2022' => 'boolean',
+    ];
+
     public function resolveRouteBinding($value, $field = null)
     {
         return $this->where($field ?? 'id', $value)->withTrashed()->firstOrFail();

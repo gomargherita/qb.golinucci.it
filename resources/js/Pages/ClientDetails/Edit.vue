@@ -81,6 +81,13 @@
             label="With accident"
             :checked="form.with_accident"
           />
+          <checkbox-input
+            v-model="form.flag_prev_2022"
+            :error="form.errors.flag_prev_2022"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="Flag Prev 2022"
+            :checked="form.flag_prev_2022"
+          />
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
           <button
