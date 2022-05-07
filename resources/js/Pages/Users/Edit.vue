@@ -113,7 +113,7 @@
           <th class="pb-4 pt-6 px-6" colspan="2">{{ __("Phone") }}</th>
         </tr>
         <tr
-          v-for="clientDetail in user.client_details"
+          v-for="clientDetail in user.clientDetails"
           :key="clientDetail.id"
           class="hover:bg-gray-100 focus-within:bg-gray-100"
         >
