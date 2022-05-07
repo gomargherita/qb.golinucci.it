@@ -31,7 +31,7 @@
                 >
                   {{ product.name }}
                 </h2>
-                <div class="mt-4">{{ product.description }}</div>
+                <div class="mt-4" v-html="product.description"></div>
                 <Link
                   class="gol-btn mt-8"
                   :style="`background-color: ${product.hex_color};`"

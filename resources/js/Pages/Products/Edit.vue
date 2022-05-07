@@ -36,7 +36,7 @@
               {{ __(product_type.name) }}
             </option>
           </select-input>
-          <textarea-input
+          <editor
             v-model="form.description"
             :error="form.errors.description"
             class="pb-8 pr-6 w-full lg:w-1/2"
@@ -71,14 +71,14 @@
             <option :value="1" :selected="form.active == 1">{{ __("Yes") }}</option>
             <option :value="0" :selected="form.active == 0">{{ __("No") }}</option>
           </select-input>
-          <file-input
+          <!-- <file-input
             v-model="form.icon"
             :error="form.errors.icon"
             class="pb-8 pr-6 w-full lg:w-1/2"
             type="file"
             accept="image/*"
             label="Image"
-          />
+          /> -->
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
           <button
@@ -111,6 +111,7 @@ import SelectInput from "@/Shared/SelectInput";
 import TextareaInput from "@/Shared/TextareaInput";
 import LoadingButton from "@/Shared/LoadingButton";
 import TrashedMessage from "@/Shared/TrashedMessage";
+import Editor from "@/Shared/Editor";
 
 export default {
   components: {
@@ -120,6 +121,7 @@ export default {
     TextareaInput,
     TextInput,
     TrashedMessage,
+    Editor,
   },
   layout: Layout,
   props: {
@@ -137,7 +139,7 @@ export default {
         detailed_description: this.product.detailed_description,
         conditions: this.product.conditions,
         hex_color: this.product.hex_color,
-        icon: this.product.icon,
+        //icon: this.product.icon,
         active: this.product.active,
       }),
     };
