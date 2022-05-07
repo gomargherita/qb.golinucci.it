@@ -39,7 +39,7 @@ class UpdateClientDetailsRequest extends FormRequest
             'varsion_ref' => ['nullable', 'max:25'],
             'note' => ['nullable'],
             'with_accident' => ['boolean'],
-            'flag_pre_2022' => ['boolean'],
+            'flag_prev_2022' => ['boolean'],
         ];
     }
 }
