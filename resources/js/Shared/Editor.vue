@@ -30,8 +30,8 @@
       class="tiptap-editor form-editor"
       :class="{ error: error }"
     />
+    <div v-if="error" class="form-error">{{ error }}</div>
   </div>
-  <div v-if="error" class="form-error">{{ error }}</div>
 </template>
 
 <script>
