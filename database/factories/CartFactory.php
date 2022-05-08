@@ -38,6 +38,7 @@ class CartFactory extends Factory
             'net_plus_access_premium' => $this->faker->numerify('###'),
             'indemnity_limit' => $this->faker->numerify('######'),
             'indemnity_limit_patrimonial' => $this->faker->numerify('######'),
+            'declarations_signature' => $this->faker->name(),
             'locked' => $this->faker->randomElement(['Y' ,'N']),
             'expired_at' => $this->faker->dateTimeBetween('-1 month', '+1 month'),
         ];

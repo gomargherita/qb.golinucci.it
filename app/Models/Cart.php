@@ -26,6 +26,7 @@ class Cart extends Model
         'net_plus_access_premium',
         'indemnity_limit',
         'indemnity_limit_patrimonial',
+        'declarations_signature',
         'expired_at',
         'locked',
     ];
