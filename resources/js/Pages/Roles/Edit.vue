@@ -8,7 +8,7 @@
       <span class="text-gray font-medium">/</span>
       <span>{{ form.name }}</span>
     </h1>
-    <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
+    <div class=" bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <text-input

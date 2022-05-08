@@ -10,7 +10,7 @@
       <span class="text-gray font-medium">/</span>{{ __("Create for")
       }}<span class="ml-2">{{ user.email }}</span>
     </h1>
-    <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
+    <div class=" bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="store">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <text-input v-model="form.user_id" :error="form.errors.user_id" type="hidden" />

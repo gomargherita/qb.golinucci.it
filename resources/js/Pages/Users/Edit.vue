@@ -1,7 +1,7 @@
 <template>
   <div>
     <Head :title="`${form.first_name} ${form.last_name}`" />
-    <div class="flex justify-start mb-8 max-w-3xl">
+    <div class="flex justify-start mb-8 ">
       <h1 class="text-3xl font-bold">
         <Link class="text-primary hover:text-secondary-400" :href="route('users')">{{
           __("Users")
@@ -14,7 +14,7 @@
     <trashed-message v-if="user.deleted_at" class="mb-6" @restore="restore">
       {{ __("This user has been deleted") }}.
     </trashed-message>
-    <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
+    <div class=" bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <text-input

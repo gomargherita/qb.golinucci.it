@@ -5,7 +5,7 @@
       <Link class="text-primary hover:text-secondary-400" :href="route('roles')">Roles</Link>
       <span class="text-gray font-medium">/</span> Create
     </h1>
-    <div class="max-w-3xl bg-white rounded-md shadow overflow-hidden">
+    <div class=" bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="store">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <text-input
