@@ -80,6 +80,22 @@
             label="Image"
           /> -->
         </div>
+        <h2 class="text-2xl font-bold flex flex-wrap -mb-8 -mr-6 p-8">{{ __("Declarations") }}</h2>
+
+        <div class="flex flex-wrap -mb-8 -mr-6 p-8">
+          <editor
+            v-model="form.pre_declarations"
+            :error="form.errors.pre_declarations"
+            class="pb-8 pr-6 w-full"
+            label="Testo pre dichiarazioni"
+          />
+          <editor
+            v-model="form.post_declarations"
+            :error="form.errors.post_declarations"
+            class="pb-8 pr-6 w-full"
+            label="Testo post dichiarazioni"
+          />
+        </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
           <button
             v-if="!product.deleted_at"
@@ -138,6 +154,8 @@ export default {
         description: this.product.description,
         detailed_description: this.product.detailed_description,
         conditions: this.product.conditions,
+        pre_declarations: this.product.pre_declarations,
+        post_declarations: this.product.post_declarations,
         hex_color: this.product.hex_color,
         //icon: this.product.icon,
         active: this.product.active,

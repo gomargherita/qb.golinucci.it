@@ -79,6 +79,8 @@ class ProductController extends Controller
                 'description' => $product->description,
                 'detailed_description' => $product->detailed_description,
                 'conditions' => $product->conditions,
+                'pre_declarations' => $product->pre_declarations,
+                'post_declarations' => $product->post_declarations,
                 'hex_color' => $product->hex_color,
                 'owner' => $product->owner,
                 'active' => $product->active,

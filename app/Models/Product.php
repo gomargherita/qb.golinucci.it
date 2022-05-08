@@ -22,6 +22,8 @@ class Product extends Model
         'detailed_description',
         'product_type_id',
         'conditions',
+        'pre_declarations',
+        'post_declarations',
         'hex_color',
         'active',
         'icon',

@@ -29,6 +29,8 @@ class StoreProductRequest extends FormRequest
             'description' => ['required'],
             'detailed_description' => ['required'],
             'conditions' => ['required'],
+            'pre_declarations' => ['required'],
+            'post_declarations' => ['required'],
             'hex_color' => ['required'],
             'icon' => ['required', 'image'],
             'active' => ['required', 'boolean'],

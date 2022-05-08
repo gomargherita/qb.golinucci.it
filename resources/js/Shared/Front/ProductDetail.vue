@@ -32,7 +32,7 @@
                   </div>
                 </div>
 
-                <div class="mt-4">{{ product.detailed_description }}</div>
+                <div class="mt-4" v-html="product.detailed_description"></div>
                 <div class="grid grid-cols-1 md:grid-cols-2 md:gap-4">
                   <button
                     type="button"
@@ -71,7 +71,7 @@
         :href="route('front.product.buy', product.id, null)"
         class="gol-btn my-8 bg-primary text-center"
       >
-        {{ __('Buy this Product') }}
+        {{ __("Buy this Product") }}
       </Link>
     </div>
   </div>
