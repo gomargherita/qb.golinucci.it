@@ -9,6 +9,7 @@ use App\Models\ClientDetail;
 use App\Models\Product;
 use App\Models\ProductOffer;
 use App\Notifications\InvoicePaid;
+use App\Rules\ProjectDeclarationsRule;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
@@ -167,6 +168,32 @@ class SiteController extends Controller
         return Inertia::render('Sites/BuyProduct', compact('product', 'clientDetails', 'cart'));
     }
 
+    public function store_step1(Product $product, Cart $cart, Request $request)
+    {
+        $user = auth()->user();
+        $cart = $this->prepareBeforeStore($user, $product, $cart);
+
+        $validated = $request->validate([
+            'user_id' => ['required'],
+            'first_name' => ['required'],
+            'last_name' => ['required'],
+            'fiscal_code' => ['required'],
+            'address' => ['required'],
+            'city' => ['required'],
+            'region' => ['required'],
+            'country' => ['required'],
+            'postal_code' => ['required'],
+            'phone' => ['required'],
+            'confirmation' => ['accepted']
+        ]);
+
+        ClientDetail::updateOrCreate(['user_id'   => $user->id], $validated);
+
+        $this->updateCartStep($cart, 2);
+
+        return redirect()->route('front.product.buy', compact('product', 'cart'));
+    }
+
     private function step2(Product $product, Cart $cart)
     {
         $user = auth()->user();
@@ -200,68 +227,6 @@ class SiteController extends Controller
         ]);
     }
 
-    private function step3(Product $product, Cart $cart)
-    {
-        return Inertia::render('Sites/BuyProduct', [
-            'product' => [
-                'id' => $product->id,
-                'name' => $product->name,
-                'type' => Str::slug($product->productType->name, '-'),
-                'conditions' => $product->conditions,
-                'pre_declarations' => $product->pre_declarations,
-                'post_declarations' => $product->post_declarations,
-                'declarations' => $product->productDeclarations, // TODO retrieve declarations
-                'icon' => $product->icon,
-                'hex_color' => $product->hex_color,
-                'offers' => $product->productOffers,
-                'deleted_at' => $product->deleted_at,
-            ],
-            'conditions' => $product->conditionalFields,
-            'cart' => $cart
-        ]);
-    }
-
-    // private function step4(Product $product)
-    // {
-    //     return Inertia::render('Sites/BuyProduct', compact('product'));
-    // }
-
-    // private function step5(Product $product)
-    // {
-    //     return Inertia::render('Sites/BuyProduct', compact('product'));
-    // }
-
-    // private function step6(Product $product)
-    // {
-    //     return Inertia::render('Sites/BuyProduct', compact('product'));
-    // }
-
-    public function store_step1(Product $product, Cart $cart, Request $request)
-    {
-        $user = auth()->user();
-        $cart = $this->prepareBeforeStore($user, $product, $cart);
-
-        $validated = $request->validate([
-            'user_id' => ['required'],
-            'first_name' => ['required'],
-            'last_name' => ['required'],
-            'fiscal_code' => ['required'],
-            'address' => ['required'],
-            'city' => ['required'],
-            'region' => ['required'],
-            'country' => ['required'],
-            'postal_code' => ['required'],
-            'phone' => ['required'],
-            'confirmation' => ['accepted']
-        ]);
-
-        ClientDetail::updateOrCreate(['user_id'   => $user->id], $validated);
-
-        $this->updateCartStep($cart, 2);
-
-        return redirect()->route('front.product.buy', compact('product', 'cart'));
-    }
-
     public function store_step2(Product $product, Cart $cart, Request $request)
     {
         $user = auth()->user();
@@ -290,18 +255,66 @@ class SiteController extends Controller
         return redirect()->route('front.product.buy', compact('product', 'cart'));
     }
 
+    private function step3(Product $product, Cart $cart)
+    {
+        return Inertia::render('Sites/BuyProduct', [
+            'product' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'type' => Str::slug($product->productType->name, '-'),
+                'pre_declarations' => $product->pre_declarations,
+                'post_declarations' => $product->post_declarations,
+                'declarations' => $product->productDeclarations, // TODO retrieve declarations
+                'icon' => $product->icon,
+                'hex_color' => $product->hex_color,
+                'deleted_at' => $product->deleted_at,
+            ],
+            'conditions' => $product->conditionalFields,
+            'cart' => $cart
+        ]);
+    }
+
     // TODO
     public function store_step3(Product $product, Cart $cart, Request $request)
     {
         $user = auth()->user();
         $cart = $this->prepareBeforeStore($user, $product, $cart);
 
-        $validated = $request->validate([]);
+        $validated = $request->validate([
+            'signature' => ['required', 'string', 'min:5'],
+            'selected_declarations' => ['required', 'array', new ProjectDeclarationsRule($product->productDeclarations)],
+            'selected_declarations.*' => ['integer', 'exists:product_declarations,id'],
+        ]);
 
+        // TODO generare firma semplice con un campo fittizio
+
+        // TODO generare il pdf e persisterlo
+        
         $this->updateCartStep($cart, 4);
 
         return redirect()->route('front.product.buy', compact('product', 'cart'));
     }
+
+    // private function step4(Product $product)
+    // {
+    //     return Inertia::render('Sites/BuyProduct', compact('product'));
+    // }
+
+    // private function step5(Product $product)
+    // {
+    //     return Inertia::render('Sites/BuyProduct', compact('product'));
+    // }
+
+    // private function step6(Product $product)
+    // {
+    //     return Inertia::render('Sites/BuyProduct', compact('product'));
+    // }
+
+
+
+
+
+
 
     // TODO
     public function store_step4(Product $product, Cart $cart, Request $request)

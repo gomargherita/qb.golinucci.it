@@ -5,6 +5,12 @@
     <div v-html="product.pre_declarations"></div>
     <form @submit.prevent="submit">
       <div class="overflow-x-auto p-1 w-full">
+        <div class="grid justify-items-end">
+          <label class="bg-primary px-3 py-2 my-2 rounded-full">
+            <span class="text-white text-lg mr-2">Conferma tutte</span>
+            <input type="checkbox" v-model="selectAll" />
+          </label>
+        </div>
         <table
           class="declaration-table table-auto w-full mx-auto border-collapse border-2 border-primary shadow rounded-lg mt-8 overflow-hidden"
         >
@@ -25,12 +31,13 @@
                   for="product_declaration_id_selected"
                 >
                   <input
-                    id="product_offer_id_selected"
-                    name="product_offer_id_selected"
-                    :data-declaration_id="declaration.id"
+                    v-model="form.selected_declarations"
+                    :value="declaration.id"
                     class="mr-1"
+                    name="selected_declarations[]"
                     type="checkbox"
                     @click="declarationSelected"
+                    number
                   />
                 </label>
               </td>
@@ -38,8 +45,15 @@
           </tbody>
         </table>
       </div>
-      <div v-html="product.post_declarations"></div>
-      <div class="my-8 float-right">FIRMA?</div>
+      <div class="my-4" v-html="product.post_declarations"></div>
+      <div class="my-8 grid justify-items-end">
+        <TextInput
+            v-model="form.signature"
+            :error="form.errors.signature"
+            class="pb-8 w-full lg:w-1/3"
+            label="Firmatario"
+          />
+      </div>
       <div>
         <BreezeValidationErrors class="mb-4" />
 
@@ -60,11 +74,13 @@
 import HTwo from "@/Shared/Front/HTwo";
 import BuyLoadingButton from "@/Shared/BuyLoadingButton";
 import BreezeValidationErrors from "@/Shared/ValidationErrors.vue";
+import TextInput from "@/Shared/TextInput";
 
 export default {
   components: {
     BuyLoadingButton,
     HTwo,
+    TextInput,
     BreezeValidationErrors,
   },
   props: {
@@ -75,19 +91,30 @@ export default {
   data() {
     return {
       form: this.$inertia.form({
-        // user_id: this.$page.props.auth.user.id,
-        // first_name: this.$page.props.clientDetails.first_name,
-        // last_name: this.$page.props.clientDetails.last_name,
-        // fiscal_code: this.$page.props.clientDetails.fiscal_code,
-        // address: this.$page.props.clientDetails.address,
-        // city: this.$page.props.clientDetails.city,
-        // region: this.$page.props.clientDetails.region,
-        // postal_code: this.$page.props.clientDetails.postal_code,
-        // country: "IT",
-        // phone: this.$page.props.clientDetails.phone,
-        // confirmation: false,
+        selected_declarations: [],
+        signature: null
       }),
     };
+  },
+  computed: {
+    selectAll: {
+      get: function () {
+        return this.product.declarations
+          ? this.form.selected_declarations.length == this.product.declarations.length
+          : false;
+      },
+      set: function (value) {
+        var selected = [];
+
+        if (value) {
+          this.product.declarations.forEach(function (declaration) {
+            selected.push(declaration.id);
+          });
+        }
+
+        this.form.selected_declarations = selected;
+      },
+    },
   },
   methods: {
     submit() {
