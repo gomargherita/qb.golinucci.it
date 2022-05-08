@@ -47,5 +47,8 @@
     "Region": "Region",
     "Postal Code": "Postal Code",
     "Phone": "Phone",
-    "I confirm the correctness of the above data": "I confirm the correctness of the above data"
+    "I confirm the correctness of the above data": "I confirm the correctness of the above data",
+
+    "Bold": "Bold",
+    "Italic": "Italic"
 }

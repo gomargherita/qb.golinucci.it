@@ -47,5 +47,8 @@
     "Region": "Provincia",
     "Postal Code": "CAP",
     "Phone": "Telefono",
-    "I confirm the correctness of the above data": "Confermo la correttezza dei dati inseriti"
+    "I confirm the correctness of the above data": "Confermo la correttezza dei dati inseriti",
+
+    "Bold": "Grassetto",
+    "Italic": "Corsivo"
 }
