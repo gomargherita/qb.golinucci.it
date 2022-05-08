@@ -25,6 +25,7 @@ class CreateProductsTable extends Migration
             $table->text('pre_declarations');
             $table->text('post_declarations');
             $table->text('conditions');
+            $table->text('payments_description');
             $table->string('icon');
             $table->string('hex_color');
             $table->boolean('active');

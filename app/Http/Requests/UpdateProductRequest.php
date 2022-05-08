@@ -31,6 +31,7 @@ class UpdateProductRequest extends FormRequest
             'conditions' => ['required', 'not_regex:/^(<p><\/p>)$/i'],
             'pre_declarations' => ['required', 'not_regex:/^(<p><\/p>)$/i'],
             'post_declarations' => ['required', 'not_regex:/^(<p><\/p>)$/i'],
+            'payments_description' => ['required', 'not_regex:/^(<p><\/p>)$/i'],
             'hex_color' => ['required'],
             //'icon' => ['required', 'image'],
             'active' => ['required', 'boolean'],

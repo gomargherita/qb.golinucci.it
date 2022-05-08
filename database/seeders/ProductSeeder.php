@@ -52,6 +52,7 @@ class ProductSeeder extends Seeder
               attivare alla cessazione del rapporto di lavoro dipendente.
             </li>
           </ol>',
+          'payments_description' => '',
             'active' => 1
         ]);
 

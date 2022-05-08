@@ -97,6 +97,17 @@
             label="Testo post dichiarazioni"
           />
         </div>
+
+        <h2 class="text-2xl font-bold flex flex-wrap -mb-8 -mr-6 p-8">{{ __("Payments") }}</h2>
+
+        <div class="flex flex-wrap -mb-8 -mr-6 p-8">
+          <editor
+            v-model="form.payments_description"
+            :error="form.errors.payments_description"
+            class="pb-8 pr-6 w-full"
+            label="Testo gateway di pagamento"
+          />
+        </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
           <button
             v-if="!product.deleted_at"
@@ -157,6 +168,7 @@ export default {
         conditions: this.product.conditions,
         pre_declarations: this.product.pre_declarations,
         post_declarations: this.product.post_declarations,
+        payments_description: this.product.payments_description,
         hex_color: this.product.hex_color,
         icon: this.product.icon,
         active: this.product.active,
