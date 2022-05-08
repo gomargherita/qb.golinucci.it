@@ -182,8 +182,8 @@ export default {
     submit() {
       this.form.post(
         this.route("front.product.store_step2", {
-          product: this.$page.props.product.id,
-          cart: this.$page.props.cart.cart_ref,
+          product: this.product.id,
+          cart: this.cart.cart_ref,
         }),
         {
           preserveScroll: (page) => Object.keys(page.props.errors).length,

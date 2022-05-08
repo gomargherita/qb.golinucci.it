@@ -162,8 +162,8 @@ export default {
     submit() {
       this.form.post(
         this.route("front.product.store_step1", {
-          product: this.$page.props.product.id,
-          cart: this.$page.props.cart.cart_ref,
+          product: this.product.id,
+          cart: this.cart.cart_ref,
         }),
         {
           // onSuccess: () => this.form.reset('password', 'password_confirmation'),
