@@ -1,21 +1,42 @@
 <template>
-  <editor-content :editor="editor" />
+  <div :class="$attrs.class">
+    <label v-if="label" class="form-label" :for="id">{{ __(label) }}:</label>
+    <editor-content
+      :id="id"
+      v-bind="{ ...$attrs, class: null }"
+      :editor="editor"
+      class="tiptap-editor form-editor"
+      :class="{ error: error }"
+    />
+  </div>
+  <div v-if="error" class="form-error">{{ error }}</div>
 </template>
 
 <script>
+import { v4 as uuid } from "uuid";
 import { Editor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
 
 export default {
+  inheritAttrs: false,
+
   components: {
     EditorContent,
   },
 
   props: {
+    id: {
+      type: String,
+      default() {
+        return `editor-input-${uuid()}`;
+      },
+    },
     modelValue: {
       type: String,
       default: "",
     },
+    error: String,
+    label: String,
   },
 
   data() {

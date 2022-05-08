@@ -4,7 +4,8 @@
 
 .form-input,
 .form-textarea,
-.form-select {
+.form-select,
+.form-editor {
   @apply p-2 leading-normal block w-full border text-gray-700 bg-white font-sans rounded text-left appearance-none relative focus:border-indigo-400 focus:ring;
 
   &::placeholder {
@@ -27,10 +28,47 @@
 
 .form-input.error,
 .form-textarea.error,
-.form-select.error {
+.form-select.error,
+.form-editor.error {
   @apply border-red-500 focus:ring focus:ring-red-200;
 }
 
 .form-error {
   @apply text-red-700 mt-2 text-sm;
+}
+
+/* Basic editor styles */
+.form-editor.tiptap-editor .ProseMirror{
+    @apply p-2 bg-gray-50;
+}
+
+.form-editor.tiptap-editor .ProseMirror > * + * {
+    margin-top: 0.75em;
+}
+
+.form-editor.tiptap-editor .ProseMirror code {
+    background-color: rgba(#616161, 0.1);
+    color: #616161;
+}
+
+.form-editor.tiptap-editor {
+    padding: 1rem 0 0;
+}
+
+.form-editor.tiptap-editor h3 {
+    margin: 1rem 0 0.5rem;
+}
+
+.form-editor.tiptap-editor pre {
+    border-radius: 5px;
+    color: #333;
+}
+
+.form-editor.tiptap-editor code {
+    display: block;
+    white-space: pre-wrap;
+    font-size: 0.8rem;
+    padding: 0.75rem 1rem;
+    background-color:#e9ecef;
+    color: #495057;
 }

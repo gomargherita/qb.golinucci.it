@@ -39,19 +39,19 @@
           <editor
             v-model="form.description"
             :error="form.errors.description"
-            class="pb-8 pr-6 w-full lg:w-1/2"
+            class="pb-8 pr-6 w-full"
             label="Description"
           />
-          <textarea-input
+          <editor
             v-model="form.detailed_description"
             :error="form.errors.detailed_description"
-            class="pb-8 pr-6 w-full lg:w-1/2"
+            class="pb-8 pr-6 w-full"
             label="Detailed description"
           />
-          <textarea-input
+          <editor
             v-model="form.conditions"
             :error="form.errors.conditions"
-            class="pb-8 pr-6 w-full lg:w-1/2"
+            class="pb-8 pr-6 w-full"
             label="Conditions"
           />
           <text-input
