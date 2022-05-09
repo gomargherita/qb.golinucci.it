@@ -86,7 +86,6 @@
                     for="product_offer_id_selected"
                   >
                     <input
-                      id="product_offer_id_selected"
                       name="product_offer_id_selected"
                       :data-offer_id="offer.id"
                       class="mr-1"

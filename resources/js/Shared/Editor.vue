@@ -2,7 +2,7 @@
   <div :class="$attrs.class">
     <label v-if="label" class="form-label" :for="id">{{ __(label) }}:</label>
     <div class="editor-menu">
-      <div class="inline-flex rounded-md shadow-sm" role="group">
+      <div class="inline-flex ml-1 rounded-md shadow-sm" role="group">
         <button
           type="button"
           class="rounded-tl-lg py-2 px-4 text-sm font-medium text-gray-900 bg-white border-t border-x border-gray-200 hover:bg-gray-100 hover:text-primary focus:z-10"

@@ -85,9 +85,6 @@ export default {
   },
   computed: {
     current_step() {
-      // console.log(this.$inertia.page.url.slice(-1));
-      // ATTENTION: it only works with max 9 steps
-      //return this.$inertia.page.url.slice(-1);
       return this.$page.props.cart.product_step_id;
     },
   },

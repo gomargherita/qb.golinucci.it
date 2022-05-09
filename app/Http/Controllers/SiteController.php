@@ -6,16 +6,18 @@ use App\Library\Services\LloydsDoPrint;
 use App\Models\Account;
 use App\Models\Cart;
 use App\Models\ClientDetail;
+use App\Models\Payment;
+use App\Models\PaymentGateway;
 use App\Models\Product;
 use App\Models\ProductOffer;
 use App\Notifications\InvoicePaid;
 use App\Rules\ProjectDeclarationsRule;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
+use Srmklive\PayPal\Services\PayPal as PayPalClient;
+
 
 class SiteController extends Controller
 {
@@ -51,7 +53,6 @@ class SiteController extends Controller
                 'email' => $user->email,
                 'owner' => $user->owner,
                 //'photo' => $user->photo_path ? URL::route('image', ['path' => $user->photo_path, 'w' => 60, 'h' => 60, 'fit' => 'crop']) : null,
-                'deleted_at' => $user->deleted_at,
                 'role' => $user->getRoleNames()->first(),
                 'client_details' => $user->clientDetails ? $user->clientDetails : null,
             ]
@@ -71,7 +72,6 @@ class SiteController extends Controller
                 'description' => $product->description,
                 'icon' => $product->icon,
                 'hex_color' => $product->hex_color,
-                'deleted_at' => $product->deleted_at,
             ]);
 
         return Inertia::render('Sites/Products', [
@@ -100,7 +100,6 @@ class SiteController extends Controller
                 'icon' => $product->icon,
                 'hex_color' => $product->hex_color,
                 'offers' => $product->productOffers,
-                'deleted_at' => $product->deleted_at,
             ],
             'conditions' => $product->conditionalFields,
         ]);
@@ -220,7 +219,6 @@ class SiteController extends Controller
                 'icon' => $product->icon,
                 'hex_color' => $product->hex_color,
                 'offers' => $product->productOffers,
-                'deleted_at' => $product->deleted_at,
             ],
             'conditions' => $product->conditionalFields,
             'cart' => $cart
@@ -264,17 +262,15 @@ class SiteController extends Controller
                 'type' => Str::slug($product->productType->name, '-'),
                 'pre_declarations' => $product->pre_declarations,
                 'post_declarations' => $product->post_declarations,
-                'declarations' => $product->productDeclarations, // TODO retrieve declarations
+                'declarations' => $product->productDeclarations,
                 'icon' => $product->icon,
                 'hex_color' => $product->hex_color,
-                'deleted_at' => $product->deleted_at,
             ],
             'conditions' => $product->conditionalFields,
             'cart' => $cart
         ]);
     }
 
-    // TODO
     public function store_step3(Product $product, Cart $cart, Request $request)
     {
         $user = auth()->user();
@@ -286,35 +282,35 @@ class SiteController extends Controller
             'selected_declarations.*' => ['integer', 'exists:product_declarations,id'],
         ]);
 
-        // TODO generare firma semplice con un campo fittizio
+        // salvo nel db la firma delle dichiarazioni, da usare poi per la generazione del documento
+        // nota: il salvataggio avviene poco sotto, nel metodo updateCartStep
+        $cart->declarations_signature = $validated['signature'];
 
         // TODO generare il pdf e persisterlo
-        
+
         $this->updateCartStep($cart, 4);
 
         return redirect()->route('front.product.buy', compact('product', 'cart'));
     }
 
-    // private function step4(Product $product)
-    // {
-    //     return Inertia::render('Sites/BuyProduct', compact('product'));
-    // }
+    private function step4(Product $product, Cart $cart)
+    {
+        $payment_gateways = PaymentGateway::where(['public' => 1])->get();
 
-    // private function step5(Product $product)
-    // {
-    //     return Inertia::render('Sites/BuyProduct', compact('product'));
-    // }
-
-    // private function step6(Product $product)
-    // {
-    //     return Inertia::render('Sites/BuyProduct', compact('product'));
-    // }
-
-
-
-
-
-
+        return Inertia::render('Sites/BuyProduct', [
+            'product' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'type' => Str::slug($product->productType->name, '-'),
+                'payment_gateways' => $payment_gateways,
+                'payments_description' => $product->payments_description,
+                'icon' => $product->icon,
+                'hex_color' => $product->hex_color,
+            ],
+            'conditions' => $product->conditionalFields,
+            'cart' => $cart
+        ]);
+    }
 
     // TODO
     public function store_step4(Product $product, Cart $cart, Request $request)
@@ -322,11 +318,73 @@ class SiteController extends Controller
         $user = auth()->user();
         $cart = $this->prepareBeforeStore($user, $product, $cart);
 
-        $validated = $request->validate([]);
+        $validated = $request->validate([
+            'payment_gateway_id_selected' => ['required', 'integer'],
+        ]);
 
-        $this->updateCartStep($cart, 5);
+        // recupero o genero un record di payment
+        $payment = Payment::firstOrCreate(
+            [
+                'cart_id' => $cart->id,
+                'payment_gateway_id' => $validated['payment_gateway_id_selected']
+            ],
+            [
+                'total_payable' => $cart->total_payable,
+            ]
+        );
+
+        // TODO
+        switch ($validated['payment_gateway_id_selected']) {
+            case 1:
+                // paypal
+                $provider = new PayPalClient;
+                $provider->setApiCredentials(config('paypal')); // Pull values from Config
+                $token = $provider->getAccessToken();
+                $provider->setAccessToken($token);
+
+                // Prepare Order
+                $order = $provider->createOrder([
+                    'intent' => 'CAPTURE',
+                    'purchase_units' => [[
+                        'reference_id' => 'transaction_number' . $cart->id,
+                        'amount' => [
+                            'currency_code' => 'EUR',
+                            'value' => $cart->total_payable
+                        ]
+                    ]],
+                    'application_context' => [
+                        'cancel_url' => 'https://laravel-paypal-app.loc/cancel',
+                        'return_url' => 'https://laravel-paypal-app.loc/success'
+                    ]
+                ]);
+
+                // Store Token so we can retrieve after PayPal sends them back to us
+                $payment->transaction_ref = $order['id'];
+                $payment->save();
+
+                // Send user to PayPal to confirm payment
+                return redirect($order['links'][1]['href'])->send();
+                // porto l-utente  allo step successivo se pagamento andato a buon fine
+                $this->updateCartStep($cart, 5);
+                break;
+            case 2:
+                // bbm
+                // porto utente a step bonifico bancario
+                break;
+            default:
+        }
 
         return redirect()->route('front.product.buy', compact('product', 'cart'));
+    }
+
+    private function step5(Product $product, Cart $cart)
+    {
+        //     return Inertia::render('Sites/BuyProduct', compact('product'));
+        // }
+
+        // private function step6(Product $product)
+        // {
+        //     return Inertia::render('Sites/BuyProduct', compact('product'));
     }
 
     // TODO
@@ -340,6 +398,16 @@ class SiteController extends Controller
         $this->updateCartStep($cart, 6);
 
         return redirect()->route('front.product.buy', compact('product', 'cart'));
+    }
+
+    private function step6(Product $product, Cart $cart)
+    {
+        //     return Inertia::render('Sites/BuyProduct', compact('product'));
+        // }
+
+        // private function step6(Product $product)
+        // {
+        //     return Inertia::render('Sites/BuyProduct', compact('product'));
     }
 
     // TODO
