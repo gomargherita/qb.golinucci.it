@@ -30,7 +30,7 @@
           </div>
         </div>
       </div>
-      <div>
+      <div v-if="!product.payment">
         <div class="my-4" v-html="product.payments_description"></div>
         <BreezeValidationErrors class="mb-4" />
         <buy-loading-button
@@ -41,6 +41,39 @@
           type="submit"
           >{{ __("Next") }}</buy-loading-button
         >
+      </div>
+      <div v-if="product.payment">
+        <div class="mt-8 mb-24 text-center text-lg">
+          <p class="bold">
+            Hai selezionato il metodo di pagamento con Bonifico Bancario.
+          </p>
+
+          <p>Ecco i dati per effettuare il bonifico:</p>
+
+          <ul class="list-none list-inside font-bold text-primary my-8">
+            <li>
+              Importo:
+              <span
+                v-text="$filters.formatPrice(parseFloat(product.payment.total_payable))"
+              ></span>
+            </li>
+            <li>IBAN: IT17Y0200805366907500043291</li>
+            <li>Rag.Soc.: Golinucci Srl</li>
+          </ul>
+          <p>
+            Riceverai una email al tuo indirizzo email con un riassunto di queste stesse
+            informazioni.
+          </p>
+          <p>
+            <b class="font-bold">
+              Nota importante: la transazione (e la generazione della polizza) potrà
+              essere portata avanti nel giorno lavorativo successivo a quello di data
+              valuta di pagamento con bonifico bancario.<br />
+              Riceverai successivamente una email con un link e ulteriori indicazioni per
+              procedere con generazione della tua polizza.</b
+            >
+          </p>
+        </div>
       </div>
     </form>
   </div>

@@ -10,6 +10,7 @@ use App\Models\Payment;
 use App\Models\PaymentGateway;
 use App\Models\Product;
 use App\Models\ProductOffer;
+use App\Notifications\BankTransfer;
 use App\Notifications\InvoicePaid;
 use App\Rules\ProjectDeclarationsRule;
 use Illuminate\Foundation\Auth\User;
@@ -81,8 +82,6 @@ class SiteController extends Controller
 
     public function product(Product $product)
     {
-        // $invoice = 'invoice';
-        // auth()->user()->notify(new InvoicePaid($invoice));
         $product = $product->load([
             'productOffers' => function ($query) {
                 $flag_prev_2022 = 0;
@@ -131,7 +130,8 @@ class SiteController extends Controller
                         return $this->step3($product, $cart);
                         break;
                     case 4:
-                        return $this->step4($product, $cart);
+                        // optional payment 
+                        return $this->step4($product, $cart, request('payment'));
                         break;
                     case 5:
                         return $this->step5($product, $cart);
@@ -293,23 +293,41 @@ class SiteController extends Controller
         return redirect()->route('front.product.buy', compact('product', 'cart'));
     }
 
-    private function step4(Product $product, Cart $cart)
+    private function step4(Product $product, Cart $cart, $payment = null)
     {
-        $payment_gateways = PaymentGateway::where(['public' => 1])->get();
+        if (empty($payment)) {
+            $payment_gateways = PaymentGateway::where(['public' => 1])->get();
 
-        return Inertia::render('Sites/BuyProduct', [
-            'product' => [
-                'id' => $product->id,
-                'name' => $product->name,
-                'type' => Str::slug($product->productType->name, '-'),
-                'payment_gateways' => $payment_gateways,
-                'payments_description' => $product->payments_description,
-                'icon' => $product->icon,
-                'hex_color' => $product->hex_color,
-            ],
-            'conditions' => $product->conditionalFields,
-            'cart' => $cart
-        ]);
+            return Inertia::render('Sites/BuyProduct', [
+                'product' => [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'type' => Str::slug($product->productType->name, '-'),
+                    'payment_gateways' => $payment_gateways,
+                    'payments_description' => $product->payments_description,
+                    'icon' => $product->icon,
+                    'hex_color' => $product->hex_color,
+                ],
+                'conditions' => $product->conditionalFields,
+                'cart' => $cart
+            ]);
+        } else {
+            $payment_data = Payment::findOrFail($payment);
+
+            return Inertia::render('Sites/BuyProduct', [
+                'product' => [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'type' => Str::slug($product->productType->name, '-'),
+                    'payments_description' => $product->payments_description,
+                    'payment' => $payment_data,
+                    'icon' => $product->icon,
+                    'hex_color' => $product->hex_color,
+                ],
+                'conditions' => $product->conditionalFields,
+                'cart' => $cart
+            ]);
+        }
     }
 
     // TODO
@@ -337,44 +355,54 @@ class SiteController extends Controller
         switch ($validated['payment_gateway_id_selected']) {
             case 1:
                 // paypal
-                $provider = new PayPalClient;
-                $provider->setApiCredentials(config('paypal')); // Pull values from Config
-                $token = $provider->getAccessToken();
-                $provider->setAccessToken($token);
-
-                // Prepare Order
-                $order = $provider->createOrder([
-                    'intent' => 'CAPTURE',
-                    'purchase_units' => [[
-                        'reference_id' => 'transaction_number' . $cart->id,
-                        'amount' => [
-                            'currency_code' => 'EUR',
-                            'value' => $cart->total_payable
-                        ]
-                    ]],
-                    'application_context' => [
-                        'cancel_url' => 'https://laravel-paypal-app.loc/cancel',
-                        'return_url' => 'https://laravel-paypal-app.loc/success'
-                    ]
-                ]);
-
-                // Store Token so we can retrieve after PayPal sends them back to us
-                $payment->transaction_ref = $order['id'];
-                $payment->save();
-
-                // Send user to PayPal to confirm payment
-                return redirect($order['links'][1]['href'])->send();
-                // porto l-utente  allo step successivo se pagamento andato a buon fine
+                $this->handle_step4paypal($cart, $payment);
                 $this->updateCartStep($cart, 5);
                 break;
             case 2:
                 // bbm
-                // porto utente a step bonifico bancario
+                auth()->user()->notify(new BankTransfer($payment));
+
+                return redirect()->route('front.product.buy', compact('product', 'cart', 'payment'));
                 break;
             default:
         }
 
         return redirect()->route('front.product.buy', compact('product', 'cart'));
+    }
+
+    // TODO TO FINISH
+    private function handle_step4paypal(Cart $cart, Payment $payment)
+    {
+        $provider = new PayPalClient;
+        $provider->setApiCredentials(config('paypal')); // Pull values from Config
+        $token = $provider->getAccessToken();
+        $provider->setAccessToken($token);
+
+        // Prepare Order
+        $order = $provider->createOrder([
+            'intent' => 'CAPTURE',
+            'purchase_units' => [[
+                'reference_id' => 'transaction_number' . $cart->id,
+                'amount' => [
+                    'currency_code' => 'EUR',
+                    'value' => $cart->total_payable
+                ]
+            ]],
+            'application_context' => [
+                'cancel_url' => 'https://laravel-paypal-app.loc/cancel', //route('post.show', ['post' => 1]);
+                'return_url' => 'https://laravel-paypal-app.loc/success'
+            ]
+        ]);
+
+        dd($order);
+
+        // Store Token so we can retrieve after PayPal sends them back to us
+        $payment->transaction_ref = $order['id'];
+        $payment->save();
+
+        // Send user to PayPal to confirm payment
+        return redirect($order['links'][1]['href'])->send();
+        // porto l-utente  allo step successivo se pagamento andato a buon fine
     }
 
     private function step5(Product $product, Cart $cart)
