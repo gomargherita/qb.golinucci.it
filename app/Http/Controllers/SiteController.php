@@ -356,12 +356,10 @@ class SiteController extends Controller
             case 1:
                 // paypal
                 $this->handle_step4paypal($cart, $payment);
-                $this->updateCartStep($cart, 5);
                 break;
             case 2:
                 // bbm
                 auth()->user()->notify(new BankTransfer($payment));
-
                 return redirect()->route('front.product.buy', compact('product', 'cart', 'payment'));
                 break;
             default:
@@ -374,7 +372,7 @@ class SiteController extends Controller
     private function handle_step4paypal(Cart $cart, Payment $payment)
     {
         $provider = new PayPalClient;
-        $provider->setApiCredentials(config('paypal')); // Pull values from Config
+        $provider->setApiCredentials(config('paypal'));
         $token = $provider->getAccessToken();
         $provider->setAccessToken($token);
 
@@ -402,7 +400,12 @@ class SiteController extends Controller
 
         // Send user to PayPal to confirm payment
         return redirect($order['links'][1]['href'])->send();
+        
+        // E DA QUI?
         // porto l-utente  allo step successivo se pagamento andato a buon fine
+
+        // TODO CAPIRE
+        $this->updateCartStep($cart, 5);
     }
 
     private function step5(Product $product, Cart $cart)
