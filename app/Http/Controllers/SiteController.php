@@ -312,7 +312,7 @@ class SiteController extends Controller
                 'cart' => $cart
             ]);
         } else {
-            $payment_data = Payment::findOrFail($payment);
+            $payment_data = Payment::query()->where(['cart_id' => $cart->id])->findOrFail($payment);
 
             return Inertia::render('Sites/BuyProduct', [
                 'product' => [
