@@ -104,7 +104,6 @@ export default {
   },
   methods: {
     paymentGatewaySelected: function (evt) {
-      console.log(evt.target.dataset.payment_id);
       this.form.payment_gateway_id_selected = evt.target.dataset.payment_id;
     },
     submit() {

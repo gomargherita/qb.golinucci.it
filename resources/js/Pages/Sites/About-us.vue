@@ -15,12 +15,10 @@
 
 <script>
 import HOne from "@/Shared/Front/HOne";
-import ProductBox from "@/Shared/Front/ProductBox";
 
 export default {
   components: {
     HOne,
-    ProductBox,
   },
 };
 </script>

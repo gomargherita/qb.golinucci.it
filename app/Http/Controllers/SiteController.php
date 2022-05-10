@@ -343,33 +343,26 @@ class SiteController extends Controller
         // recupero o genero un record di payment
         $payment = Payment::firstOrCreate(
             [
-                'cart_id' => $cart->id,
-                'payment_gateway_id' => $validated['payment_gateway_id_selected']
+                'cart_id' => $cart->id
             ],
             [
+                'payment_gateway_id' => $validated['payment_gateway_id_selected'],
                 'total_payable' => $cart->total_payable,
             ]
         );
 
-        // TODO
-        switch ($validated['payment_gateway_id_selected']) {
-            case 1:
-                // paypal
-                $this->handle_step4paypal($cart, $product, $payment);
-                break;
-            case 2:
-                // bbm
-                // TODO add cart details
-                auth()->user()->notify(new BankTransferGatewayPayment($payment));
-                return redirect()->route('front.product.buy', compact('product', 'cart', 'payment'));
-                break;
-            default:
+        if ($validated['payment_gateway_id_selected'] == 1) {
+            // paypal
+            $url = $this->handle_step4paypal($cart, $product, $payment);
+            return redirect()->route('front.paypal_redirect', ['url' => $url]);
+        } else if ($validated['payment_gateway_id_selected'] == 2) {
+            // bbm
+            // TODO add cart details
+            auth()->user()->notify(new BankTransferGatewayPayment($payment));
+            return redirect()->route('front.product.buy', compact('product', 'cart', 'payment'));
         }
-
-        return redirect()->route('front.product.buy', compact('product', 'cart'));
     }
 
-    // TODO TO FINISH
     private function handle_step4paypal(Cart $cart, Product $product, Payment $payment)
     {
         $provider = new PayPalClient;
@@ -404,22 +397,20 @@ class SiteController extends Controller
         // Store Token so we can retrieve after PayPal sends them back to us
         $payment->transaction_ref = $order['id'];
         $payment->save();
-
-        //dd($order);
         $paypal_redirect_url = $order['links'][1]['href'];
-        // dd($paypal_redirect_url);
 
-        // Send user to PayPal to confirm payment
-        //return Inertia::location($paypal_redirect_url);
-        //return redirect()->away($paypal_redirect_url);
-        return redirect()->route('front.testtest');
+        return $paypal_redirect_url;
     }
 
-    public function testtest()
+    public function paypal_redirect(Request $request)
     {
-        // funzionano entrambe
-        //return redirect()->away('https://www.sandbox.paypal.com/checkoutnow?token=6E265614GJ115263R');
-        return Inertia::location('https://www.sandbox.paypal.com/checkoutnow?token=6E265614GJ115263R');
+        $url = $request->url;
+        if (!empty($url)) {
+            // funzionano entrambe
+            //return redirect()->away($url);
+            return Inertia::location($url);
+        }
+        abort(404);
     }
 
     /**

@@ -49,7 +49,7 @@ class BankTransferGatewayPayment extends Notification
             ->line('Importo: ' . $this->payment->total_payable . '€')
             ->line('IBAN: IT17Y0200805366907500043291')
             ->line('Rag.Soc.: Golinucci Srl')
-            ->line('Nota importante: la transazione (e la generazione della polizza) potrà
+            ->line('Nota importante: l\'emissione, e la relativa copertura, potrà
             essere portata avanti nel giorno lavorativo successivo a quello di data
             valuta di pagamento con bonifico bancario.
             Riceverai successivamente una email con un link e ulteriori indicazioni per
