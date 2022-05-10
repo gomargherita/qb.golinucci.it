@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class BankTransfer extends Notification
+class BankTransferGatewayPayment extends Notification
 {
     use Queueable;
 
@@ -53,7 +53,7 @@ class BankTransfer extends Notification
             essere portata avanti nel giorno lavorativo successivo a quello di data
             valuta di pagamento con bonifico bancario.
             Riceverai successivamente una email con un link e ulteriori indicazioni per
-            procedere con generazione della tua polizza.')
+            procedere con la generazione della tua polizza.')
             ->action('Notification Action', url('/'));
     }
 

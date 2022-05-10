@@ -10,8 +10,7 @@ use App\Models\Payment;
 use App\Models\PaymentGateway;
 use App\Models\Product;
 use App\Models\ProductOffer;
-use App\Notifications\BankTransfer;
-use App\Notifications\InvoicePaid;
+use App\Notifications\BankTransferGatewayPayment;
 use App\Rules\ProjectDeclarationsRule;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
@@ -359,7 +358,7 @@ class SiteController extends Controller
                 break;
             case 2:
                 // bbm
-                auth()->user()->notify(new BankTransfer($payment));
+                auth()->user()->notify(new BankTransferGatewayPayment($payment));
                 return redirect()->route('front.product.buy', compact('product', 'cart', 'payment'));
                 break;
             default:
