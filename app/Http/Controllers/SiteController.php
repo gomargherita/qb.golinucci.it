@@ -11,6 +11,7 @@ use App\Models\PaymentGateway;
 use App\Models\Product;
 use App\Models\ProductOffer;
 use App\Notifications\BankTransferGatewayPayment;
+use App\Notifications\PaypalGatewayPaymentCancel;
 use App\Rules\ProjectDeclarationsRule;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
@@ -354,10 +355,11 @@ class SiteController extends Controller
         switch ($validated['payment_gateway_id_selected']) {
             case 1:
                 // paypal
-                $this->handle_step4paypal($cart, $payment);
+                $this->handle_step4paypal($cart, $product, $payment);
                 break;
             case 2:
                 // bbm
+                // TODO add cart details
                 auth()->user()->notify(new BankTransferGatewayPayment($payment));
                 return redirect()->route('front.product.buy', compact('product', 'cart', 'payment'));
                 break;
@@ -368,7 +370,7 @@ class SiteController extends Controller
     }
 
     // TODO TO FINISH
-    private function handle_step4paypal(Cart $cart, Payment $payment)
+    private function handle_step4paypal(Cart $cart, Product $product, Payment $payment)
     {
         $provider = new PayPalClient;
         $provider->setApiCredentials(config('paypal'));
@@ -379,32 +381,83 @@ class SiteController extends Controller
         $order = $provider->createOrder([
             'intent' => 'CAPTURE',
             'purchase_units' => [[
-                'reference_id' => 'transaction_number' . $cart->id,
+                'reference_id' => 'transaction_number' . $payment->id,
                 'amount' => [
                     'currency_code' => 'EUR',
                     'value' => $cart->total_payable
                 ]
             ]],
             'application_context' => [
-                'cancel_url' => 'https://laravel-paypal-app.loc/cancel', //route('post.show', ['post' => 1]);
-                'return_url' => 'https://laravel-paypal-app.loc/success'
+                'cancel_url' => route('front.product.store_step4_paypal_cancel', [
+                    'product' => $product,
+                    'cart' => $cart,
+                    'payment_id' => $payment
+                ]),
+                'return_url' => route('front.product.store_step4_paypal_return', [
+                    'product' => $product,
+                    'cart' => $cart,
+                    'payment_id' => $payment
+                ])
             ]
         ]);
-
-        dd($order);
 
         // Store Token so we can retrieve after PayPal sends them back to us
         $payment->transaction_ref = $order['id'];
         $payment->save();
 
-        // Send user to PayPal to confirm payment
-        return redirect($order['links'][1]['href'])->send();
-        
-        // E DA QUI?
-        // porto l-utente  allo step successivo se pagamento andato a buon fine
+        //dd($order);
+        $paypal_redirect_url = $order['links'][1]['href'];
+        // dd($paypal_redirect_url);
 
-        // TODO CAPIRE
+        // Send user to PayPal to confirm payment
+        //return Inertia::location($paypal_redirect_url);
+        //return redirect()->away($paypal_redirect_url);
+        return redirect()->route('front.testtest');
+    }
+
+    public function testtest()
+    {
+        // funzionano entrambe
+        //return redirect()->away('https://www.sandbox.paypal.com/checkoutnow?token=6E265614GJ115263R');
+        return Inertia::location('https://www.sandbox.paypal.com/checkoutnow?token=6E265614GJ115263R');
+    }
+
+    /**
+     * TODO
+     */
+    public function store_step4_paypal_return(Product $product, Cart $cart)
+    {
+        // DA VERIFICARE
+        // $provider = new PayPalClient;
+        // $provider->setApiCredentials(config('paypal'));
+        // $provider->getAccessToken();
+        // $response = $provider->capturePaymentOrder($request['token']);
+        // if (isset($response['status']) && $response['status'] == 'COMPLETED') {
+        //     //execute your own code, insert order in database etc. i use bumbummen99/shoppingcart easy to get all products. and some data like address i store in session.
+        // porto l-utente  allo step successivo se pagamento andato a buon fine
         $this->updateCartStep($cart, 5);
+        // }
+        dd(request()->all());
+        return redirect()->route('front.product.buy', compact('product', 'cart'));
+    }
+
+    /**
+     * Transazione PayPal non andata a buon fine
+     * - Mostro al cliente l'errore interrompendo il flusso d'acquisto
+     * - Invio una notifica via email al cliente e in copia a golinucci
+     */
+    public function store_step4_paypal_cancel(Product $product, Cart $cart)
+    {
+        $payment_id = request('payment_id');
+        $payment = Payment::query()->where(['cart_id' => $cart->id])->findOrFail($payment_id);
+        // TODO invio email a cliente con notifica che il pagamento non è andato a buon fine
+        $delay = now()->addMinutes(10);
+        auth()->user()->notify((new PaypalGatewayPaymentCancel($payment))->delay($delay));
+
+        // TODO invio email in copia a golinucci
+
+
+        return Inertia::render('Sites/PaymentPaypalCancel', compact('product', 'cart', 'payment'));
     }
 
     private function step5(Product $product, Cart $cart)
