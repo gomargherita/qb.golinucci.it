@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Account extends Model
 {
 
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     // https://spatie.be/docs/laravel-permission/v5/basic-usage/teams-permissions
     public static function boot()
@@ -55,5 +57,11 @@ class Account extends Model
     public function roles()
     {
         return $this->hasMany(Role::class);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name']);
     }
 }

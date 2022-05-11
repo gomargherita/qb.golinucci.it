@@ -6,10 +6,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class ClientDetail extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, LogsActivity;
 
     /**
      * The attributes that are mass assignable.
@@ -78,5 +80,28 @@ class ClientDetail extends Model
                 $query->onlyTrashed();
             }
         });
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'user_id',
+                'first_name',
+                'last_name',
+                'fiscal_code',
+                'address',
+                'city',
+                'region',
+                'country',
+                'postal_code',
+                'phone',
+                'confirmation',
+                'contact_ref',
+                'version_ref',
+                'note',
+                'with_accident',
+                'flag_prev_2022'
+            ]);
     }
 }
