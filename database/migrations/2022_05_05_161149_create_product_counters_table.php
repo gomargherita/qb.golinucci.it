@@ -22,6 +22,7 @@ class CreateProductCountersTable extends Migration
             $table->integer('counter');
             $table->string('prefix')->unique();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

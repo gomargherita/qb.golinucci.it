@@ -18,6 +18,7 @@ class CreatePaymentGatewaysTable extends Migration
             $table->string('name')->unique();
             $table->boolean('public')->default(1);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -38,6 +38,7 @@ class CreateCertificatesTable extends Migration
             $table->integer('indemnity_limit_patrimonial')->nullable();
             $table->boolean('active')->default(true);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -18,6 +18,7 @@ class CreateContractsTable extends Migration
             $table->string('contract_filepath');
             $table->string('contract_prop')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
