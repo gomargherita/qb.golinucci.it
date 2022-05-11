@@ -12,7 +12,6 @@ export default {
   },
   props: {
     product: Object,
-    conditions: Array,
   },
 };
 </script>

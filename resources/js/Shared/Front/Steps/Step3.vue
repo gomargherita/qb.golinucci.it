@@ -86,7 +86,6 @@ export default {
   props: {
     cart: Object,
     product: Object,
-    conditions: Array,
   },
   data() {
     return {

@@ -2,8 +2,6 @@
   <Head :title="__('Client detail')" />
   <HTwo :title="__('Client detail')" />
 
-  <BreezeValidationErrors class="mb-4" />
-
   <form @submit.prevent="submit">
     <div class="grid grid-cols-1 md:grid-cols-2 md:gap-4">
       <div>
@@ -107,16 +105,19 @@
           }}</span>
         </label>
       </div>
-      <div>
-        <buy-loading-button
-          :loading="form.processing"
-          :disabled="form.processing"
-          :class="{ 'opacity-25': form.processing }"
-          class="gol-btn my-8 bg-primary"
-          type="submit"
-          >{{ __("Next") }}</buy-loading-button
-        >
-      </div>
+    </div>
+    <div>
+      <BreezeValidationErrors class="my-4" />
+    </div>
+    <div>
+      <buy-loading-button
+        :loading="form.processing"
+        :disabled="form.processing"
+        :class="{ 'opacity-25': form.processing }"
+        class="gol-btn my-8 bg-primary"
+        type="submit"
+        >{{ __("Next") }}</buy-loading-button
+      >
     </div>
   </form>
 </template>
@@ -138,7 +139,6 @@ export default {
   props: {
     cart: Object,
     product: Object,
-    conditions: Array,
   },
   data() {
     return {

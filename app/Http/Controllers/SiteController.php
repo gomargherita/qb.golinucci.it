@@ -95,12 +95,11 @@ class SiteController extends Controller
                 'name' => $product->name,
                 'type' => Str::slug($product->productType->name, '-'),
                 'detailed_description' => $product->detailed_description,
-                'conditions' => $product->conditions,
+                'conditional_fields' => $product->conditionalFields,
                 'icon' => $product->icon,
                 'hex_color' => $product->hex_color,
                 'offers' => $product->productOffers,
             ],
-            'conditions' => $product->conditionalFields,
         ]);
     }
 
@@ -216,11 +215,11 @@ class SiteController extends Controller
                 'type' => Str::slug($product->productType->name, '-'),
                 'detailed_description' => $product->detailed_description,
                 'conditions' => $product->conditions,
+                'conditional_fields' => $product->conditionalFields,
                 'icon' => $product->icon,
                 'hex_color' => $product->hex_color,
                 'offers' => $product->productOffers,
             ],
-            'conditions' => $product->conditionalFields,
             'cart' => $cart
         ]);
     }
@@ -266,7 +265,6 @@ class SiteController extends Controller
                 'icon' => $product->icon,
                 'hex_color' => $product->hex_color,
             ],
-            'conditions' => $product->conditionalFields,
             'cart' => $cart
         ]);
     }
@@ -308,7 +306,6 @@ class SiteController extends Controller
                     'icon' => $product->icon,
                     'hex_color' => $product->hex_color,
                 ],
-                'conditions' => $product->conditionalFields,
                 'cart' => $cart
             ]);
         } else {
@@ -324,7 +321,6 @@ class SiteController extends Controller
                     'icon' => $product->icon,
                     'hex_color' => $product->hex_color,
                 ],
-                'conditions' => $product->conditionalFields,
                 'cart' => $cart
             ]);
         }
@@ -458,7 +454,7 @@ class SiteController extends Controller
         $delay = now()->addMinutes(10);
         auth()->user()->notify((new PaypalGatewayPaymentCancel($payment))->delay($delay));
 
-        // TODO invio email in copia a golinucci
+        // TODO invio email in copia a golinucci Francesco
 
 
         return Inertia::render('Sites/PaymentPaypalCancel', compact('product', 'cart', 'payment'));

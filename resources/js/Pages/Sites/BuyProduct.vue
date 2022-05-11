@@ -10,7 +10,7 @@
   <HOne :title="product.name" />
 
   <section id="main-content" class="container mx-auto p-2">
-    <BuyProduct :product="product" :cart="cart" :conditions="conditions"> </BuyProduct>
+    <BuyProduct :product="product" :cart="cart"> </BuyProduct>
   </section>
 </template>
 
@@ -26,7 +26,6 @@ export default {
   props: {
     cart: Object,
     product: Object,
-    conditions: Array,
   },
 };
 </script>

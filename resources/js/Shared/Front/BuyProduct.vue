@@ -12,46 +12,19 @@
             <div class="text-center font-bold" v-text="num"></div>
           </div>
         </div>
-        <div v-if="key + 1 != numSteps" class="hidden md:block flex-auto border-t-2"></div>
+        <div
+          v-if="key + 1 != numSteps"
+          class="hidden md:block flex-auto border-t-2"
+        ></div>
       </template>
     </div>
 
-    <Step1
-      v-if="current_step == 1"
-      :product="product"
-      :cart="cart"
-      :conditions="conditions"
-    />
-    <Step2
-      v-if="current_step == 2"
-      :product="product"
-      :cart="cart"
-      :conditions="conditions"
-    />
-    <Step3
-      v-if="current_step == 3"
-      :product="product"
-      :cart="cart"
-      :conditions="conditions"
-    />
-    <Step4
-      v-if="current_step == 4"
-      :product="product"
-      :cart="cart"
-      :conditions="conditions"
-    />
-    <Step5
-      v-if="current_step == 5"
-      :product="product"
-      :cart="cart"
-      :conditions="conditions"
-    />
-    <Step6
-      v-if="current_step == 6"
-      :product="product"
-      :cart="cart"
-      :conditions="conditions"
-    />
+    <Step1 v-if="current_step == 1" :product="product" :cart="cart" />
+    <Step2 v-if="current_step == 2" :product="product" :cart="cart" />
+    <Step3 v-if="current_step == 3" :product="product" :cart="cart" />
+    <Step4 v-if="current_step == 4" :product="product" :cart="cart" />
+    <Step5 v-if="current_step == 5" :product="product" :cart="cart" />
+    <Step6 v-if="current_step == 6" :product="product" :cart="cart" />
   </div>
 </template>
 
@@ -77,7 +50,6 @@ export default {
   props: {
     product: Object,
     cart: Object,
-    conditions: Array,
     numSteps: {
       type: Number,
       default: 6,
