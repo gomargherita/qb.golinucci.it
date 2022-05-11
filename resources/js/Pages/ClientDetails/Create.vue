@@ -5,16 +5,13 @@
       <Link
         class="text-primary hover:text-secondary-400"
         :href="route('clientDetails')"
-        >{{ __("Client details") }}</Link
+        >{{ __("Client detail") }}</Link
       >
-      <span class="text-gray font-medium">/</span>{{ __("Create for")
-      }}<span class="ml-2">{{ user.email }}</span>
+      <span class="text-gray font-medium">/</span>{{ __("Create") }}
     </h1>
-    <div class=" bg-white rounded-md shadow overflow-hidden">
+    <p class="ml-2">per l'utente {{ user.email }}</p>
+    <div class="bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="store">
-        <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <text-input v-model="form.user_id" :error="form.errors.user_id" type="hidden" />
-        </div>
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <text-input
             v-model="form.first_name"
@@ -132,7 +129,7 @@ export default {
   data() {
     return {
       form: this.$inertia.form({
-        user_id: this.$props.user.id,
+        user_id: this.user.id,
         first_name: null,
         last_name: null,
         fiscal_code: null,
@@ -143,8 +140,8 @@ export default {
         country: null,
         postal_code: null,
         note: null,
-        with_accident: null,
-        flag_prev_2022: null,
+        with_accident: false,
+        flag_prev_2022: false,
       }),
     };
   },

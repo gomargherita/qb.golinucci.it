@@ -33,6 +33,7 @@ class ClientDetailsController extends Controller
                 ]),
         ]);
     }
+
     /**
      * Creo anagrafica solo associata a uno specifico user
      */
