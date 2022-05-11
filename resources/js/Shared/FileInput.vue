@@ -20,7 +20,7 @@
 <script>
 export default {
   props: {
-    modelValue: File,
+    modelValue: Object,
     label: String,
     accept: String,
     errors: {
@@ -28,11 +28,19 @@ export default {
       default: () => [],
     },
   },
+//   data() {
+//     return {
+//         current_file_url: null
+//     }
+//   },
   emits: ['update:modelValue'],
   watch: {
     modelValue(value) {
       if (!value) {
         this.$refs.file.value = ''
+//       } else {
+// console.log('marco', value);
+//         //this.current_file_url = value.
       }
     },
   },

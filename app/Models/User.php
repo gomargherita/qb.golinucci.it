@@ -13,10 +13,12 @@ use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasMedia
 {
-    use HasRoles, HasApiTokens, HasFactory, Notifiable, SoftDeletes, LogsActivity;
+    use HasRoles, HasApiTokens, HasFactory, Notifiable, SoftDeletes, LogsActivity, InteractsWithMedia;
 
     /**
      * The attributes that are mass assignable.

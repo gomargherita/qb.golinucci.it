@@ -30,7 +30,7 @@ class UpdateUserRequest extends FormRequest
             'email' => ['required', 'max:50', 'email', Rule::unique('users')->ignore($this->user->id)],
             'password' => ['nullable'],
             'owner' => ['required', 'boolean'],
-            //'photo' => ['nullable', 'image'],
+            'photo' => ['nullable', 'image'],
             'role' => ['required']
         ];
     }

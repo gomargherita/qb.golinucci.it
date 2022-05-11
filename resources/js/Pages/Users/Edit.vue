@@ -9,7 +9,7 @@
         <span class="text-gray font-medium">/</span>
         <span>{{ form.first_name }} {{ form.last_name }}</span>
       </h1>
-      <img v-if="user.photo" class="block ml-4 w-8 h-8 rounded-full" :src="user.photo" />
+      <img v-if="form.photo" class="block ml-4 w-8 h-8 rounded-full" :src="form.photo.original_url" />
     </div>
     <trashed-message v-if="user.deleted_at" class="mb-6" @restore="restore">
       {{ __("This user has been deleted") }}.
@@ -66,14 +66,15 @@
               {{ __(role.name) }}
             </option>
           </select-input>
-          <!--file-input
+          <file-input
             v-model="form.photo"
             :error="form.errors.photo"
             class="pb-8 pr-6 w-full lg:w-1/2"
             type="file"
             accept="image/*"
             label="Photo"
-          /-->
+            @input="form.photo = $event.target.files[0]"
+          />
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
           <button
@@ -198,7 +199,7 @@ export default {
         password: "",
         owner: this.user.owner,
         role: this.user.role,
-        // photo: null,
+        photo: this.user.photo,
       }),
     };
   },

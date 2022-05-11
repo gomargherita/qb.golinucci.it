@@ -44,7 +44,13 @@ class UsersController extends Controller
     public function store(StoreUserRequest $request)
     {
         $user = Auth::user()->account->users()->create($request->validated());
-        // 'photo_path' => Request::file('photo') ? Request::file('photo')->store('users') : null,
+        if ($request->file('photo')) {
+            $user->addMediaFromRequest('photo')
+                ->sanitizingFileName(function ($fileName) {
+                    return strtolower(str_replace(['#', '/', '\\', ' '], '-', $fileName));
+                })
+                ->toMediaCollection('user');
+        }
 
         $user->assignRole(Role::ROLE_USER);
 
@@ -62,7 +68,7 @@ class UsersController extends Controller
                 'last_name' => $user->last_name,
                 'email' => $user->email,
                 'owner' => $user->owner,
-                //'photo' => $user->photo_path ? URL::route('image', ['path' => $user->photo_path, 'w' => 60, 'h' => 60, 'fit' => 'crop']) : null,
+                'photo' => $user->getFirstMedia('user'),
                 'deleted_at' => $user->deleted_at,
                 'role' => $user->getRoleNames()->first(),
                 'client_details' => $user->clientDetails ? $user->clientDetails : null,
@@ -75,9 +81,16 @@ class UsersController extends Controller
     {
         $user->update($request->validated());
 
-        // if (Request::file('photo')) {
-        //     $user->update(['photo_path' => Request::file('photo')->store('users')]);
-        // }
+        if ($request->file('photo')) {
+            // $user->update(['photo_path' => $request->file('photo')->store('public/users')]);
+            $prev_photo = $user->getFirstMedia('user');
+            $prev_photo->delete();
+            $user->addMediaFromRequest('photo')
+                ->sanitizingFileName(function ($fileName) {
+                    return strtolower(str_replace(['#', '/', '\\', ' '], '-', $fileName));
+                })
+                ->toMediaCollection('user');
+        }
 
         if ($request->get('password')) {
             $user->update(['password' => $request->get('password')]);
