@@ -180,7 +180,7 @@ import SelectInput from "@/Shared/SelectInput";
 import LoadingButton from "@/Shared/LoadingButton";
 import TrashedMessage from "@/Shared/TrashedMessage";
 
-export default {
+export default { 
   components: {
     FileInput,
     LoadingButton,
