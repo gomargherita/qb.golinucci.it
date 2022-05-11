@@ -1,7 +1,7 @@
 <template>
   <div>
     <Head :title="`${form.first_name} ${form.last_name}`" />
-    <div class="flex justify-start mb-8 ">
+    <div class="flex justify-start mb-8">
       <h1 class="text-3xl font-bold">
         <Link class="text-primary hover:text-secondary-400" :href="route('users')">{{
           __("Users")
@@ -9,12 +9,16 @@
         <span class="text-gray font-medium">/</span>
         <span>{{ form.first_name }} {{ form.last_name }}</span>
       </h1>
-      <img v-if="form.photo" class="block ml-4 w-8 h-8 rounded-full" :src="form.photo.original_url" />
+      <img
+        v-if="form.photo"
+        class="block ml-4 w-8 h-8 rounded-full"
+        :src="form.photo.original_url"
+      />
     </div>
     <trashed-message v-if="user.deleted_at" class="mb-6" @restore="restore">
       {{ __("This user has been deleted") }}.
     </trashed-message>
-    <div class=" bg-white rounded-md shadow overflow-hidden">
+    <div class="bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <text-input
@@ -99,33 +103,29 @@
     <h2 class="mt-12 text-2xl font-bold">{{ __("Client detail") }}</h2>
     <div class="flex items-center justify-between mb-6">
       <div class=""></div>
-      <div class="">
+      <div v-if="user.client_details.length === 0">
         <Link class="btn-gol-primary" :href="route('clientDetails.create', user.id)">
           <span>{{ __("Create") }}</span>
           <span class="hidden md:inline">&nbsp;{{ __("Client detail") }}</span>
         </Link>
       </div>
     </div>
-    <div v-if="user.clientDetails" class="mt-6 bg-white rounded shadow overflow-x-auto">
+    <div class="mt-6 bg-white rounded shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <tr class="text-left font-bold">
           <th class="pb-4 pt-6 px-6">{{ __("Name") }}</th>
           <th class="pb-4 pt-6 px-6">{{ __("City") }}</th>
           <th class="pb-4 pt-6 px-6" colspan="2">{{ __("Phone") }}</th>
         </tr>
-        <tr
-          v-for="clientDetail in user.clientDetails"
-          :key="clientDetail.id"
-          class="hover:bg-gray-100 focus-within:bg-gray-100"
-        >
+        <tr v-if="user.client_details" class="hover:bg-gray-100 focus-within:bg-gray-100">
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4 focus:text-primary"
-              :href="route('clientDetails.edit', clientDetail.id)"
+              :href="route('clientDetails.edit', user.client_details.id)"
             >
-              {{ clientDetail.last_name }} {{ clientDetail.first_name }}
+              {{ user.client_details.last_name }} {{ user.client_details.first_name }}
               <icon
-                v-if="clientDetail.deleted_at"
+                v-if="user.client_details.deleted_at"
                 name="trash"
                 class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400"
               />
@@ -134,25 +134,25 @@
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4"
-              :href="route('clientDetails.edit', clientDetail.id)"
+              :href="route('clientDetails.edit', user.client_details.id)"
               tabindex="-1"
             >
-              {{ clientDetail.city }}
+              {{ user.client_details.city }}
             </Link>
           </td>
           <td class="border-t">
             <Link
               class="flex items-center px-6 py-4"
-              :href="route('clientDetails.edit', clientDetail.id)"
+              :href="route('clientDetails.edit', user.client_details.id)"
               tabindex="-1"
             >
-              {{ clientDetail.phone }}
+              {{ user.client_details.phone }}
             </Link>
           </td>
           <td class="w-px border-t">
             <Link
               class="flex items-center px-4"
-              :href="route('clientDetails.edit', clientDetail.id)"
+              :href="route('clientDetails.edit', user.client_details.id)"
               tabindex="-1"
             >
               <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />
