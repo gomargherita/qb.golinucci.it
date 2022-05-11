@@ -100,69 +100,74 @@
         </div>
       </form>
     </div>
-    <h2 class="mt-12 text-2xl font-bold">{{ __("Client detail") }}</h2>
-    <div class="flex items-center justify-between mb-6">
-      <div class=""></div>
-      <div v-if="user.client_details.length === 0">
-        <Link class="btn-gol-primary" :href="route('clientDetails.create', user.id)">
-          <span>{{ __("Create") }}</span>
-          <span class="hidden md:inline">&nbsp;{{ __("Client detail") }}</span>
-        </Link>
+    <div v-if="!user.deleted_at">
+      <h2 class="mt-12 text-2xl font-bold">{{ __("Client detail") }}</h2>
+      <div class="flex items-center justify-between mb-6">
+        <div class=""></div>
+        <div v-if="!user.client_details">
+          <Link class="btn-gol-primary" :href="route('clientDetails.create', user.id)">
+            <span>{{ __("Create") }}</span>
+            <span class="hidden md:inline">&nbsp;{{ __("Client detail") }}</span>
+          </Link>
+        </div>
       </div>
-    </div>
-    <div class="mt-6 bg-white rounded shadow overflow-x-auto">
-      <table class="w-full whitespace-nowrap">
-        <tr class="text-left font-bold">
-          <th class="pb-4 pt-6 px-6">{{ __("Name") }}</th>
-          <th class="pb-4 pt-6 px-6">{{ __("City") }}</th>
-          <th class="pb-4 pt-6 px-6" colspan="2">{{ __("Phone") }}</th>
-        </tr>
-        <tr v-if="user.client_details" class="hover:bg-gray-100 focus-within:bg-gray-100">
-          <td class="border-t">
-            <Link
-              class="flex items-center px-6 py-4 focus:text-primary"
-              :href="route('clientDetails.edit', user.client_details.id)"
-            >
-              {{ user.client_details.last_name }} {{ user.client_details.first_name }}
-              <icon
-                v-if="user.client_details.deleted_at"
-                name="trash"
-                class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400"
-              />
-            </Link>
-          </td>
-          <td class="border-t">
-            <Link
-              class="flex items-center px-6 py-4"
-              :href="route('clientDetails.edit', user.client_details.id)"
-              tabindex="-1"
-            >
-              {{ user.client_details.city }}
-            </Link>
-          </td>
-          <td class="border-t">
-            <Link
-              class="flex items-center px-6 py-4"
-              :href="route('clientDetails.edit', user.client_details.id)"
-              tabindex="-1"
-            >
-              {{ user.client_details.phone }}
-            </Link>
-          </td>
-          <td class="w-px border-t">
-            <Link
-              class="flex items-center px-4"
-              :href="route('clientDetails.edit', user.client_details.id)"
-              tabindex="-1"
-            >
-              <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />
-            </Link>
-          </td>
-        </tr>
-        <tr v-if="user.client_details.length === 0">
-          <td class="px-6 py-4 border-t" colspan="4">No client details found.</td>
-        </tr>
-      </table>
+      <div class="mt-6 bg-white rounded shadow overflow-x-auto">
+        <table class="w-full whitespace-nowrap">
+          <tr class="text-left font-bold">
+            <th class="pb-4 pt-6 px-6">{{ __("Name") }}</th>
+            <th class="pb-4 pt-6 px-6">{{ __("City") }}</th>
+            <th class="pb-4 pt-6 px-6" colspan="2">{{ __("Phone") }}</th>
+          </tr>
+          <tr
+            v-if="user.client_details"
+            class="hover:bg-gray-100 focus-within:bg-gray-100"
+          >
+            <td class="border-t">
+              <Link
+                class="flex items-center px-6 py-4 focus:text-primary"
+                :href="route('clientDetails.edit', user.client_details.id)"
+              >
+                {{ user.client_details.last_name }} {{ user.client_details.first_name }}
+                <icon
+                  v-if="user.client_details.deleted_at"
+                  name="trash"
+                  class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400"
+                />
+              </Link>
+            </td>
+            <td class="border-t">
+              <Link
+                class="flex items-center px-6 py-4"
+                :href="route('clientDetails.edit', user.client_details.id)"
+                tabindex="-1"
+              >
+                {{ user.client_details.city }}
+              </Link>
+            </td>
+            <td class="border-t">
+              <Link
+                class="flex items-center px-6 py-4"
+                :href="route('clientDetails.edit', user.client_details.id)"
+                tabindex="-1"
+              >
+                {{ user.client_details.phone }}
+              </Link>
+            </td>
+            <td class="w-px border-t">
+              <Link
+                class="flex items-center px-4"
+                :href="route('clientDetails.edit', user.client_details.id)"
+                tabindex="-1"
+              >
+                <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />
+              </Link>
+            </td>
+          </tr>
+          <tr v-if="!user.client_details">
+            <td class="px-6 py-4 border-t" colspan="4">No client details found.</td>
+          </tr>
+        </table>
+      </div>
     </div>
   </div>
 </template>

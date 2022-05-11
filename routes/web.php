@@ -34,7 +34,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'check_role']], func
         'index' => 'products'
     ]);
 
-    Route::group(['middleware' => ['role:superadmin']], function () {
+    Route::group(['middleware' => ['role:Superadmin']], function () {
         Route::get('roles', [RolesController::class, 'index'])
             ->name('roles');
 
