@@ -45,6 +45,20 @@
             <option :value="true">{{ __("Yes") }}</option>
             <option :value="false">{{ __("No") }}</option>
           </select-input>
+          <select-input
+            v-model="form.role"
+            :error="form.errors.role"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="Role"
+          >
+            <option
+              v-for="role in roles"
+              :value="role.name"
+              :selected="role.name == form.role"
+            >
+              {{ __(role.name) }}
+            </option>
+          </select-input>
           <file-input
             v-model="form.photo"
             :error="form.errors.photo"
@@ -81,6 +95,9 @@ export default {
     TextInput,
   },
   layout: Layout,
+  props: {
+    roles: Array,
+  },
   remember: "form",
   data() {
     return {
@@ -90,6 +107,7 @@ export default {
         email: "",
         password: "",
         owner: false,
+        role: "",
         photo: null,
       }),
     };

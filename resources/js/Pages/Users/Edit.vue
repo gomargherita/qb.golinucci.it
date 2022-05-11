@@ -96,17 +96,17 @@
         </div>
       </form>
     </div>
-    <h2 class="mt-12 text-2xl font-bold">{{ __("Client details") }}</h2>
+    <h2 class="mt-12 text-2xl font-bold">{{ __("Client detail") }}</h2>
     <div class="flex items-center justify-between mb-6">
       <div class=""></div>
       <div class="">
         <Link class="btn-gol-primary" :href="route('clientDetails.create', user.id)">
           <span>{{ __("Create") }}</span>
-          <span class="hidden md:inline">&nbsp;{{ __("Client details") }}</span>
+          <span class="hidden md:inline">&nbsp;{{ __("Client detail") }}</span>
         </Link>
       </div>
     </div>
-    <div class="mt-6 bg-white rounded shadow overflow-x-auto">
+    <div v-if="user.clientDetails" class="mt-6 bg-white rounded shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <tr class="text-left font-bold">
           <th class="pb-4 pt-6 px-6">{{ __("Name") }}</th>
