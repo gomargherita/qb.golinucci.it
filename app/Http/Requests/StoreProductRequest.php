@@ -33,7 +33,7 @@ class StoreProductRequest extends FormRequest
             'post_declarations' => ['required', 'not_regex:/^(<p><\/p>)$/i'],
             'payments_description' => ['required', 'not_regex:/^(<p><\/p>)$/i'],
             'hex_color' => ['required'],
-            'icon' => ['required', 'image'],
+            'image' => ['required', 'image'],
             'active' => ['required', 'boolean'],
         ];
     }

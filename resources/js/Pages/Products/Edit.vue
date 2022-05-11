@@ -72,16 +72,18 @@
             <option :value="0" :selected="form.active == 0">{{ __("No") }}</option>
           </select-input>
           <file-input
-            v-model="form.icon"
-            :error="form.errors.icon"
+            v-model="form.image"
+            :error="form.errors.image"
             class="pb-8 pr-6 w-full lg:w-1/2"
             type="file"
             accept="image/*"
             label="Image"
-            @input="form.icon = $event.target.files[0]"
+            @input="form.image = $event.target.files[0]"
           />
         </div>
-        <h2 class="text-2xl font-bold flex flex-wrap -mb-8 -mr-6 p-8">{{ __("Declarations") }}</h2>
+        <h2 class="text-2xl font-bold flex flex-wrap -mb-8 -mr-6 p-8">
+          {{ __("Declarations") }}
+        </h2>
 
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <editor
@@ -98,7 +100,9 @@
           />
         </div>
 
-        <h2 class="text-2xl font-bold flex flex-wrap -mb-8 -mr-6 p-8">{{ __("Payments") }}</h2>
+        <h2 class="text-2xl font-bold flex flex-wrap -mb-8 -mr-6 p-8">
+          {{ __("Payments") }}
+        </h2>
 
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <editor
@@ -170,7 +174,7 @@ export default {
         post_declarations: this.product.post_declarations,
         payments_description: this.product.payments_description,
         hex_color: this.product.hex_color,
-        icon: this.product.icon,
+        image: this.product.image,
         active: this.product.active,
       }),
     };
@@ -178,7 +182,7 @@ export default {
   methods: {
     update() {
       this.form.post(`/admin/products/${this.product.id}`, {
-        // onSuccess: () => this.form.reset("password", "photo"),
+        onSuccess: () => this.form.reset("image"),
       });
     },
     destroy() {

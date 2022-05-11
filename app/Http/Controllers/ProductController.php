@@ -56,8 +56,14 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request)
     {
-        Auth::user()->account->products()->create($request->validated());
-        $icon = Request::file('icon') ? Request::file('icon')->store('products') : null;
+        $product = Auth::user()->account->products()->create($request->validated());
+        if ($request->file('image')) {
+            $product->addMediaFromRequest('image')
+                ->sanitizingFileName(function ($fileName) {
+                    return strtolower(str_replace(['#', '/', '\\', ' '], '-', $fileName));
+                })
+                ->toMediaCollection('product');
+        }
 
         return Redirect::route('products')->with('success', 'Product created.');
     }
@@ -85,7 +91,8 @@ class ProductController extends Controller
                 'hex_color' => $product->hex_color,
                 'owner' => $product->owner,
                 'active' => $product->active,
-                'icon' => $product->icon ? URL::route('image', ['path' => $product->icon, 'w' => 40, 'h' => 40, 'fit' => 'crop']) : null,
+                'image' => $product->getFirstMedia('product'),
+                // 'icon' => $product->icon ? URL::route('image', ['path' => $product->icon, 'w' => 40, 'h' => 40, 'fit' => 'crop']) : null,
                 'product_type_id' => $product->productType()->first()->id,
                 'deleted_at' => $product->deleted_at,
             ],
@@ -103,6 +110,17 @@ class ProductController extends Controller
     public function update(UpdateProductRequest $request, Product $product)
     {
         $product->update($request->validated());
+        if ($request->file('image')) {
+            // recupero il precedente e cancello
+            $prev_image = $product->getFirstMedia('product');
+            $prev_image->delete();
+
+            $product->addMediaFromRequest('image')
+                ->sanitizingFileName(function ($fileName) {
+                    return strtolower(str_replace(['#', '/', '\\', ' '], '-', $fileName));
+                })
+                ->toMediaCollection('product');
+        }
 
         // TODO fare il sync con tutte le entità necessarie, tipo offerte, ecc
         // if ($request->get('role')) {

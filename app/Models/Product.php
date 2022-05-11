@@ -12,11 +12,13 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\Permission\Traits\HasRoles;
 
-class Product extends Model
+class Product extends Model implements HasMedia
 {
-    use HasRoles, HasApiTokens, HasFactory, Notifiable, SoftDeletes, LogsActivity;
+    use HasRoles, HasApiTokens, HasFactory, Notifiable, SoftDeletes, LogsActivity, InteractsWithMedia;
 
     protected $fillable = [
         'name',
@@ -29,7 +31,6 @@ class Product extends Model
         'post_declarations',
         'hex_color',
         'active',
-        'icon',
     ];
 
     public function resolveRouteBinding($value, $field = null)
@@ -106,7 +107,6 @@ class Product extends Model
                 'post_declarations',
                 'hex_color',
                 'active',
-                'icon',
             ]);
     }
 }

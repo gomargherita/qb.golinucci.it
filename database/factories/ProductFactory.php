@@ -28,7 +28,6 @@ class ProductFactory extends Factory
             'post_declarations' => $this->faker->paragraph(12),
             'conditions' => $this->faker->paragraph(12),
             'payments_description' => $this->faker->paragraph(3),
-            'icon' => $this->faker->image(),
             'hex_color' => $this->faker->hexColor(),
             'active' => $this->faker->boolean()
         ];

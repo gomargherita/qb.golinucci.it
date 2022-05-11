@@ -71,7 +71,6 @@ class SiteController extends Controller
                 'name' => $product->name,
                 'type' => Str::slug($product->productType->name, '-'),
                 'description' => $product->description,
-                'icon' => $product->icon,
                 'hex_color' => $product->hex_color,
             ]);
 
@@ -96,7 +95,6 @@ class SiteController extends Controller
                 'type' => Str::slug($product->productType->name, '-'),
                 'detailed_description' => $product->detailed_description,
                 'conditional_fields' => $product->conditionalFields,
-                'icon' => $product->icon,
                 'hex_color' => $product->hex_color,
                 'offers' => $product->productOffers,
             ],
@@ -216,7 +214,6 @@ class SiteController extends Controller
                 'detailed_description' => $product->detailed_description,
                 'conditions' => $product->conditions,
                 'conditional_fields' => $product->conditionalFields,
-                'icon' => $product->icon,
                 'hex_color' => $product->hex_color,
                 'offers' => $product->productOffers,
             ],
@@ -262,7 +259,6 @@ class SiteController extends Controller
                 'pre_declarations' => $product->pre_declarations,
                 'post_declarations' => $product->post_declarations,
                 'declarations' => $product->productDeclarations,
-                'icon' => $product->icon,
                 'hex_color' => $product->hex_color,
             ],
             'cart' => $cart
@@ -303,7 +299,6 @@ class SiteController extends Controller
                     'type' => Str::slug($product->productType->name, '-'),
                     'payment_gateways' => $payment_gateways,
                     'payments_description' => $product->payments_description,
-                    'icon' => $product->icon,
                     'hex_color' => $product->hex_color,
                 ],
                 'cart' => $cart
@@ -318,7 +313,6 @@ class SiteController extends Controller
                     'type' => Str::slug($product->productType->name, '-'),
                     'payments_description' => $product->payments_description,
                     'payment' => $payment_data,
-                    'icon' => $product->icon,
                     'hex_color' => $product->hex_color,
                 ],
                 'cart' => $cart

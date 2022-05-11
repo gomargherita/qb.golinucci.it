@@ -56,8 +56,8 @@
             label="Color"
           />
           <file-input
-            v-model="form.icon"
-            :error="form.errors.icon"
+            v-model="form.image"
+            :error="form.errors.image"
             class="pb-8 pr-6 w-full lg:w-1/2"
             type="file"
             accept="image/*"
@@ -119,7 +119,7 @@ export default {
         post_declarations: "",
         payments_description: "",
         hex_color: "",
-        icon: null,
+        image: null,
         active: 1,
       }),
     };
