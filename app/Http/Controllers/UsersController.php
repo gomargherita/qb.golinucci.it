@@ -105,6 +105,7 @@ class UsersController extends Controller
 
     public function destroy(User $user)
     {
+        $user->clientDetails->delete();
         $user->delete();
 
         return Redirect::back()->with('success', 'User deleted.');
@@ -112,7 +113,9 @@ class UsersController extends Controller
 
     public function restore(User $user)
     {
+        // TODO https://dev.to/waiylkarim/laravel-softdelete-eloquent-relationships-ondelete-cascade-36eo
         $user->restore();
+        $user->clientDetails()->withTrashed()->restore();
 
         return Redirect::back()->with('success', 'User restored.');
     }
