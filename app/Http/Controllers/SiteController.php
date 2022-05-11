@@ -374,7 +374,7 @@ class SiteController extends Controller
         $order = $provider->createOrder([
             'intent' => 'CAPTURE',
             'purchase_units' => [[
-                'reference_id' => 'transaction_number' . $payment->id,
+                'reference_id' => 'transaction_id_' . $payment->id,
                 'amount' => [
                     'currency_code' => 'EUR',
                     'value' => $cart->total_payable
@@ -384,12 +384,12 @@ class SiteController extends Controller
                 'cancel_url' => route('front.product.store_step4_paypal_cancel', [
                     'product' => $product,
                     'cart' => $cart,
-                    'payment_id' => $payment
+                    'payment_id' => $payment->id
                 ]),
                 'return_url' => route('front.product.store_step4_paypal_return', [
                     'product' => $product,
                     'cart' => $cart,
-                    'payment_id' => $payment
+                    'payment_id' => $payment->id
                 ])
             ]
         ]);
@@ -401,7 +401,9 @@ class SiteController extends Controller
 
         return $paypal_redirect_url;
     }
-
+    /**
+     * Questo metodo mi serve per gestire la redirect esterna verso paypal per il pagamento
+     */
     public function paypal_redirect(Request $request)
     {
         $url = $request->url;
@@ -413,22 +415,33 @@ class SiteController extends Controller
         abort(404);
     }
 
-    /**
-     * TODO
-     */
     public function store_step4_paypal_return(Product $product, Cart $cart)
     {
-        // DA VERIFICARE
-        // $provider = new PayPalClient;
-        // $provider->setApiCredentials(config('paypal'));
-        // $provider->getAccessToken();
-        // $response = $provider->capturePaymentOrder($request['token']);
-        // if (isset($response['status']) && $response['status'] == 'COMPLETED') {
-        //     //execute your own code, insert order in database etc. i use bumbummen99/shoppingcart easy to get all products. and some data like address i store in session.
-        // porto l-utente  allo step successivo se pagamento andato a buon fine
-        $this->updateCartStep($cart, 5);
-        // }
-        dd(request()->all());
+        $provider = new PayPalClient;
+        $provider->setApiCredentials(config('paypal'));
+        $provider->getAccessToken();
+        $response = $provider->capturePaymentOrder(request('token'));
+        $payment_id = request('payment_id');
+
+        if (isset($response['status']) && $response['status'] == 'COMPLETED') {
+            // setto il pagamento a 1 e la data di pagamento
+            $payment = Payment::query()->where(['cart_id' => $cart->id])->findOrFail($payment_id);
+            $payment->paid = 1;
+            $payment->paid_at = now();
+            $payment->save();
+            // TODO settare renewal date?? Francesco
+
+            // porto l'utente  allo step successivo se pagamento andato a buon fine
+            $this->updateCartStep($cart, 5);
+        } else {
+            return redirect()
+                ->route('front.product.store_step4_paypal_cancel', [
+                    'product' => $product,
+                    'cart' => $cart,
+                    'payment_id' => $payment_id
+                ]);
+        }
+
         return redirect()->route('front.product.buy', compact('product', 'cart'));
     }
 
