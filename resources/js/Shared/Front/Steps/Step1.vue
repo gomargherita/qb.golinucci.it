@@ -40,6 +40,30 @@
 
       <div>
         <TextInput
+          id="gender"
+          type="text"
+          class="mt-1 block w-full"
+          v-model="form.gender"
+          :error="form.errors.gender"
+          label="Gender"
+          maxlength="1"
+          onkeyup="this.value = this.value.toUpperCase();"
+        />
+      </div>
+
+      <div>
+        <TextInput
+          id="dob"
+          type="date"
+          class="mt-1 block w-full"
+          v-model="form.dob"
+          :error="form.errors.dob"
+          label="Date of Birth"
+        />
+      </div>
+
+      <div>
+        <TextInput
           id="address"
           type="text"
           class="mt-1 block w-full"
@@ -62,12 +86,14 @@
 
       <div>
         <TextInput
-          id="region"
+          id="province"
           type="text"
           class="mt-1 block w-full"
-          v-model="form.region"
-          :error="form.errors.region"
-          label="Region"
+          v-model="form.province"
+          :error="form.errors.province"
+          label="Province"
+          maxlength="2"
+          onkeyup="this.value = this.value.toUpperCase();"
         />
       </div>
 
@@ -147,9 +173,11 @@ export default {
         first_name: this.$page.props.clientDetails.first_name,
         last_name: this.$page.props.clientDetails.last_name,
         fiscal_code: this.$page.props.clientDetails.fiscal_code,
+        gender: this.$page.props.clientDetails.gender,
+        dob: this.$page.props.clientDetails.dob,
         address: this.$page.props.clientDetails.address,
         city: this.$page.props.clientDetails.city,
-        region: this.$page.props.clientDetails.region,
+        province: this.$page.props.clientDetails.province,
         postal_code: this.$page.props.clientDetails.postal_code,
         country: "IT",
         phone: this.$page.props.clientDetails.phone,

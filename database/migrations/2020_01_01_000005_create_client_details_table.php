@@ -21,9 +21,11 @@ class CreateClientDetailsTable extends Migration
             $table->string('last_name', 25);
             $table->string('fiscal_code', 16);
             $table->string('phone', 30);
+            $table->char('gender', 1);
+            $table->date('dob')->nullable();
             $table->string('address', 150);
             $table->string('city', 50);
-            $table->string('region', 50);
+            $table->string('province', 50);
             $table->string('country', 2);
             $table->string('postal_code', 5);
             $table->boolean('confirmation')->default(false);

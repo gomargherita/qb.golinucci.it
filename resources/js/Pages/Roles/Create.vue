@@ -60,10 +60,10 @@
             label="City"
           />
           <text-input
-            v-model="form.region"
-            :error="form.errors.region"
+            v-model="form.province"
+            :error="form.errors.province"
             class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Province/State"
+            label="Province"
           />
           <select-input
             v-model="form.country"
@@ -121,7 +121,7 @@ export default {
         phone: "",
         address: "",
         city: "",
-        region: "",
+        province: "",
         country: "",
         postal_code: "",
       }),

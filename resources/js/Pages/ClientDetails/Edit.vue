@@ -34,6 +34,22 @@
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Fiscal Code"
           />
+          <select-input
+            v-model="form.gender"
+            :error="form.errors.gender"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="Gender"
+          >
+            <option :value="null" />
+            <option value="M">M</option>
+            <option value="F">F</option>
+          </select-input>
+          <text-input
+            v-model="form.dob"
+            :error="form.errors.dob"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="Date of Birth"
+          />
           <text-input
             v-model="form.phone"
             :error="form.errors.phone"
@@ -53,10 +69,12 @@
             label="City"
           />
           <text-input
-            v-model="form.region"
-            :error="form.errors.region"
+            v-model="form.province"
+            :error="form.errors.province"
             class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Province/State"
+            label="Province"
+            maxlength="2"
+            onkeyup="this.value = this.value.toUpperCase();"
           />
           <select-input
             v-model="form.country"
@@ -202,10 +220,12 @@ export default {
         first_name: this.client_detail.first_name,
         last_name: this.client_detail.last_name,
         fiscal_code: this.client_detail.fiscal_code,
+        gender: this.client_detail.gender,
+        dob: this.client_detail.dob,
         phone: this.client_detail.phone,
         address: this.client_detail.address,
         city: this.client_detail.city,
-        region: this.client_detail.region,
+        province: this.client_detail.province,
         country: this.client_detail.country,
         postal_code: this.client_detail.postal_code,
         note: this.client_detail.note,
