@@ -1,6 +1,9 @@
 <?php
 
-namespace App\Library\Services;
+namespace App\Services;
+
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Storage;
 use SoapClient, SoapHeader, SoapVar, SoapParam, SoapFault, DOMDocument;
 
 /**
@@ -18,17 +21,41 @@ use SoapClient, SoapHeader, SoapVar, SoapParam, SoapFault, DOMDocument;
  * Download the certificate
  * $doprint->DownloadRequest($SessionToken,$filename);
  */
-class LloydsDoPrint
+class LloydsDoprintService
 {
-    public $apiKey = '********';
-    public $wsdl = "https://sandboxdoprint.lloyds.com:2152/ContractValidationEngine.xamlx?wsdl";
-    public $requestorID = "*******";
+    protected $apiKey;
+    protected $wsdl;
+    public $requestorID;
+    public $baseXml;
+
+    public function __construct()
+    {
+        if (App::environment(['local', 'staging'])) {
+            // sandbox
+            $api_key = config('doprint.sandbox.api_key');
+            $wsdl = config('doprint.sandbox.wsdl');
+            $requestor_id = config('doprint.sandbox.requestor_id');
+        } else {
+            // live
+            $api_key = config('doprint.sandbox.api_key');
+            $wsdl = config('doprint.sandbox.wsdl');
+            $requestor_id = config('doprint.sandbox.requestor_id');
+        }
+        if (empty($wsdl) || empty($requestor_id) || empty($api_key)) {
+            throw new \Exception("Al least one parameter is missing");
+        } else {
+            $this->wsdl = $wsdl;
+            $this->apiKey = $api_key;
+            $this->requestorID = $requestor_id;
+        }
+    }
 
     public function HandShake()
     {
 
         $apiKey = $this->apiKey;
         $requestorID = $this->requestorID;
+        $clientVersion = '';
 
         $client = new SoapClient($this->wsdl, array("soap_version" => SOAP_1_1, "trace" => true, "exceptions" => true));
 
@@ -48,30 +75,61 @@ class LloydsDoPrint
             $sessionDuration = $response->SessionDuration;
             $sessionToken = $response->SessionToken;
             $pwExpiringDays = $response->PwExpiringDays;
-            // echo $sessionDuration . "\n";
+
+            // $return = "------$messageType OK\n";
+            // $return =  "SessionDuration: " . $sessionDuration . "\n";
+            // $return =  "pwExpritingDays: " . $pwExpiringDays . "\n";
+            // $return =  "------$messageType OK\n";
             return $sessionToken;
-            //echo $pwExpiringDays . "\n";
         } catch (SoapFault $exception) {
-            echo "Exception Thrown: " . $exception->faultstring . "\n";
-            echo $client->__getLastResponse();
+            return "Exception Thrown: " . $exception->faultstring;
         }
     }
 
-    public function ValidationRequest($sessionToken, $certificateNo, $customer_details, $start_date, $end_date, $cart_details, $wording, $prop)
+    public function ValidationRequest($sessionToken, $contractType, $productName, $certificateNo, $customer_details, $start_date, $end_date, $proposal_date, $cart_details, $wording, $prop, $prop2)
     {
         $apiKey = $this->apiKey;
         $requestorID = $this->requestorID;
         $messageType = "Validation";
         $xml = new DOMDocument('1.0', 'utf-8');
-        $xml->load("golinucci_test.xml");
+
+        //$xml->load("../xml/base.xml");
+        $xml_base = Storage::disk('private')->get('lloyds_rinnovi_base.xml');
+        $xml->loadXML($xml_base);
+
+        // Document Index
+        $DocumentIndex = $xml->getElementsByTagName('DocumentIndex')->item(0);
+        $DocumentIndex->getElementsByTagName('ContractType')->item(0)->textContent = $contractType;
+        $DocumentIndex->getElementsByTagName('CommercialInsuranceProduct')->item(0)->textContent = $productName;
+
+        // BindingAuthorityDetails
+        // PROD
+        // $BindingAuthorityDetails = $xml->getElementsByTagName('BindingAuthorityDetails')->item(0);
+        // $BindingAuthorityDetails->getElementsByTagName('BARefDate')->item(0)->textContent = '2021-11-04';
+        // $BindingAuthorityDetails->getElementsByTagName('BARefNo')->item(0)->textContent = '12';
+        // $BindingAuthorityDetails->getElementsByTagName('BABrokersRef')->item(0)->textContent = 'CPG129821';
+        // $BindingAuthorityDetails->getElementsByTagName('BAPseudonym')->item(0)->textContent = 'GMB';
+        // $BindingAuthorityDetails->getElementsByTagName('BANumber')->item(0)->textContent = '1732';
+        // $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin1')->item(0)->textContent = '115647';
+        // $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin2')->item(0)->textContent = 'XKT';
+        // $BindingAuthorityDetails->getElementsByTagName('BAUniqueMarketReference')->item(0)->textContent = 'B1732CPG129821';
+
+        // SANDBOX
+        $BindingAuthorityDetails = $xml->getElementsByTagName('BindingAuthorityDetails')->item(0);
+        $BindingAuthorityDetails->getElementsByTagName('BARefDate')->item(0)->textContent = '2020-10-09';
+        $BindingAuthorityDetails->getElementsByTagName('BARefNo')->item(0)->textContent = '4';
+        $BindingAuthorityDetails->getElementsByTagName('BABrokersRef')->item(0)->textContent = 'CPG129820';
+        $BindingAuthorityDetails->getElementsByTagName('BAPseudonym')->item(0)->textContent = 'GMB';
+        $BindingAuthorityDetails->getElementsByTagName('BANumber')->item(0)->textContent = '1732';
+        $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin1')->item(0)->textContent = '115647';
+        $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin2')->item(0)->textContent = 'XKT';
+        $BindingAuthorityDetails->getElementsByTagName('BAUniqueMarketReference')->item(0)->textContent = 'B1732CPG129820';
 
         // Certificate Number
-
         $DocumentReferences = $xml->getElementsByTagName('DocumentReferences')->item(0);
         $DocumentReferences->getElementsByTagName('CertificateICNumber')->item(0)->textContent = $certificateNo;
 
         // Set Policy Holder
-
         switch ($customer_details['profession']) {
             case '1':
                 $profession = "Dirigente Medico";
@@ -95,88 +153,78 @@ class LloydsDoPrint
         }
 
         $PolicyHolder = $xml->getElementsByTagName('PolicyholderDetails')->item(0);
-        $PolicyHolder->getElementsByTagName('LastName')->item(0)->textContent = $customer_details['surname'];
-        $PolicyHolder->getElementsByTagName('FirstName')->item(0)->textContent = $customer_details['name'];
-        $PolicyHolder->getElementsByTagName('AddressLine1')->item(0)->textContent = $customer_details['address_1'];
+        $PolicyHolder->getElementsByTagName('LastName')->item(0)->textContent = $customer_details['last_name'];
+        $PolicyHolder->getElementsByTagName('FirstName')->item(0)->textContent = $customer_details['first_name'];
+        $PolicyHolder->getElementsByTagName('AddressLine1')->item(0)->textContent = $customer_details['address'];
         $PolicyHolder->getElementsByTagName('City')->item(0)->textContent = $customer_details['city'];
-        $PolicyHolder->getElementsByTagName('PostCode')->item(0)->textContent = $customer_details['post_code'];
-        $PolicyHolder->getElementsByTagName('Region')->item(0)->textContent = $customer_details['provincia'];
-        $PolicyHolder->getElementsByTagName('FiscalCode')->item(0)->textContent = $customer_details['codice_fiscale'];
-        $PolicyHolder->getElementsByTagName('GenderType')->item(0)->textContent = 'M';
-        $PolicyHolder->getElementsByTagName('JobTitle')->item(0)->textContent = 'aaaaaaaa';
+        $PolicyHolder->getElementsByTagName('PostCode')->item(0)->textContent = $customer_details['postal_code'];
+        $PolicyHolder->getElementsByTagName('Region')->item(0)->textContent = $customer_details['province'];
+        $PolicyHolder->getElementsByTagName('FiscalCode')->item(0)->textContent = $customer_details['fiscal_code'];
+        $PolicyHolder->getElementsByTagName('GenderType')->item(0)->textContent = $customer_details['gender'];
+        $PolicyHolder->getElementsByTagName('Country')->item(0)->textContent = $customer_details['country'];
+        // $PolicyHolder->getElementsByTagName('JobTitle')->item(0)->textContent = 'aaaaaaaa';
 
-        // Set Insured Dtails
-
+        // Set Insured Details
         $InsuredDetails = $xml->getElementsByTagName('InsuredDetails')->item(0);
-        $InsuredDetails->getElementsByTagName('InsuredName')->item(0)->textContent = $customer_details['name'] . ' ' . $customer_details['surname'];
+        $InsuredDetails->getElementsByTagName('InsuredName')->item(0)->textContent = $customer_details['first_name'] . ' ' . $customer_details['last_name'];
 
         //Start End Date
 
         $CertificateDateTimeDetails = $xml->getElementsByTagName('CertificateDateTimeDetails')->item(0);
         $CertificateDateTimeDetails->getElementsByTagName('InceptionDate')->item(0)->textContent = $start_date;
         $CertificateDateTimeDetails->getElementsByTagName('ExpiryDate')->item(0)->textContent = $end_date;
-        $CertificateDateTimeDetails->getElementsByTagName('ProposalDate')->item(0)->textContent = date('Y-m-d');
+        $CertificateDateTimeDetails->getElementsByTagName('ProposalDate')->item(0)->textContent = $proposal_date;
 
         $RiskPremiumDetails = $xml->getElementsByTagName('RiskPremiumDetails')->item(0);
-
-
-
-
         $RiskPremiumDetails->getElementsByTagName('Premium')->item(0)->textContent = $cart_details['price'];
-        $RiskPremiumDetails->getElementsByTagName('Accessori')->item(0)->textContent = '0';
+        $RiskPremiumDetails->getElementsByTagName('Accessori')->item(0)->textContent = $cart_details['accessori'];
         $RiskPremiumDetails->getElementsByTagName('Tax')->item(0)->textContent =  $cart_details['tax'];
         $RiskPremiumDetails->getElementsByTagName('Gross')->item(0)->textContent =  $cart_details['price_with_tax'];
 
 
         $TotalPremiumDetails = $xml->getElementsByTagName('TotalPremiumDetails')->item(0);
         $TotalPremiumDetails->getElementsByTagName('Premium')->item(0)->textContent =  $cart_details['price'];
-        $TotalPremiumDetails->getElementsByTagName('Accessori')->item(0)->textContent = '0';
+        $TotalPremiumDetails->getElementsByTagName('Accessori')->item(0)->textContent = $cart_details['accessori'];
         $TotalPremiumDetails->getElementsByTagName('Tax')->item(0)->textContent =  $cart_details['tax'];
         $TotalPremiumDetails->getElementsByTagName('Gross')->item(0)->textContent =  $cart_details['price_with_tax'];
 
 
         $Instalments = $xml->getElementsByTagName('Instalments')->item(0);
         $Instalments->getElementsByTagName('Premium')->item(0)->textContent =  $cart_details['price'];
-        $Instalments->getElementsByTagName('Accessori')->item(0)->textContent = '0';
+        $Instalments->getElementsByTagName('Accessori')->item(0)->textContent = $cart_details['accessori'];
         $Instalments->getElementsByTagName('Tax')->item(0)->textContent = $cart_details['tax'];
         $Instalments->getElementsByTagName('Gross')->item(0)->textContent =  $cart_details['price_with_tax'];
-        $Instalments->getElementsByTagName('InstalmentDate')->item(0)->textContent = date('Y-m-d');
+        $Instalments->getElementsByTagName('InstalmentDate')->item(0)->textContent = $proposal_date;
 
         $PremiumReceipt = $xml->getElementsByTagName('PremiumReceipt')->item(0);
+        $PremiumReceipt->getElementsByTagName('FirmReceivingPremium')->item(0)->textContent = "Golinucci Srl";
         $PremiumReceipt->getElementsByTagName('AmountPremiumReceived')->item(0)->textContent = $cart_details['price_with_tax'];
-        $PremiumReceipt->getElementsByTagName('DatePremiumReceived')->item(0)->textContent = date('Y-m-d');
+        $PremiumReceipt->getElementsByTagName('DatePremiumReceived')->item(0)->textContent = $proposal_date;
 
-        $pdffile = file_get_contents($wording);
+        $pdffile = Storage::disk('private')->get($wording);
         $documentHashpdf = base64_encode(md5($pdffile, true));
+
         $CertificateAttachments = $xml->getElementsByTagName('CertificateAttachments')->item(0);
-        $GeneralConditionsAttachment = $CertificateAttachments->getElementsByTagName('GeneralConditionsAttachment')->item(0);
+        $GeneralConditionsAttachment = $CertificateAttachments->getElementsByTagName('RisksDescriptionAttachment')->item(0);
         $GeneralConditionsAttachment->getElementsByTagName('FileHash')->item(0)->textContent = $documentHashpdf;
 
         // Add Prop
-
-        $prop = file_get_contents($prop);
+        $prop = Storage::disk('private')->get($prop);
         $propHashpdf = base64_encode(md5($prop, true));
-        $ProposalFormAttachment = $CertificateAttachments->getElementsByTagName('ProposalFormAttachment')->item(0);
+        $ProposalFormAttachment = $CertificateAttachments->getElementsByTagName('OtherAttachment')->item(0);
         $ProposalFormAttachment->getElementsByTagName('FileHash')->item(0)->textContent = $propHashpdf;
 
-
+        // add 3rd attach
+        $prop2 = Storage::disk('private')->get($prop2);
+        $prop2Hashpdf = base64_encode(md5($prop2, true));
+        $ProposalFormAttachment = $CertificateAttachments->getElementsByTagName('OtherAttachment')->item(1);
+        $ProposalFormAttachment->getElementsByTagName('FileHash')->item(0)->textContent = $prop2Hashpdf;
 
         $strxml = $xml->saveXML();
         $document = base64_encode($strxml);
 
-
-
-        $clientfolder = '/var/www/clients/client0/web1/private/clientstorage/' . $customer_details['customer_id'] . '/' . $cart_details['cart_id'] . '/';
-        if (!file_exists($clientfolder)) {
-            mkdir($clientfolder, 0777, true);
-        }
-
-
-        $xml->save($clientfolder . '/policy_response.xml');
-
-
-
-
+        $policy_response_folder = 'certificates/user_' . $customer_details['user_id'] . '/cart_' . $cart_details['cart_id'];
+        Storage::disk('private')->put($policy_response_folder . '/policy_response.xml', $strxml);
 
         $documentHash = base64_encode(md5($strxml, true));
         $sessionToken = $sessionToken;
@@ -192,16 +240,22 @@ class LloydsDoPrint
             $request = new SoapParam($request, "Message");
             $response = $client->RouteMessage($request);
             $isValid = $response->IsValid;
-            echo $isValid . "\n";
             if (isset($response->Errors)) {
+                //$fault = $response->Errors->fault->string;
+                echo "------$messageType INIZIO\n";
                 $fault = $response->Errors->fault->string;
-                echo $fault . "\n";
+                if (array($fault)) {
+                    foreach ($fault as $fau)
+                        echo $fau . "\n";
+                } else {
+                    echo $fault . "\n";
+                }
+                echo "------$messageType FINE\n";
             } else {
-                print_r($response);
+                return $isValid;
             }
         } catch (SoapFault $exception) {
-            echo "Exception Thrown: " . $exception->faultstring . "\n";
-            echo $client->__getLastResponse();
+            return "Exception Thrown: " . $exception->faultstring;
         }
     }
 
@@ -232,14 +286,17 @@ class LloydsDoPrint
                 $fault = $response->Errors->fault->string;
                 echo $fault . "\n";
             } else {
+                echo "------$messageType INIZIO\n";
                 print_r($response);
+                echo "------$messageType FINE\n";
             }
         } catch (SoapFault $exception) {
+            echo "------$messageType INIZIO\n";
             echo "Exception Thrown: " . $exception->faultstring . "\n";
+            echo "------$messageType FINE\n";
             echo $client->__getLastResponse();
         }
     }
-
 
     public function TransactionRequest($sessionToken)
     {
@@ -263,10 +320,14 @@ class LloydsDoPrint
                 $fault = $response->Errors->fault->string;
                 echo $fault . "\n";
             } else {
+                echo "------$messageType INIZIO\n";
                 print_r($response);
+                echo "------$messageType FINE\n";
             }
         } catch (SoapFault $exception) {
+            echo "------$messageType INIZIO\n";
             echo "Exception Thrown: " . $exception->faultstring . "\n";
+            echo "------$messageType FINE\n";
             //echo $client->__getLastRequest();
             echo $client->__getLastResponse();
         }
@@ -290,10 +351,15 @@ class LloydsDoPrint
             $request = new SoapParam($request, "Message");
             $response = $client->RouteMessage($request);
             $isValid = $response->IsValid;
+            echo "------$messageType INIZIO\n";
+            echo $isValid;
+            echo "------$messageType FINE\n";
             file_put_contents($docName,  $response->Document);
         } catch (SoapFault $exception) {
+            echo "------$messageType INIZIO\n";
             echo "Exception Thrown: " . $exception->faultstring . "\n";
             //echo $client->__getLastRequest();
+            echo "------$messageType FINE\n";
             echo $client->__getLastResponse();
         }
     }
@@ -326,194 +392,3 @@ class Message2
         $this->SessionToken = $sessionToken;
     }
 }
-
-/* responsexml
-<?xml version="1.0" encoding="UTF-8"?>
-<mstns:ImportDataSet xmlns:mstns="http://tempuri.org/ImportDataSet.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="Schema.xsd">
-	<mstns:Document mstns:ModuleType="B" mstns:LastUpdatedDate="2011-02-25">
-
-		<mstns:DocumentIndex>
-			<mstns:ContractType>RC Professionale</mstns:ContractType>
-			<mstns:CommercialInsuranceProduct>Ingegnere</mstns:CommercialInsuranceProduct>
-			<mstns:PolicyVersionNumber>2019</mstns:PolicyVersionNumber>
-			<mstns:IndexItem>
-				<mstns:ItemText>Scheda di Copertura</mstns:ItemText>
-				<mstns:PageNumber>6</mstns:PageNumber>
-			</mstns:IndexItem>
-			<mstns:IndexItem>
-				<mstns:ItemText>Glossario</mstns:ItemText>
-				<mstns:PageNumber>7</mstns:PageNumber>
-			</mstns:IndexItem>
-			<mstns:IndexItem>
-				<mstns:ItemText>Condizioni di Polizza</mstns:ItemText>
-				<mstns:PageNumber>9</mstns:PageNumber>
-			</mstns:IndexItem>
-			<mstns:IndexItem>
-				<mstns:ItemText>Esclusioni</mstns:ItemText>
-				<mstns:PageNumber>10</mstns:PageNumber>
-			</mstns:IndexItem>
-			<mstns:IndexItem>
-				<mstns:ItemText>Procedure in caso di sinistro</mstns:ItemText>
-				<mstns:PageNumber>12</mstns:PageNumber>
-			</mstns:IndexItem>
-			<mstns:IndexItem>
-				<mstns:ItemText>Questionario</mstns:ItemText>
-				<mstns:PageNumber>16</mstns:PageNumber>
-			</mstns:IndexItem>
-		</mstns:DocumentIndex>
-
-		<mstns:BindingAuthorityDetails>
-			<mstns:BARefDate>2020-02-04</mstns:BARefDate>
-			<mstns:BARefNo>532</mstns:BARefNo>
-			<mstns:BABrokersRef>123434</mstns:BABrokersRef>
-			<mstns:BAPseudonym>AAA</mstns:BAPseudonym>
-			<mstns:BANumber>9999</mstns:BANumber>
-			<mstns:BAcorr_Pin1>115647</mstns:BAcorr_Pin1>
-			<mstns:BAcorr_Pin2>XKT</mstns:BAcorr_Pin2>
-			<mstns:BAUniqueMarketReference>B05320123456789</mstns:BAUniqueMarketReference>
-		</mstns:BindingAuthorityDetails>
-			
-		<mstns:DocumentReferences>
-			<mstns:CertificateICNumber>GVRCP1900000001906213-LB</mstns:CertificateICNumber>
-			<mstns:ICNumber/>
-			<mstns:ICStatus>1</mstns:ICStatus>
-			<mstns:ICType>
-				<mstns:DocumentType>0</mstns:DocumentType>
-			</mstns:ICType>
-			
-			<mstns:RenewedICNumber/>
-			<mstns:OriginalICNumber/>
-			<mstns:RelatedInceptionDate>0001-01-01</mstns:RelatedInceptionDate>
-			<mstns:RelatedInceptionTime>00:00</mstns:RelatedInceptionTime>
-			<mstns:RelatedExpiryDate>0001-01-01</mstns:RelatedExpiryDate>
-			<mstns:RelatedExpiryTime>00:00</mstns:RelatedExpiryTime>
-		</mstns:DocumentReferences>
-	
-		<mstns:PolicyholderDetails>
-			<mstns:FiscalCode>crtfnc94c26c573J</mstns:FiscalCode>
-			<mstns:VATNumber>10655700150</mstns:VATNumber>
-			<mstns:GenderType>M</mstns:GenderType>
-			<mstns:LastName>croatti</mstns:LastName>
-			<mstns:FirstName>francesco</mstns:FirstName>
-			<mstns:JobTitle>aaaaaaaa</mstns:JobTitle>
-			<mstns:AddressLine1>Via Garibaldi 116</mstns:AddressLine1>
-			<mstns:AddressLine2/>
-			<mstns:City>RIMINI</mstns:City>
-			<mstns:PostCode>47921</mstns:PostCode>
-			<mstns:Region>RN</mstns:Region>
-			<mstns:Country>Italia</mstns:Country>
-		</mstns:PolicyholderDetails>
-		
-		<mstns:InsuredDetails>
-			<mstns:InsuredName>francesco croatti</mstns:InsuredName>
-		</mstns:InsuredDetails>
-		
-		<mstns:CertificateSecurityDetails>
-			<mstns:SecurityType>1</mstns:SecurityType>
-			<mstns:LloydsPercentage>100</mstns:LloydsPercentage>
-			<mstns:LloydsSecurityDetails>
-				<mstns:SyndicateCode>5320</mstns:SyndicateCode>
-				<mstns:SyndicateShare>100</mstns:SyndicateShare>
-			</mstns:LloydsSecurityDetails>
-		</mstns:CertificateSecurityDetails>
-		
-		<mstns:CertificateDateTimeDetails>
-			<mstns:InceptionDate>2020-12-01</mstns:InceptionDate>
-			<mstns:InceptionTime>24:00</mstns:InceptionTime>
-			<mstns:ExpiryDate>2021-12-01</mstns:ExpiryDate>
-			<mstns:ExpiryTime>24:00</mstns:ExpiryTime>
-			<mstns:ProposalDate>2020-12-01</mstns:ProposalDate>
-			<mstns:TacitRenewal>false</mstns:TacitRenewal>
-			<mstns:TimeZone>
-				<mstns:TimeZoneCode>UTC1</mstns:TimeZoneCode>
-			</mstns:TimeZone>
-		</mstns:CertificateDateTimeDetails>
-		
-		<mstns:RiskDetailsLB>
-			<mstns:ObjectRiskInsured>Gli Assicurati indicati in polizza nell'esercizio delle funzioni di auditor, revisore fiscale ...</mstns:ObjectRiskInsured>
-			<mstns:CountryJurisdiction>Italia</mstns:CountryJurisdiction>
-			<mstns:LimitIndemnitySumInsured>Attività ordinaria €1.000.000, Auditor €500.000</mstns:LimitIndemnitySumInsured>
-			<mstns:DeductibleExcessAmountUninsured>vedi schema di franchigia a pag.6</mstns:DeductibleExcessAmountUninsured>
-		</mstns:RiskDetailsLB>
-		
-		<mstns:PolicySectionsWording>
-			<mstns:SectionsWording>Art.1,2,6,10</mstns:SectionsWording>
-		</mstns:PolicySectionsWording>
-		
-		<mstns:RiskPremiumDetails>
-			<mstns:BusinessType>4</mstns:BusinessType>
-			<mstns:RiskReference>4.245</mstns:RiskReference>
-			<mstns:Premium>3908.02</mstns:Premium>
-			<mstns:Accessori>0</mstns:Accessori>
-			<mstns:Tax>869.53</mstns:Tax>
-			<mstns:Gross>4777.55</mstns:Gross>
-		</mstns:RiskPremiumDetails>
-		
-		<mstns:TotalPremiumDetails>
-			<mstns:Currency>Euro</mstns:Currency>
-			<mstns:Premium>3908.02</mstns:Premium>
-			<mstns:Accessori>0</mstns:Accessori>
-			<mstns:Tax>869.53</mstns:Tax>
-			<mstns:Gross>4777.55</mstns:Gross>
-			<mstns:NumberOfInstalments>1</mstns:NumberOfInstalments>
-		</mstns:TotalPremiumDetails>
-		
-		<mstns:PremiumReceipt>
-			<mstns:FirmReceivingPremium>Coverholder</mstns:FirmReceivingPremium>
-			<mstns:AmountPremiumReceived>4777.55</mstns:AmountPremiumReceived>
-			<mstns:DatePremiumReceived>2020-12-01</mstns:DatePremiumReceived>
-		</mstns:PremiumReceipt>
-		
-		<mstns:PaymentTerms>Payment to Coverholder</mstns:PaymentTerms>
-		
-		<mstns:Instalments>
-			<mstns:InstalmentNumber>1</mstns:InstalmentNumber>
-			<mstns:InstalmentDate>2020-12-01</mstns:InstalmentDate>
-			<mstns:Premium>3908.02</mstns:Premium>
-			<mstns:Accessori>0</mstns:Accessori>
-			<mstns:Tax>869.53</mstns:Tax>
-			<mstns:Gross>4777.55</mstns:Gross>
-		</mstns:Instalments>
-		
-		<mstns:CertificateConditions>
-			<mstns:PolicyDescription>RC Professionale</mstns:PolicyDescription>
-			<mstns:GeneralConditions>vedi allegati</mstns:GeneralConditions>
-			<mstns:SpecialConditions>vedi Allegato 1 - Clausa di esclusione etc...</mstns:SpecialConditions>
-			<mstns:PaymentPlanDescription>Soluzione unica</mstns:PaymentPlanDescription>
-			<mstns:PaymentClause>Come disposto dalla Legge, se ...</mstns:PaymentClause>
-			<mstns:ContactsNotification>info@lossadjuster.it - 02/0123456789</mstns:ContactsNotification>
-			<mstns:ContactsQuestions>info@coverholderemail.it - 02/0123456789</mstns:ContactsQuestions>
-		</mstns:CertificateConditions>
-		
-		<mstns:ConditionsReceived>Fascicolo</mstns:ConditionsReceived>
-		
-		<mstns:CertificateAttachments>
-			<mstns:FrontJacket>S</mstns:FrontJacket>
-<mstns:GeneralConditionsAttachment>
-				<mstns:FileRef>Condizioni di Polizza</mstns:FileRef>
-				<mstns:FileHash>tq8KGFNuJJHU71J7mNbVOQ==</mstns:FileHash>
-			</mstns:GeneralConditionsAttachment>
-			<mstns:ProposalFormAttachment>
-				<mstns:FileRef>Questionario</mstns:FileRef>
-				<mstns:FileHash>c+e8NBp9T1VBsoqwbHgXYw==</mstns:FileHash>
-			</mstns:ProposalFormAttachment>
-
-			<mstns:RearJacket>S</mstns:RearJacket>
-		</mstns:CertificateAttachments>
-		
-		<mstns:RiskDetails>
-			<mstns:RiskDescription/>
-			<mstns:RiskLocation/>
-			<mstns:SumInsured>0</mstns:SumInsured>
-			<mstns:DeductibleOrExcess/>
-			
-			<mstns:OtherRiskDetails>
-				<mstns:RiskDetailDescription/>
-				<mstns:RiskDetailValue/>
-			</mstns:OtherRiskDetails>
-			
-		</mstns:RiskDetails>
-
-</mstns:Document>
-</mstns:ImportDataSet> 
- */

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Library\Services\LloydsDoPrint;
+use App\Services\LloydsDoprintService;
 use App\Models\Account;
 use App\Models\Cart;
 use App\Models\ClientDetail;
@@ -320,7 +320,6 @@ class SiteController extends Controller
         }
     }
 
-    // TODO
     public function store_step4(Product $product, Cart $cart, Request $request)
     {
         $user = auth()->user();
@@ -414,14 +413,10 @@ class SiteController extends Controller
         $payment_id = request('payment_id');
 
         if (isset($response['status']) && $response['status'] == 'COMPLETED') {
-            // setto il pagamento a 1 e la data di pagamento
             $payment = Payment::query()->where(['cart_id' => $cart->id])->findOrFail($payment_id);
             $payment->paid = 1;
             $payment->paid_at = now();
             $payment->save();
-            // TODO settare renewal date?? Francesco
-
-            // porto l'utente  allo step successivo se pagamento andato a buon fine
             $this->updateCartStep($cart, 5);
         } else {
             return redirect()
@@ -450,18 +445,88 @@ class SiteController extends Controller
 
         // TODO invio email in copia a golinucci Francesco
 
-
         return Inertia::render('Sites/PaymentPaypalCancel', compact('product', 'cart', 'payment'));
     }
 
+    // TODO
     private function step5(Product $product, Cart $cart)
     {
-        //     return Inertia::render('Sites/BuyProduct', compact('product'));
-        // }
+        // TODO questo dovrà essere differenziato tra utente a rinnovo e utenti nuovi (cambia il numero di allegati)
+        //$file = Storage::disk('private')->get('lloyds_rinnovi_base.xml');
+        $user = auth()->user();
 
-        // private function step6(Product $product)
-        // {
-        //     return Inertia::render('Sites/BuyProduct', compact('product'));
+        try {
+            $lloydsDoprintService = new LloydsDoprintService();
+            $sessionToken = $lloydsDoprintService->HandShake();
+            // Prepare data
+            $nextvalue = 'GV21PI00566';
+
+            $clientDetails = ClientDetail::where('user_id', $cart->user_id)->first();
+
+            $customer = [
+                'user_id' => $user->id, // serve per creare il percorso dove salvare i file
+                'profession' => "Medico Convenzionato",
+                'first_name' => $clientDetails->first_name,
+                'last_name' => $clientDetails->last_name,
+                'address' => $clientDetails->address,
+                'city' => $clientDetails->city,
+                'postal_code' => $clientDetails->postal_code,
+                'province' => $clientDetails->province, //'MI',
+                'fiscal_code' => $clientDetails->fiscal_code, //'LVCLCN63B68G187D',
+                'gender' => $clientDetails->gender, //'F'
+                'country' => $clientDetails->country //'Italia'
+            ];
+
+            // IMPORTANTE la data di START deve ricadere entro la data di validità del Binder
+            $start_date = '2021-06-01';
+            $end_date = '2022-06-01';
+            $proposal_date = '2022-06-01'; // se rinnovo metto start_date, altrimenti data di compilazione della form date('Y-m-d');
+            $contract_type = 'RC PROFESSIONALE';
+            $product_name = "COLPA GRAVE - STRUTTURA SANITARIA PUBBLICA"; // "COLPA GRAVE – STRUTTURA SANITARIA PRIVATA"
+            $cert_number = $nextvalue . '-LB';
+
+            $cart_details = [
+                'cart_id' => $cart->id,
+                'price' => $cart->net_premium,
+                'accessori' => $cart->accessory, // 10% di sovrapprezzo sul netto; 44/10
+                'tax' => $cart->tax, // tasse calcolate su premio + accessori
+                'price_with_tax' => $cart->gross_premium, // premio + accessori + tax (no fee)
+            ];
+
+            //$file = Storage::disk('private')->get('lloyds_rinnovi_base.xml');
+
+            $prop2 = 'scheda/scheda.pdf'; // '../props/prop.pdf'; // TODO DA GENERARE
+            $wording = 'wordings/wording.pdf'; // '../wordings/wording.pdf';
+            $prop = 'props/prop.pdf'; // '../props/prop.pdf';
+            $prop2 = 'props/prop.pdf'; // '../props/prop.pdf';
+
+
+            //Setup Policy using the xml and MD5 file hashes
+            $lloydsDoprintService->ValidationRequest($sessionToken, $contract_type, $product_name, $cert_number, $customer, $start_date, $end_date, $proposal_date, $cart_details, $wording, $prop, $prop2);
+            $reportGeneration = $sessionToken;
+        } catch (Throwable $e) {
+            report($e);
+            $reportGeneration = $e->getMessage();
+        }
+
+        // TODO settare cart renewal date, per i nuovi clienti, alla data di creazione del certificato
+
+        return Inertia::render('Sites/BuyProduct', [
+            'product' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'type' => Str::slug($product->productType->name, '-'),
+                'hex_color' => $product->hex_color,
+                'documentGeneration' => [
+                    'handshakeResult' => $reportGeneration
+                ]
+            ],
+            'cart' => $cart,
+        ]);
+    }
+
+    private function generateLloydsDoprintCertificate(LloydsDoprintService $lloydsDoprintService)
+    {
     }
 
     // TODO
@@ -477,14 +542,18 @@ class SiteController extends Controller
         return redirect()->route('front.product.buy', compact('product', 'cart'));
     }
 
+    // TODO
     private function step6(Product $product, Cart $cart)
     {
-        //     return Inertia::render('Sites/BuyProduct', compact('product'));
-        // }
-
-        // private function step6(Product $product)
-        // {
-        //     return Inertia::render('Sites/BuyProduct', compact('product'));
+        return Inertia::render('Sites/BuyProduct', [
+            'product' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'type' => Str::slug($product->productType->name, '-'),
+                'hex_color' => $product->hex_color,
+            ],
+            'cart' => $cart
+        ]);
     }
 
     // TODO
