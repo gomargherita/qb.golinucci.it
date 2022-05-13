@@ -25,7 +25,7 @@ class CreateClientDetailsTable extends Migration
             $table->date('dob')->nullable();
             $table->string('address', 150);
             $table->string('city', 50);
-            $table->string('province', 50);
+            $table->string('province', 2);
             $table->string('country', 2);
             $table->string('postal_code', 5);
             $table->boolean('confirmation')->default(false);

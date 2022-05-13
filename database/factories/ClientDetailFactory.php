@@ -23,7 +23,7 @@ class ClientDetailFactory extends Factory
             'dob'=> $this->faker->date(),
             'address' => $this->faker->streetAddress,
             'city' => $this->faker->city,
-            'province' => $this->faker->state,
+            'province' => 'MI',
             'country' => 'IT',
             'postal_code' => $this->faker->bothify('#####'),
             'confirmation' => false,
