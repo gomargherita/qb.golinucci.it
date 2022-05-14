@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\DoprintCounter;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Storage;
 use SoapClient, SoapHeader, SoapVar, SoapParam, SoapFault, DOMDocument;
@@ -27,6 +28,7 @@ class LloydsDoprintService
     protected $wsdl;
     public $requestorID;
     public $baseXml;
+    public $certificateNo;
 
     public function __construct()
     {
@@ -52,13 +54,10 @@ class LloydsDoprintService
 
     public function HandShake()
     {
-
         $apiKey = $this->apiKey;
         $requestorID = $this->requestorID;
         $clientVersion = '';
-
         $client = new SoapClient($this->wsdl, array("soap_version" => SOAP_1_1, "trace" => true, "exceptions" => true));
-
         $messageType = "HandShake";
 
         try {
@@ -82,15 +81,18 @@ class LloydsDoprintService
             // $return =  "------$messageType OK\n";
             return $sessionToken;
         } catch (SoapFault $exception) {
-            return "Exception Thrown: " . $exception->faultstring;
+            throw new \Exception("Exception Thrown $messageType: $exception->faultstring");
         }
     }
 
-    public function ValidationRequest($sessionToken, $contractType, $productName, $certificateNo, $customer_details, $start_date, $end_date, $proposal_date, $cart_details, $wording, $prop, $prop2)
+    public function ValidationRequest($sessionToken, $contractType, $productName, $customer_details, $start_date, $end_date, $proposal_date, $cart_details, $wording, $prop, $prop2)
     {
         $apiKey = $this->apiKey;
         $requestorID = $this->requestorID;
         $messageType = "Validation";
+
+        $this->certificateNo = $this->getOrGenerateCertificateNumber();
+
         $xml = new DOMDocument('1.0', 'utf-8');
 
         //$xml->load("../xml/base.xml");
@@ -127,7 +129,7 @@ class LloydsDoprintService
 
         // Certificate Number
         $DocumentReferences = $xml->getElementsByTagName('DocumentReferences')->item(0);
-        $DocumentReferences->getElementsByTagName('CertificateICNumber')->item(0)->textContent = $certificateNo;
+        $DocumentReferences->getElementsByTagName('CertificateICNumber')->item(0)->textContent = $this->certificateNo;
 
         // Set Policy Holder
         switch ($customer_details['profession']) {
@@ -242,20 +244,18 @@ class LloydsDoprintService
             $isValid = $response->IsValid;
             if (isset($response->Errors)) {
                 //$fault = $response->Errors->fault->string;
-                echo "------$messageType INIZIO\n";
                 $fault = $response->Errors->fault->string;
-                if (array($fault)) {
+                if (is_array($fault)) {
                     foreach ($fault as $fau)
-                        echo $fau . "\n";
+                        throw new \Exception("$messageType: $fau");
                 } else {
-                    echo $fault . "\n";
+                    throw new \Exception("$messageType: $fault");
                 }
-                echo "------$messageType FINE\n";
             } else {
                 return $isValid;
             }
         } catch (SoapFault $exception) {
-            return "Exception Thrown: " . $exception->faultstring;
+            throw new \Exception("Exception Thrown $messageType: $exception->faultstring");
         }
     }
 
@@ -265,7 +265,7 @@ class LloydsDoprintService
         $apiKey = $this->apiKey;
         $requestorID = $this->requestorID;
         $messageType = "Upload";
-        $pdffile = file_get_contents($pdffilename);
+        $pdffile = Storage::disk('private')->get($pdffilename);
         $document = $pdffile;
         $documentHash = base64_encode(md5($pdffile, true));
         $sessionToken = $sessionToken;
@@ -291,10 +291,11 @@ class LloydsDoprintService
                 echo "------$messageType FINE\n";
             }
         } catch (SoapFault $exception) {
-            echo "------$messageType INIZIO\n";
-            echo "Exception Thrown: " . $exception->faultstring . "\n";
-            echo "------$messageType FINE\n";
-            echo $client->__getLastResponse();
+            throw new \Exception("Exception Thrown $messageType: $exception->faultstring");
+            // echo "------$messageType INIZIO\n";
+            // echo "Exception Thrown: " . $exception->faultstring . "\n";
+            // echo "------$messageType FINE\n";
+            // echo $client->__getLastResponse();
         }
     }
 
@@ -325,11 +326,12 @@ class LloydsDoprintService
                 echo "------$messageType FINE\n";
             }
         } catch (SoapFault $exception) {
-            echo "------$messageType INIZIO\n";
-            echo "Exception Thrown: " . $exception->faultstring . "\n";
-            echo "------$messageType FINE\n";
-            //echo $client->__getLastRequest();
-            echo $client->__getLastResponse();
+            // echo "------$messageType INIZIO\n";
+            // echo "Exception Thrown: " . $exception->faultstring . "\n";
+            // echo "------$messageType FINE\n";
+            // //echo $client->__getLastRequest();
+            // echo $client->__getLastResponse();
+            throw new \Exception("Exception Thrown $messageType: $exception->faultstring");
         }
     }
 
@@ -356,11 +358,31 @@ class LloydsDoprintService
             echo "------$messageType FINE\n";
             file_put_contents($docName,  $response->Document);
         } catch (SoapFault $exception) {
-            echo "------$messageType INIZIO\n";
-            echo "Exception Thrown: " . $exception->faultstring . "\n";
-            //echo $client->__getLastRequest();
-            echo "------$messageType FINE\n";
-            echo $client->__getLastResponse();
+            // echo "------$messageType INIZIO\n";
+            // echo "Exception Thrown: " . $exception->faultstring . "\n";
+            // //echo $client->__getLastRequest();
+            // echo "------$messageType FINE\n";
+            // echo $client->__getLastResponse();
+            throw new \Exception("Exception Thrown $messageType: $exception->faultstring");
+        }
+    }
+
+    private function getOrGenerateCertificateNumber()
+    {
+
+        // get doprint counter by current year
+        $doprintCounter = DoprintCounter::where('year', 2022)->firstOrFail();
+        //$doprintCounter = DoprintCounter::where('year', date("Y"));
+        if ($doprintCounter) {
+            // compose certificate number
+            // example GV21PI00566-LB
+            $cert_number = $doprintCounter->prefix . str_pad($doprintCounter->counter, 5, "0", STR_PAD_LEFT) . $doprintCounter->postfix;
+            // TODO capire come devo incrementare il contatore per le prossime generazioni
+            // $doprintCounter->counter++;
+            // $doprintCounter->save();
+            return $cert_number;
+        } else {
+            throw new \Exception("Impossibile to generate certificate number");
         }
     }
 } // End Class
