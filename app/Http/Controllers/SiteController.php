@@ -451,7 +451,6 @@ class SiteController extends Controller
         return Inertia::render('Sites/PaymentPaypalCancel', compact('product', 'cart', 'payment'));
     }
 
-    // TODO
     private function step5(Product $product, Cart $cart)
     {
         return Inertia::render('Sites/BuyProduct', [
@@ -460,10 +459,6 @@ class SiteController extends Controller
                 'name' => $product->name,
                 'type' => Str::slug($product->productType->name, '-'),
                 'hex_color' => $product->hex_color,
-                'documentGeneration' => [
-                    // 'handshakeResult' => $reportGeneration
-                ],
-                'test' => request('test')
             ],
             'cart' => $cart,
         ]);
@@ -478,11 +473,22 @@ class SiteController extends Controller
         //return response()->json(['errors' => false, 'data' => $user->email]);
         //return Redirect::route('package.index');
 
-        if($request->test){
-            $test = $user->email;
+        switch ($request->documentGeneration) {
+            case 'handshake':
+                $response = [
+                    'error' => false,
+                    'message' => 'ok handshake'
+                ];
+                break;
+            case 'validation':
+                $response = [
+                    'error' => true,
+                    'message' => 'errore validation'
+                ];
         }
 
-        return Redirect::route('front.product.buy', compact('product', 'cart', 'test'));
+        return response()->json($response);
+        // return Redirect::route('front.product.buy', compact('product', 'cart', 'documentGeneration'));
 
         // return Inertia::render('Sites/BuyProduct', [
         //     'product' => [
