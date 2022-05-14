@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             ProductOfferSeeder::class,
             ProductStepSeeder::class,
             ProductDeclarationSeeder::class,
+            DoprintCounterSeeder::class
         ]);
     }
 }
