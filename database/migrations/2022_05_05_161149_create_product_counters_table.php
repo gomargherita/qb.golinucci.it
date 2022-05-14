@@ -19,6 +19,7 @@ class CreateProductCountersTable extends Migration
             $table->id();
             $table->foreignIdFor(Product::class)->constrained();
             $table->foreignIdFor(PaymentGateway::class)->constrained();
+            $table->year('year');
             $table->integer('counter');
             $table->string('prefix')->unique();
             $table->timestamps();

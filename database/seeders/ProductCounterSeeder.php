@@ -19,9 +19,9 @@ class ProductCounterSeeder extends Seeder
         // 1 paypal, 2 bbm, 3 cassa
 
         ProductCounter::factory()->count(3)->sequence(
-            ['product_id' => 1, 'payment_gateway_id' => 1, 'counter' => 0, 'prefix' => '21NLP-'],
-            ['product_id' => 1, 'payment_gateway_id' => 2, 'counter' => 0, 'prefix' => '21NLB-'],
-            ['product_id' => 1, 'payment_gateway_id' => 3, 'counter' => 0, 'prefix' => '21NLC-'],
+            ['product_id' => 1, 'payment_gateway_id' => 1, 'year' => 2022, 'counter' => 0, 'prefix' => '22NLP-'],
+            ['product_id' => 1, 'payment_gateway_id' => 2, 'year' => 2022, 'counter' => 0, 'prefix' => '22NLB-'],
+            ['product_id' => 1, 'payment_gateway_id' => 3, 'year' => 2022, 'counter' => 0, 'prefix' => '22NLC-'],
         )->create();
     }
 }
