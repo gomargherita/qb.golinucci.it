@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Services\LloydsDoprintService;
 use App\Models\Account;
 use App\Models\Cart;
+use App\Models\Certificate;
 use App\Models\ClientDetail;
 use App\Models\Payment;
 use App\Models\PaymentGateway;
 use App\Models\Product;
+use App\Models\ProductCounter;
 use App\Models\ProductOffer;
 use App\Notifications\BankTransferGatewayPayment;
 use App\Notifications\PaypalGatewayPaymentCancel;
@@ -132,7 +134,7 @@ class SiteController extends Controller
                         return $this->step4($product, $cart, request('payment'));
                         break;
                     case 5:
-                        return $this->step5($product, $cart, request('test'));
+                        return $this->step5($product, $cart, request('documentGeneration'));
                         break;
                     case 6:
                         return $this->step6($product, $cart);
@@ -145,7 +147,7 @@ class SiteController extends Controller
                 'user_id' => $user->id,
                 'product_id' => $product->id,
                 'product_step_id' => 1,
-                'expired_at' => now(), // TODO Francesco come calcolare?
+                'expired_at' => now(), // TODO Francesco come calcolare? Riposta: Scadenza renewal_date + 1 anno
                 'locked' => 'N',
                 'cart_ref' => uniqid()
             ]);
@@ -459,10 +461,20 @@ class SiteController extends Controller
                 'name' => $product->name,
                 'type' => Str::slug($product->productType->name, '-'),
                 'hex_color' => $product->hex_color,
+                'documentGenerator' => []
             ],
             'cart' => $cart,
         ]);
     }
+
+    private function store_step5_certificate_initialization(Product $product, Cart $cart, Request $request)
+    {
+        return $response = [
+            'error' => false,
+            'message' => 'ok certificate_initialization'
+        ];
+    }
+
     // TODO
     public function store_step5(Product $product, Cart $cart, Request $request)
     {
@@ -473,10 +485,14 @@ class SiteController extends Controller
         //return response()->json(['errors' => false, 'data' => $user->email]);
         //return Redirect::route('package.index');
 
-        switch ($request->documentGeneration) {
+        switch ($request->method) {
+            case 'certificate_initialization':
+                $response = $this->store_step5_certificate_initialization($product, $cart, $request);
+                
+                break;
             case 'handshake':
                 $response = [
-                    'error' => false,
+                    'error' => true,
                     'message' => 'ok handshake'
                 ];
                 break;
@@ -518,6 +534,7 @@ class SiteController extends Controller
             $end_date = '2022-06-01';
             $proposal_date = '2022-06-01'; // se rinnovo metto start_date, altrimenti data di compilazione della form date('Y-m-d');
             $contract_type = 'RC PROFESSIONALE';
+            // TODO nome dipende dall-offerta selezionata, campo ente
             $product_name = "COLPA GRAVE - STRUTTURA SANITARIA PUBBLICA"; // "COLPA GRAVE – STRUTTURA SANITARIA PRIVATA"
 
             // se tutto è stato generato correttamente salvo certificato in DB

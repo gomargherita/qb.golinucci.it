@@ -6,10 +6,22 @@
       Siamo pronti a generare i tuoi documenti. Ci vorranno alcuni secondi, ti preghiamo
       di attendere e di non abbandonare la pagina, per favore.
     </p>
-
-    <p v-if="product.documentGeneration" v-text="product.documentGeneration"></p>
-
-    <form @submit.prevent="submit">
+    <ul v-if="product.documentGenerator.length">
+      <li
+        v-for="documentGenerator in product.documentGenerator"
+        v-text="documentGenerator.message"
+      ></li>
+    </ul>
+    <button
+      type="button"
+      id="startGeneration"
+      v-if="!isHidden"
+      @click.once="startGeneration"
+      class="gol-btn my-8 bg-primary"
+    >
+      Start
+    </button>
+    <form @submit.prevent="submit" class="hidden">
       <buy-loading-button
         :loading="form.processing"
         :disabled="form.processing"
@@ -36,127 +48,77 @@ export default {
   props: {
     cart: Object,
     product: Object,
-    // documentGeneration: {
-    //   type: String,
-    //   default: "",
-    // },
   },
   data() {
     return {
-      form: this.$inertia.form({
-        
-      }),
+      form: this.$inertia.form({}),
+      isHidden: false,
     };
   },
   methods: {
-    doprintRequest: async (product, cart, method_name) => {
-      let myResponse = "";
-      await axios
-        .post(
-          route("front.product.store_step5", {
-            product: product,
-            cart: cart,
-          }),
-          { documentGeneration: method_name }
-        )
-        .then((response) => {
-          if (response.data.error) {
-            myResponse = { error: true, message: response.data.message };
-          } else {
-            myResponse = { error: false, message: response.data.message };
-          }
-        });
-      return myResponse;
-    },
-    async submit() {
-      let product = this.product.id;
-      let cart = this.cart.cart_ref;
-      let handshakeResponse = await this.doprintRequest(
-        this.product,
-        this.cart,
-        "handshake"
-      ).then((response) => {
-        debugger;
-        this.$props.product.documentGeneration = response.message;
-        if (response.error) {
-          return false;
-        }
-        return true;
-      });
+    doprintRequest: async (params) => {
+      let response = {};
+      let url = route("front.product.store_step5", params);
 
-      if (handshakeResponse) {
-        let validationResponse = await this.doprintRequest(
-          this.product,
-          this.cart,
-          "validation"
-        ).then((response) => {
-          this.$props.product.documentGeneration = response.message;
-          if (response.error) {
-            return false;
+      await axios
+        .post(url)
+        .then((res) => {
+          if (res.data.error) {
+            throw res.data;
           }
-          return true;
+          response = res.data;
+        })
+        .catch((err) => {
+          throw err;
         });
+
+      return response;
+    },
+    async startGeneration() {
+      this.isHidden = true;
+      let self = this;
+
+      let params = { product: self.product, cart: self.cart };
+      // Prima chiamata
+
+      try {
+        // Imposta il metodo da utilizzare nel BE
+        params.method = "certificate_initialization";
+
+        // Esegue la chiamata al metodo e con la response POSITIVA aggiorna la prop del componente
+        const res = await this.doprintRequest(params);
+        self.product.documentGenerator.push(res);
+      } catch (err) {
+        // Con la response NEGATIVA aggiorna la prop del componente
+        self.product.documentGenerator.push(err);
+        // Non esegue la chiamata successiva
+        return false;
       }
 
-      // this.product.documentGeneration = response.data.message;
-      //   if (handshakeResponse) {
-      //     //   const secondRequest = await axios
-      //     //     .post(
-      //     //       route("front.product.store_step5", {
-      //     //         product: product,
-      //     //         cart: cart,
-      //     //       }),
-      //     //       { documentGeneration: "validation" }
-      //     //     )
-      //     //     .then((response) => {
-      //     //       if (reponse.error) {
-      //     //         this.product.documentGeneration = response.data.message;
-      //     //         return false;
-      //     //       } else {
-      //     //         this.product.documentGeneration = response.data.message;
-      //     //         return true;
-      //     //       }
-      //     //     });
-      //   }
+      // Seconda chiamata
+      try {
+        // Imposta il metodo da utilizzare nel BE
+        params.method = "handshake";
 
-      //   Inertia.post(
-      //     route("front.product.store_step5", {
-      //       product: product,
-      //       cart: cart,
-      //     }),
-      //     { documentGeneration: "testtest" },
-      //     {
-      //       only: ["product"],
-      //     }
-      //   );
+        // Esegue la chiamata al metodo e con la response POSITIVA aggiorna la prop del componente
+        const res = await this.doprintRequest(params);
+        self.product.documentGenerator.push(res);
+      } catch (err) {
+        // Con la response NEGATIVA aggiorna la prop del componente
+        self.product.documentGenerator.push(err);
+        // Non esegue la chiamata successiva
+        return false;
+      }
 
-      //   axios
-      //     .post(route("front.product.store_step5"), {
-      //       product: product,
-      //       cart: cart,
-      //     })
-      //     .then((res) => {
-      //       console.log(res);
-      //     });
-      //   this.form.post(
-      //     this.route("front.product.store_step5", {
-      //       product: this.product.id,
-      //       cart: this.cart.cart_ref,
-      //     }),
-      //     {
-      //       // preserveScroll: (page) => Object.keys(page.props.errors).length,
-      //       onSuccess: (page) => {
-      //         this.form.handshake_result = page;
-      //       },
-      //       onError: (errors) => {
-      //         console.log(errors);
-      //       },
-      //       //   onFinish: (visit) => {
-      //       //       // console.log(visit);
-      //       //       Inertia.reload({ only: ['users'] })
-      //       //   },
-      //     }
-      //   );
+      // Terza chiamata
+      try {
+        params.method = "validation";
+        const res = await this.doprintRequest(params);
+        self.product.documentGenerator.push(res);
+      } catch (err) {
+        self.product.documentGenerator.push(err);
+        return false;
+      }
     },
   },
 };
