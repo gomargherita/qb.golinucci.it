@@ -18,7 +18,7 @@ class ClientDetailFactory extends Factory
             'phone' => $this->faker->tollFreePhoneNumber,
             'first_name' => $this->faker->firstName,
             'last_name' => $this->faker->lastName,
-            'fiscal_code' => $this->faker->bothify('??????##?##?###?'),
+            'fiscal_code' => 'CMPCLL09M11C351C', // $this->faker->bothify('??????##?##?###?'),
             'gender' => $this->faker->randomElement(['M' ,'F']),
             'dob'=> $this->faker->date(),
             'address' => $this->faker->streetAddress,

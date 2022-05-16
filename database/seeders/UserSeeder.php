@@ -30,7 +30,10 @@ class UserSeeder extends Seeder
 
         ClientDetail::factory(1)
             ->create([
-                'user_id' => $user->id
+                'user_id' => $user->id,
+                'first_name' => 'Camillo',
+                'last_name' => 'Campana',
+                'fiscal_code' => 'CMPCLL09M11C351C',
             ]);
 
         $user = User::factory()->create([

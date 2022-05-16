@@ -25,7 +25,8 @@ class CreateCertificatesTable extends Migration
             $table->foreignIdFor(Product::class)->constrained();
             $table->foreignIdFor(ProductOffer::class)->nullable()->constrained();
             $table->foreignIdFor(Contract::class)->nullable()->constrained();
-            $table->string('certificate_no', 20)->unique();
+            $table->string('certificate_no', 20)->nullable()->unique();
+            $table->string('certificate_doprint_no', 20)->nullable()->unique();
             $table->datetime('renewal_date')->nullable();
             $table->decimal('total_payable')->nullable(); // quanto il cliente paga
             $table->decimal('admin_fee')->nullable(); // commissione golinucci
@@ -36,7 +37,7 @@ class CreateCertificatesTable extends Migration
             $table->decimal('net_plus_access_premium')->nullable(); // accessory + net premium; ex price
             $table->integer('indemnity_limit')->nullable();
             $table->integer('indemnity_limit_patrimonial')->nullable();
-            $table->boolean('active')->default(true);
+            $table->boolean('active')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });
