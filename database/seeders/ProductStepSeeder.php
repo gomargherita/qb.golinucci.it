@@ -40,6 +40,10 @@ class ProductStepSeeder extends Seeder
                 'product_id' => 1,
                 'step_number' => 6
             ],
+            [
+                'product_id' => 1,
+                'step_number' => 7
+            ],
         )->create();
     }
 }

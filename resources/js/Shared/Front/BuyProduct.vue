@@ -3,7 +3,7 @@
     <HTwo :title="__('Buy this Product')" />
 
     <div class="flex items-center justify-between mx-auto gap2 md:gap-4">
-      <template v-for="(num, key) in numSteps" :key="key">
+      <template v-for="(num, key) in num_steps" :key="key">
         <div class="flex items-center text-primary relative">
           <div
             class="rounded-full h-6 w-6 md:h-12 md:w-12 md:py-3 border-2 border-gray-300"
@@ -13,7 +13,7 @@
           </div>
         </div>
         <div
-          v-if="key + 1 != numSteps"
+          v-if="key + 1 != num_steps"
           class="hidden md:block flex-auto border-t-2"
         ></div>
       </template>
@@ -50,14 +50,13 @@ export default {
   props: {
     product: Object,
     cart: Object,
-    numSteps: {
-      type: Number,
-      default: 6,
-    },
   },
   computed: {
     current_step() {
-      return this.$page.props.cart.product_step_id;
+      return this.cart.product_step_id;
+    },
+    num_steps() {
+      return this.product.steps;
     },
   },
 };

@@ -73,6 +73,11 @@ class Product extends Model implements HasMedia
         return $this->hasMany(ProductDeclaration::class);
     }
 
+    public function productSteps(): HasMany
+    {
+        return $this->hasMany(ProductStep::class);
+    }
+
     public function scopeOrderByName($query)
     {
         $query->orderBy('name');

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -32,6 +33,16 @@ class Cart extends Model
         'expired_at',
         'locked',
     ];
+
+    public function payment(): HasOne
+    {
+        return $this->hasOne(Payment::class);
+    }
+
+    public function certificate(): HasOne
+    {
+        return $this->hasOne(Certificate::class);
+    }
 
     public function getActivitylogOptions(): LogOptions
     {

@@ -130,7 +130,6 @@ class SiteController extends Controller
                         return $this->step3($product, $cart);
                         break;
                     case 4:
-                        // optional payment 
                         return $this->step4($product, $cart, request('payment'));
                         break;
                     case 5:
@@ -138,6 +137,9 @@ class SiteController extends Controller
                         break;
                     case 6:
                         return $this->step6($product, $cart);
+                        break;
+                    case 7:
+                        return $this->step7($product, $cart);
                         break;
                 }
             }
@@ -164,7 +166,21 @@ class SiteController extends Controller
                 'user_id' => $user->id
             ])->latest('id')->first();
 
-        return Inertia::render('Sites/BuyProduct', compact('product', 'clientDetails', 'cart'));
+        return Inertia::render('Sites/BuyProduct', [
+            'product' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'type' => Str::slug($product->productType->name, '-'),
+                'detailed_description' => $product->detailed_description,
+                'conditions' => $product->conditions,
+                'conditional_fields' => $product->conditionalFields,
+                'hex_color' => $product->hex_color,
+                'offers' => $product->productOffers,
+                'steps' => $product->productSteps->count()
+            ],
+            'cart' => $cart,
+            'clientDetails' => $clientDetails
+        ]);
     }
 
     public function store_step1(Product $product, Cart $cart, Request $request)
@@ -221,6 +237,7 @@ class SiteController extends Controller
                 'conditional_fields' => $product->conditionalFields,
                 'hex_color' => $product->hex_color,
                 'offers' => $product->productOffers,
+                'steps' => $product->productSteps->count()
             ],
             'cart' => $cart
         ]);
@@ -265,6 +282,7 @@ class SiteController extends Controller
                 'post_declarations' => $product->post_declarations,
                 'declarations' => $product->productDeclarations,
                 'hex_color' => $product->hex_color,
+                'steps' => $product->productSteps->count()
             ],
             'cart' => $cart
         ]);
@@ -294,32 +312,30 @@ class SiteController extends Controller
 
     private function step4(Product $product, Cart $cart, $payment = null)
     {
+
+        $productObject = [
+            'id' => $product->id,
+            'name' => $product->name,
+            'type' => Str::slug($product->productType->name, '-'),
+            'payments_description' => $product->payments_description,
+            'hex_color' => $product->hex_color,
+            'steps' => $product->productSteps->count(),
+        ];
+
         if (empty($payment)) {
             $payment_gateways = PaymentGateway::where(['public' => 1])->get();
+            $productObject['payment_gateways'] = $payment_gateways;
 
             return Inertia::render('Sites/BuyProduct', [
-                'product' => [
-                    'id' => $product->id,
-                    'name' => $product->name,
-                    'type' => Str::slug($product->productType->name, '-'),
-                    'payment_gateways' => $payment_gateways,
-                    'payments_description' => $product->payments_description,
-                    'hex_color' => $product->hex_color,
-                ],
+                'product' => $productObject,
                 'cart' => $cart
             ]);
         } else {
             $payment_data = Payment::query()->where(['cart_id' => $cart->id])->findOrFail($payment);
+            $productObject['payment'] = $payment_data;
 
             return Inertia::render('Sites/BuyProduct', [
-                'product' => [
-                    'id' => $product->id,
-                    'name' => $product->name,
-                    'type' => Str::slug($product->productType->name, '-'),
-                    'payments_description' => $product->payments_description,
-                    'payment' => $payment_data,
-                    'hex_color' => $product->hex_color,
-                ],
+                'product' => $productObject,
                 'cart' => $cart
             ]);
         }
@@ -461,6 +477,7 @@ class SiteController extends Controller
                 'name' => $product->name,
                 'type' => Str::slug($product->productType->name, '-'),
                 'hex_color' => $product->hex_color,
+                'steps' => $product->productSteps->count(),
                 'documentGenerator' => []
             ],
             'cart' => $cart,
@@ -691,6 +708,7 @@ class SiteController extends Controller
                 'name' => $product->name,
                 'type' => Str::slug($product->productType->name, '-'),
                 'hex_color' => $product->hex_color,
+                'steps' => $product->productSteps->count()
             ],
             'cart' => $cart
         ]);
@@ -708,6 +726,22 @@ class SiteController extends Controller
         $this->finalizeCart($cart);
 
         return redirect()->route('front.product.buy', compact('product', 'cart'));
+    }
+
+    // TODO
+    private function step7(Product $product, Cart $cart)
+    {
+
+        return Inertia::render('Sites/BuyProduct', [
+            'product' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'type' => Str::slug($product->productType->name, '-'),
+                'hex_color' => $product->hex_color,
+                'steps' => $product->productSteps->count()
+            ],
+            'cart' => $cart
+        ]);
     }
 
     private function prepareBeforeStore(User $user, Product $product, Cart $cart)

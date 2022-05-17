@@ -1,6 +1,6 @@
 <template>
-  <Head :title="__('Ordine Confermato')" />
-  <HTwo :title="__('Ordine Confermato')" />
+  <Head :title="__('Firma Documento')" />
+  <HTwo :title="__('Firma Documento')" />
 </template>
 
 <script>
@@ -11,6 +11,7 @@ export default {
     HTwo,
   },
   props: {
+    cart: Object,
     product: Object,
   },
 };
