@@ -24,13 +24,17 @@ use SoapClient, SoapHeader, SoapVar, SoapParam, SoapFault, DOMDocument;
  */
 class LloydsDoprintService
 {
+    protected $requestorID;
+    protected $baseXml;
     protected $apiKey;
     protected $wsdl;
-    public $requestorID;
-    public $baseXml;
-    public $certificateNo;
+    protected $sessionToken;
+    protected $start_date;
+    protected $end_date;
+    protected $proposal_date;
+    protected $certificate;
 
-    public function __construct()
+    public function __construct($certificate, $start_date, $end_date, $proposal_date)
     {
         if (App::environment(['local', 'staging'])) {
             // sandbox
@@ -43,12 +47,16 @@ class LloydsDoprintService
             $wsdl = config('doprint.sandbox.wsdl');
             $requestor_id = config('doprint.sandbox.requestor_id');
         }
-        if (empty($wsdl) || empty($requestor_id) || empty($api_key)) {
+        if (empty($wsdl) || empty($requestor_id) || empty($api_key) || empty($start_date) || empty($end_date) || empty($proposal_date) || empty($certificate)) {
             throw new \Exception("Al least one parameter is missing");
         } else {
             $this->wsdl = $wsdl;
             $this->apiKey = $api_key;
             $this->requestorID = $requestor_id;
+            $this->certificate = $certificate;
+            $this->start_date = $start_date;
+            $this->end_date = $end_date;
+            $this->proposal_date = $proposal_date;
         }
     }
 
@@ -71,27 +79,26 @@ class LloydsDoprintService
             $request = new SoapVar($request, SOAP_ENC_OBJECT, "CVPHandshakeRequest", "http://schemas.datacontract.org/2004/07/Euseco.Mokadom.CVP.Workflow.MessageContracts");
             $request = new SoapParam($request, "Message");
             $response = $client->RouteMessage($request);
-            $sessionDuration = $response->SessionDuration;
-            $sessionToken = $response->SessionToken;
-            $pwExpiringDays = $response->PwExpiringDays;
+            $this->sessionToken = $response->SessionToken;
 
+            // $sessionDuration = $response->SessionDuration;
+            // $pwExpiringDays = $response->PwExpiringDays;
             // $return = "------$messageType OK\n";
             // $return =  "SessionDuration: " . $sessionDuration . "\n";
             // $return =  "pwExpritingDays: " . $pwExpiringDays . "\n";
             // $return =  "------$messageType OK\n";
-            return $sessionToken;
         } catch (SoapFault $exception) {
             throw new \Exception("Exception Thrown $messageType: $exception->faultstring");
         }
     }
 
-    public function ValidationRequest($sessionToken, $contractType, $productName, $customer_details, $start_date, $end_date, $proposal_date, $cart_details, $wording, $prop, $prop2)
+    public function ValidationRequest($contractType, $productName, $customer_details, $cart_details, $wording, $prop, $prop2)
     {
         $apiKey = $this->apiKey;
         $requestorID = $this->requestorID;
         $messageType = "Validation";
 
-        $this->certificateNo = $this->getOrGenerateCertificateNumber();
+        $this->getOrGenerateCertificateNumber();
 
         $xml = new DOMDocument('1.0', 'utf-8');
 
@@ -129,7 +136,7 @@ class LloydsDoprintService
 
         // Certificate Number
         $DocumentReferences = $xml->getElementsByTagName('DocumentReferences')->item(0);
-        $DocumentReferences->getElementsByTagName('CertificateICNumber')->item(0)->textContent = $this->certificateNo;
+        $DocumentReferences->getElementsByTagName('CertificateICNumber')->item(0)->textContent = $this->certificate->certificate_doprint_no;
 
         // Set Policy Holder
         switch ($customer_details['profession']) {
@@ -171,11 +178,10 @@ class LloydsDoprintService
         $InsuredDetails->getElementsByTagName('InsuredName')->item(0)->textContent = $customer_details['first_name'] . ' ' . $customer_details['last_name'];
 
         //Start End Date
-
         $CertificateDateTimeDetails = $xml->getElementsByTagName('CertificateDateTimeDetails')->item(0);
-        $CertificateDateTimeDetails->getElementsByTagName('InceptionDate')->item(0)->textContent = $start_date;
-        $CertificateDateTimeDetails->getElementsByTagName('ExpiryDate')->item(0)->textContent = $end_date;
-        $CertificateDateTimeDetails->getElementsByTagName('ProposalDate')->item(0)->textContent = $proposal_date;
+        $CertificateDateTimeDetails->getElementsByTagName('InceptionDate')->item(0)->textContent = $this->start_date;
+        $CertificateDateTimeDetails->getElementsByTagName('ExpiryDate')->item(0)->textContent = $this->end_date;
+        $CertificateDateTimeDetails->getElementsByTagName('ProposalDate')->item(0)->textContent = $this->proposal_date;
 
         $RiskPremiumDetails = $xml->getElementsByTagName('RiskPremiumDetails')->item(0);
         $RiskPremiumDetails->getElementsByTagName('Premium')->item(0)->textContent = $cart_details['price'];
@@ -196,12 +202,12 @@ class LloydsDoprintService
         $Instalments->getElementsByTagName('Accessori')->item(0)->textContent = $cart_details['accessori'];
         $Instalments->getElementsByTagName('Tax')->item(0)->textContent = $cart_details['tax'];
         $Instalments->getElementsByTagName('Gross')->item(0)->textContent =  $cart_details['price_with_tax'];
-        $Instalments->getElementsByTagName('InstalmentDate')->item(0)->textContent = $proposal_date;
+        $Instalments->getElementsByTagName('InstalmentDate')->item(0)->textContent = $this->proposal_date;
 
         $PremiumReceipt = $xml->getElementsByTagName('PremiumReceipt')->item(0);
         $PremiumReceipt->getElementsByTagName('FirmReceivingPremium')->item(0)->textContent = "Golinucci Srl";
         $PremiumReceipt->getElementsByTagName('AmountPremiumReceived')->item(0)->textContent = $cart_details['price_with_tax'];
-        $PremiumReceipt->getElementsByTagName('DatePremiumReceived')->item(0)->textContent = $proposal_date;
+        $PremiumReceipt->getElementsByTagName('DatePremiumReceived')->item(0)->textContent = $this->proposal_date;
 
         $pdffile = Storage::disk('private')->get($wording);
         $documentHashpdf = base64_encode(md5($pdffile, true));
@@ -229,7 +235,6 @@ class LloydsDoprintService
         Storage::disk('private')->put($policy_response_folder . '/policy_response.xml', $strxml);
 
         $documentHash = base64_encode(md5($strxml, true));
-        $sessionToken = $sessionToken;
         $client = new SoapClient($this->wsdl, array("soap_version" => SOAP_1_1, "trace" => true, "exceptions" => true));
         try {
             $header = array();
@@ -237,13 +242,12 @@ class LloydsDoprintService
             $header[] = new SoapHeader("http://tempuri.org/", "MessageType", $messageType);
             $header[] = new SoapHeader("http://tempuri.org/", "RequestorID", $requestorID);
             $client->__setSoapHeaders($header);
-            $request = new Message1($document, $documentHash, $sessionToken);
+            $request = new Message1($document, $documentHash, $this->sessionToken);
             $request = new SoapVar($request, SOAP_ENC_OBJECT, "CVPValidationRequest", "http://schemas.datacontract.org/2004/07/Euseco.Mokadom.CVP.Workflow.MessageContracts");
             $request = new SoapParam($request, "Message");
             $response = $client->RouteMessage($request);
             $isValid = $response->IsValid;
             if (isset($response->Errors)) {
-                //$fault = $response->Errors->fault->string;
                 $fault = $response->Errors->fault->string;
                 if (is_array($fault)) {
                     foreach ($fault as $fau)
@@ -259,8 +263,7 @@ class LloydsDoprintService
         }
     }
 
-
-    public function UploadRequest($sessionToken, $pdffilename)
+    public function UploadRequest($pdffilename)
     {
         $apiKey = $this->apiKey;
         $requestorID = $this->requestorID;
@@ -268,7 +271,6 @@ class LloydsDoprintService
         $pdffile = Storage::disk('private')->get($pdffilename);
         $document = $pdffile;
         $documentHash = base64_encode(md5($pdffile, true));
-        $sessionToken = $sessionToken;
         $client = new SoapClient($this->wsdl, array("soap_version" => SOAP_1_1, "trace" => true, "exceptions" => true));
         try {
             $header = array();
@@ -276,7 +278,7 @@ class LloydsDoprintService
             $header[] = new SoapHeader("http://tempuri.org/", "MessageType", $messageType);
             $header[] = new SoapHeader("http://tempuri.org/", "RequestorID", $requestorID);
             $client->__setSoapHeaders($header);
-            $request = new Message1($document, $documentHash, $sessionToken);
+            $request = new Message1($document, $documentHash, $this->sessionToken);
             $request = new SoapVar($request, SOAP_ENC_OBJECT, "CVPUploadRequest", "http://schemas.datacontract.org/2004/07/Euseco.Mokadom.CVP.Workflow.MessageContracts");
             $request = new SoapParam($request, "Message");
             $response = $client->RouteMessage($request);
@@ -299,7 +301,7 @@ class LloydsDoprintService
         }
     }
 
-    public function TransactionRequest($sessionToken)
+    public function TransactionRequest()
     {
         $apiKey = $this->apiKey;
         $messageType = "Transaction";
@@ -311,7 +313,7 @@ class LloydsDoprintService
             $header[] = new SoapHeader("http://tempuri.org/", "MessageType", $messageType);
             $header[] = new SoapHeader("http://tempuri.org/", "RequestorID", $requestorID);
             $client->__setSoapHeaders($header);
-            $request = new Message2($sessionToken);
+            $request = new Message2($this->sessionToken);
             $request = new SoapVar($request, SOAP_ENC_OBJECT, "CVPTransactionRequest", "http://schemas.datacontract.org/2004/07/Euseco.Mokadom.CVP.Workflow.MessageContracts");
             $request = new SoapParam($request, "Message");
             $response = $client->RouteMessage($request);
@@ -335,7 +337,7 @@ class LloydsDoprintService
         }
     }
 
-    public function DownloadRequest($sessionToken, $docName)
+    public function DownloadRequest($docName)
     {
         $apiKey = $this->apiKey;
 
@@ -348,7 +350,7 @@ class LloydsDoprintService
             $header[] = new SoapHeader("http://tempuri.org/", "MessageType", $messageType);
             $header[] = new SoapHeader("http://tempuri.org/", "RequestorID", $requestorID);
             $client->__setSoapHeaders($header);
-            $request = new Message2($sessionToken);
+            $request = new Message2($this->sessionToken);
             $request = new SoapVar($request, SOAP_ENC_OBJECT, "CVPDownloadRequest", "http://schemas.datacontract.org/2004/07/Euseco.Mokadom.CVP.Workflow.MessageContracts");
             $request = new SoapParam($request, "Message");
             $response = $client->RouteMessage($request);
@@ -369,20 +371,23 @@ class LloydsDoprintService
 
     private function getOrGenerateCertificateNumber()
     {
-
         // get doprint counter by current year
-        $doprintCounter = DoprintCounter::where('year', 2022)->firstOrFail();
-        //$doprintCounter = DoprintCounter::where('year', date("Y"));
-        if ($doprintCounter) {
-            // compose certificate number
-            // example GV21PI00566-LB
-            $cert_number = $doprintCounter->prefix . str_pad($doprintCounter->counter, 5, "0", STR_PAD_LEFT) . $doprintCounter->postfix;
-            // TODO capire come devo incrementare il contatore per le prossime generazioni
-            // $doprintCounter->counter++;
-            // $doprintCounter->save();
-            return $cert_number;
+        if (empty($this->certificate->certificate_doprint_no)) {
+            $doprintCounter = DoprintCounter::where('year', date('Y'))->firstOrFail();
+            if ($doprintCounter) {
+                // compose certificate number
+                // example GV21PI00566-LB
+                $doprintCounter->counter++;
+                $doprintCounter->save();
+                $cert_number = $doprintCounter->prefix . str_pad($doprintCounter->counter, 5, "0", STR_PAD_LEFT) . $doprintCounter->postfix;
+                $this->certificate->certificate_doprint_no = $cert_number;
+                $this->certificate->save();
+                return $cert_number;
+            } else {
+                throw new \Exception("Impossibile to generate certificate number");
+            }
         } else {
-            throw new \Exception("Impossibile to generate certificate number");
+            return $this->certificate->certificate_doprint_no;
         }
     }
 } // End Class

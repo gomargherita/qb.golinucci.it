@@ -135,7 +135,7 @@ Route::controller(SiteController::class)->group(function () {
         Route::post('/products/{product}/store_step6/{cart:cart_ref}', 'store_step6')->name('front.product.store_step6')->middleware(['auth']);
     });
 
-    //Route::get('/test-lloyds', 'testLloyds')->name('front.testlloyds');
+    Route::get('/test-import', 'testImport')->name('front.testimport');
 });
 
 require __DIR__ . '/auth.php';
