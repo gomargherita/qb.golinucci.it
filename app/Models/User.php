@@ -26,6 +26,7 @@ class User extends Authenticatable implements HasMedia
      * @var array<int, string>
      */
     protected $fillable = [
+        'account_id', // necessary to handle users from admin panel? To check
         'name',
         'first_name',
         'last_name',

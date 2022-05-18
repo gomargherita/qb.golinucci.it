@@ -15,7 +15,6 @@ class Certificate extends Model
     use HasFactory, SoftDeletes, LogsActivity;
 
     protected $fillable = [
-        'user_id',
         'cart_id',
         'contract_id',
         'certificate_no',
@@ -43,7 +42,7 @@ class Certificate extends Model
                 $productCounter->counter = $productCounter->counter + 1;
                 $productCounter->save();
                 $certificate->certificate_no = $productCounter->prefix . $productCounter->counter;
-                $certificate->doprint_current_step = 'handshake';
+                $certificate->doprint_current_step = 'handshake'; // set first step after initialization
             }
         });
     }
@@ -52,7 +51,6 @@ class Certificate extends Model
     {
         return LogOptions::defaults()
             ->logOnly([
-                'user_id',
                 'cart_id',
                 'contract_id',
                 'certificate_no',

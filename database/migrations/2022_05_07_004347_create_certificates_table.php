@@ -20,12 +20,11 @@ class CreateCertificatesTable extends Migration
     {
         Schema::create('certificates', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(User::class)->constrained();
             $table->foreignIdFor(Cart::class)->constrained();
             $table->foreignIdFor(Contract::class)->nullable()->constrained();
             $table->string('certificate_no', 20)->nullable()->unique();
             $table->string('doprint_token', 100)->nullable()->unique();
-            $table->string('doprint_current_step', 20)->nullable()->unique();
+            $table->string('doprint_current_step', 20)->nullable();
             $table->string('doprint_certificate_no', 20)->nullable()->unique();
             $table->datetime('renewal_date')->nullable();
             $table->boolean('active')->default(false);

@@ -127,6 +127,51 @@ export default {
         // Non esegue la chiamata successiva
         return false;
       }
+
+      // Quarta chiamata
+      try {
+        // Imposta il metodo da utilizzare nel BE
+        params.method = "upload";
+
+        // Esegue la chiamata al metodo e con la response POSITIVA aggiorna la prop del componente
+        const res = await this.doprintRequest(params);
+        self.product.documentGenerator.push(res);
+      } catch (err) {
+        // Con la response NEGATIVA aggiorna la prop del componente
+        self.product.documentGenerator.push(err);
+        // Non esegue la chiamata successiva
+        return false;
+      }
+
+      // Quinta chiamata
+      try {
+        // Imposta il metodo da utilizzare nel BE
+        params.method = "transaction";
+
+        // Esegue la chiamata al metodo e con la response POSITIVA aggiorna la prop del componente
+        const res = await this.doprintRequest(params);
+        self.product.documentGenerator.push(res);
+      } catch (err) {
+        // Con la response NEGATIVA aggiorna la prop del componente
+        self.product.documentGenerator.push(err);
+        // Non esegue la chiamata successiva
+        return false;
+      }
+
+      // Sesta chiamata
+      try {
+        // Imposta il metodo da utilizzare nel BE
+        params.method = "download";
+
+        // Esegue la chiamata al metodo e con la response POSITIVA aggiorna la prop del componente
+        const res = await this.doprintRequest(params);
+        self.product.documentGenerator.push(res);
+      } catch (err) {
+        // Con la response NEGATIVA aggiorna la prop del componente
+        self.product.documentGenerator.push(err);
+        // Non esegue la chiamata successiva
+        return false;
+      }
     },
   },
 };

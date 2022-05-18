@@ -11,7 +11,6 @@ use App\Models\ClientDetail;
 use App\Models\Payment;
 use App\Models\PaymentGateway;
 use App\Models\Product;
-use App\Models\ProductCounter;
 use App\Models\ProductOffer;
 use App\Notifications\BankTransferGatewayPayment;
 use App\Notifications\PaypalGatewayPaymentCancel;
@@ -29,8 +28,6 @@ use Throwable;
 
 class SiteController extends Controller
 {
-
-    private $lloydsDoprintService;
 
     /**
      * Display a listing of the resource.
@@ -491,40 +488,74 @@ class SiteController extends Controller
         ]);
     }
 
+    // TODO
+    public function store_step5(Product $product, Cart $cart, Request $request)
+    {
+        // TODO questo dovrà essere differenziato tra utente a rinnovo e utenti nuovi (cambia il numero di allegati)
+        //$file = Storage::disk('private')->get('lloyds_rinnovi_base.xml');
+        $user = auth()->user();
+        $cart = $this->prepareBeforeStore($user, $product, $cart);
+        $certificate = Certificate::firstOrCreate(
+            ['cart_id' => $cart->id],
+            [
+                //'certificate_no' => $certificate_no, // set in certificate boot method
+                'contract_id' => 1, // TODO DA SISTEMARE
+                //'renewal_date' => $proposal_date,
+            ]
+        );
+
+        switch ($request->method) {
+            case 'certificate_initialization':
+                $response = $this->store_step5_certificate_initialization($cart);
+                break;
+            case 'handshake':
+                $response = $this->store_step5_certificate_handshake($cart);
+                break;
+            case 'validation':
+                $response = $this->store_step5_certificate_validation($cart);
+                break;
+            case 'upload':
+                $response = $this->store_step5_certificate_upload($cart);
+                break;
+            case 'transaction':
+                $response = $this->store_step5_certificate_transaction($cart);
+                break;
+            case 'download':
+                $response = $this->store_step5_certificate_download($cart);
+                break;
+        }
+
+        return response()->json($response);
+
+
+
+        // TODO settare cart renewal date, per i nuovi clienti, alla data di creazione del certificato
+
+        $validated = $request->validate([]);
+
+        $this->updateCartStep($cart, 6);
+
+        return redirect()->route('front.product.buy', compact('product', 'cart'));
+    }
+
     private function store_step5_certificate_initialization(Cart $cart)
     {
         try {
+            $certificate = $cart->certificate;
             $user = auth()->user();
-
-            $certificate = Certificate::firstOrCreate(
-                [
-                    'user_id' => $user->id,
-                    'cart_id' => $cart->id,
-                    'product_id' => $cart->product_id,
-                    'product_offer_id' => $cart->product_offer_id,
-                ],
-                [
-                    //'certificate_no' => $certificate_no, // set in certificate boot method
-                    //'certificate_doprint_no' => '', //$lloydsDoprintService->certificateNo,
-                    'contract_id' => 1, // TODO DA SISTEMARE
-                    //'renewal_date' => $proposal_date,
-                    'total_payable' => $cart->total_payable,
-                    'admin_fee' => $cart->admin_fee,
-                    'gross_premium' => $cart->gross_premium,
-                    'tax' => $cart->tax,
-                    'net_premium' => $cart->net_premium,
-                    'accessory' => $cart->accessory,
-                    'net_plus_access_premium' => $cart->net_plus_access_premium,
-                    'indemnity_limit' => $cart->indemnity_limit,
-                    'indemnity_limit_patrimonial' => $cart->indemnity_limit_patrimonial,
-                ]
-            );
-
-            activity()
-                ->causedBy($user)
-                ->on($certificate)
-                ->event('certificate_generation')
-                ->log("An error occurred on generating a certificate $certificate->certificate_no;");
+            if (empty($certificate->doprint_token)) {
+                activity()
+                    ->causedBy($user)
+                    ->on($certificate)
+                    ->event('certificate_generation')
+                    ->log("Initiate certificate $certificate->certificate_no generation;");
+            } else {
+                activity()
+                    ->causedBy($user)
+                    ->on($certificate)
+                    ->event('certificate_generation')
+                    ->log("Re-Initiate certificate $certificate->certificate_no generation due to previous error;");
+            }
 
             return [
                 'error' => false,
@@ -542,48 +573,28 @@ class SiteController extends Controller
         }
     }
 
-    private function store_step5_certificate_generation(Cart $cart)
+    private function store_step5_certificate_handshake(Cart $cart)
     {
         try {
-            $user = auth()->user();
-            // get certificate
-            $certificate = Certificate::where([
-                'user_id' => $user->id,
-                'cart_id' => $cart->id,
-            ])->first();
-            // IMPORTANTE la data di START deve ricadere entro la data di validità del Binder
-            $start_date = '2021-06-01';
-            $end_date = '2022-06-01';
-            $proposal_date = '2022-06-01'; // se rinnovo metto start_date, altrimenti data di compilazione della form date('Y-m-d');
-            $this->lloydsDoprintService = new LloydsDoprintService($certificate, $start_date, $end_date, $proposal_date);
-            $user = auth()->user();
-            $this->lloydsDoprintService->HandShake();
+            $certificate = $cart->certificate;
+            if ($certificate->doprint_current_step == 'handshake' && empty($certificate->doprint_token)) {
+                $certificate->doprint_token = LloydsDoprintService::handShake();
+                $certificate->doprint_current_step = 'validation';
+                $certificate->save();
+            }
+
+            return [
+                'error' => false,
+                'message' => 'Connessione avvenuta correttamente...'
+            ];
         } catch (Throwable $e) {
             activity()
-                ->causedBy($user)
+                ->causedBy(auth()->user())
                 ->event('certificate_generation')
                 ->log("An error occurred on generating a certificate on handshake;" . $e->getMessage());
             return [
                 'error' => true,
                 'message' => 'Connessione fallita. Si prega di contattarci via telefono o email'
-            ];
-        }
-
-        try {
-            $this->store_step5_certificate_validation($cart);
-        } catch (Throwable $e) {
-            return [
-                'error' => true,
-                'message' => $e->getMessage()
-            ];
-        }
-
-        try {
-            $this->store_step5_certificate_upload($cart);
-        } catch (Throwable $e) {
-            return [
-                'error' => true,
-                'message' => $e->getMessage()
             ];
         }
     }
@@ -592,57 +603,77 @@ class SiteController extends Controller
     {
         try {
             $user = auth()->user();
-            $clientDetails = ClientDetail::where('user_id', $cart->user_id)->first();
+            $certificate = $cart->certificate;
+            if ($certificate->doprint_current_step == 'validation') {
+                $clientDetails = ClientDetail::where('user_id', $cart->user_id)->first();
 
-            $customer = [
-                'user_id' => $user->id, // serve per creare il percorso dove salvare i file
-                'profession' => "Medico Convenzionato",
-                'first_name' => $clientDetails->first_name,
-                'last_name' => $clientDetails->last_name,
-                'address' => $clientDetails->address,
-                'city' => $clientDetails->city,
-                'postal_code' => $clientDetails->postal_code,
-                'province' => $clientDetails->province, //'MI',
-                'fiscal_code' => $clientDetails->fiscal_code,
-                'gender' => $clientDetails->gender,
-                'country' => ($clientDetails->country == 'IT') ? 'Italia' : $clientDetails->country
+                $customer = [
+                    'user_id' => $user->id, // serve per creare il percorso dove salvare i file
+                    'profession' => "Medico Convenzionato",
+                    'first_name' => $clientDetails->first_name,
+                    'last_name' => $clientDetails->last_name,
+                    'address' => $clientDetails->address,
+                    'city' => $clientDetails->city,
+                    'postal_code' => $clientDetails->postal_code,
+                    'province' => $clientDetails->province, //'MI',
+                    'fiscal_code' => $clientDetails->fiscal_code,
+                    'gender' => $clientDetails->gender,
+                    'country' => ($clientDetails->country == 'IT') ? 'Italia' : $clientDetails->country
+                ];
+
+                $cart_details = [
+                    'cart_id' => $cart->id,
+                    'price' => $cart->net_premium,
+                    'accessori' => $cart->accessory, // 10% di sovrapprezzo sul netto; 44/10
+                    'tax' => $cart->tax, // tasse calcolate su premio + accessori
+                    'price_with_tax' => $cart->gross_premium, // premio + accessori + tax (no fee)
+                ];
+
+                // $scheda = 'scheda/scheda.pdf'; // '../props/prop.pdf'; // TODO DA GENERARE
+                $scheda = 'props/scheda.pdf';
+                $wording = 'wordings/wording.pdf'; // '../wordings/wording.pdf';
+                $prop = 'props/prop.pdf'; // '../props/prop.pdf';
+
+                $contract_type = 'RC PROFESSIONALE';
+                // TODO nome dipende dall-offerta selezionata, campo ente
+                $product_name = "COLPA GRAVE - STRUTTURA SANITARIA PUBBLICA"; // "COLPA GRAVE – STRUTTURA SANITARIA PRIVATA"
+
+                // IMPORTANTE la data di START deve ricadere entro la data di validità del Binder
+                $start_date = '2021-06-01';
+                $end_date = '2022-06-01';
+                $proposal_date = '2022-06-01'; // se rinnovo metto start_date, altrimenti data di compilazione della form date('Y-m-d');
+                //Setup Policy using the xml and MD5 file hashes
+                $isValid = LloydsDoprintService::validationRequest(
+                    $cart,
+                    $start_date,
+                    $end_date,
+                    $proposal_date,
+                    $contract_type,
+                    $product_name,
+                    $customer,
+                    $cart_details,
+                    $scheda,
+                    $wording,
+                    $prop
+                );
+                if ($isValid) {
+                    $certificate->doprint_current_step = 'upload';
+                    $certificate->save();
+                }
+            }
+            return [
+                'error' => false,
+                'message' => 'Validazione certificato completata...'
             ];
-
-            $cart_details = [
-                'cart_id' => $cart->id,
-                'price' => $cart->net_premium,
-                'accessori' => $cart->accessory, // 10% di sovrapprezzo sul netto; 44/10
-                'tax' => $cart->tax, // tasse calcolate su premio + accessori
-                'price_with_tax' => $cart->gross_premium, // premio + accessori + tax (no fee)
-            ];
-
-            // $scheda = 'scheda/scheda.pdf'; // '../props/prop.pdf'; // TODO DA GENERARE
-            $scheda = 'props/scheda.pdf';
-            $wording = 'wordings/wording.pdf'; // '../wordings/wording.pdf';
-            $prop = 'props/prop.pdf'; // '../props/prop.pdf';
-
-            $contract_type = 'RC PROFESSIONALE';
-            // TODO nome dipende dall-offerta selezionata, campo ente
-            $product_name = "COLPA GRAVE - STRUTTURA SANITARIA PUBBLICA"; // "COLPA GRAVE – STRUTTURA SANITARIA PRIVATA"
-
-            //Setup Policy using the xml and MD5 file hashes
-            $isValid = $this->lloydsDoprintService->ValidationRequest(
-                $contract_type,
-                $product_name,
-                $customer,
-                $cart_details,
-                $scheda,
-                $wording,
-                $prop
-            );
-
-            return $isValid;
         } catch (Throwable $e) {
             activity()
                 ->causedBy($user)
                 ->event('certificate_generation')
                 ->log("An error occurred on generating a certificate on validation;" . $e->getMessage());
-            throw new \Exception('Validazione fallita. Si prega di contattarci via telefono o email');
+            return [
+                'error' => true,
+                'message' => 'Validazione certificato fallita. Si prega di contattarci via telefono o email'
+            ];
         }
     }
 
@@ -651,108 +682,118 @@ class SiteController extends Controller
 
         try {
             $user = auth()->user();
+            $certificate = $cart->certificate;
+            if ($certificate->doprint_current_step == 'upload') {
 
-            // $scheda = 'scheda/scheda.pdf'; // '../props/prop.pdf'; // TODO DA GENERARE
-            $scheda = 'props/scheda.pdf';
-            $wording = 'wordings/wording.pdf'; // '../wordings/wording.pdf';
-            $prop = 'props/prop.pdf'; // '../props/prop.pdf';
+                // $scheda = 'scheda/scheda.pdf'; // '../props/prop.pdf'; // TODO DA GENERARE
+                $scheda = 'props/scheda.pdf';
+                $wording = 'wordings/wording.pdf'; // '../wordings/wording.pdf';
+                $prop = 'props/prop.pdf'; // '../props/prop.pdf';
 
-            // // Upload PER RINNOVI
-            // Ordine allegati 1. scheda prodotto (da generare, pagina 6 della polizza),
-            $this->lloydsDoprintService->UploadRequest($scheda);
+                // // Upload PER RINNOVI
+                // Ordine allegati 1. scheda prodotto (da generare, pagina 6 della polizza),
+                LloydsDoprintService::uploadRequest($cart, $scheda);
 
-            // // Upload 2. wording
-            // per pubblico file WORDING BINDER NL 2021_SECTION_A_RENEW.pdf
-            // per privato WORDING BINDER NL 2021_SECTION B_RENEW.pdf
-            $this->lloydsDoprintService->UploadRequest($wording);
+                // // Upload 2. wording
+                // per pubblico file WORDING BINDER NL 2021_SECTION_A_RENEW.pdf
+                // per privato WORDING BINDER NL 2021_SECTION B_RENEW.pdf
+                LloydsDoprintService::uploadRequest($cart, $wording);
 
-            //  Upload 3.attach
-            // ATTACHING CLAUSES
-            $this->lloydsDoprintService->UploadRequest($prop);
+                //  Upload 3.attach
+                // ATTACHING CLAUSES
+                LloydsDoprintService::uploadRequest($cart, $prop);
 
-            // // Upload PER NUOVI
-            // Ordine allegati 1. scheda prodotto (da generare, pagina 6 della polizza), 
+                // // Upload PER NUOVI
+                // Ordine allegati 1. scheda prodotto (da generare, pagina 6 della polizza), 
 
-            // Upload 2. wording
-            // per pubblico WORDING BINDER NL 2021_SECTION_A
-            // per privato WORDING BINDER NL 2021_SECTION B
+                // Upload 2. wording
+                // per pubblico WORDING BINDER NL 2021_SECTION_A
+                // per privato WORDING BINDER NL 2021_SECTION B
 
-            // Upload 3.attach
-            // ATTACHING CLAUSES
+                // Upload 3.attach
+                // ATTACHING CLAUSES
 
-            // Upload 4. modulo di adesione
-            // da generare
+                // Upload 4. modulo di adesione
+                // da generare
 
+
+                $certificate->doprint_current_step = 'transaction';
+                $certificate->save();
+            }
+
+            return [
+                'error' => false,
+                'message' => 'Upload file completato...'
+            ];
         } catch (Throwable $e) {
             activity()
                 ->causedBy($user)
                 ->event('certificate_generation')
-                ->log("An error occurred on generating a certificate on validation;" . $e->getMessage());
-            throw new \Exception('Validazione fallita. Si prega di contattarci via telefono o email');
+                ->log("An error occurred on generating a certificate on upload;" . $e->getMessage());
+            return [
+                'error' => true,
+                'message' => 'Upload file fallito. Si prega di contattarci via telefono o email'
+            ];
         }
     }
 
-    private function store_step5_certificate_transaction()
+    private function store_step5_certificate_transaction(Cart $cart)
     {
         try {
-            $this->lloydsDoprintService->TransactionRequest();
-        } catch (Throwable $e) {
-            report($e);
-            $reportGeneration = $e->getMessage();
+            $user = auth()->user();
+            $certificate = $cart->certificate;
+            if ($certificate->doprint_current_step == 'transaction') {
+                $isValid = LloydsDoprintService::transactionRequest($cart);
+                if ($isValid) {
+                    $certificate->doprint_current_step = 'download';
+                    $certificate->save();
+                }
+            }
 
-            return false;
+            return [
+                'error' => false,
+                'message' => 'Transazione completata...'
+            ];
+        } catch (Throwable $e) {
+            activity()
+                ->causedBy($user)
+                ->event('certificate_generation')
+                ->log("An error occurred on generating a certificate on transaction;" . $e->getMessage());
+            return [
+                'error' => true,
+                'message' => 'Transazione fallita. Si prega di contattarci via telefono o email'
+            ];
         }
     }
 
-    private function store_step5_certificate_download()
+    private function store_step5_certificate_download(Cart $cart)
     {
         try {
-            // // Download the certificate
-            $filename = 'test-download.pdf';
-            $this->lloydsDoprintService->DownloadRequest($filename);
+            $user = auth()->user();
+            $certificate = $cart->certificate;
+            if ($certificate->doprint_current_step == 'download') {
+                // // Download the certificate
+                $filename = 'certificate.pdf';
+                $isValid = LloydsDoprintService::downloadRequest($cart, $filename);
+                if ($isValid) {
+                    $certificate->doprint_current_step = 'completed';
+                    $certificate->save();
+                }
+            }
+            return [
+                'error' => false,
+                'message' => 'Preparazione certificato completata...'
+            ];
         } catch (Throwable $e) {
-            report($e);
-            $reportGeneration = $e->getMessage();
-            return false;
+            activity()
+                ->causedBy($user)
+                ->event('certificate_generation')
+                ->log("An error occurred on generating a certificate on Download;" . $e->getMessage());
+            return [
+                'error' => true,
+                'message' => 'Preparazione certificato fallita. Si prega di contattarci via telefono o email'
+            ];
         }
-    }
-
-    // TODO
-    public function store_step5(Product $product, Cart $cart, Request $request)
-    {
-        // TODO questo dovrà essere differenziato tra utente a rinnovo e utenti nuovi (cambia il numero di allegati)
-        //$file = Storage::disk('private')->get('lloyds_rinnovi_base.xml');
-        $user = auth()->user();
-
-        //return response()->json(['errors' => false, 'data' => $user->email]);
-        //return Redirect::route('package.index');
-
-
-        switch ($request->method) {
-            case 'certificate_initialization':
-                $response = $this->store_step5_certificate_initialization($cart);
-                break;
-            case 'generation':
-
-                $response = $this->store_step5_certificate_generation($cart);
-                break;
-        }
-
-        return response()->json($response);
-
-
-
-        // TODO settare cart renewal date, per i nuovi clienti, alla data di creazione del certificato
-
-
-        $user = auth()->user();
-        $cart = $this->prepareBeforeStore($user, $product, $cart);
-
-        $validated = $request->validate([]);
-
-        $this->updateCartStep($cart, 6);
-
-        return redirect()->route('front.product.buy', compact('product', 'cart'));
     }
 
     // TODO
@@ -762,7 +803,7 @@ class SiteController extends Controller
         // $users = Yousign::getUsers();
         $certificate_folder = 'certificates/user_' . $user->id . '/cart_' . $cart->id;
         $storagePath  = Storage::disk('private')->getDriver()->getAdapter()->getPathPrefix();
-        // non posso usare lo storage perch{ la libreria usa get_contents e si spacca
+        // non posso usare lo storage perché la libreria usa get_contents e si spacca
         //$certificate_pdf = Storage::disk('private')->get($certificate_folder . '/certificate.pdf');
         $certificate_pdf = $storagePath . $certificate_folder . '/certificate.pdf';
 
@@ -788,7 +829,7 @@ class SiteController extends Controller
 
         // Allows you to define the content of SMS. {{code}} will be used to define the security code managed by Yousign.
         // up to 150 characters
-        $client->addSmsContent('DIGITAL SIGNATURE - {{code}} is your security code to sign your documents.');
+        $client->addSmsContent('GOLINUCCI SRL - FIRMA DIGITALE - Ecco il tuo codice di sicurezza per firmare il documento: {{code}}.');
 
         // add files to procedure
         $file = $client->addFile('certificate.pdf', $certificate_pdf, $procedure['id']);
@@ -810,6 +851,7 @@ class SiteController extends Controller
 
         // start the signature process
         $client->launchProcedure($procedure['id']);
+
         return Inertia::render('Sites/BuyProduct', [
             'product' => [
                 'id' => $product->id,

@@ -7,34 +7,9 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Storage;
 use SoapClient, SoapHeader, SoapVar, SoapParam, SoapFault, DOMDocument;
 
-/**
- * Methods
- * DoPrint Login
- * $SessionToken=$doprint->HandShake();
- * Setup Policy using the xml and MD5 file hashes
- * $doprint->ValidationRequest($SessionToken,$nextvalue.'-LB',$customer,$start_date,$end_date,$arr,$wording,$prop);
- * Upload the wording
- * $doprint->UploadRequest($SessionToken,$wording);
- * Upload Proposal form
- * $doprint->UploadRequest($SessionToken,$prop);
- * Create the policy
- * $doprint->TransactionRequest($SessionToken);
- * Download the certificate
- * $doprint->DownloadRequest($SessionToken,$filename);
- */
 class LloydsDoprintService
 {
-    protected $requestorID;
-    protected $baseXml;
-    protected $apiKey;
-    protected $wsdl;
-    protected $sessionToken;
-    protected $start_date;
-    protected $end_date;
-    protected $proposal_date;
-    protected $certificate;
-
-    public function __construct($certificate, $start_date, $end_date, $proposal_date)
+    private static function getConnectionDetails()
     {
         if (App::environment(['local', 'staging'])) {
             // sandbox
@@ -47,25 +22,25 @@ class LloydsDoprintService
             $wsdl = config('doprint.sandbox.wsdl');
             $requestor_id = config('doprint.sandbox.requestor_id');
         }
-        if (empty($wsdl) || empty($requestor_id) || empty($api_key) || empty($start_date) || empty($end_date) || empty($proposal_date) || empty($certificate)) {
+        if (empty($wsdl) || empty($requestor_id) || empty($api_key)) {
             throw new \Exception("Al least one parameter is missing");
         } else {
-            $this->wsdl = $wsdl;
-            $this->apiKey = $api_key;
-            $this->requestorID = $requestor_id;
-            $this->certificate = $certificate;
-            $this->start_date = $start_date;
-            $this->end_date = $end_date;
-            $this->proposal_date = $proposal_date;
+            return [
+                'wsdl' => $wsdl,
+                'apiKey' => $api_key,
+                'requestorID' => $requestor_id
+            ];
         }
     }
 
-    public function HandShake()
+    public static function handShake()
     {
-        $apiKey = $this->apiKey;
-        $requestorID = $this->requestorID;
+        $connectionDetails = self::getConnectionDetails();
+        $apiKey = $connectionDetails['apiKey'];
+        $requestorID = $connectionDetails['requestorID'];
+        $wsdl = $connectionDetails['wsdl'];
         $clientVersion = '';
-        $client = new SoapClient($this->wsdl, array("soap_version" => SOAP_1_1, "trace" => true, "exceptions" => true));
+        $client = new SoapClient($wsdl, array("soap_version" => SOAP_1_1, "trace" => true, "exceptions" => true));
         $messageType = "HandShake";
 
         try {
@@ -79,26 +54,23 @@ class LloydsDoprintService
             $request = new SoapVar($request, SOAP_ENC_OBJECT, "CVPHandshakeRequest", "http://schemas.datacontract.org/2004/07/Euseco.Mokadom.CVP.Workflow.MessageContracts");
             $request = new SoapParam($request, "Message");
             $response = $client->RouteMessage($request);
-            $this->sessionToken = $response->SessionToken;
-
+            return $response->SessionToken;
             // $sessionDuration = $response->SessionDuration;
             // $pwExpiringDays = $response->PwExpiringDays;
-            // $return = "------$messageType OK\n";
-            // $return =  "SessionDuration: " . $sessionDuration . "\n";
-            // $return =  "pwExpritingDays: " . $pwExpiringDays . "\n";
-            // $return =  "------$messageType OK\n";
         } catch (SoapFault $exception) {
             throw new \Exception("Exception Thrown $messageType: $exception->faultstring");
         }
     }
 
-    public function ValidationRequest($contractType, $productName, $customer_details, $cart_details, $wording, $prop, $prop2)
+    public static function validationRequest($cart, $start_date, $end_date, $proposal_date, $contractType, $productName, $customer_details, $cart_details, $wording, $prop, $prop2)
     {
-        $apiKey = $this->apiKey;
-        $requestorID = $this->requestorID;
+        $connectionDetails = self::getConnectionDetails();
+        $apiKey = $connectionDetails['apiKey'];
+        $requestorID = $connectionDetails['requestorID'];
+        $wsdl = $connectionDetails['wsdl'];
         $messageType = "Validation";
-
-        $this->getOrGenerateCertificateNumber();
+        $certificate = $cart->certificate;
+        self::getOrGenerateCertificateNumber($certificate);
 
         $xml = new DOMDocument('1.0', 'utf-8');
 
@@ -136,7 +108,7 @@ class LloydsDoprintService
 
         // Certificate Number
         $DocumentReferences = $xml->getElementsByTagName('DocumentReferences')->item(0);
-        $DocumentReferences->getElementsByTagName('CertificateICNumber')->item(0)->textContent = $this->certificate->certificate_doprint_no;
+        $DocumentReferences->getElementsByTagName('CertificateICNumber')->item(0)->textContent = $certificate->doprint_certificate_no;
 
         // Set Policy Holder
         switch ($customer_details['profession']) {
@@ -179,9 +151,9 @@ class LloydsDoprintService
 
         //Start End Date
         $CertificateDateTimeDetails = $xml->getElementsByTagName('CertificateDateTimeDetails')->item(0);
-        $CertificateDateTimeDetails->getElementsByTagName('InceptionDate')->item(0)->textContent = $this->start_date;
-        $CertificateDateTimeDetails->getElementsByTagName('ExpiryDate')->item(0)->textContent = $this->end_date;
-        $CertificateDateTimeDetails->getElementsByTagName('ProposalDate')->item(0)->textContent = $this->proposal_date;
+        $CertificateDateTimeDetails->getElementsByTagName('InceptionDate')->item(0)->textContent = $start_date;
+        $CertificateDateTimeDetails->getElementsByTagName('ExpiryDate')->item(0)->textContent = $end_date;
+        $CertificateDateTimeDetails->getElementsByTagName('ProposalDate')->item(0)->textContent = $proposal_date;
 
         $RiskPremiumDetails = $xml->getElementsByTagName('RiskPremiumDetails')->item(0);
         $RiskPremiumDetails->getElementsByTagName('Premium')->item(0)->textContent = $cart_details['price'];
@@ -202,12 +174,12 @@ class LloydsDoprintService
         $Instalments->getElementsByTagName('Accessori')->item(0)->textContent = $cart_details['accessori'];
         $Instalments->getElementsByTagName('Tax')->item(0)->textContent = $cart_details['tax'];
         $Instalments->getElementsByTagName('Gross')->item(0)->textContent =  $cart_details['price_with_tax'];
-        $Instalments->getElementsByTagName('InstalmentDate')->item(0)->textContent = $this->proposal_date;
+        $Instalments->getElementsByTagName('InstalmentDate')->item(0)->textContent = $proposal_date;
 
         $PremiumReceipt = $xml->getElementsByTagName('PremiumReceipt')->item(0);
         $PremiumReceipt->getElementsByTagName('FirmReceivingPremium')->item(0)->textContent = "Golinucci Srl";
         $PremiumReceipt->getElementsByTagName('AmountPremiumReceived')->item(0)->textContent = $cart_details['price_with_tax'];
-        $PremiumReceipt->getElementsByTagName('DatePremiumReceived')->item(0)->textContent = $this->proposal_date;
+        $PremiumReceipt->getElementsByTagName('DatePremiumReceived')->item(0)->textContent = $proposal_date;
 
         $pdffile = Storage::disk('private')->get($wording);
         $documentHashpdf = base64_encode(md5($pdffile, true));
@@ -235,14 +207,14 @@ class LloydsDoprintService
         Storage::disk('private')->put($policy_response_folder . '/policy_response.xml', $strxml);
 
         $documentHash = base64_encode(md5($strxml, true));
-        $client = new SoapClient($this->wsdl, array("soap_version" => SOAP_1_1, "trace" => true, "exceptions" => true));
+        $client = new SoapClient($wsdl, array("soap_version" => SOAP_1_1, "trace" => true, "exceptions" => true));
         try {
             $header = array();
             $header[] = new SoapHeader("http://tempuri.org/", "APIKey", $apiKey);
             $header[] = new SoapHeader("http://tempuri.org/", "MessageType", $messageType);
             $header[] = new SoapHeader("http://tempuri.org/", "RequestorID", $requestorID);
             $client->__setSoapHeaders($header);
-            $request = new Message1($document, $documentHash, $this->sessionToken);
+            $request = new Message1($document, $documentHash, $certificate->doprint_token);
             $request = new SoapVar($request, SOAP_ENC_OBJECT, "CVPValidationRequest", "http://schemas.datacontract.org/2004/07/Euseco.Mokadom.CVP.Workflow.MessageContracts");
             $request = new SoapParam($request, "Message");
             $response = $client->RouteMessage($request);
@@ -263,116 +235,128 @@ class LloydsDoprintService
         }
     }
 
-    public function UploadRequest($pdffilename)
+    public static function uploadRequest($cart, $pdffilename)
     {
-        $apiKey = $this->apiKey;
-        $requestorID = $this->requestorID;
+        $connectionDetails = self::getConnectionDetails();
+        $apiKey = $connectionDetails['apiKey'];
+        $requestorID = $connectionDetails['requestorID'];
+        $wsdl = $connectionDetails['wsdl'];
         $messageType = "Upload";
+        $certificate = $cart->certificate;
+
         $pdffile = Storage::disk('private')->get($pdffilename);
         $document = $pdffile;
         $documentHash = base64_encode(md5($pdffile, true));
-        $client = new SoapClient($this->wsdl, array("soap_version" => SOAP_1_1, "trace" => true, "exceptions" => true));
+        $client = new SoapClient($wsdl, array("soap_version" => SOAP_1_1, "trace" => true, "exceptions" => true));
         try {
             $header = array();
             $header[] = new SoapHeader("http://tempuri.org/", "APIKey", $apiKey);
             $header[] = new SoapHeader("http://tempuri.org/", "MessageType", $messageType);
             $header[] = new SoapHeader("http://tempuri.org/", "RequestorID", $requestorID);
             $client->__setSoapHeaders($header);
-            $request = new Message1($document, $documentHash, $this->sessionToken);
+            $request = new Message1($document, $documentHash, $certificate->doprint_token);
             $request = new SoapVar($request, SOAP_ENC_OBJECT, "CVPUploadRequest", "http://schemas.datacontract.org/2004/07/Euseco.Mokadom.CVP.Workflow.MessageContracts");
             $request = new SoapParam($request, "Message");
             $response = $client->RouteMessage($request);
             $isValid = $response->IsValid;
-            echo $isValid . "\n";
             if (isset($response->Errors)) {
                 $fault = $response->Errors->fault->string;
-                echo $fault . "\n";
+                if (is_array($fault)) {
+                    foreach ($fault as $fau)
+                        throw new \Exception("$messageType: $fau");
+                } else {
+                    throw new \Exception("$messageType: $fault");
+                }
             } else {
-                echo "------$messageType INIZIO\n";
-                print_r($response);
-                echo "------$messageType FINE\n";
+                return $isValid;
             }
         } catch (SoapFault $exception) {
             throw new \Exception("Exception Thrown $messageType: $exception->faultstring");
-            // echo "------$messageType INIZIO\n";
-            // echo "Exception Thrown: " . $exception->faultstring . "\n";
-            // echo "------$messageType FINE\n";
-            // echo $client->__getLastResponse();
         }
     }
 
-    public function TransactionRequest()
+    public static function transactionRequest($cart)
     {
-        $apiKey = $this->apiKey;
+        $connectionDetails = self::getConnectionDetails();
+        $apiKey = $connectionDetails['apiKey'];
+        $requestorID = $connectionDetails['requestorID'];
+        $wsdl = $connectionDetails['wsdl'];
         $messageType = "Transaction";
-        $requestorID = $this->requestorID;
-        $client = new SoapClient($this->wsdl, array("soap_version" => SOAP_1_1, "trace" => true, "exceptions" => true));
+        $certificate = $cart->certificate;
+
+        $client = new SoapClient($wsdl, array("soap_version" => SOAP_1_1, "trace" => true, "exceptions" => true));
         try {
             $header = array();
             $header[] = new SoapHeader("http://tempuri.org/", "APIKey", $apiKey);
             $header[] = new SoapHeader("http://tempuri.org/", "MessageType", $messageType);
             $header[] = new SoapHeader("http://tempuri.org/", "RequestorID", $requestorID);
             $client->__setSoapHeaders($header);
-            $request = new Message2($this->sessionToken);
+            $request = new Message2($certificate->doprint_token);
             $request = new SoapVar($request, SOAP_ENC_OBJECT, "CVPTransactionRequest", "http://schemas.datacontract.org/2004/07/Euseco.Mokadom.CVP.Workflow.MessageContracts");
             $request = new SoapParam($request, "Message");
             $response = $client->RouteMessage($request);
-            $isValid = $response->IsValid;
-            echo $isValid . "\n";
+            $isValid = $response->DocumentsReady;
             if (isset($response->Errors)) {
                 $fault = $response->Errors->fault->string;
-                echo $fault . "\n";
+                if (is_array($fault)) {
+                    foreach ($fault as $fau)
+                        throw new \Exception("$messageType: $fau");
+                } else {
+                    throw new \Exception("$messageType: $fault");
+                }
             } else {
-                echo "------$messageType INIZIO\n";
-                print_r($response);
-                echo "------$messageType FINE\n";
+                return $isValid;
             }
         } catch (SoapFault $exception) {
-            // echo "------$messageType INIZIO\n";
-            // echo "Exception Thrown: " . $exception->faultstring . "\n";
-            // echo "------$messageType FINE\n";
-            // //echo $client->__getLastRequest();
-            // echo $client->__getLastResponse();
             throw new \Exception("Exception Thrown $messageType: $exception->faultstring");
         }
     }
 
-    public function DownloadRequest($docName)
+    public static function downloadRequest($cart, $docName)
     {
-        $apiKey = $this->apiKey;
-
+        $connectionDetails = self::getConnectionDetails();
+        $apiKey = $connectionDetails['apiKey'];
+        $requestorID = $connectionDetails['requestorID'];
+        $wsdl = $connectionDetails['wsdl'];
         $messageType = "Download";
-        $requestorID = $this->requestorID;
-        $client = new SoapClient($this->wsdl, array("soap_version" => SOAP_1_1, "trace" => true, "exceptions" => true));
+        $certificate = $cart->certificate;
+
+        $client = new SoapClient($wsdl, array("soap_version" => SOAP_1_1, "trace" => true, "exceptions" => true));
         try {
             $header = array();
             $header[] = new SoapHeader("http://tempuri.org/", "APIKey", $apiKey);
             $header[] = new SoapHeader("http://tempuri.org/", "MessageType", $messageType);
             $header[] = new SoapHeader("http://tempuri.org/", "RequestorID", $requestorID);
             $client->__setSoapHeaders($header);
-            $request = new Message2($this->sessionToken);
+            $request = new Message2($certificate->doprint_token);
             $request = new SoapVar($request, SOAP_ENC_OBJECT, "CVPDownloadRequest", "http://schemas.datacontract.org/2004/07/Euseco.Mokadom.CVP.Workflow.MessageContracts");
             $request = new SoapParam($request, "Message");
             $response = $client->RouteMessage($request);
-            $isValid = $response->IsValid;
-            echo "------$messageType INIZIO\n";
-            echo $isValid;
-            echo "------$messageType FINE\n";
-            file_put_contents($docName,  $response->Document);
+            $documentHash = $response->DocumentHash;
+            if ($documentHash) {
+                $certificate_folder = 'certificates/user_' . $cart->user_id . '/cart_' . $certificate->cart_id;
+                Storage::disk('private')->put($certificate_folder . '/' . $docName, $response->Document);
+            }
+            if (isset($response->Errors)) {
+                $fault = $response->Errors->fault->string;
+                if (is_array($fault)) {
+                    foreach ($fault as $fau)
+                        throw new \Exception("$messageType: $fau");
+                } else {
+                    throw new \Exception("$messageType: $fault");
+                }
+            } else {
+                return $documentHash;
+            }
         } catch (SoapFault $exception) {
-            // echo "------$messageType INIZIO\n";
-            // echo "Exception Thrown: " . $exception->faultstring . "\n";
-            // //echo $client->__getLastRequest();
-            // echo "------$messageType FINE\n";
-            // echo $client->__getLastResponse();
             throw new \Exception("Exception Thrown $messageType: $exception->faultstring");
         }
     }
 
-    private function getOrGenerateCertificateNumber()
+    private static function getOrGenerateCertificateNumber($certificate)
     {
         // get doprint counter by current year
-        if (empty($this->certificate->certificate_doprint_no)) {
+        if (empty($certificate->doprint_certificate_no)) {
             $doprintCounter = DoprintCounter::where('year', date('Y'))->firstOrFail();
             if ($doprintCounter) {
                 // compose certificate number
@@ -380,14 +364,15 @@ class LloydsDoprintService
                 $doprintCounter->counter++;
                 $doprintCounter->save();
                 $cert_number = $doprintCounter->prefix . str_pad($doprintCounter->counter, 5, "0", STR_PAD_LEFT) . $doprintCounter->postfix;
-                $this->certificate->certificate_doprint_no = $cert_number;
-                $this->certificate->save();
+                $certificate->doprint_certificate_no = $cert_number;
+                //$this->certificate->doprint_token = $this->sessionToken;
+                $certificate->save();
                 return $cert_number;
             } else {
                 throw new \Exception("Impossibile to generate certificate number");
             }
         } else {
-            return $this->certificate->certificate_doprint_no;
+            return $certificate->doprint_certificate_no;
         }
     }
 } // End Class
