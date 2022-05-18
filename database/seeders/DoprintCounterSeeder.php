@@ -18,7 +18,7 @@ class DoprintCounterSeeder extends Seeder
         DoprintCounter::create(
             [
                 'year' => 2022, 
-                'counter' => 568,  // 00568 https://stackoverflow.com/questions/66796921/store-integer-with-leading-0-if-set
+                'counter' => 580,
                 'prefix' => 'GV21PI',
                 'postfix' => '-LB',
             ],

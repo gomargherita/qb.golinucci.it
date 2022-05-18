@@ -6,12 +6,15 @@
       Siamo pronti a generare i tuoi documenti. Ci vorranno alcuni secondi, ti preghiamo
       di attendere e di non abbandonare la pagina, per favore.
     </p>
-    <ul v-if="product.documentGenerator.length" class="my-4 font-bold text-primary text-center">
-      <li
-        v-for="documentGenerator in product.documentGenerator"
-        v-text="documentGenerator.message"
-      ></li>
-    </ul>
+    <div v-if="product.documentGenerator.length">
+
+      <ul class="my-4 font-bold text-primary text-center">
+        <li
+          v-for="documentGenerator in product.documentGenerator"
+          v-text="documentGenerator.message"
+        ></li>
+      </ul>
+    </div>
     <button
       type="button"
       id="startGeneration"
@@ -98,7 +101,7 @@ export default {
       // Seconda chiamata
       try {
         // Imposta il metodo da utilizzare nel BE
-        params.method = "generation";
+        params.method = "handshake";
 
         // Esegue la chiamata al metodo e con la response POSITIVA aggiorna la prop del componente
         const res = await this.doprintRequest(params);
@@ -111,14 +114,19 @@ export default {
       }
 
       // Terza chiamata
-    //   try {
-    //     params.method = "validation";
-    //     const res = await this.doprintRequest(params);
-    //     self.product.documentGenerator.push(res);
-    //   } catch (err) {
-    //     self.product.documentGenerator.push(err);
-    //     return false;
-    //   }
+      try {
+        // Imposta il metodo da utilizzare nel BE
+        params.method = "validation";
+
+        // Esegue la chiamata al metodo e con la response POSITIVA aggiorna la prop del componente
+        const res = await this.doprintRequest(params);
+        self.product.documentGenerator.push(res);
+      } catch (err) {
+        // Con la response NEGATIVA aggiorna la prop del componente
+        self.product.documentGenerator.push(err);
+        // Non esegue la chiamata successiva
+        return false;
+      }
     },
   },
 };
