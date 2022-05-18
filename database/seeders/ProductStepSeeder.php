@@ -15,7 +15,7 @@ class ProductStepSeeder extends Seeder
     public function run()
     {
 
-        ProductStep::factory()->count(6)->sequence(
+        ProductStep::factory()->count(7)->sequence(
             [
                 'product_id' => 1,
                 'step_number' => 1
