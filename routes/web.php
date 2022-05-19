@@ -8,7 +8,7 @@ use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\SiteController;
-use App\Http\Controllers\SiteProductController;
+use App\Http\Controllers\SiteBuyProductController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -99,6 +99,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'check_role']], func
 
     Route::get('reports', [ReportsController::class, 'index'])
         ->name('reports');
+
+    Route::get('/private-files/{file?}', 'FileController@get')->where('file', '(.*)');
 });
 
 // Images
@@ -125,21 +127,24 @@ Route::controller(SiteController::class)->group(function () {
     Route::get('/products/{product}', 'product')->name('front.product');
 });
 
-Route::controller(SiteProductController::class)->group(function () {
-    Route::get('/paypal_redirect', 'paypal_redirect')->name('front.paypal_redirect')->middleware(['auth']);
-    Route::scopeBindings()->group(function () {
-        Route::get('/products/{product}/buy/{cart:cart_ref?}', 'buy')->name('front.product.buy')->middleware(['auth']); // pagina per il flusso di acquisto
-        Route::post('/products/{product}/store_step1/{cart:cart_ref}', 'store_step1')->name('front.product.store_step1')->middleware(['auth']);
-        Route::post('/products/{product}/store_step2/{cart:cart_ref}', 'store_step2')->name('front.product.store_step2')->middleware(['auth']);
-        Route::post('/products/{product}/store_step3/{cart:cart_ref}', 'store_step3')->name('front.product.store_step3')->middleware(['auth']);
-        Route::post('/products/{product}/store_step4/{cart:cart_ref}', 'store_step4')->name('front.product.store_step4')->middleware(['auth']);
-        Route::get('/products/{product}/store_step4_paypal/{cart:cart_ref}/{payment_id}/r', 'store_step4_paypal_return')->name('front.product.store_step4_paypal_return')->middleware(['auth']);
-        Route::get('/products/{product}/store_step4_paypal/{cart:cart_ref}/{payment_id}/c', 'store_step4_paypal_cancel')->name('front.product.store_step4_paypal_cancel')->middleware(['auth']);
-        Route::post('/products/{product}/store_step5/{cart:cart_ref}', 'store_step5')->name('front.product.store_step5')->middleware(['auth']);
-        Route::post('/products/{product}/store_step6/{cart:cart_ref}', 'store_step6')->name('front.product.store_step6')->middleware(['auth']);
-    });
 
-    Route::get('/test-import', 'testImport')->name('front.testimport');
+Route::group(['middleware' => ['auth']], function () {
+    Route::controller(SiteBuyProductController::class)->group(function () {
+        Route::get('/paypal_redirect', 'paypal_redirect')->name('front.paypal_redirect');
+        Route::scopeBindings()->group(function () {
+            Route::get('/products/{product}/buy/{cart:cart_ref?}', 'buy')->name('front.product.buy'); // pagina per il flusso di acquisto
+            Route::post('/products/{product}/store_step1/{cart:cart_ref}', 'store_step1')->name('front.product.store_step1');
+            Route::post('/products/{product}/store_step2/{cart:cart_ref}', 'store_step2')->name('front.product.store_step2');
+            Route::post('/products/{product}/store_step3/{cart:cart_ref}', 'store_step3')->name('front.product.store_step3');
+            Route::post('/products/{product}/store_step4/{cart:cart_ref}', 'store_step4')->name('front.product.store_step4');
+            Route::get('/products/{product}/store_step4_paypal/{cart:cart_ref}/{payment_id}/r', 'store_step4_paypal_return')->name('front.product.store_step4_paypal_return');
+            Route::get('/products/{product}/store_step4_paypal/{cart:cart_ref}/{payment_id}/c', 'store_step4_paypal_cancel')->name('front.product.store_step4_paypal_cancel');
+            Route::post('/products/{product}/store_step5/{cart:cart_ref}', 'store_step5')->name('front.product.store_step5');
+            Route::post('/products/{product}/store_step6/{cart:cart_ref}', 'store_step6')->name('front.product.store_step6');
+        });
+
+        Route::get('/test-import', 'testImport')->name('front.testimport');
+    });
 });
 
 require __DIR__ . '/auth.php';

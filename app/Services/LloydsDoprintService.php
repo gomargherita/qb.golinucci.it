@@ -296,6 +296,7 @@ class LloydsDoprintService
             $request = new SoapParam($request, "Message");
             $response = $client->RouteMessage($request);
             $isValid = $response->DocumentsReady;
+            // TODO se isValid false potrebbe essere legato alla questione delle sanzioni se solleva 'error in attachments'
             if (isset($response->Errors)) {
                 $fault = $response->Errors->fault->string;
                 if (is_array($fault)) {
