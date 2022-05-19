@@ -8,6 +8,7 @@ use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\SiteController;
+use App\Http\Controllers\SiteProductController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -122,6 +123,9 @@ Route::controller(SiteController::class)->group(function () {
     Route::get('/about-us', 'aboutUs')->name('front.aboutus');
     Route::get('/products', 'products')->name('front.products');
     Route::get('/products/{product}', 'product')->name('front.product');
+});
+
+Route::controller(SiteProductController::class)->group(function () {
     Route::get('/paypal_redirect', 'paypal_redirect')->name('front.paypal_redirect')->middleware(['auth']);
     Route::scopeBindings()->group(function () {
         Route::get('/products/{product}/buy/{cart:cart_ref?}', 'buy')->name('front.product.buy')->middleware(['auth']); // pagina per il flusso di acquisto

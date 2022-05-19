@@ -44,6 +44,22 @@ class Cart extends Model
         return $this->hasOne(Certificate::class);
     }
 
+    public function updateCartStep(int $next_step)
+    {
+        $this->product_step_id = $next_step;
+        return $this->save();
+    }
+
+    public function verifyAndGrabCart(User $user)
+    {
+        return Cart::query()
+            ->where([
+                'user_id' => $user->id,
+                'cart_ref' => $this->cart_ref,
+                'locked' => 'N'
+            ])->first();
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()

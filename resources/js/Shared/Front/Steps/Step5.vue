@@ -2,12 +2,14 @@
   <Head :title="__('Generazione Documento')" />
   <HTwo :title="__('Generazione Documento')" />
   <div class="mt-8">
-    <p>
-      Siamo pronti a generare i tuoi documenti. Ci vorranno alcuni secondi, ti preghiamo
-      di attendere e di non abbandonare la pagina, per favore.
+    <p class="text-center">
+      Siamo pronti a generare i tuoi documenti.<br>
+      <span class="font-bold text-xl text-red-500">ATTENZIONE</span><br>
+      <span class="font-bold text-lg"
+        >Ci vorranno alcuni secondi, ti preghiamo di attendere e di non abbandonare la
+        pagina fino alla conclusione della procedura.</span>
     </p>
     <div v-if="product.documentGenerator.length">
-
       <ul class="my-4 font-bold text-primary text-center">
         <li
           v-for="documentGenerator in product.documentGenerator"
@@ -18,13 +20,13 @@
     <button
       type="button"
       id="startGeneration"
-      v-if="!isHidden"
+      v-if="!isStartGenerationHidden"
       @click.once="startGeneration"
       class="gol-btn my-8 bg-primary"
     >
-      Start
+      {{ __("Start") }}
     </button>
-    <form @submit.prevent="submit" class="hidden">
+    <form @submit.prevent="submit" v-if="!isNextHidden">
       <buy-loading-button
         :loading="form.processing"
         :disabled="form.processing"
@@ -55,9 +57,11 @@ export default {
   data() {
     return {
       form: this.$inertia.form({}),
-      isHidden: false,
+      isStartGenerationHidden: false,
+      isNextHidden: true,
     };
   },
+
   methods: {
     doprintRequest: async (params) => {
       let response = {};
@@ -78,16 +82,14 @@ export default {
       return response;
     },
     async startGeneration() {
-      this.isHidden = true;
+      this.isStartGenerationHidden = true;
       let self = this;
 
       let params = { product: self.product, cart: self.cart };
+
       // Prima chiamata
-
       try {
-        // Imposta il metodo da utilizzare nel BE
         params.method = "certificate_initialization";
-
         // Esegue la chiamata al metodo e con la response POSITIVA aggiorna la prop del componente
         const res = await this.doprintRequest(params);
         self.product.documentGenerator.push(res);
@@ -100,78 +102,66 @@ export default {
 
       // Seconda chiamata
       try {
-        // Imposta il metodo da utilizzare nel BE
         params.method = "handshake";
-
-        // Esegue la chiamata al metodo e con la response POSITIVA aggiorna la prop del componente
         const res = await this.doprintRequest(params);
         self.product.documentGenerator.push(res);
       } catch (err) {
-        // Con la response NEGATIVA aggiorna la prop del componente
         self.product.documentGenerator.push(err);
-        // Non esegue la chiamata successiva
         return false;
       }
 
       // Terza chiamata
       try {
-        // Imposta il metodo da utilizzare nel BE
         params.method = "validation";
-
-        // Esegue la chiamata al metodo e con la response POSITIVA aggiorna la prop del componente
         const res = await this.doprintRequest(params);
         self.product.documentGenerator.push(res);
       } catch (err) {
-        // Con la response NEGATIVA aggiorna la prop del componente
         self.product.documentGenerator.push(err);
-        // Non esegue la chiamata successiva
         return false;
       }
 
       // Quarta chiamata
       try {
-        // Imposta il metodo da utilizzare nel BE
         params.method = "upload";
-
-        // Esegue la chiamata al metodo e con la response POSITIVA aggiorna la prop del componente
         const res = await this.doprintRequest(params);
         self.product.documentGenerator.push(res);
       } catch (err) {
-        // Con la response NEGATIVA aggiorna la prop del componente
         self.product.documentGenerator.push(err);
-        // Non esegue la chiamata successiva
         return false;
       }
 
       // Quinta chiamata
       try {
-        // Imposta il metodo da utilizzare nel BE
         params.method = "transaction";
-
-        // Esegue la chiamata al metodo e con la response POSITIVA aggiorna la prop del componente
         const res = await this.doprintRequest(params);
         self.product.documentGenerator.push(res);
       } catch (err) {
-        // Con la response NEGATIVA aggiorna la prop del componente
         self.product.documentGenerator.push(err);
-        // Non esegue la chiamata successiva
         return false;
       }
 
       // Sesta chiamata
       try {
-        // Imposta il metodo da utilizzare nel BE
         params.method = "download";
-
-        // Esegue la chiamata al metodo e con la response POSITIVA aggiorna la prop del componente
         const res = await this.doprintRequest(params);
         self.product.documentGenerator.push(res);
       } catch (err) {
-        // Con la response NEGATIVA aggiorna la prop del componente
         self.product.documentGenerator.push(err);
-        // Non esegue la chiamata successiva
         return false;
       }
+
+      this.isNextHidden = false;
+    },
+    submit() {
+      this.form.post(
+        this.route("front.product.store_step5", {
+          product: this.product.id,
+          cart: this.cart.cart_ref,
+        }),
+        {
+          preserveScroll: (page) => Object.keys(page.props.errors).length,
+        }
+      );
     },
   },
 };
