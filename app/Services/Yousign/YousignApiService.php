@@ -20,9 +20,10 @@ class YousignApiService
     public function startYousignClientAndLaunchProcedure()
     {
         $user = auth()->user();
+        $yousign_config = config('yousign');
         // $users = Yousign::getUsers();
         $certificate_folder = 'certificates/user_' . $user->id . '/cart_' . $this->cart->id;
-        $storagePath  = Storage::disk('private')->getDriver()->getAdapter()->getPathPrefix();
+        $storagePath  = Storage::disk('private')->getAdapter()->getPathPrefix();
         // non posso usare lo storage perché la libreria usa get_contents e si spacca
         //$certificate_pdf = Storage::disk('private')->get($certificate_folder . '/certificate.pdf');
         $certificate_pdf = $storagePath . $certificate_folder . '/certificate.pdf';
@@ -37,7 +38,7 @@ class YousignApiService
 
         // add webhooks 
         // you can add different headers
-        $webhookUrl = env('YOUSIGN_API_URL') . 'yousign/';
+        $webhookUrl = $yousign_config['api_url'] . 'yousign/';
         $client->addWebhook('member.finished', $webhookUrl . 'signature', 'GET', array(
             //"X-Custom-Header" => $type . '-signature',
         ));
@@ -56,7 +57,7 @@ class YousignApiService
 
         // add member to sign the documents
         $member_signer = $client->addMember('Marco', 'Masi', 'masiorama@gmail.com', '+393299858148', $procedure['id'], 'signer', 1);
-        $validator_config = config('yousign.validator');
+        $validator_config = $yousign_config['validator'];
         $member_validator = $client->addMember($validator_config['first_name'], $validator_config['last_name'], $validator_config['email'], $validator_config['phone'], $procedure['id'], 'validator', 2);
 
         // to determine the last page of your file

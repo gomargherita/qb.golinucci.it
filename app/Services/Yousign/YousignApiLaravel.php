@@ -34,9 +34,10 @@ class YousignApiLaravel {
     );
 
     public function __construct() {
-        $this->setApikey(env('YOUSIGN_KEY'));
-        $this->apiBaseUrl = env('YOUSIGN_API_URL');
-        $this->baseUrlWithoutSlash = substr(env('YOUSIGN_API_URL'), 0, -1);;
+        $yousign_config = config('yousign');
+        $this->setApikey($yousign_config['key']);
+        $this->apiBaseUrl = $yousign_config['api_url'];
+        $this->baseUrlWithoutSlash = substr($yousign_config['api_url'], 0, -1);;
     }
 
     /**

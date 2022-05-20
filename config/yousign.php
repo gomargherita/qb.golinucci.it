@@ -1,7 +1,9 @@
 <?php
 
 return [
-    // TODO inserire altri dettagli che per ora vengono presi direttamente da .env
+    'key' => env('YOUSIGN_KEY', ''),
+    'api_url' => env('YOUSIGN_API_URL', 'https://staging-api.yousign.com/'),
+    'app_url' => env('YOUSIGN_APP_URL', 'https://staging-app.yousign.com/'),
     'validator' => [
         'first_name' => env('YOUSIGN_VALIDATOR_FIRST_NAME', ''),
         'last_name' => env('YOUSIGN_VALIDATOR_LAST_NAME', ''),
