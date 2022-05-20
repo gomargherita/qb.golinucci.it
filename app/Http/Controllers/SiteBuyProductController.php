@@ -488,7 +488,8 @@ class SiteBuyProductController extends Controller
     {
         try {
             $certificate = $cart->certificate;
-            if ($certificate->doprint_current_step == 'handshake' && empty($certificate->doprint_token)) {
+            // se validation allora rieseguo anche handshake
+            if ($certificate->doprint_current_step == 'handshake' && empty($certificate->doprint_token) || $certificate->doprint_current_step == 'validation' && !empty($certificate->doprint_token)) {
                 $certificate->doprint_token = LloydsDoprintService::handShake();
                 $certificate->doprint_current_step = 'validation';
                 $certificate->save();
