@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "992e8528226f37205818ad8a23b3c5e5",
+    "content-hash": "5bfd4d31040939a391ff7950006a54b3",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -2679,53 +2679,6 @@
                 "source": "https://github.com/nette/utils/tree/v3.2.7"
             },
             "time": "2022-01-24T11:29:14+00:00"
-        },
-        {
-            "name": "nidrax69/yousign-api-laravel",
-            "version": "2.0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/nidrax69/yousign-api-client-laravel.git",
-                "reference": "92335d1419c09beaffa327732403b0702e6ace03"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/nidrax69/yousign-api-client-laravel/zipball/92335d1419c09beaffa327732403b0702e6ace03",
-                "reference": "92335d1419c09beaffa327732403b0702e6ace03",
-                "shasum": ""
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Nidrax69\\YousignApiLaravel\\YousignApiLaravelServiceProvider"
-                    ],
-                    "aliases": {
-                        "YousignApiLaravel": "Nidrax69\\YousignApiLaravel\\Facades\\YousignApiLaravel"
-                    }
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Nidrax69\\YousignApiLaravel\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "nidrax",
-                    "email": "nidraxmusic@gmail.com"
-                }
-            ],
-            "description": "Package for using YousignApi with laravel > 7.x",
-            "support": {
-                "issues": "https://github.com/nidrax69/yousign-api-client-laravel/issues",
-                "source": "https://github.com/nidrax69/yousign-api-client-laravel/tree/2.0.2"
-            },
-            "time": "2022-03-28T14:27:42+00:00"
         },
         {
             "name": "nikic/php-parser",

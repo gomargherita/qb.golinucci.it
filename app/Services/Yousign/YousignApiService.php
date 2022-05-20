@@ -1,12 +1,9 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Yousign;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
-use Nidrax69\YousignApiLaravel\YousignApiLaravel;
-
-use function PHPUnit\Framework\throwException;
 
 class YousignApiService
 {
