@@ -2,6 +2,7 @@
 
 namespace App\Services\Yousign;
 
+use App\Models\Signature;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 
@@ -33,8 +34,8 @@ class YousignApiService
         // see all possibilities at https://dev.yousign.com/
         $client->setProcedureKeyValue('name', 'Polizza Medici Colpa Grave');
         $client->setProcedureKeyValue('description', 'Polizza Medici Colpa Grave ' . $user->first_name . ' ' . $user->last_name . '(' . $user->email . ')');
-        // to set default expiration date to the signature
-        $client->setProcedureKeyValue('expiresAt', '2022-05-24');
+        // to set default expiration date to the signature // TODO 1 settimana?
+        $client->setProcedureKeyValue('expiresAt', Carbon::now()->addWeek(1));
 
         // add webhooks 
         // you can add different headers
@@ -67,16 +68,28 @@ class YousignApiService
         $reason_validator = "Signed by " . $validator_config['first_name'] . " " . $validator_config['last_name'] . " (Yousign)";
 
         // to determine position see https://placeit.yousign.fr/
-        $position = '252,545,352,586';
-        $fileObject_signer = $client->addFileObject($file['id'], $member_signer['id'], $position, $reason_signer, $lastPageNumber, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
-        $fileObject_validator = $client->addFileObject($file['id'], $member_validator['id'], $position, $reason_validator, $lastPageNumber, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
+        $field_name_signer = 'firma_cliente_contratto';
+        $fileObject_signer = $client->addFileObjectViaFieldName($file['id'], $member_signer['id'], $reason_signer, $field_name_signer, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
+        $field_name_signer = 'firma_cliente_precontrattuale';
+        $fileObject_signer = $client->addFileObjectViaFieldName($file['id'], $member_signer['id'], $reason_signer, $field_name_signer, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
+        $field_name_signer = 'firma_cliente_privacy';
+        $fileObject_signer = $client->addFileObjectViaFieldName($file['id'], $member_signer['id'], $reason_signer, $field_name_signer, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
+        $field_name_validator = 'firma_broker_quietanzamento';
+        $fileObject_validator = $client->addFileObjectViaFieldName($file['id'], $member_validator['id'], $reason_validator, $field_name_validator, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
 
         // fileObject ritorna ciò
         // array(13) { ["mention"]=> NULL ["mention2"]=> NULL ["member"]=> array(17) { ["id"]=> string(45) "/members/b3ee30b9-f643-4a94-8470-cfd85f2030eb" ["user"]=> NULL ["type"]=> string(6) "signer" ["firstname"]=> string(5) "Marco" ["lastname"]=> string(4) "Masi" ["email"]=> string(19) "masiorama@gmail.com" ["phone"]=> string(13) "+393299858148" ["position"]=> int(1) ["createdAt"]=> string(25) "2022-05-17T15:52:07+02:00" ["updatedAt"]=> string(25) "2022-05-17T15:52:07+02:00" ["startedAt"]=> NULL ["finishedAt"]=> NULL ["status"]=> string(7) "pending" ["comment"]=> NULL ["parent"]=> NULL ["contact"]=> NULL ["fields"]=> array(2) { ["company"]=> NULL ["job_title"]=> NULL } } ["fieldName"]=> NULL ["reason"]=> string(21) "Signed by (Yousign)" ["id"]=> string(50) "/file_objects/cfcb2839-1070-4e43-8dc5-239b9def60a9" ["type"]=> string(9) "signature" ["file"]=> string(43) "/files/9894b0b5-2f8b-4cfa-9d17-b4d36e9f0b6f" ["page"]=> int(1) ["position"]=> string(15) "252,545,352,586" ["createdAt"]=> string(25) "2022-05-17T15:52:07+02:00" ["updatedAt"]=> string(25) "2022-05-17T15:52:07+02:00" ["parent"]=> NULL }
+        Signature::create([
+            'cart_id' => $this->cart->id,
+            'procedure_id' => $procedure['id'],
+            'member_signer_id' => $fileObject_signer['member']['id'],
+            'status' => $procedure['status'],
+        ]);
 
         // start the signature process
         $client->launchProcedure($procedure['id']);
 
-        return $fileObject_signer;
+        return $fileObject_signer['member']['id'];
     }
+
 }

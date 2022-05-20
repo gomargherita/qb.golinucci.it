@@ -5,10 +5,13 @@
     <p class="text-center">
       Manca solo un ultimo step: firmare i tuoi documenti.<br />
       <span class="font-bold text-xl text-red-500">ATTENZIONE</span><br />
-      <span class="font-bold text-lg">Per firmare i documenti visiona tutte le pagine e clicca sul buttone FIRMA in basso a destra.</span>
+      <span class="font-bold text-lg"
+        >Per firmare i documenti visiona tutte le pagine e clicca sul buttone FIRMA in
+        basso a destra.</span
+      >
     </p>
     <iframe
-      v-if="product.yousign"
+      v-if="product.yousign_member_signer_id"
       :src="procedureId"
       class="my-8 min-h-screen w-full"
     ></iframe>
@@ -31,7 +34,7 @@ export default {
       return (
         this.product.yousign_url +
         "procedure/sign?members=" +
-        this.product.yousign.member.id
+        this.product.yousign_member_signer_id
       );
     },
   },

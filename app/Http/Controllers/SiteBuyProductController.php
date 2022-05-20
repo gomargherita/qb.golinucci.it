@@ -11,10 +11,11 @@ use App\Models\Payment;
 use App\Models\PaymentGateway;
 use App\Models\Product;
 use App\Models\ProductOffer;
+use App\Models\Signature;
 use App\Notifications\BankTransferGatewayPayment;
 use App\Notifications\PaypalGatewayPaymentCancel;
 use App\Rules\ProjectDeclarationsRule;
-use App\Services\YousignApiService;
+use App\Services\Yousign\YousignApiService;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -717,7 +718,16 @@ class SiteBuyProductController extends Controller
     // TODO
     private function step6(Product $product, Cart $cart)
     {
-        $fileObjectSigner = (new YousignApiService($cart))->startYousignClientAndLaunchProcedure();
+        $yousignClient = new YousignApiService($cart);
+
+        // try to grab already existing procedure
+        $signature = Signature::where('cart_id', $cart->id)->first();
+
+        if (empty($signature)) {
+            $yousignMemberSignerId = $yousignClient->startYousignClientAndLaunchProcedure();
+        } else {
+            $yousignMemberSignerId = $signature->member_signer_id;
+        }
 
         return Inertia::render('Sites/BuyProduct', [
             'product' => [
@@ -726,8 +736,8 @@ class SiteBuyProductController extends Controller
                 'type' => Str::slug($product->productType->name, '-'),
                 'hex_color' => $product->hex_color,
                 'steps' => $product->productSteps->count(),
-                'yousign_url' => env('YOUSIGN_APP_URL'),
-                'yousign' => $fileObjectSigner
+                'yousign_url' => config('yousign.app_url'),
+                'yousign_member_signer_id' => $yousignMemberSignerId
             ],
             'cart' => $cart
         ]);

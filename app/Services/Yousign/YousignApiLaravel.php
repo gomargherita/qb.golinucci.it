@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Services\Yousign;
 
@@ -6,11 +6,20 @@ use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 use GuzzleHttp\Psr7;
 
-class YousignApiLaravel {
+class YousignApiLaravel
+{
 
     protected $baseUrl;
     protected $baseUrlWithoutSlash;
     protected $apikey;
+
+    public function __construct()
+    {
+        $yousign_config = config('yousign');
+        $this->setApikey($yousign_config['key']);
+        $this->apiBaseUrl = $yousign_config['api_url'];
+        $this->baseUrlWithoutSlash = substr($yousign_config['api_url'], 0, -1);
+    }
 
     protected $_procedure = array(
         'name' => '',
@@ -18,33 +27,25 @@ class YousignApiLaravel {
         'start' => false,
         'expiresAt' => null,
         'template' => false,
-        'ordered' => false, 
+        'ordered' => false,
         'metadata' => [],
         'config' => array(),
         'archive' => false
     );
 
-    protected $_webhook = array(
-
-    );
+    protected $_webhook = array();
 
     // default content SMS
     protected $_operationModeSmsConfig = array(
         "content" => "SIGNATURE ELECTRONIQUE : {{code}} est votre code de sécurité pour confirmer la signature de vos documents."
     );
 
-    public function __construct() {
-        $yousign_config = config('yousign');
-        $this->setApikey($yousign_config['key']);
-        $this->apiBaseUrl = $yousign_config['api_url'];
-        $this->baseUrlWithoutSlash = substr($yousign_config['api_url'], 0, -1);;
-    }
-
     /**
      * Set API KEY from Yousign
      * @param $apikey
      */
-    private function setApikey($apikey) {
+    private function setApikey($apikey)
+    {
         $this->apikey = $apikey;
     }
 
@@ -54,7 +55,8 @@ class YousignApiLaravel {
      * @param $apikey
      */
 
-    public function setProcedureKeyValue($key, $value) {
+    public function setProcedureKeyValue($key, $value)
+    {
         $this->_procedure[$key] = $value;
     }
 
@@ -64,7 +66,8 @@ class YousignApiLaravel {
      * @param $apikey
      */
 
-    private function setWebhook($key, $value) {
+    private function setWebhook($key, $value)
+    {
         $this->_webhook[$key] = $value;
     }
 
@@ -74,7 +77,8 @@ class YousignApiLaravel {
      * @param $apikey
      */
 
-    public function addSmsContent($value) {
+    public function addSmsContent($value)
+    {
         $this->_operationModeSmsConfig['content'] = $value;
     }
 
@@ -105,7 +109,8 @@ class YousignApiLaravel {
      * @param $apikey
      */
 
-    public function addWebhook($type, $url, $method, $headers = []) {
+    public function addWebhook($type, $url, $method, $headers = [])
+    {
         $webhook = array(
             array(
                 "url" => $url,
@@ -119,19 +124,18 @@ class YousignApiLaravel {
     /**
      * @return mixed
      */
-    public function getApikey() {
+    public function getApikey()
+    {
         return $this->apikey;
     }
 
-    public function api_request($path, $method, $params = [], $removeSlash = false, $asBody = false)
+    private function apiRequest($path, $method, $params = [], $removeSlash = false, $asBody = false)
     {
         if ($removeSlash) {
             $baseUrl = $this->baseUrlWithoutSlash;
         } else {
             $baseUrl = $this->apiBaseUrl;
         }
-
-        
 
         try {
             if ($asBody) {
@@ -146,16 +150,16 @@ class YousignApiLaravel {
                     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
                     CURLOPT_CUSTOMREQUEST => "GET",
                     CURLOPT_HTTPHEADER => array(
-                        "Authorization: Bearer ".$this->getApikey(),
+                        "Authorization: Bearer " . $this->getApikey(),
                         "Content-Type: application/json"
                     ),
                 ));
-        
+
                 $response = curl_exec($curl);
                 $err = curl_error($curl);
-        
+
                 curl_close($curl);
-        
+
                 if ($err) {
                     return "cURL Error #:" . $err;
                 } else {
@@ -163,15 +167,14 @@ class YousignApiLaravel {
                 }
             } else {
                 $response = Http::withOptions(['debug' => false])
-                        ->acceptJson()
-                        ->withToken($this->getApikey())
-                        ->$method($baseUrl . $path, $params);
+                    ->acceptJson()
+                    ->withToken($this->getApikey())
+                    ->$method($baseUrl . $path, $params);
                 return $response->throw()->json();
             }
         } catch (RequestException $e) {
             abort($response->status(), $response->body(), ['Content-Type: application/json']);
         }
-        
     }
 
     /**
@@ -179,12 +182,13 @@ class YousignApiLaravel {
      * @return mixed
      */
 
-    public function createProcedure() {
+    public function createProcedure()
+    {
         $method = 'POST';
         $path = 'procedures';
 
         $this->_procedure['config']['webhook'] = $this->_webhook;
-        return $this->api_request($path, $method, $this->_procedure);
+        return $this->apiRequest($path, $method, $this->_procedure);
     }
 
     /**
@@ -192,11 +196,12 @@ class YousignApiLaravel {
      * @return mixed
      */
 
-    public function getProcedure($procedureId) {
+    public function getProcedure($procedureId)
+    {
         $method = 'GET';
         $path = 'procedures';
 
-        $this->api_request($path . '/' . $procedureId, $method);
+        $this->apiRequest($path . '/' . $procedureId, $method);
     }
 
     /**
@@ -207,7 +212,8 @@ class YousignApiLaravel {
      * @return mixed
      */
 
-    public function addFile($name, $content, $procedureId = null, $isAttachment = false) {
+    public function addFile($name, $content, $procedureId = null, $isAttachment = false)
+    {
         $method = 'POST';
         $path = 'files';
 
@@ -217,10 +223,10 @@ class YousignApiLaravel {
         $parameters = array(
             'name' => $name,
             'content' => $b64Doc,
-            'procedure' => $procedureId, 
+            'procedure' => $procedureId,
             'type' => $isAttachment ? 'attachment' : 'signable'
         );
-        return $this->api_request($path, $method, $parameters);
+        return $this->apiRequest($path, $method, $parameters);
     }
 
     /**
@@ -235,7 +241,8 @@ class YousignApiLaravel {
      * @return mixed
      */
 
-    public function addMember($firstname, $lastname, $email, $phone, $procedureId = null, $type = "signer", $position = null) {
+    public function addMember($firstname, $lastname, $email, $phone, $procedureId = null, $type = "signer", $position = null)
+    {
         $method = 'POST';
         $path = 'members';
 
@@ -254,7 +261,41 @@ class YousignApiLaravel {
             $member["position"] = $position;
         }
 
-        return $this->api_request($path, $method, $member);
+        return $this->apiRequest($path, $method, $member);
+    }
+
+    /**
+     * @params fileId string
+     * @params memberId string
+     * @params reason string see https://dev.yousign.com/#ba613ed7-08fa-45ea-9b5f-5e850aa367dc
+     * @params procedureId string
+     * @params fieldName string field name where to put the signature
+     * @params type int (2 types of fields: signature (default value) or text which will be used for text fields.)
+     * @params contentRequired bool see https://dev.yousign.com/#3e7c6772-e92a-4b3d-98d0-84c22a64f3d7
+     * @params content string|null see https://dev.yousign.com/#3e7c6772-e92a-4b3d-98d0-84c22a64f3d7
+     * @params mention1 string
+     * @params mention2 string
+     * 
+     * @return mixed
+     */
+
+    public function addFileObjectViaFieldName($fileId, $memberId, $reason, $fieldName, $type = 'signature', $contentRequired = true, $content = null, $mention = null, $mention2 = null)
+    {
+        $method = 'POST';
+        $path = 'file_objects';
+
+        $parameter = array(
+            "file" => $fileId,
+            "member" => $memberId,
+            "fieldName" => $fieldName,
+            "mention" => $mention,
+            "mention2" => $mention2,
+            "reason" => $reason,
+            "content" => $content,
+            "contentRequired" => $contentRequired,
+        );
+
+        return $this->apiRequest($path, $method, $parameter);
     }
 
     /**
@@ -273,7 +314,8 @@ class YousignApiLaravel {
      * @return mixed
      */
 
-    public function addFileObject($fileId, $memberId, $position, $reason, $page, $type = 'signature', $contentRequired = true, $content = null, $mention = null, $mention2 = null) {
+    public function addFileObjectViaPosition($fileId, $memberId, $position, $reason, $page, $type = 'signature', $contentRequired = true, $content = null, $mention = null, $mention2 = null)
+    {
         $method = 'POST';
         $path = 'file_objects';
 
@@ -289,50 +331,52 @@ class YousignApiLaravel {
             "contentRequired" => $contentRequired,
         );
 
-        return $this->api_request($path, $method, $parameter);
+        return $this->apiRequest($path, $method, $parameter);
     }
 
     /**
      *  used for start the procedure and get signature list
      * 
      */
-    
-    public function launchProcedure($procedureId) {
+
+    public function launchProcedure($procedureId)
+    {
         $method = 'PUT';
-        
+
         $parameter = array(
             'start' => true
         );
 
         // remove slash because the id is /procedure/id-XXXXXXXX
-        return $this->api_request($procedureId, $method, $parameter, true);
+        return $this->apiRequest($procedureId, $method, $parameter, true);
     }
 
     /**
      *  Consumption
      */
-    
-    public function consumption() {
+
+    public function consumption()
+    {
         $method = 'PUT';
         $path = 'consumptions/metrics';
 
-        return $this->api_request($path, $method);
+        return $this->apiRequest($path, $method);
     }
 
     /**
      *  getFileSigned
      */
-    
-    public function fileSigned($fileId, $binaryMode = true) {
+
+    public function fileSigned($fileId, $binaryMode = true)
+    {
         $method = 'GET';
 
         if ($binaryMode) {
             $path =  $fileId . "/download?alt=media";
-        } else{
+        } else {
             $path =  $fileId . "/download";
         }
 
-        return $this->api_request($path, $method, [], true, true);
+        return $this->apiRequest($path, $method, [], true, true);
     }
-
 }
