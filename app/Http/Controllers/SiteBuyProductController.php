@@ -445,6 +445,12 @@ class SiteBuyProductController extends Controller
             // TODO settare cart renewal date, per i nuovi clienti, alla data di creazione del certificato
             $cart->updateCartStep(6);
 
+            activity()
+                    ->causedBy($user)
+                    ->on($certificate)
+                    ->event('certificate_generation')
+                    ->log("Completed certificate $certificate->certificate_no generation;");
+
             return redirect()->route('front.product.buy', compact('product', 'cart'));
         }
     }
