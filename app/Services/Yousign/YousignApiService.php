@@ -57,7 +57,7 @@ class YousignApiService
         $file = $client->addFile('certificate.pdf', $certificate_pdf, $procedure['id']);
 
         // add member to sign the documents
-        $member_signer = $client->addMember('Marco', 'Masi', 'masiorama@gmail.com', '+393299858148', $procedure['id'], 'signer', 1);
+        $member_signer = $client->addMember($user->client_detail->first_name, $user->client_detail->last_name, $user->email, $user->client_detail->phone, $procedure['id'], 'signer', 1);
         $validator_config = $yousign_config['validator'];
         $member_validator = $client->addMember($validator_config['first_name'], $validator_config['last_name'], $validator_config['email'], $validator_config['phone'], $procedure['id'], 'validator', 2);
 
@@ -80,7 +80,7 @@ class YousignApiService
         // fileObject ritorna ciò
         // array(13) { ["mention"]=> NULL ["mention2"]=> NULL ["member"]=> array(17) { ["id"]=> string(45) "/members/b3ee30b9-f643-4a94-8470-cfd85f2030eb" ["user"]=> NULL ["type"]=> string(6) "signer" ["firstname"]=> string(5) "Marco" ["lastname"]=> string(4) "Masi" ["email"]=> string(19) "masiorama@gmail.com" ["phone"]=> string(13) "+393299858148" ["position"]=> int(1) ["createdAt"]=> string(25) "2022-05-17T15:52:07+02:00" ["updatedAt"]=> string(25) "2022-05-17T15:52:07+02:00" ["startedAt"]=> NULL ["finishedAt"]=> NULL ["status"]=> string(7) "pending" ["comment"]=> NULL ["parent"]=> NULL ["contact"]=> NULL ["fields"]=> array(2) { ["company"]=> NULL ["job_title"]=> NULL } } ["fieldName"]=> NULL ["reason"]=> string(21) "Signed by (Yousign)" ["id"]=> string(50) "/file_objects/cfcb2839-1070-4e43-8dc5-239b9def60a9" ["type"]=> string(9) "signature" ["file"]=> string(43) "/files/9894b0b5-2f8b-4cfa-9d17-b4d36e9f0b6f" ["page"]=> int(1) ["position"]=> string(15) "252,545,352,586" ["createdAt"]=> string(25) "2022-05-17T15:52:07+02:00" ["updatedAt"]=> string(25) "2022-05-17T15:52:07+02:00" ["parent"]=> NULL }
         Signature::create([
-            'cart_id' => $this->cart->id,
+            'certificate_id' => $this->cart->certificate->id,
             'procedure_id' => $procedure['id'],
             'member_signer_id' => $fileObject_signer['member']['id'],
             'status' => $procedure['status'],

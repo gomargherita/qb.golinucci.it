@@ -18,7 +18,6 @@ use App\Rules\ProjectDeclarationsRule;
 use App\Services\Yousign\YousignApiService;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
@@ -720,8 +719,8 @@ class SiteBuyProductController extends Controller
     {
         $yousignClient = new YousignApiService($cart);
 
-        // try to grab already existing procedure
-        $signature = Signature::where('cart_id', $cart->id)->first();
+        // try to grab already existing signature procedure
+        $signature = Signature::where('certificate_id', $cart->certificate->id)->first();
 
         if (empty($signature)) {
             $yousignMemberSignerId = $yousignClient->startYousignClientAndLaunchProcedure();

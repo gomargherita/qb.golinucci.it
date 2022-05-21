@@ -34,6 +34,7 @@ class UserSeeder extends Seeder
                 'first_name' => 'Camillo',
                 'last_name' => 'Campana',
                 'fiscal_code' => 'CMPCLL09M11C351C',
+                'phone' => '3299858148'
             ]);
 
         $user = User::factory()->create([
@@ -48,18 +49,11 @@ class UserSeeder extends Seeder
                 'user_id' => $user->id
             ]);
 
-        User::factory()->create([
-            'account_id' => $account->id,
-            'first_name' => 'Nadia',
-            'last_name' => 'Rossi',
-            'owner' => true,
-        ]);
-
         // create clients
-        $users = User::factory(21)->create([
-            'account_id' => $account->id,
-            'owner' => false,
-        ]);
+        // $users = User::factory(21)->create([
+        //     'account_id' => $account->id,
+        //     'owner' => false,
+        // ]);
 
         // assign multiple clientDetails to prev clients
         // ClientDetail::factory(40)
@@ -100,13 +94,12 @@ class UserSeeder extends Seeder
                     $user->assignRole(Role::ROLE_SUPERADMIN);
                     break;
                 case 2:
-                case 3:
                     setPermissionsTeamId(1);
                     $user->assignRole(Role::ROLE_OPERATOR);
                     break;
-                case 25:
-                    setPermissionsTeamId(2);
-                    $user->assignRole(Role::ROLE_AGENT);
+                // case 25:
+                //     setPermissionsTeamId(2);
+                //     $user->assignRole(Role::ROLE_AGENT);
                     break;
                 default:
                     setPermissionsTeamId(1);
