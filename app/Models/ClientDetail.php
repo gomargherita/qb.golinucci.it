@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Propaganistas\LaravelPhone\Casts\E164PhoneNumberCast;
 
 class ClientDetail extends Model
 {
@@ -44,6 +45,7 @@ class ClientDetail extends Model
         'confirmation' => 'boolean',
         'with_accident' => 'boolean',
         'flag_prev_2022' => 'boolean',
+        'phone' => E164PhoneNumberCast::class.':IT',
     ];
 
     public function resolveRouteBinding($value, $field = null)
@@ -97,7 +99,6 @@ class ClientDetail extends Model
         });
     }
 
-    
 
     public function getActivitylogOptions(): LogOptions
     {

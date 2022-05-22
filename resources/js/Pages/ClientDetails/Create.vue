@@ -53,6 +53,7 @@
             :error="form.errors.phone"
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Phone"
+            type="tel"
           />
           <text-input
             v-model="form.address"

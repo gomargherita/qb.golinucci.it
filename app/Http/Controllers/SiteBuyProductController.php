@@ -18,6 +18,7 @@ use App\Rules\ProjectDeclarationsRule;
 use App\Services\Yousign\YousignApiService;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
@@ -126,17 +127,25 @@ class SiteBuyProductController extends Controller
             'country' => ['required'],
             'postal_code' => ['required'],
             'phone' => ['required', 'max:30', 'phone:IT,mobile'],
-            // 'additional_fields' => ['required', 'array', 'min:' . $num_additional_fields, 'max:' . $num_additional_fields],
-            // 'additional_fields.*.field_name' => ['required'],
-            // 'additional_fields.*.selected' => ['required'],
             'product_client_details' => ['required', 'array', 'min:' . $num_additional_fields, 'max:' . $num_additional_fields],
             'product_client_details.*.pivot.selected_field_value' => ['required'],
             'confirmation' => ['accepted']
         ]);
 
-        ClientDetail::updateOrCreate(['user_id'   => $user->id], $validated);
+        DB::transaction(function() use ($user, $validated, $cart){
+            $clientDetails = ClientDetail::updateOrCreate(['user_id'   => $user->id], $validated);
 
-        $cart->updateCartStep(2);
+            $rebuildProductClientDetails = [];
+            foreach($validated['product_client_details'] as $el){
+                $conditional_field_id = $el['pivot']['conditional_field_id'];
+                $selected_field_value = $el['pivot']['selected_field_value'];
+                $rebuildProductClientDetails[$conditional_field_id] = ['selected_field_value' => $selected_field_value];
+            }
+    
+            $clientDetails->productClientDetails()->sync($rebuildProductClientDetails);
+    
+            $cart->updateCartStep(2);
+        });
 
         return redirect()->route('front.product.buy', compact('product', 'cart'));
     }
@@ -167,7 +176,7 @@ class SiteBuyProductController extends Controller
                 'conditional_fields' => $product->conditionalFields,
                 'hex_color' => $product->hex_color,
                 'offers' => $product->productOffers,
-                'steps' => $product->productSteps->count()
+                'steps' => $product->productSteps->count(),
             ],
             'cart' => $cart
         ]);

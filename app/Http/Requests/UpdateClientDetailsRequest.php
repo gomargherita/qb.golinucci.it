@@ -31,7 +31,7 @@ class UpdateClientDetailsRequest extends FormRequest
             'fiscal_code' => ['required', 'max:16'],
             'gender' => ['required', 'in:M,F', 'max:1'],
             'dob' => ['nullable', 'date'],
-            'phone' => ['required', 'max:30'],
+            'phone' => ['required', 'max:30', 'phone:IT,mobile'],
             'address' => ['required', 'max:150'],
             'city' => ['required', 'max:50'],
             'province' => ['required', 'max:2'],

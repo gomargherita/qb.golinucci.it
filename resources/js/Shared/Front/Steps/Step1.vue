@@ -221,7 +221,7 @@
       <div>
         <TextInput
           id="phone"
-          type="text"
+          type="tel"
           class="mt-1 block w-full"
           v-model="form.phone"
           :error="form.errors.phone"
@@ -244,7 +244,6 @@
               :label="conditional_field.field_label"
               :error="form.errors.product_client_details"
               v-model="form.product_client_details[index].pivot.selected_field_value"
-              
             >
               <option
                 v-for="(option_value, option_key) in JSON.parse(
@@ -336,25 +335,7 @@ export default {
       }),
     };
   },
-
   methods: {
-    // updateValue(event, index, field) {
-    //   if (field.field_type == "select") {
-    //     let add_field = {
-    //       field_name: field.field_name,
-    //       selected: event.target.value,
-    //     };
-    //     console.log(add_field);
-    //     this.form.product_client_details[index] = add_field;
-    //   } else if (field.field_type == "text") {
-    //     let add_field = {
-    //       field_name: field.field_name,
-    //       value: event.target.value,
-    //     };
-    //     console.log(add_field);
-    //     this.form.product_client_details[index] = add_field;
-    //   }
-    // },
     submit() {
       this.form.post(
         this.route("front.product.store_step1", {
