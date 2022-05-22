@@ -19,7 +19,7 @@ class CreateProductClientDetailsTable extends Migration
         Schema::create('product_client_details', function (Blueprint $table) {
             $table->foreignIdFor(ClientDetail::class)->constrained();
             $table->foreignIdFor(ConditionalField::class)->constrained();
-            $table->text('selected_field_value');
+            $table->text('selected_field_value')->nullable();
             $table->timestamps();
 
             $table->index('client_detail_id');

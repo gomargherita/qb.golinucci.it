@@ -97,6 +97,8 @@ class ClientDetail extends Model
         });
     }
 
+    
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()

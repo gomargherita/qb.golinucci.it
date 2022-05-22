@@ -119,7 +119,7 @@ class SiteBuyProductController extends Controller
             'last_name' => ['required'],
             'fiscal_code' => ['required'],
             'gender' => ['required'],
-            'dob' => ['nullable'],
+            'dob' => ['date'],
             'address' => ['required'],
             'city' => ['required'],
             'province' => ['required'],
@@ -130,6 +130,7 @@ class SiteBuyProductController extends Controller
             // 'additional_fields.*.field_name' => ['required'],
             // 'additional_fields.*.selected' => ['required'],
             'product_client_details' => ['required', 'array', 'min:' . $num_additional_fields, 'max:' . $num_additional_fields],
+            'product_client_details.*.pivot.selected_field_value' => ['required'],
             'confirmation' => ['accepted']
         ]);
 

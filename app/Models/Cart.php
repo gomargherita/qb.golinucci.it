@@ -4,8 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
@@ -39,6 +41,11 @@ class Cart extends Model
         return $this->hasOne(Payment::class);
     }
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function certificate(): HasOne
     {
         return $this->hasOne(Certificate::class);
@@ -58,6 +65,37 @@ class Cart extends Model
                 'cart_ref' => $this->cart_ref,
                 'locked' => 'N'
             ])->first();
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+        static::created(function ($cart) {
+
+            DB::transaction(function () use ($cart) {
+                // recuperare o creare anagrafica
+                $clientDetails = ClientDetail::query()
+                    // ->with('productClientDetails:field_name')
+                    ->latest('id')
+                    ->firstOrCreate([
+                        'user_id' => $cart->user->id,
+                    ], [
+                        'first_name' => $cart->user->first_name,
+                        'last_name' => $cart->user->last_name,
+                    ]);
+
+                // recuperare o creare prodcut anagrafica
+                $product = Product::find($cart->product_id);
+                if ($clientDetails->withCount('productClientDetails')->get() != $product->withCount('conditionalFields')->get()) {
+                    foreach ($product->conditionalFields as $conditionalField) {
+                        ProductClientDetail::create([
+                            'client_detail_id' => $clientDetails->id,
+                            'conditional_field_id' => $conditionalField->id,
+                        ]);
+                    }
+                }
+            });
+        });
     }
 
     public function getActivitylogOptions(): LogOptions
