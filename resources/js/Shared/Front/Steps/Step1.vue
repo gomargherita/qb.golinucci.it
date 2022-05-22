@@ -230,7 +230,7 @@
       </div>
 
       <div class="col-span-2">
-        <p class="my-4 font-bold">Campi per preselezionare offerta di prodotto</p>
+        <p class="my-4 font-bold">Campi per preselezionare l'offerta di prodotto</p>
       </div>
       <template v-if="product.conditional_fields.length">
         <div
@@ -242,8 +242,9 @@
               :id="conditional_field.field_name"
               class="mt-1 block w-full"
               :label="conditional_field.field_label"
-              :error="form.errors.additiona_fields"
-              @change="updateValue($event, index, conditional_field)"
+              :error="form.errors.product_client_details"
+              v-model="form.product_client_details[index].pivot.selected_field_value"
+              
             >
               <option
                 v-for="(option_value, option_key) in JSON.parse(
@@ -254,6 +255,14 @@
                 :selected="option_key == 1"
               ></option>
             </SelectInput>
+          </div>
+          <div v-if="conditional_field.field_type == 'text'">
+            <TextInput
+              :id="conditional_field.field_name"
+              :label="conditional_field.field_label"
+              :error="form.errors.product_client_details"
+              v-model="form.product_client_details[index].pivot.selected_field_value"
+            />
           </div>
         </div>
       </template>
@@ -322,21 +331,30 @@ export default {
         postal_code: this.$page.props.clientDetails.postal_code,
         country: "IT",
         phone: this.$page.props.clientDetails.phone,
-        additional_fields: [],
+        product_client_details: this.$page.props.clientDetails.product_client_details,
         confirmation: false,
       }),
     };
   },
 
   methods: {
-    updateValue(event, index, field) {
-      let add_field = {
-        field_name: field.field_name,
-        selected: event.target.value,
-      };
-      console.log(add_field);
-      this.form.additional_fields[index] = add_field;
-    },
+    // updateValue(event, index, field) {
+    //   if (field.field_type == "select") {
+    //     let add_field = {
+    //       field_name: field.field_name,
+    //       selected: event.target.value,
+    //     };
+    //     console.log(add_field);
+    //     this.form.product_client_details[index] = add_field;
+    //   } else if (field.field_type == "text") {
+    //     let add_field = {
+    //       field_name: field.field_name,
+    //       value: event.target.value,
+    //     };
+    //     console.log(add_field);
+    //     this.form.product_client_details[index] = add_field;
+    //   }
+    // },
     submit() {
       this.form.post(
         this.route("front.product.store_step1", {

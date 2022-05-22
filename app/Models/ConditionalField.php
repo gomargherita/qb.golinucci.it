@@ -21,7 +21,8 @@ class ConditionalField extends Model
             ->logOnly([
                 'field_name',
                 'field_type',
-                'field_value'
+                'field_value',
+                'only_client_details'
             ]);
     }
 }

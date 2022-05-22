@@ -18,6 +18,7 @@ class ConditionalFieldFactory extends Factory
             'field_label' => '',
             'field_type' => '',
             'field_value' => '',
+            'only_client_details' => 0
         ];
     }
 }

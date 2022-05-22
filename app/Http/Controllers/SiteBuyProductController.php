@@ -78,9 +78,12 @@ class SiteBuyProductController extends Controller
     {
         $user = auth()->user();
         $clientDetails = ClientDetail::query()
+            ->with('productClientDetails:field_name')
             ->where([
                 'user_id' => $user->id
-            ])->latest('id')->first();
+            ])
+            ->latest('id')
+            ->first();
 
         $product = $product->load([
             'productOffers'
@@ -123,9 +126,10 @@ class SiteBuyProductController extends Controller
             'country' => ['required'],
             'postal_code' => ['required'],
             'phone' => ['required', 'max:30', 'phone:IT,mobile'],
-            'additional_fields' => ['required', 'array', 'min:' . $num_additional_fields, 'max:' . $num_additional_fields],
-            'additional_fields.*.field_name' => ['required'],
-            'additional_fields.*.selected' => ['required'],
+            // 'additional_fields' => ['required', 'array', 'min:' . $num_additional_fields, 'max:' . $num_additional_fields],
+            // 'additional_fields.*.field_name' => ['required'],
+            // 'additional_fields.*.selected' => ['required'],
+            'product_client_details' => ['required', 'array', 'min:' . $num_additional_fields, 'max:' . $num_additional_fields],
             'confirmation' => ['accepted']
         ]);
 

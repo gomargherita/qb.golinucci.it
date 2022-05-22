@@ -19,6 +19,7 @@ class CreateConditionalFieldsTable extends Migration
             $table->string('field_label')->unique();
             $table->string('field_type');
             $table->json('field_value');
+            $table->boolean('only_client_details')->default(0);
             $table->timestamps();
             $table->softDeletes();
         });

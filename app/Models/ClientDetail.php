@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -53,6 +54,18 @@ class ClientDetail extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function productClientDetails(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            ConditionalField::class,
+            'product_client_details',
+            'client_detail_id',
+            'conditional_field_id'
+        )
+            ->withPivot('selected_field_value')
+            ->withTimestamps();
     }
 
     public function scopeOrderByName($query)

@@ -15,8 +15,8 @@ class ConditionalFieldSeeder extends Seeder
     public function run()
     {
         ConditionalField::factory()->create([
-            'field_name' => 'profession',
-            'field_label' => 'Professione',
+            'field_name' => 'qualification',
+            'field_label' => 'Qualifica dell\'Assicurato',
             'field_type' => 'select',
             'field_value' => json_encode([
                 1 => 'Dirigente Medico',
@@ -29,13 +29,30 @@ class ConditionalFieldSeeder extends Seeder
         ]);
 
         ConditionalField::factory()->create([
-            'field_name' => 'authority',
-            'field_label' => 'Ente',
+            'field_name' => 'authority_type',
+            'field_label' => 'Tipologia Ente',
             'field_type' => 'select',
             'field_value' => json_encode([
                 1 => 'Pubblico/ASL',
                 2 => 'Privato'
             ]),
         ]);
+
+        ConditionalField::factory()->create([
+            'field_name' => 'authority',
+            'field_label' => 'Ente di Appartenenza',
+            'field_type' => 'text',
+            'field_value' => '',
+            'only_client_details' => true
+        ]);
+
+        ConditionalField::factory()->create([
+            'field_name' => 'specialization',
+            'field_label' => 'Specializzazione',
+            'field_type' => 'text',
+            'field_value' => '',
+            'only_client_details' => true
+        ]);
+        
     }
 }
