@@ -15,6 +15,7 @@ class ConditionalFieldFactory extends Factory
     {
         return [
             'field_name' => '',
+            'field_label' => '',
             'field_type' => '',
             'field_value' => '',
         ];

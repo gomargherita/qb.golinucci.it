@@ -82,6 +82,10 @@ class SiteBuyProductController extends Controller
                 'user_id' => $user->id
             ])->latest('id')->first();
 
+        $product = $product->load([
+            'productOffers'
+        ]);
+
         return Inertia::render('Sites/BuyProduct', [
             'product' => [
                 'id' => $product->id,
@@ -104,6 +108,8 @@ class SiteBuyProductController extends Controller
         $user = auth()->user();
         $cart = $this->verifyAndGetCartOrRedirect($user, $product, $cart);
 
+        $num_additional_fields = $product->conditionalFields->count();
+
         $validated = $request->validate([
             'user_id' => ['required'],
             'first_name' => ['required'],
@@ -116,7 +122,10 @@ class SiteBuyProductController extends Controller
             'province' => ['required'],
             'country' => ['required'],
             'postal_code' => ['required'],
-            'phone' => ['required'],
+            'phone' => ['required', 'max:30', 'phone:IT,mobile'],
+            'additional_fields' => ['required', 'array', 'min:' . $num_additional_fields, 'max:' . $num_additional_fields],
+            'additional_fields.*.field_name' => ['required'],
+            'additional_fields.*.selected' => ['required'],
             'confirmation' => ['accepted']
         ]);
 
@@ -446,10 +455,10 @@ class SiteBuyProductController extends Controller
             $cart->updateCartStep(6);
 
             activity()
-                    ->causedBy($user)
-                    ->on($certificate)
-                    ->event('certificate_generation')
-                    ->log("Completed certificate $certificate->certificate_no generation;");
+                ->causedBy($user)
+                ->on($certificate)
+                ->event('certificate_generation')
+                ->log("Completed certificate $certificate->certificate_no generation;");
 
             return redirect()->route('front.product.buy', compact('product', 'cart'));
         }

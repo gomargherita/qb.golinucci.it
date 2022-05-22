@@ -96,16 +96,16 @@ return [
     ],
     'multiple_of' => 'The :attribute must be a multiple of :value.',
     'not_in' => 'The selected :attribute is invalid.',
-    'not_regex' => 'The :attribute format is invalid.',
-    'numeric' => 'The :attribute must be a number.',
+    'not_regex' => 'Il formato del campo :attribute non è valido.',
+    'numeric' => 'Il campo :attribute deve essere un numero.',
     'password' => 'The password is incorrect.',
     'present' => 'The :attribute field must be present.',
     'prohibited' => 'The :attribute field is prohibited.',
     'prohibited_if' => 'The :attribute field is prohibited when :other is :value.',
     'prohibited_unless' => 'The :attribute field is prohibited unless :other is in :values.',
     'prohibits' => 'The :attribute field prohibits :other from being present.',
-    'regex' => 'The :attribute format is invalid.',
-    'required' => 'The :attribute field is required.',
+    'regex' => 'Il formato del campo :attribute non è valido.',
+    'required' => 'Il campo :attribute è obbligatorio.',
     'required_if' => 'The :attribute field is required when :other is :value.',
     'required_unless' => 'The :attribute field is required unless :other is in :values.',
     'required_with' => 'The :attribute field is required when :values is present.',
@@ -157,4 +157,5 @@ return [
 
     'attributes' => [],
 
+    'phone' => 'Il campo :attribute contiene un numero di telefono non valido.',
 ];

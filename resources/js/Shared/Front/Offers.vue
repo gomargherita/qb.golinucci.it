@@ -6,7 +6,7 @@
         :class="`offer-filters grid grid-cols-1 md:grid-cols-${product.conditional_fields.length} mx-auto text-center gap-4`"
       >
         <div v-for="conditional_field in product.conditional_fields" class="inline-block">
-          <label v-text="conditional_field.field_name"></label>
+          <label v-text="conditional_field.field_label"></label>
           <div v-if="conditional_field.field_type == 'select'">
             <select v-model="filter_conditions[conditional_field.id]" @change="change">
               <option

@@ -228,7 +228,36 @@
           label="Phone"
         />
       </div>
-      <div>
+
+      <div class="col-span-2">
+        <p class="my-4 font-bold">Campi per preselezionare offerta di prodotto</p>
+      </div>
+      <template v-if="product.conditional_fields.length">
+        <div
+          v-for="(conditional_field, index) in product.conditional_fields"
+          :key="index"
+        >
+          <div v-if="conditional_field.field_type == 'select'">
+            <SelectInput
+              :id="conditional_field.field_name"
+              class="mt-1 block w-full"
+              :label="conditional_field.field_label"
+              :error="form.errors.additiona_fields"
+              @change="updateValue($event, index, conditional_field)"
+            >
+              <option
+                v-for="(option_value, option_key) in JSON.parse(
+                  conditional_field.field_value
+                )"
+                :value="option_key"
+                v-text="option_value"
+                :selected="option_key == 1"
+              ></option>
+            </SelectInput>
+          </div>
+        </div>
+      </template>
+      <div class="col-span-2">
         <label class="flex items-center mt-6 select-none" for="confirmation">
           <input
             id="confirmation"
@@ -293,12 +322,21 @@ export default {
         postal_code: this.$page.props.clientDetails.postal_code,
         country: "IT",
         phone: this.$page.props.clientDetails.phone,
+        additional_fields: [],
         confirmation: false,
       }),
     };
   },
 
   methods: {
+    updateValue(event, index, field) {
+      let add_field = {
+        field_name: field.field_name,
+        selected: event.target.value,
+      };
+      console.log(add_field);
+      this.form.additional_fields[index] = add_field;
+    },
     submit() {
       this.form.post(
         this.route("front.product.store_step1", {
@@ -306,7 +344,6 @@ export default {
           cart: this.cart.cart_ref,
         }),
         {
-          // onSuccess: () => this.form.reset('password', 'password_confirmation'),
           preserveScroll: (page) => Object.keys(page.props.errors).length,
         }
       );

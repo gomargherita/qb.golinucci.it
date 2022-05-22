@@ -16,6 +16,7 @@ class CreateConditionalFieldsTable extends Migration
         Schema::create('conditional_fields', function (Blueprint $table) {
             $table->id();
             $table->string('field_name')->unique();
+            $table->string('field_label')->unique();
             $table->string('field_type');
             $table->json('field_value');
             $table->timestamps();
