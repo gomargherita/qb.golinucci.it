@@ -227,7 +227,7 @@
           :error="form.errors.phone"
           label="Phone"
         />
-        <span class="italic text-red-400 text-sm">Attenzione: è obbligatorio inserire un numero di cellulare valido per procedere alla firma elettronica in uno step successivo, altrimenti sarà impossibile completare l'operazione in autonomia.</span>
+        <span class="italic text-gray-700 text-sm">Attenzione: è obbligatorio inserire un numero di cellulare valido per procedere alla firma elettronica, altrimenti sarà impossibile completare l'operazione.</span>
       </div>
 
       <div class="col-span-2">

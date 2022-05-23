@@ -132,18 +132,18 @@ class SiteBuyProductController extends Controller
             'confirmation' => ['accepted']
         ]);
 
-        DB::transaction(function() use ($user, $validated, $cart){
+        DB::transaction(function () use ($user, $validated, $cart) {
             $clientDetails = ClientDetail::updateOrCreate(['user_id'   => $user->id], $validated);
 
             $rebuildProductClientDetails = [];
-            foreach($validated['product_client_details'] as $el){
+            foreach ($validated['product_client_details'] as $el) {
                 $conditional_field_id = $el['pivot']['conditional_field_id'];
                 $selected_field_value = $el['pivot']['selected_field_value'];
                 $rebuildProductClientDetails[$conditional_field_id] = ['selected_field_value' => $selected_field_value];
             }
-    
+
             $clientDetails->productClientDetails()->sync($rebuildProductClientDetails);
-    
+
             $cart->updateCartStep(2);
         });
 
@@ -153,7 +153,7 @@ class SiteBuyProductController extends Controller
     private function step2(Product $product, Cart $cart)
     {
         $user = auth()->user();
-        $clientDetails = ClientDetail::select(['flag_prev_2022'])
+        $clientDetails = ClientDetail::query()
             ->where([
                 'user_id' => $user->id
             ])->latest('id')->first();
@@ -166,6 +166,43 @@ class SiteBuyProductController extends Controller
             }
         ]);
 
+        $conditionalFieldsIds = $product
+            ->conditionalFields()
+            ->select(['id'])
+            ->where('only_client_details', 0)
+            ->get()
+            ->map(function ($v) {
+                return $v['id'];
+            });
+
+        $productClientDetails = $clientDetails
+            ->productClientDetails()
+            ->select(['conditional_field_id', 'selected_field_value'])
+            ->whereIn('conditional_field_id', $conditionalFieldsIds)
+            ->get();
+
+        $clean = []; // key conditional_field_id, value selected_field_value
+        foreach ($productClientDetails as $productClientDetail) {
+            $clean[$productClientDetail->conditional_field_id] = $productClientDetail->selected_field_value;
+        }
+
+        $offers = $product->productOffers->map(function ($rec) use ($clean) {
+            $rec2 = $rec->conditionalFields;
+            $flag = true;
+            foreach ($rec2 as $bhgh) {
+                $conditional_field_id = $bhgh->pivot->conditional_field_id;
+                $selected_field_value = $bhgh->pivot->selected_field_value;
+                if ($selected_field_value != $clean[$conditional_field_id]) {
+                    $flag = false;
+                }
+            }
+            if ($flag) {
+                return $rec;
+            }
+        })->filter(function ($value) {
+            return $value != null;
+        });
+
         return Inertia::render('Sites/BuyProduct', [
             'product' => [
                 'id' => $product->id,
@@ -175,10 +212,11 @@ class SiteBuyProductController extends Controller
                 'conditions' => $product->conditions,
                 'conditional_fields' => $product->conditionalFields,
                 'hex_color' => $product->hex_color,
-                'offers' => $product->productOffers,
+                'offers' => $offers,
                 'steps' => $product->productSteps->count(),
             ],
-            'cart' => $cart
+            'cart' => $cart,
+            'clientDetails' => $clientDetails
         ]);
     }
 
@@ -645,7 +683,7 @@ class SiteBuyProductController extends Controller
                 LloydsDoprintService::uploadRequest($cart, $prop);
 
                 // // Upload PER NUOVI
-                // Ordine allegati 1. scheda prodotto (da generare, pagina 6 della polizza), 
+                // Ordine allegati 1. scheda prodotto (da generare, pagina 6 della polizza),
 
                 // Upload 2. wording
                 // per pubblico WORDING BINDER NL 2021_SECTION_A

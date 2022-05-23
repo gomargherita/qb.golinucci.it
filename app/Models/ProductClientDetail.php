@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ProductClientDetail extends Model
 {
@@ -14,4 +15,9 @@ class ProductClientDetail extends Model
         'conditional_field_id',
         'selected_field_value',
     ];
+
+    public function conditionalField(): BelongsTo
+    {
+        return $this->belongsTo(ConditionalField::class);
+    }
 }
