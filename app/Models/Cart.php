@@ -86,7 +86,7 @@ class Cart extends Model
 
                 // recuperare o creare prodcut anagrafica
                 $product = Product::find($cart->product_id);
-                if ($clientDetails->withCount('productClientDetails')->get() != $product->withCount('conditionalFields')->get()) {
+                if ($clientDetails->productClientDetails->count() != $product->conditionalFields->count()) {
                     foreach ($product->conditionalFields as $conditionalField) {
                         ProductClientDetail::create([
                             'client_detail_id' => $clientDetails->id,
