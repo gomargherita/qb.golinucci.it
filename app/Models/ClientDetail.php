@@ -70,6 +70,13 @@ class ClientDetail extends Model
             ->withTimestamps();
     }
 
+    public function getConditionalFieldMatchById($id = null){
+        $productClientDetails = $this->productClientDetails()->where('conditional_field_id', $id)->first();
+        $field_id = $productClientDetails->pivot->selected_field_value;
+        $profession_array = json_decode($productClientDetails->field_value);
+        return $profession_array->$field_id;
+    }
+
     public function scopeOrderByName($query)
     {
         $query->orderBy('last_name')->orderBy('first_name');

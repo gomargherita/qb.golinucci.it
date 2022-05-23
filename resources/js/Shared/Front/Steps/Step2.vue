@@ -1,6 +1,6 @@
 <template>
-  <Head :title="__('Scelta Polizza e Tempi')" />
-  <HTwo :title="__('Scelta Polizza e Tempi')" />
+  <Head :title="__('Scelta Polizza')" />
+  <HTwo :title="__('Scelta Polizza')" />
   <div class="mt-8">
     <div>
       <div class="text-center">
@@ -23,7 +23,7 @@
                 <th class="p-4 font-light">Franchigia</th>
                 <th class="p-4 font-light">Costo Annuo</th>
                 <th class="p-4 font-light">Wording</th>
-                <th class="p-4 font-light">Choose</th>
+                <th class="p-4 font-light">Scegli</th>
               </tr>
             </thead>
             <tbody>
@@ -51,13 +51,13 @@
                   v-text="$filters.formatPrice(parseFloat(offer.total_payable))"
                 ></td>
                 <td class="p-4 border border-primary">
-                  <Link
+                  <a
+                    class="btn-gol"
                     :href="offer.contract.contract_filepath"
                     target="_blank"
-                    class="btn-gol"
                   >
                     {{ __("Download") }}
-                  </Link>
+                  </a>
                 </td>
                 <td class="p-4 border border-primary">
                   <label

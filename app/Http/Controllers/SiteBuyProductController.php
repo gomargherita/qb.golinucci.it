@@ -585,10 +585,11 @@ class SiteBuyProductController extends Controller
             $certificate = $cart->certificate;
             if ($certificate->doprint_current_step == 'validation') {
                 $clientDetails = ClientDetail::where('user_id', $cart->user_id)->first();
+                $profession = $clientDetails->getConditionalFieldMatchById(1);
 
                 $customer = [
                     'user_id' => $user->id, // serve per creare il percorso dove salvare i file
-                    'profession' => "Medico Convenzionato",
+                    'profession' => $profession,
                     'first_name' => $clientDetails->first_name,
                     'last_name' => $clientDetails->last_name,
                     'address' => $clientDetails->address,
@@ -615,8 +616,12 @@ class SiteBuyProductController extends Controller
 
                 $contract_type = 'RC PROFESSIONALE';
                 // TODO nome dipende dall-offerta selezionata, campo ente
-                $product_name = "COLPA GRAVE - STRUTTURA SANITARIA PUBBLICA"; // "COLPA GRAVE – STRUTTURA SANITARIA PRIVATA"
-
+                $authority_type = $clientDetails->getConditionalFieldMatchById(2);
+                if($authority_type == 'Pubblico/ASL'){
+                    $product_name = "COLPA GRAVE - STRUTTURA SANITARIA PUBBLICA";
+                } else {
+                    $product_name = "COLPA GRAVE - STRUTTURA SANITARIA PRIVATA";
+                }
                 // IMPORTANTE la data di START deve ricadere entro la data di validità del Binder
                 $start_date = '2021-06-01';
                 $end_date = '2022-06-01';
