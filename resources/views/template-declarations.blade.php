@@ -20,7 +20,7 @@
     </div>
     <table style="border-collapse: collapse;">
         @foreach ($declarations as $declaration)
-        <tr style="">
+        <tr>
             <td style="border:1pt solid black; padding: 2px 10px;">
                 {!! $declaration->declaration !!}
             </td>
@@ -34,7 +34,7 @@
         {!! $post_declarations !!}
     </div>
     <div style="margin:20px 0;text-align:right;width: 100%;">
-        Firma
+        Sottoscritto online da <span>{{ $declarations_signature }}</span>
     </div>
 </body>
 

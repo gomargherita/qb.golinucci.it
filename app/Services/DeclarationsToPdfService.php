@@ -28,7 +28,8 @@ class DeclarationsToPdfService
             'title' => 'Dichiarazioni dell\'Assicurato',
             'pre_declarations' => $product->pre_declarations,
             'declarations' => $declarations,
-            'post_declarations' => $product->post_declarations
+            'post_declarations' => $product->post_declarations,
+            'declarations_signature' => $this->cart->declarations_signature
         ];
 
         PDF::setOptions([
