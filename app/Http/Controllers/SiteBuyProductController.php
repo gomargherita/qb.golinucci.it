@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Imports\MedmalRenewalsImport;
-use App\Services\LloydsDoprintService;
 use App\Models\Cart;
 use App\Models\Certificate;
 use App\Models\ClientDetail;
@@ -15,6 +14,8 @@ use App\Models\Signature;
 use App\Notifications\BankTransferGatewayPayment;
 use App\Notifications\PaypalGatewayPaymentCancel;
 use App\Rules\ProjectDeclarationsRule;
+use App\Services\LloydsDoprintService;
+use App\Services\DeclarationsToPdfService;
 use App\Services\Yousign\YousignApiService;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
@@ -280,7 +281,9 @@ class SiteBuyProductController extends Controller
         // nota: il salvataggio avviene poco sotto, nel metodo updateCartStep
         $cart->declarations_signature = $validated['signature'];
 
-        // TODO generare il pdf e persisterlo
+        // genero e salvo il pdf delle dichiarazioni
+        $declarationToPdf = new DeclarationsToPdfService($cart);
+        $declarationToPdf->generateAndPersist();
 
         $cart->updateCartStep(4);
 
@@ -615,7 +618,7 @@ class SiteBuyProductController extends Controller
                 $prop = 'props/prop.pdf'; // '../props/prop.pdf';
 
                 $contract_type = 'RC PROFESSIONALE';
-                // TODO nome dipende dall-offerta selezionata, campo ente
+                // TODO nome dipende dall'offerta selezionata, campo ente
                 $authority_type = $clientDetails->getConditionalFieldMatchById(2);
                 if($authority_type == 'Pubblico/ASL'){
                     $product_name = "COLPA GRAVE - STRUTTURA SANITARIA PUBBLICA";

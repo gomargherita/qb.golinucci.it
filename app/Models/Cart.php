@@ -84,7 +84,7 @@ class Cart extends Model
                         'last_name' => $cart->user->last_name,
                     ]);
 
-                // recuperare o creare prodcut anagrafica
+                // recuperare o creare product anagrafica
                 $product = Product::find($cart->product_id);
                 if ($clientDetails->productClientDetails->count() != $product->conditionalFields->count()) {
                     foreach ($product->conditionalFields as $conditionalField) {

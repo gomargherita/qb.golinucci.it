@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Storage as FacadesStorage;
+use Illuminate\Support\Facades\Storage;
 
 class FileController extends Controller
 {
@@ -15,6 +15,6 @@ class FileController extends Controller
 
     public function get($file)
     {
-        return FacadesStorage::disk('private')->get($file);
+        return Storage::disk('private')->get($file);
     }
 }
