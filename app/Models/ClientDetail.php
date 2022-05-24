@@ -45,7 +45,7 @@ class ClientDetail extends Model
         'confirmation' => 'boolean',
         'with_accident' => 'boolean',
         'flag_prev_2022' => 'boolean',
-        'phone' => E164PhoneNumberCast::class.':IT',
+        'phone' => E164PhoneNumberCast::class . ':IT',
     ];
 
     public function resolveRouteBinding($value, $field = null)
@@ -70,11 +70,20 @@ class ClientDetail extends Model
             ->withTimestamps();
     }
 
-    public function getConditionalFieldMatchById($id = null){
+    /**
+     * $select_field_flag se true restituisce il valore estraendolo dal json field_value, altrimenti restituisce il valore attuale
+     */
+    public function getConditionalFieldMatchById($id = null, $select_field_flag = true)
+    {
         $productClientDetails = $this->productClientDetails()->where('conditional_field_id', $id)->first();
-        $field_id = $productClientDetails->pivot->selected_field_value;
-        $profession_array = json_decode($productClientDetails->field_value);
-        return $profession_array->$field_id;
+        $field = $productClientDetails->pivot->selected_field_value;
+        if ($select_field_flag) {
+            $data_array = json_decode($productClientDetails->field_value);
+            $result = $data_array->$field;
+        } else {
+            $result = $field;
+        }
+        return $result;
     }
 
     public function scopeOrderByName($query)
