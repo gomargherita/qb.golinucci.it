@@ -30,6 +30,7 @@ class CreateCertificatesTable extends Migration
             $table->string('doprint_certificate_no', 20)->nullable()->unique();
             $table->date('start_validity_date')->nullable();
             $table->date('end_validity_date')->nullable();
+            $table->date('retroactivity')->nullable();
             $table->boolean('active')->default(false);
             $table->timestamps();
             $table->softDeletes();

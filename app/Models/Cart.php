@@ -23,6 +23,7 @@ class Cart extends Model
         'product_offer_id',
         'cart_ref',
         'renewal_date',
+        'retroactivity',
         'total_payable',
         'admin_fee',
         'gross_premium',
@@ -38,7 +39,8 @@ class Cart extends Model
     ];
 
     protected $casts = [
-        'renewal_date' => 'date'
+        'renewal_date' => 'date',
+        'retroactivity' => 'date',
     ];
 
     public function payment(): HasOne
@@ -97,6 +99,18 @@ class Cart extends Model
 
                 if ($last_prev_certificate) {
                     $cart->renewal_date = Carbon::parse($last_prev_certificate->end_validity_date)->toDateString();
+                }
+            }
+
+            // se non vuoto può arrivare dall'excel di importazione rinnovi
+            if (empty($cart->retroactivity)) {
+                $last_prev_certificate = Certificate::select(['retroactivity'])->where([
+                    // controllo su product
+                    'product_id' => $cart->product->id,
+                ])->latest()->first();
+
+                if ($last_prev_certificate) {
+                    $cart->retroactivity = Carbon::parse($last_prev_certificate->retroactivity)->toDateString();
                 }
             }
         });

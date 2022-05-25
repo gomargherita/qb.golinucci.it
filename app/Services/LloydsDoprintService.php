@@ -235,7 +235,7 @@ class LloydsDoprintService
             $request = new SoapParam($request, "Message");
             $response = $client->RouteMessage($request);
             $isValid = $response->IsValid;
-            if (isset($response->Errors)) {
+            if (!$isValid && isset($response->Errors)) {
                 $fault = $response->Errors->fault->string;
                 if (is_array($fault)) {
                     foreach ($fault as $fau)

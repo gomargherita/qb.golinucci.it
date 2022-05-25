@@ -26,6 +26,7 @@ class CreateCartsTable extends Migration
             $table->foreignIdFor(ProductOffer::class)->nullable()->constrained();
             $table->string('cart_ref', 13); // uniqueid
             $table->date('renewal_date')->nullable();
+            $table->date('retroactivity')->nullable();
             $table->decimal('total_payable')->nullable(); // quanto il cliente paga
             $table->decimal('admin_fee')->nullable(); // commissione golinucci
             $table->decimal('gross_premium')->nullable(); // ex price_with_tax; total_payable - admin_fee

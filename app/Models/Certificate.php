@@ -22,6 +22,7 @@ class Certificate extends Model
         'contract_id',
         'start_validity_date',
         'end_validity_date',
+        'retroactivity',
         'certificate_no',
         'doprint_token',
         'doprint_current_step',
@@ -31,7 +32,8 @@ class Certificate extends Model
 
     protected $casts = [
         'start_validity_date' => 'date',
-        'end_validity_date' => 'date'
+        'end_validity_date' => 'date',
+        'retroactivity' => 'date',
     ];
 
     public function cart(): BelongsTo
@@ -59,15 +61,16 @@ class Certificate extends Model
         $this->attributes['end_validity_date'] = Carbon::parse($renewal_date)->addMonths($this->productOffer->months);
     }
 
-    // TODO
-    // retroattività da aggiungere a tabella certificates
-    // rinnovi
-    // oggi dato nell'excel
-    // futuro: se esistono certificati completati precedenti allora fa fede la retroattivit' di quelli
-    // nuovo cliente
-    // data di pagamento - 10 anni
-    public function getRetroactivity()
+    // se esistono certificati completati precedenti allora fa fede la retroattività di quelli
+    public function setRetroactivityAttribute($retroactivity)
     {
+        if(empty($retroactivity)){
+            // nuovo cliente
+            // data di pagamento - 10 anni
+            $retroactivity = Carbon::parse($this->cart->payment->paid_at)->subYears(10);
+        }
+        
+        $this->attributes['retroactivity'] = $retroactivity;
     }
 
     public static function boot()

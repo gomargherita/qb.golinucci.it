@@ -476,7 +476,8 @@ class SiteBuyProductController extends Controller
                 'product_id' => $cart->product_id,
                 'product_offer_id' => $cart->product_offer_id,
                 'contract_id' => $cart->productOffer->contract->id, // TODO DA SISTEMARE
-                'start_validity_date' => $cart->renewal_date
+                'start_validity_date' => $cart->renewal_date,
+                'retroactivity' => $cart->retroactivity
             ]
         );
         if (isset($request->method)) {
@@ -683,13 +684,14 @@ class SiteBuyProductController extends Controller
                 // per pubblico file WORDING BINDER NL 2021_SECTION_A_RENEW.pdf
                 // per privato WORDING BINDER NL 2021_SECTION B_RENEW.pdf
                 // dovrei recuperalo da $certificate->contract_id
-                $wording = Storage::disk('private')->get('attaching_clauses/ATTACHING_CLAUSES.pdf');
-                'wordings/wording.pdf';
+                //$wording = Storage::disk('private')->get('attaching_clauses/ATTACHING_CLAUSES.pdf');
+                $wording = Storage::disk('private')->get('wordings/wording.pdf');
                 LloydsDoprintService::uploadRequest($cart, $wording);
 
                 // Upload 3.attach
                 // ATTACHING CLAUSES
-                $attaching_clauses = Storage::disk('private')->get('attaching_clauses/ATTACHING_CLAUSES.pdf');
+                // $attaching_clauses = Storage::disk('private')->get('attaching_clauses/ATTACHING_CLAUSES.pdf');
+                $attaching_clauses = Storage::disk('private')->get('props/prop.pdf');
                 LloydsDoprintService::uploadRequest($cart, $attaching_clauses);
 
                 // Upload PER NUOVI
