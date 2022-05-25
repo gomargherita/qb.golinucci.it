@@ -27,7 +27,7 @@ class DatasheetToPdfService
         // TODO non serve?
         //$authority = $clientDetails->getConditionalFieldMatchById(3, false);
         $specialization = $clientDetails->getConditionalFieldMatchById(4, false);
-        $retroactivity = $certificate->getRetroactivity();
+        $retroactivity = $certificate->retroactivity->format('d/m/Y');
         $indemnity_limit = number_format(
             $this->cart->indemnity_limit,
             2,
@@ -40,8 +40,8 @@ class DatasheetToPdfService
             ",",
             "."
         );
-        $start_validity_date = $certificate->start_validity_date->toDateString();
-        $end_validity_date = $certificate->end_validity_date->toDateString();
+        $start_validity_date = $certificate->start_validity_date->format('d/m/Y');
+        $end_validity_date = $certificate->end_validity_date->format('d/m/Y');
         $insurance_deductible = '0'; // franchigia
         $rif_gol = $certificate->certificate_no;
         //= Product::where('id', $this->cart->product_id)->first();
