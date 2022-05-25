@@ -481,7 +481,7 @@ class SiteBuyProductController extends Controller
         );
         if (isset($request->method)) {
             switch ($request->method) {
-                case 'certificate_initialization':
+                case 'initialization':
                     $response = $this->store_step5_certificate_initialization($cart);
                     break;
                 case 'handshake':

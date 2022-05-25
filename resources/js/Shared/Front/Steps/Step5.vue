@@ -89,7 +89,7 @@ export default {
 
       // Prima chiamata
       try {
-        params.method = "certificate_initialization";
+        params.method = "initialization";
         // Esegue la chiamata al metodo e con la response POSITIVA aggiorna la prop del componente
         const res = await this.doprintRequest(params);
         self.product.documentGenerator.push(res);
