@@ -41,16 +41,16 @@ class ContractSeeder extends Seeder
 
         Contract::factory()->count(2)->sequence(
             [
-                'contract_filepath' => 'tmp/WORDING_BINDER_NL_2021_SECTION_A_RENEW.pdf', // medico, pubblico, rinnovo
+                'contract_filepath' => '/storage/contracts/WORDING_BINDER_NL_2021_SECTION_A_RENEW.pdf', // medico, pubblico, rinnovo
             ],
             [
-                'contract_filepath' => 'tmp/WORDING_BINDER_NL_2021_SECTION_B_RENEW.pdf' // medico, privato, rinnovo
+                'contract_filepath' => '/storage/contracts/WORDING_BINDER_NL_2021_SECTION_B_RENEW.pdf' // medico, privato, rinnovo
             ],
             [
-                'contract_filepath' => 'tmp/WORDING_BINDER_NL_2021_SECTION_A' // medico pubblico, nuovo cliente
+                'contract_filepath' => '/storage/contracts/WORDING_BINDER_NL_2021_SECTION_A' // medico pubblico, nuovo cliente
             ],
             [
-                'contract_filepath' => 'tmp/WORDING_BINDER_NL_2021_SECTION_B' // medico privato, nuovo cliente
+                'contract_filepath' => '/storage/contracts/WORDING_BINDER_NL_2021_SECTION_B' // medico privato, nuovo cliente
             ],
         )->create();
     }
