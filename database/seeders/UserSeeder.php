@@ -46,7 +46,8 @@ class UserSeeder extends Seeder
 
         ClientDetail::factory(1)
             ->create([
-                'user_id' => $user->id
+                'user_id' => $user->id,
+                'phone' => '3299858148'
             ]);
 
         // create clients

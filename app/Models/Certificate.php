@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,7 +17,11 @@ class Certificate extends Model
 
     protected $fillable = [
         'cart_id',
+        'product_id',
+        'product_offer_id',
         'contract_id',
+        'start_validity_date',
+        'end_validity_date',
         'certificate_no',
         'doprint_token',
         'doprint_current_step',
@@ -24,9 +29,45 @@ class Certificate extends Model
         'active'
     ];
 
+    protected $casts = [
+        'start_validity_date' => 'date',
+        'end_validity_date' => 'date'
+    ];
+
     public function cart(): BelongsTo
     {
         return $this->belongsTo(Cart::class);
+    }
+
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+    public function productOffer(): BelongsTo
+    {
+        return $this->belongsTo(ProductOffer::class);
+    }
+
+    public function setStartValidityDateAttribute($renewal_date)
+    {
+        if (empty($renewal_date)) {
+            $renewal_date = $this->cart->payment->paid_at; 
+        }
+
+        $this->attributes['start_validity_date'] = $renewal_date;
+        $this->attributes['end_validity_date'] = Carbon::parse($renewal_date)->addMonths($this->productOffer->months);
+    }
+
+    // TODO
+    // retroattività da aggiungere a tabella certificates
+    // rinnovi
+    // oggi dato nell'excel
+    // futuro: se esistono certificati completati precedenti allora fa fede la retroattivit' di quelli
+    // nuovo cliente
+    // data di pagamento - 10 anni
+    public function getRetroactivity()
+    {
     }
 
     public static function boot()
@@ -52,6 +93,8 @@ class Certificate extends Model
         return LogOptions::defaults()
             ->logOnly([
                 'cart_id',
+                'product_id',
+                'product_offer_id',
                 'contract_id',
                 'certificate_no',
                 'doprint_token',

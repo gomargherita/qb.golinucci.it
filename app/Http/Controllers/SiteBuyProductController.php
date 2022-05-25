@@ -14,12 +14,14 @@ use App\Models\Signature;
 use App\Notifications\BankTransferGatewayPayment;
 use App\Notifications\PaypalGatewayPaymentCancel;
 use App\Rules\ProjectDeclarationsRule;
+use App\Services\DatasheetToPdfService;
 use App\Services\LloydsDoprintService;
 use App\Services\DeclarationsToPdfService;
 use App\Services\Yousign\YousignApiService;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
@@ -67,7 +69,7 @@ class SiteBuyProductController extends Controller
                 'user_id' => $user->id,
                 'product_id' => $product->id,
                 'product_step_id' => 1,
-                'expired_at' => now(), // TODO Francesco come calcolare? Riposta: Scadenza renewal_date + 1 anno
+                'expired_at' => now(), // TODO Francesco come calcolare? Riposta: Scadenza renewal_date + 1 anno NO, DOVREBBE ESSERE QUANDO SCADE IL CARRELLO, NON IL CERTIFICATO
                 'locked' => 'N',
                 'cart_ref' => uniqid()
             ]);
@@ -415,9 +417,7 @@ class SiteBuyProductController extends Controller
 
         if (isset($response['status']) && $response['status'] == 'COMPLETED') {
             $payment = Payment::query()->where(['cart_id' => $cart->id])->findOrFail($payment_id);
-            $payment->paid = 1;
-            $payment->paid_at = now();
-            $payment->save();
+            $payment->updatePaymentStatus();
             $cart->updateCartStep(5);
         } else {
             return redirect()
@@ -467,16 +467,16 @@ class SiteBuyProductController extends Controller
 
     public function store_step5(Product $product, Cart $cart, Request $request)
     {
-        // TODO questo dovrà essere differenziato tra utente a rinnovo e utenti nuovi (cambia il numero di allegati)
-        //$file = Storage::disk('private')->get('lloyds_rinnovi_base.xml');
         $user = auth()->user();
         $cart = $this->verifyAndGetCartOrRedirect($user, $product, $cart);
         $certificate = Certificate::firstOrCreate(
             ['cart_id' => $cart->id],
             [
                 //'certificate_no' => $certificate_no, // set in certificate boot method
-                'contract_id' => 1, // TODO DA SISTEMARE
-                //'renewal_date' => $proposal_date,
+                'product_id' => $cart->product_id,
+                'product_offer_id' => $cart->product_offer_id,
+                'contract_id' => $cart->productOffer->contract->id, // TODO DA SISTEMARE
+                'start_validity_date' => $cart->renewal_date
             ]
         );
         if (isset($request->method)) {
@@ -612,15 +612,17 @@ class SiteBuyProductController extends Controller
                     'price_with_tax' => $cart->gross_premium, // premio + accessori + tax (no fee)
                 ];
 
-                // $scheda = 'scheda/scheda.pdf'; // '../props/prop.pdf'; // TODO DA GENERARE
-                $scheda = 'props/scheda.pdf';
+                // TODO GENERARE scheda
+                $declarationToPdf = new DatasheetToPdfService($cart);
+                // passo profession perché già generato poco sopra
+                $scheda = $declarationToPdf->generateAndPersist($profession);
                 $wording = 'wordings/wording.pdf'; // '../wordings/wording.pdf';
                 $prop = 'props/prop.pdf'; // '../props/prop.pdf';
 
                 $contract_type = 'RC PROFESSIONALE';
-                // TODO nome dipende dall'offerta selezionata, campo ente
+                // nome dipende dall'offerta selezionata, campo authority type
                 $authority_type = $clientDetails->getConditionalFieldMatchById(2);
-                if($authority_type == 'Pubblico/ASL'){
+                if ($authority_type == 'Pubblico/ASL') {
                     $product_name = "COLPA GRAVE - STRUTTURA SANITARIA PUBBLICA";
                 } else {
                     $product_name = "COLPA GRAVE - STRUTTURA SANITARIA PRIVATA";
@@ -628,7 +630,7 @@ class SiteBuyProductController extends Controller
                 // IMPORTANTE la data di START deve ricadere entro la data di validità del Binder
                 $start_date = '2021-06-01';
                 $end_date = '2022-06-01';
-                $proposal_date = '2022-06-01'; // se rinnovo metto start_date, altrimenti data di compilazione della form date('Y-m-d');
+                $proposal_date = '2022-06-01';
                 //Setup Policy using the xml and MD5 file hashes
                 $isValid = LloydsDoprintService::validationRequest(
                     $cart,
@@ -671,26 +673,26 @@ class SiteBuyProductController extends Controller
             $user = auth()->user();
             $certificate = $cart->certificate;
             if ($certificate->doprint_current_step == 'upload') {
-
-                // $scheda = 'scheda/scheda.pdf'; // '../props/prop.pdf'; // TODO DA GENERARE
-                $scheda = 'props/scheda.pdf';
-                $wording = 'wordings/wording.pdf'; // '../wordings/wording.pdf';
-                $prop = 'props/prop.pdf'; // '../props/prop.pdf';
-
-                // // Upload PER RINNOVI
-                // Ordine allegati 1. scheda prodotto (da generare, pagina 6 della polizza),
+                // Upload PER RINNOVI
+                // Ordine allegati 1. scheda prodotto (generato on the fly, pagina 6 della polizza),
+                $scheda_folder = 'certificates/user_' . $cart->user_id . '/cart_' . $cart->id;
+                $scheda = Storage::disk('private')->get($scheda_folder . '/scheda.pdf');
                 LloydsDoprintService::uploadRequest($cart, $scheda);
 
-                // // Upload 2. wording
+                // Upload 2. wording TODO
                 // per pubblico file WORDING BINDER NL 2021_SECTION_A_RENEW.pdf
                 // per privato WORDING BINDER NL 2021_SECTION B_RENEW.pdf
+                // dovrei recuperalo da $certificate->contract_id
+                $wording = Storage::disk('private')->get('attaching_clauses/ATTACHING_CLAUSES.pdf');
+                'wordings/wording.pdf';
                 LloydsDoprintService::uploadRequest($cart, $wording);
 
-                //  Upload 3.attach
+                // Upload 3.attach
                 // ATTACHING CLAUSES
-                LloydsDoprintService::uploadRequest($cart, $prop);
+                $attaching_clauses = Storage::disk('private')->get('attaching_clauses/ATTACHING_CLAUSES.pdf');
+                LloydsDoprintService::uploadRequest($cart, $attaching_clauses);
 
-                // // Upload PER NUOVI
+                // Upload PER NUOVI
                 // Ordine allegati 1. scheda prodotto (da generare, pagina 6 della polizza),
 
                 // Upload 2. wording

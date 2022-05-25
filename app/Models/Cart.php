@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -36,6 +37,10 @@ class Cart extends Model
         'locked',
     ];
 
+    protected $casts = [
+        'renewal_date' => 'date'
+    ];
+
     public function payment(): HasOne
     {
         return $this->hasOne(Payment::class);
@@ -44,6 +49,16 @@ class Cart extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+    public function productOffer(): BelongsTo
+    {
+        return $this->belongsTo(ProductOffer::class);
     }
 
     public function certificate(): HasOne
@@ -70,6 +85,22 @@ class Cart extends Model
     public static function boot()
     {
         parent::boot();
+
+        static::creating(function ($cart) {
+            // set renewal date empty // se vuoto non arriva da prima importazione via csv, quindi cliente nuovo
+            if (empty($cart->renewal_date)) {
+                // get renewal date if exists in previous cart
+                $last_prev_certificate = Certificate::select(['end_validity_date'])->where([
+                    // controllo su product
+                    'product_id' => $cart->product->id,
+                ])->latest()->first();
+
+                if ($last_prev_certificate) {
+                    $cart->renewal_date = Carbon::parse($last_prev_certificate->end_validity_date)->toDateString();
+                }
+            }
+        });
+
         static::created(function ($cart) {
 
             DB::transaction(function () use ($cart) {

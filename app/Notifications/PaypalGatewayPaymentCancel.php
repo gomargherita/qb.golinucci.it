@@ -45,8 +45,8 @@ class PaypalGatewayPaymentCancel extends Notification implements ShouldQueue
         return (new MailMessage)
             ->greeting('Attenzione')
             ->line('Abbiamo riscontrato un errore e/o non è stato completato correttamente l\'ordine di pagamento.')
-            ->line('Ci stiamo già attivando per gestire la problematica.')
-            ->line('Ti contatteremo il prima possibile con uno dei metodi concordati in fase contrattuale.')
+            ->line('Ci siamo già attivati per gestire la problematica.')
+            ->line('Ti contatteremo il prima possibile.')
             ->line('Grazie per l\'attenzione.');
     }
 

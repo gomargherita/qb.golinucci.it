@@ -25,7 +25,7 @@ class CreateCartsTable extends Migration
             $table->foreignIdFor(ProductStep::class)->constrained();
             $table->foreignIdFor(ProductOffer::class)->nullable()->constrained();
             $table->string('cart_ref', 13); // uniqueid
-            $table->datetime('renewal_date')->nullable();
+            $table->date('renewal_date')->nullable();
             $table->decimal('total_payable')->nullable(); // quanto il cliente paga
             $table->decimal('admin_fee')->nullable(); // commissione golinucci
             $table->decimal('gross_premium')->nullable(); // ex price_with_tax; total_payable - admin_fee
@@ -36,8 +36,6 @@ class CreateCartsTable extends Migration
             $table->integer('indemnity_limit')->nullable();
             $table->integer('indemnity_limit_patrimonial')->nullable();
             $table->string('declarations_signature', 100)->nullable();
-            // data di pagamento?
-            // altri dati mancanti?
             $table->char('locked', 1)->default('N');
             $table->datetime('expired_at');
             $table->timestamps();

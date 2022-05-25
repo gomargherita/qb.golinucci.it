@@ -75,6 +75,7 @@ class LloydsDoprintService
         $xml = new DOMDocument('1.0', 'utf-8');
 
         //$xml->load("../xml/base.xml");
+        // TODO questo dovrà essere differenziato tra utente a rinnovo e utenti nuovi (cambia il numero di allegati)
         $xml_base = Storage::disk('private')->get('lloyds_rinnovi_base.xml');
         $xml->loadXML($xml_base);
 
@@ -111,28 +112,6 @@ class LloydsDoprintService
         $DocumentReferences->getElementsByTagName('CertificateICNumber')->item(0)->textContent = $certificate->doprint_certificate_no;
 
         // Set Policy Holder
-        switch ($customer_details['profession']) {
-            case '1':
-                $profession = "Dirigente Medico";
-                break;
-            case '2':
-                $profession = "Medico Convenzionato";
-                break;
-            case '3':
-                $profession = "Medico Specialista in Formazione (Specializzando)";
-                break;
-            case '4':
-                $profession = "Personale sanitario";
-                break;
-            case '5':
-                $profession = "Dirigente Sanitario non Medico";
-                break;
-            case '6':
-                $profession = "Dirigente Infermieristico";
-                break;
-            default:
-        }
-
         $PolicyHolder = $xml->getElementsByTagName('PolicyholderDetails')->item(0);
         $PolicyHolder->getElementsByTagName('LastName')->item(0)->textContent = $customer_details['last_name'];
         $PolicyHolder->getElementsByTagName('FirstName')->item(0)->textContent = $customer_details['first_name'];
@@ -235,7 +214,7 @@ class LloydsDoprintService
         }
     }
 
-    public static function uploadRequest($cart, $pdffilename)
+    public static function uploadRequest($cart, $document)
     {
         $connectionDetails = self::getConnectionDetails();
         $apiKey = $connectionDetails['apiKey'];
@@ -243,10 +222,7 @@ class LloydsDoprintService
         $wsdl = $connectionDetails['wsdl'];
         $messageType = "Upload";
         $certificate = $cart->certificate;
-
-        $pdffile = Storage::disk('private')->get($pdffilename);
-        $document = $pdffile;
-        $documentHash = base64_encode(md5($pdffile, true));
+        $documentHash = base64_encode(md5($document, true));
         $client = new SoapClient($wsdl, array("soap_version" => SOAP_1_1, "trace" => true, "exceptions" => true));
         try {
             $header = array();
