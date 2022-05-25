@@ -147,4 +147,8 @@ Route::group(['middleware' => ['auth']], function () {
     });
 });
 
+Route::get('/yousign/{cart:cart_ref}/member_finished', [YousignController::class, 'yousign_member_finished'])->name('front.yousign.member_finished');
+Route::get('/yousign/{cart:cart_ref}/procedure_finished', [YousignController::class, 'yousign_procedure_finished'])->name('front.yousign.procedure_finished');
+Route::get('/yousign/{cart:cart_ref}/procedure_refused', [YousignController::class, 'yousign_procedure_refused'])->name('front.yousign.procedure_refused');
+
 require __DIR__ . '/auth.php';

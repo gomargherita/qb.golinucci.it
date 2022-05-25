@@ -10,6 +10,9 @@
         basso a destra.</span
       >
     </p>
+    <div v-if="product.signature_error">
+      {{ product.signature_error }}
+    </div>
     <iframe
       v-if="product.yousign_member_signer_id"
       :src="procedureId"

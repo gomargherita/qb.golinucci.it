@@ -790,15 +790,20 @@ class SiteBuyProductController extends Controller
     // TODO
     private function step6(Product $product, Cart $cart)
     {
-        $yousignClient = new YousignApiService($cart);
+        try {
 
-        // try to grab already existing signature procedure
-        $signature = Signature::where('certificate_id', $cart->certificate->id)->first();
+            $yousignClient = new YousignApiService($cart);
 
-        if (empty($signature)) {
-            $yousignMemberSignerId = $yousignClient->startYousignClientAndLaunchProcedure();
-        } else {
-            $yousignMemberSignerId = $signature->member_signer_id;
+            // try to grab already existing signature procedure
+            $signature = Signature::where('certificate_id', $cart->certificate->id)->first();
+
+            if (empty($signature)) {
+                $yousignMemberSignerId = $yousignClient->startYousignClientAndLaunchProcedure();
+            } else {
+                $yousignMemberSignerId = $signature->member_signer_id;
+            }
+        } catch (\Exception $e) {
+            $product_signature_error = 'Si è verificato un errore con la procedura di firma.';
         }
 
         return Inertia::render('Sites/BuyProduct', [
@@ -809,7 +814,8 @@ class SiteBuyProductController extends Controller
                 'hex_color' => $product->hex_color,
                 'steps' => $product->productSteps->count(),
                 'yousign_url' => config('yousign.app_url'),
-                'yousign_member_signer_id' => $yousignMemberSignerId
+                'yousign_member_signer_id' => $yousignMemberSignerId ?? null,
+                'signature_error' => $product_signature_error ?? null
             ],
             'cart' => $cart
         ]);

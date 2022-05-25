@@ -173,7 +173,11 @@ class YousignApiLaravel
                 return $response->throw()->json();
             }
         } catch (RequestException $e) {
-            abort($response->status(), $response->body(), ['Content-Type: application/json']);
+            activity()
+                ->causedBy(auth()->user())
+                ->event('signature')
+                ->log("An error occurred on signing the documents;" . $e->getMessage());
+            throw new \Exception($e->getMessage());
         }
     }
 
@@ -227,6 +231,26 @@ class YousignApiLaravel
             'type' => $isAttachment ? 'attachment' : 'signable'
         );
         return $this->apiRequest($path, $method, $parameters);
+    }
+
+    public function addServerStamp($fileId, $fieldName, $mention, $mention2, $signature_file)
+    {
+        $method = 'POST';
+        $path = 'server_stamps';
+
+        $parameter = array(
+            "file" => $fileId,
+            "fileObjects" => [
+                [
+                    'fieldName' => $fieldName,
+                    'mention' => $mention,
+                    'mention2' => $mention2
+                ]
+            ],
+            "signImage" => $signature_file,
+        );
+
+        return $this->apiRequest($path, $method, $parameter);
     }
 
     /**
