@@ -20,7 +20,7 @@ class ProductSeeder extends Seeder
         Product::factory()
             ->hasAttached($conditionalFields)
             ->create([
-                'name' => 'Polizza Singola Medici e Personale Sanitario',
+                'name' => 'Polizza R.C. Colpa Grave e Patrimoniale - Esercenti la Professione Sanitaria',
                 'account_id' => '1',
                 'product_type_id' => '1',
                 'pre_declarations' => 'Io sottoscritto/a in qualità di assicurato della polizza RC colpa Grave e Patrimoniale, in ottemperanza del Regolamento IVASS n. 40 del 02/08/2018 (Modificato ed Integrato dal Provvedimento IVASS N.97 del 04/08/2020), prima di essere vincolato da un contratto offerto mediante tecniche di comunicazione a distanza, dichiaro:',

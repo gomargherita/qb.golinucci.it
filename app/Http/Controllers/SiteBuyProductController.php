@@ -17,6 +17,7 @@ use App\Rules\ProjectDeclarationsRule;
 use App\Services\DatasheetToPdfService;
 use App\Services\LloydsDoprintService;
 use App\Services\DeclarationsToPdfService;
+use App\Services\PaymentCertificateToPdfService;
 use App\Services\Yousign\YousignApiService;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
@@ -418,6 +419,9 @@ class SiteBuyProductController extends Controller
         if (isset($response['status']) && $response['status'] == 'COMPLETED') {
             $payment = Payment::query()->where(['cart_id' => $cart->id])->findOrFail($payment_id);
             $payment->updatePaymentStatus();
+            // genero e salvo il pdf con estratto conto dell'acquisto
+            $paymentToPdf = new PaymentCertificateToPdfService($cart);
+            $paymentToPdf->generateAndPersist();
             $cart->updateCartStep(5);
         } else {
             return redirect()
