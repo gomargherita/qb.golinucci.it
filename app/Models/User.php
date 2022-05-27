@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Activitylog\LogOptions;
@@ -124,6 +125,23 @@ class User extends Authenticatable implements HasMedia
                 $query->onlyTrashed();
             }
         });
+    }
+
+    /**
+     * Route notifications for the mail channel.
+     *
+     * @param  \Illuminate\Notifications\Notification  $notification
+     * @return array|string
+     */
+    public function routeNotificationForMail($notification)
+    {
+        if (App::environment(['local', 'staging'])) {
+            $email = config('mail-extra.mail_test_to');
+        } else {
+            $email = $this->email;
+        }
+
+        return $email;
     }
 
     public function getActivitylogOptions(): LogOptions

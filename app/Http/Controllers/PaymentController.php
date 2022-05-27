@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
 use App\Models\Payment;
+use App\Notifications\ConfirmedOfflinePayment;
 use Illuminate\Support\Facades\Redirect;
 
 class PaymentController extends Controller
@@ -64,6 +65,7 @@ class PaymentController extends Controller
 
         if ($payment->update($validated)) {
             if ($validated['paid'] && $payment->cart->product_step_id == 4) {
+                auth()->user()->notify(new ConfirmedOfflinePayment($payment));
                 $payment->cart->updateCartStep(5);
             }
         }

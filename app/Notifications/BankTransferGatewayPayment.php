@@ -53,8 +53,7 @@ class BankTransferGatewayPayment extends Notification
             essere portata avanti nel giorno lavorativo successivo a quello di data
             valuta di pagamento con bonifico bancario.
             Riceverai successivamente una email con un link e ulteriori indicazioni per
-            procedere con la generazione della tua polizza.')
-            ->action('Notification Action', url('/'));
+            procedere con la generazione della tua polizza.');
     }
 
     /**
