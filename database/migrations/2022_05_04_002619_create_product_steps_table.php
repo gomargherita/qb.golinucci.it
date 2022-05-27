@@ -18,6 +18,7 @@ class CreateProductStepsTable extends Migration
             $table->id();
             $table->foreignIdFor(Product::class)->constrained();
             $table->integer('step_number');
+            $table->string('step_name');
             $table->timestamps();
             $table->softDeletes();
         });

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\ClientDetailsController;
@@ -99,6 +100,27 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'check_role']], func
 
     Route::get('reports', [ReportsController::class, 'index'])
         ->name('reports');
+
+    Route::get('carts', [CartController::class, 'index'])
+        ->name('carts');
+
+    Route::get('carts/{user}/create', [CartController::class, 'create'])
+        ->name('carts.create');
+
+    Route::post('carts', [CartController::class, 'store'])
+        ->name('carts.store');
+
+    Route::get('carts/{cart}/edit', [CartController::class, 'edit'])
+        ->name('carts.edit');
+
+    Route::put('carts/{cart}', [CartController::class, 'update'])
+        ->name('carts.update');
+
+    Route::delete('carts/{cart}', [CartController::class, 'destroy'])
+        ->name('carts.destroy');
+
+    Route::put('carts/{cart}/restore', [CartController::class, 'restore'])
+        ->name('carts.restore');
 
     Route::get('/private-files/{file?}', 'FileController@get')->where('file', '(.*)');
 });

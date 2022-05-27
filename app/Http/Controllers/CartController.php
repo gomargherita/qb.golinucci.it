@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCartRequest;
 use App\Http\Requests\UpdateCartRequest;
 use App\Models\Cart;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Request;
+use Inertia\Inertia;
 
 class CartController extends Controller
 {
@@ -15,7 +19,24 @@ class CartController extends Controller
      */
     public function index()
     {
-        //
+        return Inertia::render('Carts/Index', [
+            'filters' => Request::all('search', 'trashed'),
+            'carts' => Auth::user()->account->carts()
+                ->orderByDate()
+                ->filter(Request::only('search', 'trashed'))
+                ->paginate(10)
+                ->withQueryString()
+                ->through(fn ($cart) => [
+                    'id' => $cart->id,
+                    'user' => $cart->user->only('id', 'email'),
+                    'product_name' => $cart->product->name,
+                    'step' => $cart->productStep ? $cart->productStep->step_number . '. ' . $cart->productStep->step_name : null,
+                    'product_offer' => $cart->productOffer ? $cart->productOffer->id . '. ' . $cart->productOffer->name : null,
+                    'cart_ref' => $cart->cart_ref,
+                    'created_at' => $cart->created_at->format('d/m/Y'),
+                    'deleted_at' => $cart->deleted_at,
+                ]),
+        ]);
     }
 
     /**
@@ -40,17 +61,6 @@ class CartController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Cart  $cart
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Cart $cart)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
      * @param  \App\Models\Cart  $cart
@@ -58,7 +68,17 @@ class CartController extends Controller
      */
     public function edit(Cart $cart)
     {
-        //
+        return Inertia::render('Carts/Edit', [
+            // 'can' => [
+            //     'delete_cart' => $currentUser->can('carts.delete')
+            // ],
+            'cart' => [
+                'id' => $cart->id,
+                'cart_ref' => $cart->cart_ref,
+                'deleted_at' => $cart->deleted_at,
+            ],
+            'user' => $cart->user ? $cart->user : null,
+        ]);
     }
 
     /**
@@ -70,17 +90,22 @@ class CartController extends Controller
      */
     public function update(UpdateCartRequest $request, Cart $cart)
     {
-        //
+        $cart->update($request->validated());
+
+        return Redirect::back()->with('success', 'Cart updated.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Cart  $cart
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Cart $cart)
     {
-        //
+        $cart->delete();
+
+        return Redirect::back()->with('success', 'Cart deleted.');
+    }
+
+    public function restore(Cart $cart)
+    {
+        $cart->restore();
+
+        return Redirect::back()->with('success', 'Cart restored.');
     }
 }

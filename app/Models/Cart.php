@@ -58,6 +58,11 @@ class Cart extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public function productStep(): BelongsTo
+    {
+        return $this->belongsTo(ProductStep::class);
+    }
+
     public function productOffer(): BelongsTo
     {
         return $this->belongsTo(ProductOffer::class);
@@ -82,6 +87,37 @@ class Cart extends Model
                 'cart_ref' => $this->cart_ref,
                 'locked' => 'N'
             ])->first();
+    }
+
+    public function scopeOrderByDate($query)
+    {
+        $query->orderBy('created_at', 'desc');
+    }
+
+    public function getNameAttribute()
+    {
+        return $this->cart->cart_ref;
+    }
+
+    public function scopeFilter($query, array $filters)
+    {
+        $query->when($filters['search'] ?? null, function ($query, $search) {
+            $query->where('carts.cart_ref', 'like', '%' . $search . '%')
+            // ->orWhere('client_details.first_name', 'like', '%' . $search . '%')
+            // ->orWhere('client_details.last_name', 'like', '%' . $search . '%')
+            ->orWhere('users.email', 'like', '%' . $search . '%')
+            ->orWhere('users.first_name', 'like', '%' . $search . '%')
+            ->orWhere('users.last_name', 'like', '%' . $search . '%')
+            ->orWhereHas('productStep', function($query) use ($search){
+                $query->where('step_name', 'like', '%' . $search . '%');
+            });
+        })->when($filters['trashed'] ?? null, function ($query, $trashed) {
+            if ($trashed === 'with') {
+                $query->withTrashed();
+            } elseif ($trashed === 'only') {
+                $query->onlyTrashed();
+            }
+        });
     }
 
     public static function boot()

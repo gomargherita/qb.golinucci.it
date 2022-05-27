@@ -43,6 +43,11 @@ class Account extends Model
         return $this->hasMany(Product::class);
     }
 
+    public function carts()
+    {
+        return $this->hasManyThrough(Cart::class, User::class);
+    }
+
     public function clientDetails()
     {
         return $this->hasManyThrough(ClientDetail::class, User::class);

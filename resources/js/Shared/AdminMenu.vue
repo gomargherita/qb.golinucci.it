@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="mb-4">
+    <!-- <div class="mb-4">
       <Link class="group flex items-center py-3" :href="route('dashboard')">
         <icon
           name="dashboard"
@@ -21,7 +21,7 @@
           {{ __("Dashboard") }}
         </div>
       </Link>
-    </div>
+    </div> -->
     <div class="mb-4">
       <Link class="group flex items-center py-3" :href="route('products')">
         <icon
@@ -111,6 +111,28 @@
       </Link>
     </div>
     <div class="mb-4">
+      <Link class="group flex items-center py-3" :href="route('carts')">
+        <icon
+          name="office"
+          class="mr-2 w-4 h-4"
+          :class="
+            isUrl('admin/carts')
+              ? 'fill-primary'
+              : 'fill-gray-900 group-hover:fill-primary'
+          "
+        />
+        <div
+          :class="
+            isUrl('admin/cart')
+              ? 'text-primary'
+              : 'text-gray-900 group-hover:text-primary'
+          "
+        >
+          {{ __("Carts") }}
+        </div>
+      </Link>
+    </div>
+    <!-- <div class="mb-4">
       <Link class="group flex items-center py-3" :href="route('reports')">
         <icon
           name="printer"
@@ -131,7 +153,7 @@
           {{ __("Reports") }}
         </div>
       </Link>
-    </div>
+    </div> -->
     <div class="mb-4">
       <a class="group flex items-center py-3" href="/" target="_blank">
         <icon
