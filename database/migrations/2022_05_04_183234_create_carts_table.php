@@ -38,6 +38,7 @@ class CreateCartsTable extends Migration
             $table->integer('indemnity_limit_patrimonial')->nullable();
             $table->string('declarations_signature', 100)->nullable();
             $table->char('locked', 1)->default('N');
+            $table->text('note')->nullable();
             $table->datetime('expired_at');
             $table->timestamps();
             $table->softDeletes();

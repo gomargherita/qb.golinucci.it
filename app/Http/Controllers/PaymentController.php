@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
 use App\Models\Payment;
+use Illuminate\Support\Facades\Redirect;
 
 class PaymentController extends Controller
 {
@@ -40,17 +41,6 @@ class PaymentController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Payment  $payment
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Payment $payment)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
      * @param  \App\Models\Payment  $payment
@@ -70,7 +60,15 @@ class PaymentController extends Controller
      */
     public function update(UpdatePaymentRequest $request, Payment $payment)
     {
-        //
+        $validated = $request->validated();
+
+        if ($payment->update($validated)) {
+            if ($validated['paid'] && $payment->cart->product_step_id == 4) {
+                $payment->cart->updateCartStep(5);
+            }
+        }
+
+        return Redirect::back()->with('success', 'Payment updated.');
     }
 
     /**

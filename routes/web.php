@@ -4,6 +4,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\ClientDetailsController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UsersController;
@@ -121,6 +122,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'check_role']], func
 
     Route::put('carts/{cart}/restore', [CartController::class, 'restore'])
         ->name('carts.restore');
+
+    Route::put('payments/{payment}', [PaymentController::class, 'update'])
+        ->name('payments.update');
 
     Route::get('/private-files/{file?}', 'FileController@get')->where('file', '(.*)');
 });

@@ -22,7 +22,7 @@ class CreatePaymentsTable extends Migration
             $table->decimal('total_payable');
             $table->boolean('paid')->default(0);
             $table->string('transaction_ref')->nullable();
-            $table->datetime('paid_at')->nullable();
+            $table->date('paid_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

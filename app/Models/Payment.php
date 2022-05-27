@@ -22,6 +22,16 @@ class Payment extends Model
         'paid_at'
     ];
 
+    protected $casts = [
+        'paid' => 'boolean',
+        'paid_at' => 'date'
+    ];
+
+    public function getPaidAtAttribute($value)
+    {
+        return $value;
+    }
+
     public function cart(): BelongsTo
     {
         return $this->belongsTo(Cart::class);

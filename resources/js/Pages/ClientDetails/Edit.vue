@@ -50,6 +50,7 @@
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Date of Birth"
             type="date"
+            pattern="\d{4}-\d{2}-\d{2}"
           />
           <text-input
             v-model="form.phone"

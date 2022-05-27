@@ -419,9 +419,7 @@ class SiteBuyProductController extends Controller
         if (isset($response['status']) && $response['status'] == 'COMPLETED') {
             $payment = Payment::query()->where(['cart_id' => $cart->id])->findOrFail($payment_id);
             $payment->updatePaymentStatus();
-            // genero e salvo il pdf con estratto conto dell'acquisto
-            $paymentToPdf = new PaymentCertificateToPdfService($cart);
-            $paymentToPdf->generateAndPersist();
+
             $cart->updateCartStep(5);
         } else {
             return redirect()
@@ -528,6 +526,9 @@ class SiteBuyProductController extends Controller
     {
         try {
             $certificate = $cart->certificate;
+            // genero e salvo il pdf con estratto conto dell'acquisto
+            $paymentToPdf = new PaymentCertificateToPdfService($cart);
+            $paymentToPdf->generateAndPersist();
             $user = auth()->user();
             if (empty($certificate->doprint_token)) {
                 activity()
@@ -618,9 +619,9 @@ class SiteBuyProductController extends Controller
                 ];
 
                 // TODO GENERARE scheda
-                $declarationToPdf = new DatasheetToPdfService($cart);
+                $datasheetToPdf = new DatasheetToPdfService($cart);
                 // passo profession perché già generato poco sopra
-                $scheda = $declarationToPdf->generateAndPersist($profession);
+                $scheda = $datasheetToPdf->generateAndPersist($profession);
                 $wording = 'wordings/wording.pdf'; // '../wordings/wording.pdf';
                 $prop = 'props/prop.pdf'; // '../props/prop.pdf';
 

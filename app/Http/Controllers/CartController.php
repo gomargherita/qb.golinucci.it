@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreCartRequest;
 use App\Http\Requests\UpdateCartRequest;
 use App\Models\Cart;
+use App\Models\PaymentGateway;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
@@ -68,15 +69,20 @@ class CartController extends Controller
      */
     public function edit(Cart $cart)
     {
+
+        $payment_gateways = PaymentGateway::all();
+
         return Inertia::render('Carts/Edit', [
             // 'can' => [
             //     'delete_cart' => $currentUser->can('carts.delete')
             // ],
             'cart' => [
                 'id' => $cart->id,
+                'payment' => $cart->payment,
                 'cart_ref' => $cart->cart_ref,
                 'deleted_at' => $cart->deleted_at,
             ],
+            'payment_gateways' => $payment_gateways,
             'user' => $cart->user ? $cart->user : null,
         ]);
     }

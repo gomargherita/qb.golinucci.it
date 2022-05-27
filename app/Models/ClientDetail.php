@@ -42,6 +42,7 @@ class ClientDetail extends Model
     ];
 
     protected $casts = [
+        'dob' => 'date',
         'confirmation' => 'boolean',
         'with_accident' => 'boolean',
         'flag_prev_2022' => 'boolean',
@@ -68,6 +69,11 @@ class ClientDetail extends Model
         )
             ->withPivot('selected_field_value')
             ->withTimestamps();
+    }
+
+    public function getDobAttribute($value)
+    {
+        return $value;
     }
 
     /**

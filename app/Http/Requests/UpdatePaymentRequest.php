@@ -13,7 +13,7 @@ class UpdatePaymentRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,11 @@ class UpdatePaymentRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'cart_id' => ['required'],
+            'payment_gateway_id' => ['required'],
+            'paid' => ['boolean'],
+            'transaction_ref' => ['nullable', 'max:125'],
+            'paid_at' => ['nullable', 'required_unless:paid,false', 'date'],
         ];
     }
 }
