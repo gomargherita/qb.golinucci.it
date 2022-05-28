@@ -45,13 +45,15 @@ class ConfirmedOfflinePayment extends Notification
      */
     public function toMail($notifiable)
     {
+        $user = $this->payment->cart->user;
         $url = route('front.product.buy', [$this->payment->cart->product->id, $this->payment->cart->cart_ref]);
 
         return (new MailMessage)
-            ->greeting('Grazie per aver scelto i prodotti Golinucci!')
+            ->greeting("Salve $user->name")
             ->line('Abbiamo appena confermato il pagamento del tuo prodotto.')
             ->line('Per procedere e finalmente ricevere la tua polizza ti basta cliccare sul pulsante sottostante e seguire le istruzioni.')
-            ->action('Clicca per procedere', $url);
+            ->action('Clicca per procedere', $url)
+            ->salutation('Grazie per aver scelto i prodotti Golinucci!');
     }
 
     /**
