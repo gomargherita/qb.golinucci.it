@@ -6,9 +6,9 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Storage;
 
-// TODO
-class CompletedBuyWithAttachments extends Notification
+class FinalEmailWithAttachments extends Notification
 {
     use Queueable;
 
@@ -43,19 +43,20 @@ class CompletedBuyWithAttachments extends Notification
      */
     public function toMail($notifiable)
     {
+        $user = $this->payment->cart->user;
+        $storage_path = Storage::disk('private')->getAdapter()->getPathPrefix();
+        $certificate_folder = 'certificates/user_' . $user->id . '/cart_' . $this->payment->cart->id;
+        $file_path = $storage_path . $certificate_folder;
+
         return (new MailMessage)
-            ->greeting('Grazie per aver scelto i prodotti Golinucci!')
-            ->line('Per procedere con l\'acquisto della propria polizza occorre pagare la totalità del premio.')
-            ->line('Ecco i dati per effettuare il bonifico:')
-            ->line('Importo: ' . $this->payment->total_payable . '€')
-            ->line('IBAN: IT17Y0200805366907500043291')
-            ->line('Rag.Soc.: Golinucci Srl')
-            ->line('Nota importante: l\'emissione, e la relativa copertura, potrà
-            essere portata avanti nel giorno lavorativo successivo a quello di data
-            valuta di pagamento con bonifico bancario.
-            Riceverai successivamente una email con un link e ulteriori indicazioni per
-            procedere con la generazione della tua polizza.')
-            ->action('Notification Action', url('/'));
+            ->subject('Q&B Golinucci - Polizza e documenti')
+            ->greeting("Salve $user->name")
+            ->line('Ecco in allegato la tua polizza e tutta la documentazione allegata per il prodotto che hai selezionato.')
+            //->action('Notification Action', url('/'))
+            ->salutation('Grazie per aver scelto i prodotti Golinucci!')
+            ->attach($file_path . '/certificate-final.pdf')
+            ->attach($file_path . '/declarations.pdf')
+            ->attach($file_path . '/payment-certificate.pdf');
     }
 
     /**

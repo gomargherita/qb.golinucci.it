@@ -442,12 +442,10 @@ class SiteBuyProductController extends Controller
     {
         $payment_id = request('payment_id');
         $payment = Payment::query()->where(['cart_id' => $cart->id])->findOrFail($payment_id);
-        // TODO invio email a cliente con notifica che il pagamento non è andato a buon fine
-        $delay = now()->addMinutes(10);
+        // invio email a cliente con notifica che il pagamento non è andato a buon fine
+        // bcc a MAIL_BCC_TO
+        $delay = now()->addMinutes(1);
         auth()->user()->notify((new PaypalGatewayPaymentCancel($payment))->delay($delay));
-
-        // TODO invio email in copia a golinucci Francesco
-
         return Inertia::render('Sites/PaymentPaypalCancel', compact('product', 'cart', 'payment'));
     }
 

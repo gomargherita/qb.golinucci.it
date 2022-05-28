@@ -42,9 +42,12 @@ class BankTransferGatewayPayment extends Notification
      */
     public function toMail($notifiable)
     {
+        $user = $this->payment->cart->user;
+        
         return (new MailMessage)
-            ->greeting('Grazie per aver scelto i prodotti Golinucci!')
-            ->line('Per procedere con l\'acquisto della propria polizza occorre pagare la totalità del premio.')
+            ->subject('Q&B Golinucci - Procedi al pagamento tramite Bonifico Bancario')
+            ->greeting("Salve $user->name")
+            ->line('Per procedere con l\'acquisto della tua polizza occorre pagare la totalità del premio.')
             ->line('Ecco i dati per effettuare il bonifico:')
             ->line('Importo: ' . $this->payment->total_payable . '€')
             ->line('IBAN: IT17Y0200805366907500043291')
@@ -53,7 +56,8 @@ class BankTransferGatewayPayment extends Notification
             essere portata avanti nel giorno lavorativo successivo a quello di data
             valuta di pagamento con bonifico bancario.
             Riceverai successivamente una email con un link e ulteriori indicazioni per
-            procedere con la generazione della tua polizza.');
+            procedere con la generazione della tua polizza.')
+            ->salutation('Grazie per aver scelto i prodotti Golinucci!');
     }
 
     /**

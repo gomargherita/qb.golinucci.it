@@ -49,6 +49,7 @@ class ConfirmedOfflinePayment extends Notification
         $url = route('front.product.buy', [$this->payment->cart->product->id, $this->payment->cart->cart_ref]);
 
         return (new MailMessage)
+            ->subject('Q&B Golinucci - Conferma pagamento tramite bonifico bancario')
             ->greeting("Salve $user->name")
             ->line('Abbiamo appena confermato il pagamento del tuo prodotto.')
             ->line('Per procedere e finalmente ricevere la tua polizza ti basta cliccare sul pulsante sottostante e seguire le istruzioni.')

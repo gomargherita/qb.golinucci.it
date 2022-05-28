@@ -42,12 +42,19 @@ class PaypalGatewayPaymentCancel extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
+        $user = $this->payment->cart->user;
+        $bcc_address = config('mail-extra.mail_bcc_to');
+
         return (new MailMessage)
-            ->greeting('Attenzione')
-            ->line('Abbiamo riscontrato un errore e/o non è stato completato correttamente l\'ordine di pagamento.')
+            ->error()
+            ->subject('Q&B Golinucci - Annullamento pagamento tramite Paypal')
+            ->greeting("Salve $user->name")
+            ->line('Attenzione: abbiamo riscontrato un errore e/o non è stato completato correttamente l\'ordine di pagamento con Paypal.')
             ->line('Ci siamo già attivati per gestire la problematica.')
             ->line('Ti contatteremo il prima possibile.')
-            ->line('Grazie per l\'attenzione.');
+            ->line('Grazie per l\'attenzione.')
+            ->line('Ref cart: ' . $this->payment->cart->cart_ref)
+            ->bcc($bcc_address);
     }
 
     /**
