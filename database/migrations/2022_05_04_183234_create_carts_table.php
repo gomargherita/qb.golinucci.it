@@ -24,7 +24,7 @@ class CreateCartsTable extends Migration
             $table->foreignIdFor(Product::class)->constrained();
             $table->foreignIdFor(ProductStep::class)->constrained();
             $table->foreignIdFor(ProductOffer::class)->nullable()->constrained();
-            $table->string('cart_ref', 13); // uniqueid
+            $table->string('cart_ref', 13)->unique(); // uniqueid
             $table->date('renewal_date')->nullable();
             $table->date('retroactivity')->nullable();
             $table->decimal('total_payable')->nullable(); // quanto il cliente paga

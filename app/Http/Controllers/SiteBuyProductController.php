@@ -872,12 +872,14 @@ class SiteBuyProductController extends Controller
     {
         if (!empty($cart)) {
             // recupero il carrello verificando se è ancora attivo
-            $cart->verifyAndGrabCart($user);
+            if(empty($cart->verifyAndGrabCart($user))){
+                abort(401);
+            }
         }
 
-        if (empty($cart)) {
-            redirect()->route('front.product.buy', ['product' => $product]);
-        }
+        // if (empty($cart)) {
+        //     return redirect()->route('front.product.buy', ['product' => $product]);
+        // }
 
         return $cart;
     }
