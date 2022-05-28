@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
 use Spatie\Activitylog\LogOptions;
@@ -71,6 +72,11 @@ class Cart extends Model
     public function certificate(): HasOne
     {
         return $this->hasOne(Certificate::class);
+    }
+
+    public function signature(): HasOneThrough
+    {
+        return $this->hasOneThrough(Signature::class, Certificate::class);
     }
 
     public function updateCartStep(int $next_step)

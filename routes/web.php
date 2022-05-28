@@ -11,6 +11,7 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\RolesController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\SiteBuyProductController;
+use App\Http\Controllers\YousignController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -145,6 +146,13 @@ Route::get('language/{language}', function ($language) {
 
 // public frontend
 
+// Route::get('generate-pdf', function () {
+//     $cart = Cart::where('id', 2)->first();
+//     $declarationToPdf = new PaymentCertificateToPdfService($cart);
+//     $declarationToPdf->generateAndPersist();
+// });
+
+
 Route::controller(SiteController::class)->group(function () {
     Route::get('/', 'home')->name('front.home');
     Route::get('/user-account', 'userAccount')->name('front.useraccount')->middleware(['auth']);
@@ -173,8 +181,10 @@ Route::group(['middleware' => ['auth']], function () {
     });
 });
 
-Route::get('/yousign/{cart:cart_ref}/member_finished', [YousignController::class, 'yousign_member_finished'])->name('front.yousign.member_finished');
-Route::get('/yousign/{cart:cart_ref}/procedure_finished', [YousignController::class, 'yousign_procedure_finished'])->name('front.yousign.procedure_finished');
-Route::get('/yousign/{cart:cart_ref}/procedure_refused', [YousignController::class, 'yousign_procedure_refused'])->name('front.yousign.procedure_refused');
+Route::get('/yousign/member_finished', [YousignController::class, 'yousign_member_finished'])->name('front.yousign.member_finished');
+Route::get('/yousign/procedure_finished', [YousignController::class, 'yousign_procedure_finished'])->name('front.yousign.procedure_finished');
+Route::get('/yousign/procedure_refused', [YousignController::class, 'yousign_procedure_refused'])->name('front.yousign.procedure_refused');
+Route::get('/yousign/server_stamps_finished', [YousignController::class, 'yousign_server_stamps_finished'])->name('front.yousign.server_stamps_finished');
+Route::get('/yousign/server_stamps_error', [YousignController::class, 'yousign_server_stamps_error'])->name('front.yousign.server_stamps_error');
 
 require __DIR__ . '/auth.php';

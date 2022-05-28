@@ -237,9 +237,11 @@ class YousignApiLaravel
     {
         $method = 'POST';
         $path = 'server_stamps';
-
         $parameter = array(
             "file" => $fileId,
+            'config' => [
+                'webhook' => $this->_webhook
+            ],
             "fileObjects" => [
                 [
                     'fieldName' => $fieldName,
@@ -402,5 +404,13 @@ class YousignApiLaravel
         }
 
         return $this->apiRequest($path, $method, [], true, true);
+    }
+
+    public function getFile($filedId)
+    {
+        $method = 'GET';
+        $path = $filedId;
+
+        return $this->apiRequest($path, $method, [], true);
     }
 }
