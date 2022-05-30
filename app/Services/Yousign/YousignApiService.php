@@ -47,11 +47,11 @@ class YousignApiService
         // rimango in attesa finché non arriva il ping dal server di yousign e non aggiorno lo status
         $maxLoop = 5;
         while ($status = Signature::find($signature->id)->status == 'init' && $maxLoop != 0) {
-            sleep(3);
+            sleep(4);
             $maxLoop--;
         }
 
-        if ($status == 'init') {
+        if ($status) {
             activity()
                 ->on($signature)
                 ->event('server_stamp_error_after_loop')
