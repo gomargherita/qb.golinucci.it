@@ -18,6 +18,7 @@ class CreateSignaturesTable extends Migration
             $table->id();
             $table->foreignIdFor(Certificate::class)->constrained();
             $table->string('procedure_id')->nullable()->unique();
+            $table->string('file_id')->nullable()->unique();
             $table->string('member_signer_id')->nullable()->unique();
             $table->string('status', 20)->nullable();
             $table->timestamps();
