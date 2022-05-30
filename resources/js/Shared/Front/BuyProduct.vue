@@ -25,6 +25,7 @@
     <Step4 v-if="current_step == 4" :product="product" :cart="cart" />
     <Step5 v-if="current_step == 5" :product="product" :cart="cart" />
     <Step6 v-if="current_step == 6" :product="product" :cart="cart" />
+    <Step7 v-if="current_step == 7" :product="product" :cart="cart" />
   </div>
 </template>
 
@@ -36,6 +37,7 @@ import Step3 from "@/Shared/Front/Steps/Step3";
 import Step4 from "@/Shared/Front/Steps/Step4";
 import Step5 from "@/Shared/Front/Steps/Step5";
 import Step6 from "@/Shared/Front/Steps/Step6";
+import Step7 from "@/Shared/Front/Steps/Step7";
 
 export default {
   components: {
@@ -46,6 +48,7 @@ export default {
     Step4,
     Step5,
     Step6,
+    Step7
   },
   props: {
     product: Object,

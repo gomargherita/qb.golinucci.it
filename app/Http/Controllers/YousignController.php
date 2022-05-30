@@ -3,53 +3,149 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
+use App\Notifications\FinalEmailWithAttachments;
+use App\Services\Yousign\YousignApiLaravel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class YousignController extends Controller
 {
 
+    // member.finished
     public function yousign_member_finished(Request $request)
     {
+        if (!empty($request->header('x-cart-header'))) {
+            $cart_header = $request->header('x-cart-header');
+            $cart = Cart::where('cart_ref', $cart_header)->first();
+            if ($cart && $cart->signature->status == 'server_stamp_ok') {
+                $signature = $cart->signature;
+                $signature->status = 'member_ok';
+                $signature->save();
+                activity()
+                    ->on($signature)
+                    ->event('signature_member_finished')
+                    ->log("Yousign member sign finished for cart $cart->cart_ref - certificate {$cart->certificate->certificate_no};");
+            }
+        }
     }
 
+    // procedure.finished
     public function yousign_procedure_finished(Request $request)
     {
+        if (!empty($request->header('x-cart-header'))) {
+            $cart_header = $request->header('x-cart-header');
+            $cart = Cart::where('cart_ref', $cart_header)->first();
+            if ($cart && $cart->signature->status == 'member_ok') {
+                $signature = $cart->signature;
+                $signature->status = 'procedure_finished';
+                $signature->save();
+                activity()
+                    ->on($signature)
+                    ->event('signature_procedure_finished')
+                    ->log("Yousign procedure finished for cart $cart->cart_ref - certificate {$cart->certificate->certificate_no};");
+                $request_content = json_decode($request->getContent(), true);
+                $file_id = $request_content['procedureFinished']['file']['id'];
+                $certificate_folder = 'certificates/user_' . $cart->user->id . '/cart_' . $cart->id;
+                $client = new YousignApiLaravel();
+                $fileMemberSigned = $client->fileSigned($file_id);
+                Storage::disk('private')->put($certificate_folder . '/certificate-final.pdf', $fileMemberSigned);
+                $cart->updateCartStep(7);
+                $cart->user->notify(new FinalEmailWithAttachments($cart));
+                activity()
+                    ->on($signature)
+                    ->event('signature_file_stored_finished')
+                    ->log("Cart $cart->cart_ref - certificate {$cart->certificate->certificate_no} persisted on storage, final email sent;");
+            }
+        }
     }
 
+    // procedure.error
+    public function yousign_procedure_error(Request $request)
+    {
+        if (!empty($request->header('x-cart-header'))) {
+            $cart_header = $request->header('x-cart-header');
+            $cart = Cart::where('cart_ref', $cart_header)->first();
+            if ($cart && $cart->signature->status == 'member_ok') {
+                $signature = $cart->signature;
+                $signature->status = 'procedure_error';
+                $signature->save();
+                activity()
+                    ->on($signature)
+                    ->event('signature_procedure_error')
+                    ->log("Yousign procedure error for cart $cart->cart_ref - certificate {$cart->certificate->certificate_no};");
+            }
+        }
+    }
+
+    // procedure.expired
+    public function yousign_procedure_expired(Request $request)
+    {
+        if (!empty($request->header('x-cart-header'))) {
+            $cart_header = $request->header('x-cart-header');
+            $cart = Cart::where('cart_ref', $cart_header)->first();
+            if ($cart && $cart->signature->status == 'server_stamp_ok') {
+                $signature = $cart->signature;
+                $signature->status = 'procedure_expired';
+                $signature->save();
+                activity()
+                    ->on($signature)
+                    ->event('signature_procedure_expired')
+                    ->log("Yousign procedure expired for cart $cart->cart_ref - certificate {$cart->certificate->certificate_no};");
+            }
+        }
+    }
+
+    // procedure.refused
     public function yousign_procedure_refused(Request $request)
     {
-        
+        if (!empty($request->header('x-cart-header'))) {
+            $cart_header = $request->header('x-cart-header');
+            $cart = Cart::where('cart_ref', $cart_header)->first();
+            if ($cart && $cart->signature->status == 'server_stamp_ok') {
+                $signature = $cart->signature;
+                $signature->status = 'procedure_refused';
+                $signature->save();
+                activity()
+                    ->on($signature)
+                    ->event('signature_member_refused')
+                    ->log("Yousign procedure refused for cart $cart->cart_ref - certificate {$cart->certificate->certificate_no};");
+            }
+        }
     }
 
+    // server_stamp.finished
     public function yousign_server_stamps_finished(Request $request)
     {
         if (!empty($request->header('x-cart-header'))) {
             $cart_header = $request->header('x-cart-header');
-            // if($request->eventName ==  "server_stamp.finished" && $request->serverStamp->status == 'done'){
             $cart = Cart::where('cart_ref', $cart_header)->first();
-            // porto lo status della firma a 'server_stamp'
             if ($cart && $cart->signature->status == 'init') {
                 $signature = $cart->signature;
                 $signature->status = 'server_stamp_ok';
                 $signature->save();
+                activity()
+                    ->on($signature)
+                    ->event('signature_stamp_ok')
+                    ->log("Yousign server stamp generation ok for cart $cart->cart_ref - certificate {$cart->certificate->certificate_no};");
             }
-            // }
         }
     }
 
+    // server_stamp.error
     public function yousign_server_stamps_error(Request $request)
     {
         if (!empty($request->header('x-cart-header'))) {
             $cart_header = $request->header('x-cart-header');
-            // if($request->eventName ==  "server_stamp.finished" && $request->serverStamp->status == 'done'){
             $cart = Cart::where('cart_ref', $cart_header)->first();
-            // porto lo status della firma a 'server_stamp'
-            // if ($cart && $cart->signature->status == 'init') {
-            //     $signature = $cart->signature;
-            //     $signature->status = 'server_stamp_ok';
-            //     $signature->save();
-            // }
-            // }
+            if ($cart && $cart->signature->status == 'init') {
+                $signature = $cart->signature;
+                $signature->status = 'server_stamp_error';
+                $signature->save();
+                activity()
+                    ->on($signature)
+                    ->event('signature_stamp_error')
+                    ->log("Yousign server stamp generation error for cart $cart->cart_ref - certificate {$cart->certificate->certificate_no};");
+            }
         }
     }
 }

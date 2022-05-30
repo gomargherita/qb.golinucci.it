@@ -825,23 +825,8 @@ class SiteBuyProductController extends Controller
     }
 
     // TODO
-    public function store_step6(Product $product, Cart $cart, Request $request)
-    {
-        $user = auth()->user();
-        $cart = $this->verifyAndGetCartOrRedirect($user, $product, $cart);
-
-        $validated = $request->validate([]);
-
-        // TODO
-        $this->finalizeCart($cart);
-
-        return redirect()->route('front.product.buy', compact('product', 'cart'));
-    }
-
-    // TODO
     private function step7(Product $product, Cart $cart)
     {
-
         return Inertia::render('Sites/BuyProduct', [
             'product' => [
                 'id' => $product->id,
@@ -852,20 +837,6 @@ class SiteBuyProductController extends Controller
             ],
             'cart' => $cart
         ]);
-    }
-
-    // TODO
-    public function store_step7(Product $product, Cart $cart, Request $request)
-    {
-        $user = auth()->user();
-        $cart = $this->verifyAndGetCartOrRedirect($user, $product, $cart);
-
-        $validated = $request->validate([]);
-
-        // TODO
-        $this->finalizeCart($cart);
-
-        return redirect()->route('front.product.buy', compact('product', 'cart'));
     }
 
     private function verifyAndGetCartOrRedirect(User $user, Product $product, Cart $cart)
@@ -882,11 +853,6 @@ class SiteBuyProductController extends Controller
         // }
 
         return $cart;
-    }
-
-    // TODO
-    private function finalizeCart(Cart $cart)
-    {
     }
 
     public function testImport()

@@ -174,7 +174,6 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/products/{product}/store_step4_paypal/{cart:cart_ref}/{payment_id}/r', 'store_step4_paypal_return')->name('front.product.store_step4_paypal_return');
             Route::get('/products/{product}/store_step4_paypal/{cart:cart_ref}/{payment_id}/c', 'store_step4_paypal_cancel')->name('front.product.store_step4_paypal_cancel');
             Route::post('/products/{product}/store_step5/{cart:cart_ref}', 'store_step5')->name('front.product.store_step5');
-            Route::post('/products/{product}/store_step6/{cart:cart_ref}', 'store_step6')->name('front.product.store_step6');
         });
 
         Route::get('/test-import', 'testImport')->name('front.testimport');
@@ -184,6 +183,8 @@ Route::group(['middleware' => ['auth']], function () {
 Route::get('/yousign/member_finished', [YousignController::class, 'yousign_member_finished'])->name('front.yousign.member_finished');
 Route::get('/yousign/procedure_finished', [YousignController::class, 'yousign_procedure_finished'])->name('front.yousign.procedure_finished');
 Route::get('/yousign/procedure_refused', [YousignController::class, 'yousign_procedure_refused'])->name('front.yousign.procedure_refused');
+Route::get('/yousign/procedure_error', [YousignController::class, 'yousign_procedure_error'])->name('front.yousign.procedure_error');
+Route::get('/yousign/procedure_expired', [YousignController::class, 'yousign_procedure_expired'])->name('front.yousign.procedure_expired');
 Route::get('/yousign/server_stamps_finished', [YousignController::class, 'yousign_server_stamps_finished'])->name('front.yousign.server_stamps_finished');
 Route::get('/yousign/server_stamps_error', [YousignController::class, 'yousign_server_stamps_error'])->name('front.yousign.server_stamps_error');
 
