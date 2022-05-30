@@ -39,8 +39,9 @@ class UserSeeder extends Seeder
 
         $user = User::factory()->create([
             'account_id' => $account->id,
-            'first_name' => 'Francesco',
-            'last_name' => 'Croatti',
+            'first_name' => 'Mario',
+            'last_name' => 'Rossi',
+            'fiscal_code' => 'RSSMRA80A02C573I',
             'owner' => true,
         ]);
 
