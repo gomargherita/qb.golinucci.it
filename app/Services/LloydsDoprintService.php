@@ -62,7 +62,7 @@ class LloydsDoprintService
         }
     }
 
-    public static function validationRequest($cart, $start_date, $end_date, $proposal_date, $contractType, $productName, $customer_details, $cart_details, $wording, $prop, $prop2)
+    public static function validationRequest($cart, $start_date, $end_date, $proposal_date, $contractType, $productName, $customer_details, $cart_details, $datasheet)
     {
         $connectionDetails = self::getConnectionDetails();
         $apiKey = $connectionDetails['apiKey'];
@@ -160,24 +160,24 @@ class LloydsDoprintService
         $PremiumReceipt->getElementsByTagName('AmountPremiumReceived')->item(0)->textContent = $cart_details['price_with_tax'];
         $PremiumReceipt->getElementsByTagName('DatePremiumReceived')->item(0)->textContent = $proposal_date;
 
-        $pdffile = Storage::disk('private')->get($wording);
+        $pdffile = Storage::disk('private')->get($datasheet);
         $documentHashpdf = base64_encode(md5($pdffile, true));
 
         $CertificateAttachments = $xml->getElementsByTagName('CertificateAttachments')->item(0);
         $GeneralConditionsAttachment = $CertificateAttachments->getElementsByTagName('RisksDescriptionAttachment')->item(0);
         $GeneralConditionsAttachment->getElementsByTagName('FileHash')->item(0)->textContent = $documentHashpdf;
 
-        // Add Prop
-        $prop = Storage::disk('private')->get($prop);
-        $propHashpdf = base64_encode(md5($prop, true));
+        // Add Wording
+        $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_filepath));
+        $wordingHashpdf = base64_encode(md5($wording, true));
         $ProposalFormAttachment = $CertificateAttachments->getElementsByTagName('OtherAttachment')->item(0);
-        $ProposalFormAttachment->getElementsByTagName('FileHash')->item(0)->textContent = $propHashpdf;
+        $ProposalFormAttachment->getElementsByTagName('FileHash')->item(0)->textContent = $wordingHashpdf;
 
-        // add 3rd attach
-        $prop2 = Storage::disk('private')->get($prop2);
-        $prop2Hashpdf = base64_encode(md5($prop2, true));
+        // add attaching clauses
+        $attachingClauses = Storage::disk('private')->get('attaching_clauses/ATTACHING_CLAUSES.pdf');
+        $attachingClauses2Hashpdf = base64_encode(md5($attachingClauses, true));
         $ProposalFormAttachment = $CertificateAttachments->getElementsByTagName('OtherAttachment')->item(1);
-        $ProposalFormAttachment->getElementsByTagName('FileHash')->item(0)->textContent = $prop2Hashpdf;
+        $ProposalFormAttachment->getElementsByTagName('FileHash')->item(0)->textContent = $attachingClauses2Hashpdf;
 
         $strxml = $xml->saveXML();
         $document = base64_encode($strxml);

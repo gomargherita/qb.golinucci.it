@@ -46,14 +46,14 @@ class Certificate extends Model
         return $this->belongsTo(Product::class);
     }
 
-    public function signature(): HasOne
-    {
-        return $this->hasOne(Signature::class);
-    }
-
     public function productOffer(): BelongsTo
     {
         return $this->belongsTo(ProductOffer::class);
+    }
+
+    public function signature(): HasOne
+    {
+        return $this->hasOne(Signature::class);
     }
 
     public function setStartValidityDateAttribute($renewal_date)

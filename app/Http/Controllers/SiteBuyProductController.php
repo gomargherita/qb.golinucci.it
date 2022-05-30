@@ -475,7 +475,7 @@ class SiteBuyProductController extends Controller
                 //'certificate_no' => $certificate_no, // set in certificate boot method
                 'product_id' => $cart->product_id,
                 'product_offer_id' => $cart->product_offer_id,
-                'contract_id' => $cart->productOffer->contract->id, // TODO DA SISTEMARE
+                'contract_id' => $cart->productOffer->contract->id,
                 'start_validity_date' => $cart->renewal_date,
                 'retroactivity' => $cart->retroactivity
             ]
@@ -632,6 +632,7 @@ class SiteBuyProductController extends Controller
                     $product_name = "COLPA GRAVE - STRUTTURA SANITARIA PRIVATA";
                 }
                 // IMPORTANTE la data di START deve ricadere entro la data di validità del Binder
+                // TODO DATE DA SISTEMARE 
                 $start_date = '2021-06-01';
                 $end_date = '2022-06-01';
                 $proposal_date = '2022-06-01';
@@ -645,9 +646,7 @@ class SiteBuyProductController extends Controller
                     $product_name,
                     $customer,
                     $cart_details,
-                    $scheda,
-                    $wording,
-                    $prop
+                    $scheda
                 );
                 if ($isValid) {
                     $certificate->doprint_current_step = 'upload';
@@ -678,38 +677,33 @@ class SiteBuyProductController extends Controller
             $certificate = $cart->certificate;
             if ($certificate->doprint_current_step == 'upload') {
                 // Upload PER RINNOVI
-                // Ordine allegati 1. scheda prodotto (generato on the fly, pagina 6 della polizza),
+                // 1. scheda prodotto (generato on the fly, pagina 6 della polizza),
                 $scheda_folder = 'certificates/user_' . $cart->user_id . '/cart_' . $cart->id;
                 $scheda = Storage::disk('private')->get($scheda_folder . '/scheda.pdf');
                 LloydsDoprintService::uploadRequest($cart, $scheda);
 
-                // Upload 2. wording TODO
-                // per pubblico file WORDING BINDER NL 2021_SECTION_A_RENEW.pdf
-                // per privato WORDING BINDER NL 2021_SECTION B_RENEW.pdf
-                // dovrei recuperalo da $certificate->contract_id
-                //$wording = Storage::disk('private')->get('attaching_clauses/ATTACHING_CLAUSES.pdf');
-                $wording = Storage::disk('private')->get('wordings/wording.pdf');
+                // 2. wording
+                // pubblico file WORDING BINDER NL 2021_SECTION_A_RENEW.pdf
+                // privato WORDING BINDER NL 2021_SECTION B_RENEW.pdf
+                $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_filepath));
                 LloydsDoprintService::uploadRequest($cart, $wording);
 
-                // Upload 3.attach
-                // ATTACHING CLAUSES
-                // $attaching_clauses = Storage::disk('private')->get('attaching_clauses/ATTACHING_CLAUSES.pdf');
-                $attaching_clauses = Storage::disk('private')->get('props/prop.pdf');
+                // 3. ATTACHING CLAUSES
+                $attaching_clauses = Storage::disk('private')->get('attaching_clauses/ATTACHING_CLAUSES.pdf');
                 LloydsDoprintService::uploadRequest($cart, $attaching_clauses);
 
                 // Upload PER NUOVI
-                // Ordine allegati 1. scheda prodotto (da generare, pagina 6 della polizza),
+                // 1. scheda prodotto (da generare, pagina 6 della polizza),
 
-                // Upload 2. wording
+                // 2. wording
                 // per pubblico WORDING BINDER NL 2021_SECTION_A
                 // per privato WORDING BINDER NL 2021_SECTION B
 
-                // Upload 3.attach
+                // 3. attach
                 // ATTACHING CLAUSES
 
-                // Upload 4. modulo di adesione
+                // 4. modulo di adesione
                 // da generare
-
 
                 $certificate->doprint_current_step = 'transaction';
                 $certificate->save();
