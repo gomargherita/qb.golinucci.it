@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
+use Illuminate\Support\Str;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -68,6 +69,21 @@ class HandleInertiaRequests extends Middleware
                 return translations(
                     resource_path('lang/' . app()->getLocale() . '.json')
                 );
+            },
+            'errors' => function () use ($request) {
+                $flag_cd = false;
+                $coll_original = $this->resolveValidationErrors($request);
+                foreach ($coll_original as $key => $value) {
+                    if (Str::startsWith($key, 'product_client_details.')) {
+                        unset($coll_original->$key);
+                        $flag_cd = true;
+                    }
+                }
+                if ($flag_cd) {
+                    $coll_original->product_client_details = 'I campi per preselezionare l\'offerta di prodotto sono obbligatori.';
+                }
+
+                return (object) $coll_original;
             },
         ]);
     }

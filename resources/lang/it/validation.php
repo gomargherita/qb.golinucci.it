@@ -155,7 +155,10 @@ return [
     |
     */
 
-    'attributes' => [],
+    'attributes' => [
+        'gender' => 'Sesso',
+        'confirmation' => 'Conferma correttenza dei dati inseriti',
+    ],
 
     'phone' => 'Il campo :attribute contiene un numero di telefono non valido.',
 ];
