@@ -176,7 +176,6 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('/products/{product}/store_step5/{cart:cart_ref}', 'store_step5')->name('front.product.store_step5');
         });
 
-        Route::get('/test-import', 'testImport')->name('front.testimport');
     });
 });
 

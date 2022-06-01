@@ -49,9 +49,9 @@ class BankTransferGatewayPayment extends Notification
             ->greeting("Salve $user->name")
             ->line('Per procedere con l\'acquisto della tua polizza occorre pagare la totalità del premio.')
             ->line('Ecco i dati per effettuare il bonifico:')
+            ->line('Bonifico Bancario su c/c intestato a Golinucci srl IBAN IT69 D030 6923 9031 0000 0007 600 presso Banca Intesa San Paolo')
             ->line('Importo: ' . $this->payment->total_payable . '€')
-            ->line('IBAN: IT17Y0200805366907500043291')
-            ->line('Rag.Soc.: Golinucci Srl')
+            ->line('Causale: ' . $user->name . ' RC Professionale')
             ->line('Nota importante: l\'emissione, e la relativa copertura, potrà
             essere portata avanti nel giorno lavorativo successivo a quello di data
             valuta di pagamento con bonifico bancario.

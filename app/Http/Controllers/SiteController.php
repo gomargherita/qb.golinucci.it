@@ -46,8 +46,7 @@ class SiteController extends Controller
 
     public function products()
     {
-        // TODO rendere dinamica questa sezione
-        // Per ora estraggo solo i prodotti di golinucci
+        // TODO rendere dinamica questa sezione: per ora estraggo solo i prodotti di golinucci
         $account = Account::with('products');
         $products = $account->find(1)->products
             ->map(fn ($product) => [

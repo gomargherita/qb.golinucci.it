@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Storage;
  * 1. init
  * 2. server_stamp_ok/server_stamp_error
  * 3. member_finished
- * TODO da capire procedure.finished e procedure.refused
+ * 4. procedure_finished/procedure_refused
  */
 class YousignApiService
 {

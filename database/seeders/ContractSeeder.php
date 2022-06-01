@@ -14,7 +14,6 @@ class ContractSeeder extends Seeder
      */
     public function run()
     {
-        // TODO i contracts nel vecchio db sono i famosi wording???
         // per i rinnovi
         // per pubblico file WORDING BINDER NL 2021_SECTION_A_RENEW.pdf
         // per privato WORDING BINDER NL 2021_SECTION B_RENEW.pdf

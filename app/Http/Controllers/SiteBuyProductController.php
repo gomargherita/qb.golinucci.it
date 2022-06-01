@@ -22,7 +22,6 @@ use App\Services\Yousign\YousignApiService;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
@@ -70,7 +69,7 @@ class SiteBuyProductController extends Controller
                 'user_id' => $user->id,
                 'product_id' => $product->id,
                 'product_step_id' => 1,
-                'expired_at' => now(), // TODO Francesco come calcolare? Riposta: Scadenza renewal_date + 1 anno NO, DOVREBBE ESSERE QUANDO SCADE IL CARRELLO, NON IL CERTIFICATO
+                'expired_at' => now()->addMonths(1),
                 'locked' => 'N',
                 'cart_ref' => uniqid()
             ]);
@@ -350,7 +349,6 @@ class SiteBuyProductController extends Controller
             return redirect()->route('front.paypal_redirect', ['url' => $url]);
         } else if ($validated['payment_gateway_id_selected'] == 2) {
             // bbm
-            // TODO add cart details
             auth()->user()->notify(new BankTransferGatewayPayment($payment));
             return redirect()->route('front.product.buy', compact('product', 'cart', 'payment'));
         }
@@ -419,7 +417,6 @@ class SiteBuyProductController extends Controller
         if (isset($response['status']) && $response['status'] == 'COMPLETED') {
             $payment = Payment::query()->where(['cart_id' => $cart->id])->findOrFail($payment_id);
             $payment->updatePaymentStatus();
-
             $cart->updateCartStep(5);
         } else {
             return redirect()
@@ -440,13 +437,16 @@ class SiteBuyProductController extends Controller
      */
     public function store_step4_paypal_cancel(Product $product, Cart $cart)
     {
-        $payment_id = request('payment_id');
-        $payment = Payment::query()->where(['cart_id' => $cart->id])->findOrFail($payment_id);
-        // invio email a cliente con notifica che il pagamento non è andato a buon fine
-        // bcc a MAIL_BCC_TO
-        $delay = now()->addMinutes(1);
-        auth()->user()->notify((new PaypalGatewayPaymentCancel($payment))->delay($delay));
-        return Inertia::render('Sites/PaymentPaypalCancel', compact('product', 'cart', 'payment'));
+        // se l'utente cancella il pagamento con paypal lo riporto alla pagina di pagamento
+        return redirect()->route('front.product.buy', compact('product', 'cart'));
+
+        // $payment_id = request('payment_id');
+        // $payment = Payment::query()->where(['cart_id' => $cart->id])->findOrFail($payment_id);
+        // // invio email a cliente con notifica che il pagamento non è andato a buon fine
+        // // bcc a MAIL_BCC_TO
+        // $delay = now()->addMinutes(1);
+        // auth()->user()->notify((new PaypalGatewayPaymentCancel($payment))->delay($delay));
+        // return Inertia::render('Sites/PaymentPaypalCancel', compact('product', 'cart', 'payment'));
     }
 
     private function step5(Product $product, Cart $cart)
@@ -507,7 +507,6 @@ class SiteBuyProductController extends Controller
 
             return response()->json($response);
         } else {
-            // TODO settare cart renewal date, per i nuovi clienti, alla data di creazione del certificato
             $cart->updateCartStep(6);
 
             activity()
@@ -593,10 +592,11 @@ class SiteBuyProductController extends Controller
             if ($certificate->doprint_current_step == 'validation') {
                 $clientDetails = ClientDetail::where('user_id', $cart->user_id)->first();
                 $profession = $clientDetails->getConditionalFieldMatchById(1);
+                $authority_type = $clientDetails->getConditionalFieldMatchById(2);
 
                 $customer = [
-                    'user_id' => $user->id, // serve per creare il percorso dove salvare i file
                     'profession' => $profession,
+                    'authority_type' => $authority_type,
                     'first_name' => $clientDetails->first_name,
                     'last_name' => $clientDetails->last_name,
                     'address' => $clientDetails->address,
@@ -616,34 +616,11 @@ class SiteBuyProductController extends Controller
                     'price_with_tax' => $cart->gross_premium, // premio + accessori + tax (no fee)
                 ];
 
-                // TODO GENERARE scheda
                 $datasheetToPdf = new DatasheetToPdfService($cart);
-                // passo profession perché già generato poco sopra
-                $scheda = $datasheetToPdf->generateAndPersist($profession);
-                $wording = 'wordings/wording.pdf'; // '../wordings/wording.pdf';
-                $prop = 'props/prop.pdf'; // '../props/prop.pdf';
+                $scheda = $datasheetToPdf->generateAndPersist($profession); // passo profession perché già generato poco sopra
 
-                $contract_type = 'RC PROFESSIONALE';
-                // nome dipende dall'offerta selezionata, campo authority type
-                $authority_type = $clientDetails->getConditionalFieldMatchById(2);
-                if ($authority_type == 'Pubblico/ASL') {
-                    $product_name = "COLPA GRAVE - STRUTTURA SANITARIA PUBBLICA";
-                } else {
-                    $product_name = "COLPA GRAVE - STRUTTURA SANITARIA PRIVATA";
-                }
-                // IMPORTANTE la data di START deve ricadere entro la data di validità del Binder
-                // TODO DATE DA SISTEMARE 
-                $start_date = '2021-06-01';
-                $end_date = '2022-06-01';
-                $proposal_date = '2022-06-01';
-                //Setup Policy using the xml and MD5 file hashes
                 $isValid = LloydsDoprintService::validationRequest(
                     $cart,
-                    $start_date,
-                    $end_date,
-                    $proposal_date,
-                    $contract_type,
-                    $product_name,
                     $customer,
                     $cart_details,
                     $scheda
@@ -676,35 +653,7 @@ class SiteBuyProductController extends Controller
             $user = auth()->user();
             $certificate = $cart->certificate;
             if ($certificate->doprint_current_step == 'upload') {
-                // Upload PER RINNOVI
-                // 1. scheda prodotto (generato on the fly, pagina 6 della polizza),
-                $scheda_folder = 'certificates/user_' . $cart->user_id . '/cart_' . $cart->id;
-                $scheda = Storage::disk('private')->get($scheda_folder . '/scheda.pdf');
-                LloydsDoprintService::uploadRequest($cart, $scheda);
-
-                // 2. wording
-                // pubblico file WORDING BINDER NL 2021_SECTION_A_RENEW.pdf
-                // privato WORDING BINDER NL 2021_SECTION B_RENEW.pdf
-                $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_filepath));
-                LloydsDoprintService::uploadRequest($cart, $wording);
-
-                // 3. ATTACHING CLAUSES
-                $attaching_clauses = Storage::disk('private')->get('attaching_clauses/ATTACHING_CLAUSES.pdf');
-                LloydsDoprintService::uploadRequest($cart, $attaching_clauses);
-
-                // Upload PER NUOVI
-                // 1. scheda prodotto (da generare, pagina 6 della polizza),
-
-                // 2. wording
-                // per pubblico WORDING BINDER NL 2021_SECTION_A
-                // per privato WORDING BINDER NL 2021_SECTION B
-
-                // 3. attach
-                // ATTACHING CLAUSES
-
-                // 4. modulo di adesione
-                // da generare
-
+                LloydsDoprintService::uploadAttachments($cart);
                 $certificate->doprint_current_step = 'transaction';
                 $certificate->save();
             }
@@ -784,14 +733,10 @@ class SiteBuyProductController extends Controller
         }
     }
 
-    // TODO
     private function step6(Product $product, Cart $cart)
     {
         try {
-
             $yousignClient = new YousignApiService($cart);
-
-            // try to grab already existing signature procedure
             $signature = Signature::where('certificate_id', $cart->certificate->id)->first();
 
             if (empty($signature)) {
@@ -818,7 +763,6 @@ class SiteBuyProductController extends Controller
         ]);
     }
 
-    // TODO
     private function step7(Product $product, Cart $cart)
     {
         return Inertia::render('Sites/BuyProduct', [
@@ -837,7 +781,7 @@ class SiteBuyProductController extends Controller
     {
         if (!empty($cart)) {
             // recupero il carrello verificando se è ancora attivo
-            if(empty($cart->verifyAndGrabCart($user))){
+            if (empty($cart->verifyAndGrabCart($user))) {
                 abort(401);
             }
         }
@@ -849,8 +793,8 @@ class SiteBuyProductController extends Controller
         return $cart;
     }
 
-    public function testImport()
-    {
-        Excel::import(new MedmalRenewalsImport, storage_path('app/public/' . 'database-giugno-settembre.csv'));
-    }
+    // public function testImport()
+    // {
+    //     Excel::import(new MedmalRenewalsImport, storage_path('app/public/' . 'database-giugno-settembre.csv'));
+    // }
 }

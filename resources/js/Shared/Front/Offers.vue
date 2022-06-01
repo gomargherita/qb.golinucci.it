@@ -60,7 +60,6 @@
               class="p-4 border border-primary"
               v-text="$filters.formatPrice(offer.indemnity_limit_patrimonial)"
             ></td>
-            <!-- TODO Massimale RC Patrimoniale solo per i rinnovi 1.000.000, i nuovi è 500.000 -->
             <td class="p-4 border border-primary">Zero</td>
             <td
               class="p-4 border border-primary"

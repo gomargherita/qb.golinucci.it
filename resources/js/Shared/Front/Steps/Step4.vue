@@ -57,8 +57,7 @@
                 v-text="$filters.formatPrice(parseFloat(product.payment.total_payable))"
               ></span>
             </li>
-            <li>IBAN: IT17Y0200805366907500043291</li>
-            <li>Rag.Soc.: Golinucci Srl</li>
+            <li>Bonifico Bancario su c/c intestato a Golinucci srl IBAN IT69 D030 6923 9031 0000 0007 600 presso Banca Intesa San Paolo</li>
           </ul>
           <p>
             Riceverai una email al tuo indirizzo email con un riassunto di queste stesse

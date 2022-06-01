@@ -41,14 +41,16 @@ class UserSeeder extends Seeder
             'account_id' => $account->id,
             'first_name' => 'Mario',
             'last_name' => 'Rossi',
-            'fiscal_code' => 'RSSMRA80A02C573I',
             'owner' => true,
         ]);
 
         ClientDetail::factory(1)
             ->create([
                 'user_id' => $user->id,
-                'phone' => '3299858148'
+                'first_name' => 'Mario',
+                'last_name' => 'Rossi',
+                'fiscal_code' => 'RSSMRA80A02C573I',
+                'phone' => '3299858148',
             ]);
 
         // create clients

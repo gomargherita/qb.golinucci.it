@@ -42,7 +42,6 @@ class Payment extends Model
         return $this->belongsTo(PaymentGateway::class);
     }
 
-    // TODO da chiamare su payment via pannello quando ok pagamento bonifico bancario
     public function updatePaymentStatus()
     {
         $this->paid = 1;

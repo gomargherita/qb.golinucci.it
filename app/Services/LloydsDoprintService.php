@@ -62,7 +62,7 @@ class LloydsDoprintService
         }
     }
 
-    public static function validationRequest($cart, $start_date, $end_date, $proposal_date, $contractType, $productName, $customer_details, $cart_details, $datasheet)
+    public static function validationRequest($cart, $customer_details, $cart_details, $datasheet)
     {
         $connectionDetails = self::getConnectionDetails();
         $apiKey = $connectionDetails['apiKey'];
@@ -75,37 +75,47 @@ class LloydsDoprintService
         $xml = new DOMDocument('1.0', 'utf-8');
 
         //$xml->load("../xml/base.xml");
-        // TODO questo dovrà essere differenziato tra utente a rinnovo e utenti nuovi (cambia il numero di allegati)
-        $xml_base = Storage::disk('private')->get('lloyds_rinnovi_base.xml');
+        // TODO questo dovrà essere differenziato tra utente a rinnovo e utenti nuovi (cambia il numero di allegati, lloyds_new_base.xml)
+        $xml_base = Storage::disk('private')->get('lloyds_renew_base.xml');
         $xml->loadXML($xml_base);
 
         // Document Index
         $DocumentIndex = $xml->getElementsByTagName('DocumentIndex')->item(0);
-        $DocumentIndex->getElementsByTagName('ContractType')->item(0)->textContent = $contractType;
-        $DocumentIndex->getElementsByTagName('CommercialInsuranceProduct')->item(0)->textContent = $productName;
+        $contract_type = 'RC PROFESSIONALE';
+        $DocumentIndex->getElementsByTagName('ContractType')->item(0)->textContent = $contract_type;
+
+        $authority_type = $customer_details['authority_type'];
+        if ($authority_type == 'Pubblico/ASL') {
+            $product_name = "COLPA GRAVE - STRUTTURA SANITARIA PUBBLICA";
+        } else {
+            $product_name = "COLPA GRAVE - STRUTTURA SANITARIA PRIVATA";
+        }
+        $DocumentIndex->getElementsByTagName('CommercialInsuranceProduct')->item(0)->textContent = $product_name;
 
         // BindingAuthorityDetails
-        // PROD
-        // $BindingAuthorityDetails = $xml->getElementsByTagName('BindingAuthorityDetails')->item(0);
-        // $BindingAuthorityDetails->getElementsByTagName('BARefDate')->item(0)->textContent = '2021-11-04';
-        // $BindingAuthorityDetails->getElementsByTagName('BARefNo')->item(0)->textContent = '12';
-        // $BindingAuthorityDetails->getElementsByTagName('BABrokersRef')->item(0)->textContent = 'CPG129821';
-        // $BindingAuthorityDetails->getElementsByTagName('BAPseudonym')->item(0)->textContent = 'GMB';
-        // $BindingAuthorityDetails->getElementsByTagName('BANumber')->item(0)->textContent = '1732';
-        // $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin1')->item(0)->textContent = '115647';
-        // $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin2')->item(0)->textContent = 'XKT';
-        // $BindingAuthorityDetails->getElementsByTagName('BAUniqueMarketReference')->item(0)->textContent = 'B1732CPG129821';
-
         // SANDBOX
-        $BindingAuthorityDetails = $xml->getElementsByTagName('BindingAuthorityDetails')->item(0);
-        $BindingAuthorityDetails->getElementsByTagName('BARefDate')->item(0)->textContent = '2020-10-09';
-        $BindingAuthorityDetails->getElementsByTagName('BARefNo')->item(0)->textContent = '4';
-        $BindingAuthorityDetails->getElementsByTagName('BABrokersRef')->item(0)->textContent = 'CPG129820';
-        $BindingAuthorityDetails->getElementsByTagName('BAPseudonym')->item(0)->textContent = 'GMB';
-        $BindingAuthorityDetails->getElementsByTagName('BANumber')->item(0)->textContent = '1732';
-        $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin1')->item(0)->textContent = '115647';
-        $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin2')->item(0)->textContent = 'XKT';
-        $BindingAuthorityDetails->getElementsByTagName('BAUniqueMarketReference')->item(0)->textContent = 'B1732CPG129820';
+        if (App::environment(['local', 'staging'])) {
+            $BindingAuthorityDetails = $xml->getElementsByTagName('BindingAuthorityDetails')->item(0);
+            $BindingAuthorityDetails->getElementsByTagName('BARefDate')->item(0)->textContent = '2020-10-09';
+            $BindingAuthorityDetails->getElementsByTagName('BARefNo')->item(0)->textContent = '4';
+            $BindingAuthorityDetails->getElementsByTagName('BABrokersRef')->item(0)->textContent = 'CPG129820';
+            $BindingAuthorityDetails->getElementsByTagName('BAPseudonym')->item(0)->textContent = 'GMB';
+            $BindingAuthorityDetails->getElementsByTagName('BANumber')->item(0)->textContent = '1732';
+            $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin1')->item(0)->textContent = '115647';
+            $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin2')->item(0)->textContent = 'XKT';
+            $BindingAuthorityDetails->getElementsByTagName('BAUniqueMarketReference')->item(0)->textContent = 'B1732CPG129820';
+        } else {
+            // PROD
+            $BindingAuthorityDetails = $xml->getElementsByTagName('BindingAuthorityDetails')->item(0);
+            $BindingAuthorityDetails->getElementsByTagName('BARefDate')->item(0)->textContent = '2021-11-04';
+            $BindingAuthorityDetails->getElementsByTagName('BARefNo')->item(0)->textContent = '12';
+            $BindingAuthorityDetails->getElementsByTagName('BABrokersRef')->item(0)->textContent = 'CPG129821';
+            $BindingAuthorityDetails->getElementsByTagName('BAPseudonym')->item(0)->textContent = 'GMB';
+            $BindingAuthorityDetails->getElementsByTagName('BANumber')->item(0)->textContent = '1732';
+            $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin1')->item(0)->textContent = '115647';
+            $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin2')->item(0)->textContent = 'XKT';
+            $BindingAuthorityDetails->getElementsByTagName('BAUniqueMarketReference')->item(0)->textContent = 'B1732CPG129821';
+        }
 
         // Certificate Number
         $DocumentReferences = $xml->getElementsByTagName('DocumentReferences')->item(0);
@@ -128,7 +138,19 @@ class LloydsDoprintService
         $InsuredDetails = $xml->getElementsByTagName('InsuredDetails')->item(0);
         $InsuredDetails->getElementsByTagName('InsuredName')->item(0)->textContent = $customer_details['first_name'] . ' ' . $customer_details['last_name'];
 
-        //Start End Date
+        // Start End Date
+        // IMPORTANTE la data di START deve ricadere entro la data di validità del Binder
+        if (App::environment(['local', 'staging'])) {
+            $start_date = '2021-06-01';
+            $end_date = '2022-06-01';
+            // TODO proposal date rinnovo metto start_date, nuovo metto data di pagamento
+            $proposal_date = $cart->payment->paid_at; // TODO VERIFICARE CON FRANCESCO
+        } else {
+            $start_date = $certificate->start_validity_date;
+            $end_date = $certificate->end_validity_date;
+            // TODO proposal date rinnovo metto start_date, nuovo metto data di pagamento
+            $proposal_date = $cart->payment->paid_at; // TODO VERIFICARE CON FRANCESCO 
+        }
         $CertificateDateTimeDetails = $xml->getElementsByTagName('CertificateDateTimeDetails')->item(0);
         $CertificateDateTimeDetails->getElementsByTagName('InceptionDate')->item(0)->textContent = $start_date;
         $CertificateDateTimeDetails->getElementsByTagName('ExpiryDate')->item(0)->textContent = $end_date;
@@ -182,7 +204,7 @@ class LloydsDoprintService
         $strxml = $xml->saveXML();
         $document = base64_encode($strxml);
 
-        $policy_response_folder = 'certificates/user_' . $customer_details['user_id'] . '/cart_' . $cart_details['cart_id'];
+        $policy_response_folder = 'certificates/user_' . $cart->user_id . '/cart_' . $cart_details['cart_id'];
         Storage::disk('private')->put($policy_response_folder . '/policy_response.xml', $strxml);
 
         $documentHash = base64_encode(md5($strxml, true));
@@ -351,6 +373,38 @@ class LloydsDoprintService
         } else {
             return $certificate->doprint_certificate_no;
         }
+    }
+
+    public static function uploadAttachments($cart)
+    {
+        // Upload PER RINNOVI
+        // 1. scheda prodotto (generato on the fly, pagina 6 della polizza),
+        $scheda_folder = 'certificates/user_' . $cart->user_id . '/cart_' . $cart->id;
+        $scheda = Storage::disk('private')->get($scheda_folder . '/scheda.pdf');
+        LloydsDoprintService::uploadRequest($cart, $scheda);
+
+        // 2. wording
+        // pubblico file WORDING BINDER NL 2021_SECTION_A_RENEW.pdf
+        // privato WORDING BINDER NL 2021_SECTION B_RENEW.pdf
+        $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_filepath));
+        LloydsDoprintService::uploadRequest($cart, $wording);
+
+        // 3. ATTACHING CLAUSES
+        $attaching_clauses = Storage::disk('private')->get('attaching_clauses/ATTACHING_CLAUSES.pdf');
+        LloydsDoprintService::uploadRequest($cart, $attaching_clauses);
+
+        // Upload PER NUOVI
+        // 1. scheda prodotto (da generare, pagina 6 della polizza),
+
+        // 2. wording
+        // per pubblico WORDING BINDER NL 2021_SECTION_A
+        // per privato WORDING BINDER NL 2021_SECTION B
+
+        // 3. attach
+        // ATTACHING CLAUSES
+
+        // 4. modulo di adesione
+        // da generare
     }
 } // End Class
 

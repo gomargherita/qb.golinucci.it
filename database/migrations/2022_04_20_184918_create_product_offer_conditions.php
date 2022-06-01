@@ -15,7 +15,6 @@ class CreateProductOfferConditions extends Migration
      */
     public function up()
     {
-        // TODO CAPIRE COME AGGIUNGERE N RECORD ASSOCIATI A OGNI SINGOLA OFFER CON I VALORI DEI CONDITIONAL FIELDS
         Schema::create('product_offer_conditions', function (Blueprint $table) {
             $table->foreignIdFor(ProductOffer::class)->constrained();
             $table->foreignIdFor(ConditionalField::class)->constrained();
