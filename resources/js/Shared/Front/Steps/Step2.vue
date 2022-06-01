@@ -69,6 +69,7 @@
                       class="mr-1"
                       type="radio"
                       @click="offerSelected"
+                      :checked="offer.id == this.form.product_offer_id_selected"
                     />
                   </label>
                 </td>
@@ -117,7 +118,7 @@ export default {
       filter_conditions: {},
       objectToCompare: {},
       form: this.$inertia.form({
-        product_offer_id_selected: null,
+        product_offer_id_selected: (this.cart.product_offer_id) ? this.cart.product_offer_id : null,
       }),
     };
   },
