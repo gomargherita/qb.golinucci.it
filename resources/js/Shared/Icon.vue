@@ -689,6 +689,37 @@
     />
   </svg>
   <svg
+    v-else-if="name === 'arrow-right'"
+    xmlns="http://www.w3.org/2000/svg"
+    width="162"
+    height="49.281"
+    viewBox="0 0 162 49.281"
+  >
+    <g id="Raggruppa_68" data-name="Raggruppa 68" transform="translate(-898 -787.362)">
+      <g id="right-arrow" transform="translate(929.57 787.362)">
+        <g id="Raggruppa_13" data-name="Raggruppa 13" transform="translate(101.478)">
+          <path
+            id="Tracciato_58"
+            data-name="Tracciato 58"
+            d="M129.644,22.717,107.713.787a2.7,2.7,0,0,0-3.813,0L102.286,2.4a2.7,2.7,0,0,0,0,3.813L120.7,24.63,102.265,43.066a2.7,2.7,0,0,0,0,3.813l1.615,1.614a2.7,2.7,0,0,0,3.813,0l21.951-21.95a2.721,2.721,0,0,0,0-3.826Z"
+            transform="translate(-101.478)"
+            fill="#822622"
+          />
+        </g>
+      </g>
+      <rect
+        id="Rettangolo_123"
+        data-name="Rettangolo 123"
+        width="153"
+        height="7"
+        rx="3.5"
+        transform="translate(898 809)"
+        fill="#822622"
+      />
+    </g>
+  </svg>
+
+  <svg
     v-else-if="name === 'medici'"
     id="cardiogram"
     xmlns="http://www.w3.org/2000/svg"
