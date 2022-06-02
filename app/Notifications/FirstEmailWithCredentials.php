@@ -47,6 +47,7 @@ class FirstEmailWithCredentials extends Notification implements ShouldQueue
         // generate a new password, hash it and save
         $uncrypted_password = Str::random(10);
         $user->password = $uncrypted_password;
+        $user->email_verified_at = now();
         $user->save();
         $url = route('front.product.buy', [$this->cart->product->id, $this->cart->cart_ref]);
         $renewal_date = $this->cart->renewal_date->format('d/m/Y');

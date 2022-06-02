@@ -43,7 +43,7 @@ class SendFirstEmail extends Command
         // grab all carts with renewal_date < 14days
         $num_of_days = 14;
         $target_date = Carbon::now()->addDays($num_of_days)->format('Y-m-d');
-        $carts = Cart::whereDate('renewal_date', '=', $target_date)->get();
+        $carts = Cart::whereNull('email_verified_at')->whereDate('renewal_date', '=', $target_date)->get();
 
         $carts->each(function ($cart) {
             $user = $cart->user;
