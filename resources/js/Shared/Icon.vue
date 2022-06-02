@@ -677,7 +677,7 @@
     v-else-if="name === 'golinucci-logo-legacy'"
     xmlns="http://www.w3.org/2000/svg"
     xmlns:xlink="http://www.w3.org/1999/xlink"
-    width="119.041"
+    width="119.041" 
     height="55.191"
     viewBox="0 0 119.041 55.191"
   >
