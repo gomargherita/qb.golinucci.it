@@ -15,7 +15,20 @@ class SiteController extends Controller
      */
     public function home()
     {
-        return Inertia::render('Sites/Home');
+        // TODO rendere dinamica questa sezione: per ora estraggo solo i prodotti di golinucci
+        $account = Account::with('products');
+        $products = $account->find(1)->products
+            ->map(fn ($product) => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'type' => Str::slug($product->productType->name, '-'),
+                'description' => $product->description,
+                'hex_color' => $product->hex_color,
+            ]);
+
+        return Inertia::render('Sites/Home', [
+            'products' => $products
+        ]);
     }
 
     /**
@@ -83,5 +96,4 @@ class SiteController extends Controller
             ],
         ]);
     }
-
 }
