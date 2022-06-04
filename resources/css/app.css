@@ -48,6 +48,10 @@ body {
         }
     }
 
+    div#front-layout #main-content p {
+        @apply mb-3;
+    }
+
     div#front-layout #main-content .gol-btn {
         @apply w-full block py-2 text-lg font-bold shadow text-white hover:text-gray-200 rounded-full [text-shadow:0_4px_8px_rgba(0,0,0,0.12)];
     }
