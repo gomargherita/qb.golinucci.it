@@ -29,7 +29,7 @@
         </div>
         <div class="container mx-auto">
           <div class="relative full md:w-1/3 text-center md:text-left m-12">
-            <div class="text-4xl text-primary capitalize text-primary font-semibold mt-8">
+            <div class="text-4xl text-primary capitalize text-primary leading-10 font-semibold mt-8">
               Dal 1952 Assicuriamo<br />la Vostra Serenità
             </div>
             <div class="mt-4">
