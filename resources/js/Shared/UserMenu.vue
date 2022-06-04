@@ -8,7 +8,7 @@
         >{{ __("Admin") }}
       </Link>
     </div>
-    <div class="mb-2 md:mb-0">
+    <!-- <div class="mb-2 md:mb-0">
       <NavLink
         :href="route('front.useraccount')"
         class="block py-2 text-white hover:bg-primary"
@@ -16,7 +16,7 @@
         :activeStyle="'text-yellow-400'"
         >{{ __("My Profile") }}
       </NavLink>
-    </div>
+    </div> -->
     <div class="mb-2 md:mb-0">
       <Link
         class="block py-2 w-full text-left text-white hover:bg-primary"
