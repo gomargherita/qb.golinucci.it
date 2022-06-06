@@ -1,13 +1,16 @@
 #!/bin/bash
 
 # Move to project folder
-cd /var/www/html/chemicals || exit
+cd /var/www/stagingqb.golinucci.it || exit
 
 # Set application offline
 php artisan down
 
 # Update git project
 git pull origin $(git rev-parse --abbrev-ref HEAD)
+
+# Fix permissions
+sudo chown -R mmasi:www-data
 
 # Run pending migrations:
 php artisan migrate
