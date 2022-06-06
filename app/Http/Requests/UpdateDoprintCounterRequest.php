@@ -13,7 +13,7 @@ class UpdateDoprintCounterRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,11 @@ class UpdateDoprintCounterRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'product_id' => ['required'],
+            'year' => ['required', 'date_format:Y'],
+            'prefix' => ['required', 'string'],
+            'counter' => ['required', 'integer'],
+            'postfix' => ['required', 'string'],
         ];
     }
 }

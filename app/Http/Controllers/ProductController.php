@@ -96,7 +96,8 @@ class ProductController extends Controller
                 'deleted_at' => $product->deleted_at,
             ],
             'product_types' => $product_types,
-            'product_counters' => $product->productCounters()->with('paymentGateway')->get()
+            'product_counters' => $product->productCounters()->with('paymentGateway')->get(),
+            'doprint_counter' => $product->doprintCounters
         ]);
     }
 
@@ -113,7 +114,7 @@ class ProductController extends Controller
         if ($request->file('image')) {
             // recupero il precedente e cancello
             $prev_image = $product->getFirstMedia('product');
-            if($prev_image){
+            if ($prev_image) {
                 $prev_image->delete();
             }
 

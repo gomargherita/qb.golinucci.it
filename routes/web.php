@@ -4,6 +4,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\ClientDetailsController;
+use App\Http\Controllers\DoprintCounterController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
@@ -134,6 +135,12 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'check_role']], func
 
     Route::put('productCounters/{productCounter}', [ProductCounterController::class, 'update'])
         ->name('productCounters.update');
+
+    Route::get('doprintCounters/{doprintCounter}/edit', [DoprintCounterController::class, 'edit'])
+        ->name('doprintCounters.edit');
+
+    Route::put('doprintCounters/{doprintCounter}', [DoprintCounterController::class, 'update'])
+        ->name('doprintCounters.update');
 
     Route::get('/private-files/{file?}', [FileController::class, 'get'])->where('file', '(.*)')->name('privateFiles');;
 });

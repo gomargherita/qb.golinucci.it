@@ -198,6 +198,70 @@
         </tr>
       </table>
     </div>
+
+    <div v-if="doprint_counter">
+      <h2 class="mt-12 text-2xl font-bold">{{ __("Doprint Counters") }}</h2>
+      <div class="mt-6 bg-white rounded shadow overflow-x-auto">
+        <table class="w-full whitespace-nowrap">
+          <tr class="text-left font-bold">
+            <th class="pb-4 pt-6 px-6">Year</th>
+            <th class="pb-4 pt-6 px-6">Prefix</th>
+            <th class="pb-4 pt-6 px-6">Counter</th>
+            <th class="pb-4 pt-6 px-6" colspan="2">Postfix</th>
+          </tr>
+          <tr
+            :key="doprint_counter.id"
+            class="hover:bg-gray-100 focus-within:bg-gray-100"
+          >
+            <td class="border-t">
+              <Link
+                class="flex items-center px-6 py-4"
+                :href="route('doprintCounters.edit', doprint_counter.id)"
+                tabindex="-1"
+              >
+                {{ doprint_counter.year }}
+              </Link>
+            </td>
+            <td class="border-t">
+              <Link
+                class="flex items-center px-6 py-4"
+                :href="route('doprintCounters.edit', doprint_counter.id)"
+                tabindex="-1"
+              >
+                {{ doprint_counter.prefix }}
+              </Link>
+            </td>
+            <td class="border-t">
+              <Link
+                class="flex items-center px-6 py-4"
+                :href="route('doprintCounters.edit', doprint_counter.id)"
+                tabindex="-1"
+              >
+                {{ doprint_counter.counter }}
+              </Link>
+            </td>
+            <td class="border-t">
+              <Link
+                class="flex items-center px-6 py-4"
+                :href="route('doprintCounters.edit', doprint_counter.id)"
+                tabindex="-1"
+              >
+                {{ doprint_counter.postfix }}
+              </Link>
+            </td>
+            <td class="w-px border-t">
+              <Link
+                class="flex items-center px-4"
+                :href="route('doprintCounters.edit', doprint_counter.id)"
+                tabindex="-1"
+              >
+                <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />
+              </Link>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -226,6 +290,7 @@ export default {
     product: Object,
     product_types: Array,
     product_counters: Array,
+    doprint_counter: Object,
   },
   remember: "form",
   data() {

@@ -17,6 +17,7 @@ class DoprintCounterSeeder extends Seeder
         // esempio GV21PI00565-LB
         DoprintCounter::create(
             [
+                'product_id' => 1,
                 'year' => 2022, 
                 'counter' => 580,
                 'prefix' => 'GV21PI',

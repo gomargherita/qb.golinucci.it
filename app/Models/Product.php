@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -66,6 +67,11 @@ class Product extends Model implements HasMedia
     public function productCounters(): HasMany
     {
         return $this->hasMany(ProductCounter::class);
+    }
+
+    public function doprintCounters(): HasOne
+    {
+        return $this->hasOne(DoprintCounter::class);
     }
 
     public function carts(): HasMany

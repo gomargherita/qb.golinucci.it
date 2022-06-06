@@ -8,4 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class DoprintCounter extends Model
 {
     use HasFactory;
+
+    public $fillable = [
+        'product_id',
+        'year',
+        'prefix',
+        'counter',
+        'postfix'
+    ];
 }

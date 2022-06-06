@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Product;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,6 +16,7 @@ class CreateDoprintCountersTable extends Migration
     {
         Schema::create('doprint_counters', function (Blueprint $table) {
             $table->id();
+            $table->foreignIdFor(Product::class)->constrained();
             $table->integer('year');
             $table->integer('counter');
             $table->string('prefix')->unique();
