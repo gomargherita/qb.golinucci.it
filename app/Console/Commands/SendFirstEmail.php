@@ -44,11 +44,18 @@ class SendFirstEmail extends Command
         // da importare un cron tipo 30  2  1-30  jun  *  php artisan mail:first_send...
         $num_of_days = 14;
         $target_date = Carbon::now()->addDays($num_of_days)->format('Y-m-d');
-        $carts = Cart::whereNull('email_verified_at')->whereDate('renewal_date', '=', $target_date)->get();
+
+        $carts = Cart::with('user')
+            ->whereDate('renewal_date', '<', $target_date)
+            ->whereHas('user', function ($q) {
+                $q->whereNull('email_verified_at');
+            })
+            ->get();
 
         $carts->each(function ($cart) {
             $user = $cart->user;
             $user->notify(new FirstEmailWithCredentials($cart));
+            $this->info(now() . ': first email sent to '. $cart->user->email);
         });
     }
 }

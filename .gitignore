@@ -18,3 +18,4 @@ public/js/*.*
 public/img/*.*
 public/images/*.*
 public/mix-manifest.json
+send_first_email.log
