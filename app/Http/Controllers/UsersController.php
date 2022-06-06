@@ -37,7 +37,12 @@ class UsersController extends Controller
 
     public function create()
     {
-        $roles = Auth::user()->account->roles()->get();
+        if(auth()->user()->getRoleNames()->first() == Role::ROLE_SUPERADMIN){
+            $roles = Auth::user()->account->roles()->get();
+        } else {
+            $roles = Auth::user()->account->roles()->where('name', Role::ROLE_USER)->get();
+        }
+
         return Inertia::render('Users/Create', compact('roles'));
     }
 
@@ -59,7 +64,11 @@ class UsersController extends Controller
 
     public function edit(User $user)
     {
-        $roles = Auth::user()->account->roles()->get();
+        if($user->getRoleNames()->first() == Role::ROLE_SUPERADMIN){
+            $roles = Auth::user()->account->roles()->get();
+        } else {
+            $roles = Auth::user()->account->roles()->where('name', Role::ROLE_USER)->get();
+        }
 
         return Inertia::render('Users/Edit', [
             'user' => [

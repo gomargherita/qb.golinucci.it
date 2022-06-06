@@ -29,7 +29,7 @@ class StoreUserRequest extends FormRequest
             'last_name' => ['required', 'max:50'],
             'email' => ['required', 'max:50', 'email', Rule::unique('users')],
             'password' => ['required'],
-            'owner' => ['required', 'boolean'],
+            'owner' => ['boolean'],
             'photo' => ['nullable', 'image'],
             'role' => ['required']
         ];

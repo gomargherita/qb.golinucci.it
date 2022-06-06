@@ -48,6 +48,7 @@
             label="Password"
           />
           <select-input
+            v-if="this.$page.props.auth.user.is_superadmin"
             v-model="form.owner"
             :error="form.errors.owner"
             class="pb-8 pr-6 w-full lg:w-1/2"
@@ -180,7 +181,7 @@ import SelectInput from "@/Shared/SelectInput";
 import LoadingButton from "@/Shared/LoadingButton";
 import TrashedMessage from "@/Shared/TrashedMessage";
 
-export default { 
+export default {
   components: {
     FileInput,
     LoadingButton,

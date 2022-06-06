@@ -29,7 +29,7 @@ class UpdateUserRequest extends FormRequest
             'last_name' => ['required', 'max:50'],
             'email' => ['required', 'max:50', 'email', Rule::unique('users')->ignore($this->user->id)],
             'password' => ['nullable'],
-            'owner' => ['required', 'boolean'],
+            'owner' => ['boolean'],
             'photo' => ['nullable', 'image'],
             'role' => ['required']
         ];

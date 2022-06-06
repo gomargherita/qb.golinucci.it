@@ -7,7 +7,7 @@
       }}</Link>
       <span class="text-gray font-medium">/</span>{{ __("Create") }}
     </h1>
-    <div class=" bg-white rounded-md shadow overflow-hidden">
+    <div class="bg-white rounded-md shadow overflow-hidden">
       <form @submit.prevent="store">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
           <text-input
@@ -37,6 +37,7 @@
             label="Password"
           />
           <select-input
+            v-if="this.$page.props.auth.user.is_superadmin"
             v-model="form.owner"
             :error="form.errors.owner"
             class="pb-8 pr-6 w-full lg:w-1/2"
