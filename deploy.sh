@@ -10,7 +10,7 @@ php artisan down
 git pull origin $(git rev-parse --abbrev-ref HEAD)
 
 # Fix permissions
-sudo chown -R mmasi:www-data
+sudo chown -R mmasi:www-data /var/www/stagingqb.golinucci.it/
 
 # Run pending migrations:
 php artisan migrate
