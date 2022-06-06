@@ -12,14 +12,41 @@
       >{{ __("This cart detail has been deleted") }}.</trashed-message
     >
     <div class="bg-white rounded-md shadow overflow-hidden">
+      <div class="flex flex-wrap -mb-8 -mr-6 p-8">
+        <div>
+          <label class="font-bold">{{ __("Product") }}</label
+          ><br />
+          <div v-text="cart.product.name" class="pb-8 pr-6 w-full"></div>
+        </div>
+        <div>
+          <label class="font-bold">{{ __("Product Offer") }}</label
+          ><br />
+          <div
+            v-text="
+              this.cart.product_offer
+                ? this.cart.product_offer?.name
+                : 'Offerta Prodotto non ancora scelta'
+            "
+            class="pb-8 pr-6 w-full"
+          ></div>
+        </div>
+      </div>
       <form @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
-          <text-input
-            v-model="form.product"
-            :error="form.errors.first_name"
+          <select-input
+            v-model="form.product_step_id"
+            :error="form.errors.product_step_id"
             class="pb-8 pr-6 w-full lg:w-1/2"
-            label="First Name"
-          />
+            label="Step"
+          >
+            <option
+              v-for="product_step in cart.product_steps"
+              :value="product_step.id"
+              :selected="product_step.id == form.product_step_id"
+            >
+              {{ product_step.step_number }}. {{ product_step.step_name }}
+            </option></select-input
+          >
         </div>
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
           <button
@@ -182,6 +209,7 @@ export default {
     return {
       form: this.$inertia.form({
         cart_ref: this.cart.cart_ref,
+        product_step_id: this.cart.product_step_id,
       }),
       form_payment: this.$inertia.form({
         cart_id: this.cart.id,

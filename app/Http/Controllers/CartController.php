@@ -78,6 +78,10 @@ class CartController extends Controller
             // ],
             'cart' => [
                 'id' => $cart->id,
+                'product' => $cart->product,
+                'product_offer' => $cart->productOffer ? $cart->productOffer : null,
+                'product_step_id' => $cart->product_step_id,
+                'product_steps' => $cart->product->productSteps,
                 'payment' => $cart->payment,
                 'cart_ref' => $cart->cart_ref,
                 'deleted_at' => $cart->deleted_at,

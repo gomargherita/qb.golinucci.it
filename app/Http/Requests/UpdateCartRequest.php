@@ -13,7 +13,7 @@ class UpdateCartRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,7 @@ class UpdateCartRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'product_step_id' => ['required'],
         ];
     }
 }
