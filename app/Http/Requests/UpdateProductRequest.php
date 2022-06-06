@@ -24,7 +24,7 @@ class UpdateProductRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => ['required', 'max:50'],
+            'name' => ['required', 'max:125'],
             'product_type_id' => ['required', 'integer'],
             'description' => ['required', 'not_regex:/^(<p><\/p>)$/i'],
             'detailed_description' => ['required', 'not_regex:/^(<p><\/p>)$/i'],

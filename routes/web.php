@@ -6,6 +6,7 @@ use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\ClientDetailsController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductCounterController;
 use App\Http\Controllers\ReportsController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\RolesController;
@@ -127,7 +128,13 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'check_role']], func
     Route::put('payments/{payment}', [PaymentController::class, 'update'])
         ->name('payments.update');
 
-    Route::get('/private-files/{file?}', 'FileController@get')->where('file', '(.*)');
+    Route::get('productCounters/{productCounter}/edit', [ProductCounterController::class, 'edit'])
+        ->name('productCounters.edit');
+
+    Route::put('productCounters/{productCounter}', [ProductCounterController::class, 'update'])
+        ->name('productCounters.update');
+
+    //Route::get('/private-files/{file?}', 'FileController@get')->where('file', '(.*)');
 });
 
 // Images
@@ -175,7 +182,6 @@ Route::group(['middleware' => ['auth']], function () {
             Route::get('/products/{product}/store_step4_paypal/{cart:cart_ref}/{payment_id}/c', 'store_step4_paypal_cancel')->name('front.product.store_step4_paypal_cancel');
             Route::post('/products/{product}/store_step5/{cart:cart_ref}', 'store_step5')->name('front.product.store_step5');
         });
-
     });
 });
 

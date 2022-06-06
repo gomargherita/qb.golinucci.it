@@ -9,7 +9,6 @@ use App\Models\ProductType;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
-use Illuminate\Support\Facades\URL;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -96,7 +95,8 @@ class ProductController extends Controller
                 'product_type_id' => $product->productType()->first()->id,
                 'deleted_at' => $product->deleted_at,
             ],
-            'product_types' => $product_types
+            'product_types' => $product_types,
+            'product_counters' => $product->productCounters()->with('paymentGateway')->get()
         ]);
     }
 
@@ -113,7 +113,9 @@ class ProductController extends Controller
         if ($request->file('image')) {
             // recupero il precedente e cancello
             $prev_image = $product->getFirstMedia('product');
-            $prev_image->delete();
+            if($prev_image){
+                $prev_image->delete();
+            }
 
             $product->addMediaFromRequest('image')
                 ->sanitizingFileName(function ($fileName) {

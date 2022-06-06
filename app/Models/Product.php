@@ -63,6 +63,11 @@ class Product extends Model implements HasMedia
         return $this->hasMany(ProductOffer::class);
     }
 
+    public function productCounters(): HasMany
+    {
+        return $this->hasMany(ProductCounter::class);
+    }
+
     public function carts(): HasMany
     {
         return $this->hasMany(Cart::class);

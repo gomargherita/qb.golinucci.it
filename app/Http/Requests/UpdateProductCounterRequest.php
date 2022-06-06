@@ -13,7 +13,7 @@ class UpdateProductCounterRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,10 @@ class UpdateProductCounterRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'year' => ['required', 'date_format:Y'],
+            'payment_gateway_id' => ['required', 'integer'],
+            'prefix' => ['required', 'string'],
+            'counter' => ['required', 'integer'],
         ];
     }
 }

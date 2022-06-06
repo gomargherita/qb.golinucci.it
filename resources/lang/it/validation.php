@@ -89,9 +89,9 @@ return [
     'mimes' => 'The :attribute must be a file of type: :values.',
     'mimetypes' => 'The :attribute must be a file of type: :values.',
     'min' => [
-        'numeric' => 'The :attribute must be at least :min.',
+        'numeric' => ':attribute deve essere almeno :min.',
         'file' => 'The :attribute must be at least :min kilobytes.',
-        'string' => 'The :attribute must be at least :min characters.',
+        'string' => ':attribute deve essere lungo almeno :min caratteri.',
         'array' => 'The :attribute must have at least :min items.',
     ],
     'multiple_of' => 'The :attribute must be a multiple of :value.',
@@ -158,6 +158,8 @@ return [
     'attributes' => [
         'gender' => 'Sesso',
         'confirmation' => 'Conferma correttenza dei dati inseriti',
+        'signature' => 'Firmatario',
+        'selected_declarations' => 'Dichiarazioni'
     ],
 
     'phone' => 'Il campo :attribute contiene un numero di telefono non valido.',

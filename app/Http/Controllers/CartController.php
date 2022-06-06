@@ -87,6 +87,7 @@ class CartController extends Controller
                 'deleted_at' => $cart->deleted_at,
             ],
             'payment_gateways' => $payment_gateways,
+            'product_counters' => $cart->product->productCounters,
             'user' => $cart->user ? $cart->user : null,
         ]);
     }

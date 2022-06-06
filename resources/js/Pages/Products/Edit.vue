@@ -132,6 +132,72 @@
         </div>
       </form>
     </div>
+
+    <h2 class="mt-12 text-2xl font-bold">{{ __("Product Counters") }}</h2>
+    <div class="mt-6 bg-white rounded shadow overflow-x-auto">
+      <table class="w-full whitespace-nowrap">
+        <tr class="text-left font-bold">
+          <th class="pb-4 pt-6 px-6">Payment Gateway</th>
+          <th class="pb-4 pt-6 px-6">Year</th>
+          <th class="pb-4 pt-6 px-6">Prefix</th>
+          <th class="pb-4 pt-6 px-6" colspan="2">Counter</th>
+        </tr>
+        <tr
+          v-if="product_counters"
+          v-for="product_counter in product_counters"
+          :key="product_counter.id"
+          class="hover:bg-gray-100 focus-within:bg-gray-100"
+        >
+          <td class="border-t">
+            <Link
+              class="flex items-center px-6 py-4 focus:text-primary"
+              :href="route('productCounters.edit', product_counter.id)"
+            >
+              {{ product_counter.payment_gateway.name }}
+            </Link>
+          </td>
+          <td class="border-t">
+            <Link
+              class="flex items-center px-6 py-4"
+              :href="route('productCounters.edit', product_counter.id)"
+              tabindex="-1"
+            >
+              {{ product_counter.year }}
+            </Link>
+          </td>
+          <td class="border-t">
+            <Link
+              class="flex items-center px-6 py-4"
+              :href="route('productCounters.edit', product_counter.id)"
+              tabindex="-1"
+            >
+              {{ product_counter.prefix }}
+            </Link>
+          </td>
+          <td class="border-t">
+            <Link
+              class="flex items-center px-6 py-4"
+              :href="route('productCounters.edit', product_counter.id)"
+              tabindex="-1"
+            >
+              {{ product_counter.counter }}
+            </Link>
+          </td>
+          <td class="w-px border-t">
+            <Link
+              class="flex items-center px-4"
+              :href="route('productCounters.edit', product_counter.id)"
+              tabindex="-1"
+            >
+              <icon name="cheveron-right" class="block w-6 h-6 fill-gray-400" />
+            </Link>
+          </td>
+        </tr>
+        <tr v-if="product_counters.length === 0">
+          <td class="px-6 py-4 border-t" colspan="4">No product counters related.</td>
+        </tr>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -159,6 +225,7 @@ export default {
   props: {
     product: Object,
     product_types: Array,
+    product_counters: Array,
   },
   remember: "form",
   data() {

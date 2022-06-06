@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreProductCounterRequest;
 use App\Http\Requests\UpdateProductCounterRequest;
 use App\Models\ProductCounter;
+use Illuminate\Support\Facades\Redirect;
+use Inertia\Inertia;
 
 class ProductCounterController extends Controller
 {
@@ -58,7 +60,9 @@ class ProductCounterController extends Controller
      */
     public function edit(ProductCounter $productCounter)
     {
-        //
+        return Inertia::render('ProductCounters/Edit', [
+            'product_counter' => $productCounter
+        ]);
     }
 
     /**
@@ -70,7 +74,9 @@ class ProductCounterController extends Controller
      */
     public function update(UpdateProductCounterRequest $request, ProductCounter $productCounter)
     {
-        //
+        $productCounter->update($request->validated());
+
+        return Redirect::back()->with('success', 'Product Counter updated.');
     }
 
     /**
