@@ -4,6 +4,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\ClientDetailsController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductCounterController;
@@ -134,7 +135,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'check_role']], func
     Route::put('productCounters/{productCounter}', [ProductCounterController::class, 'update'])
         ->name('productCounters.update');
 
-    //Route::get('/private-files/{file?}', 'FileController@get')->where('file', '(.*)');
+    Route::get('/private-files/{file?}', [FileController::class, 'get'])->where('file', '(.*)')->name('privateFiles');;
 });
 
 // Images

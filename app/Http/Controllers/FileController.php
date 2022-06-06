@@ -7,14 +7,13 @@ use Illuminate\Support\Facades\Storage;
 
 class FileController extends Controller
 {
-
-    // public function __construct()
-    // {
-    //     $this->middleware('auth');
-    // }
-
     public function get($file)
     {
-        return Storage::disk('private')->get($file);
+        if (Storage::disk('private')->exists($file)) {
+            $storage_private = Storage::disk('private');
+            return $storage_private->download($file);
+        } else {
+            abort('Requested file does not exist on our server.');
+        }
     }
 }

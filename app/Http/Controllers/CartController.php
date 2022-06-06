@@ -9,6 +9,7 @@ use App\Models\PaymentGateway;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class CartController extends Controller
@@ -69,8 +70,8 @@ class CartController extends Controller
      */
     public function edit(Cart $cart)
     {
-
         $payment_gateways = PaymentGateway::all();
+        $certificate_folder = 'certificates/user_' . $cart->user_id . '/cart_' . $cart->id;
 
         return Inertia::render('Carts/Edit', [
             // 'can' => [
@@ -83,8 +84,14 @@ class CartController extends Controller
                 'product_step_id' => $cart->product_step_id,
                 'product_steps' => $cart->product->productSteps,
                 'payment' => $cart->payment,
+                'certificate' => $cart->certificate,
                 'cart_ref' => $cart->cart_ref,
                 'deleted_at' => $cart->deleted_at,
+                'documents' => [
+                    'certificate_final' => Storage::disk('private')->exists($certificate_folder . '/' . 'certificate-final.pdf') ? route('privateFiles', $certificate_folder . '/' . 'certificate-final.pdf') : null,
+                    'declarations' => Storage::disk('private')->exists($certificate_folder . '/' . 'declarations.pdf') ? route('privateFiles', $certificate_folder . '/' . 'declarations.pdf') : null,
+                    'payment_certificate' => Storage::disk('private')->exists($certificate_folder . '/' . 'payment-certificate.pdf') ? route('privateFiles', $certificate_folder . '/' . 'payment-certificate.pdf') : null,
+                ]
             ],
             'payment_gateways' => $payment_gateways,
             'product_counters' => $cart->product->productCounters,

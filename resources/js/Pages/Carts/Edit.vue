@@ -122,6 +122,53 @@
         </form>
       </div>
     </div>
+
+    <h2 class="mt-12 text-2xl font-bold">{{ __("Certificate") }}</h2>
+
+    <div class="mt-6 bg-white rounded shadow overflow-x-auto">
+      <div class="bg-white rounded-md shadow overflow-hidden">
+        <div v-if="!cart.certificate" class="flex flex-wrap p-8">No certificate yet.</div>
+        <div v-if="cart.certificate" class="flex flex-wrap p-8">Certificate data</div>
+      </div>
+    </div>
+
+    <h2 class="mt-12 text-2xl font-bold">{{ __("Documents") }}</h2>
+
+    <div class="mt-6 bg-white rounded shadow overflow-x-auto">
+      <div class="bg-white rounded-md shadow overflow-hidden">
+        <div v-if="!cart.documents.declarations" class="flex flex-wrap p-8">
+          No declaration yet.
+        </div>
+        <div v-if="cart.documents.declarations" class="flex flex-wrap p-8">
+          <a :href="cart.documents.declarations" target="_blank" class="btn-gol-primary"
+            >Declarations</a
+          >
+        </div>
+        <div v-if="!cart.documents.payment_certificate" class="flex flex-wrap p-8">
+          No payment certificate yet.
+        </div>
+        <div v-if="cart.documents.payment_certificate" class="flex flex-wrap p-8">
+          <a
+            :href="cart.documents.payment_certificate"
+            target="_blank"
+            class="btn-gol-primary"
+            >Payment Certificate</a
+          >
+        </div>
+        <div v-if="!cart.documents.certificate_final" class="flex flex-wrap p-8">
+          No certificate yet.
+        </div>
+        <div v-if="cart.documents.certificate_final" class="flex flex-wrap p-8">
+          <a
+            :href="cart.documents.certificate_final"
+            target="_blank"
+            class="btn-gol-primary"
+            >Certificate</a
+          >
+        </div>
+      </div>
+    </div>
+
     <h2 class="mt-12 text-2xl font-bold">{{ __("Related User") }}</h2>
     <div class="mt-6 bg-white rounded shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
