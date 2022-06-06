@@ -1,6 +1,6 @@
 <template>
   <div>
-    <!-- <div class="mb-4">
+    <div class="mb-4">
       <Link class="group flex items-center py-3" :href="route('dashboard')">
         <icon
           name="dashboard"
@@ -21,7 +21,7 @@
           {{ __("Dashboard") }}
         </div>
       </Link>
-    </div> -->
+    </div>
     <div class="mb-4">
       <Link class="group flex items-center py-3" :href="route('products')">
         <icon
