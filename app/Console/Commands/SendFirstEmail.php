@@ -45,11 +45,13 @@ class SendFirstEmail extends Command
         $num_of_days = 14;
         $target_date = Carbon::now()->addDays($num_of_days)->format('Y-m-d');
 
-        $carts = Cart::with('user')
+        $carts = Cart::with(['user', 'user.clientDetails'])
             ->whereDate('renewal_date', '<', $target_date)
             ->whereHas('user', function ($q) {
-                // TODO aggiungere ignorare clienti con with_accident a true
                 $q->whereNull('email_verified_at');
+            })
+            ->whereHas('user.clientDetails', function ($q) {
+                $q->where('with_accident', 0);
             })
             ->get();
 
