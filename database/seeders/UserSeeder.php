@@ -41,6 +41,7 @@ class UserSeeder extends Seeder
             'account_id' => $account->id,
             'first_name' => 'Mario',
             'last_name' => 'Rossi',
+            'email' => 'posta@golinucci.it',
             'owner' => true,
         ]);
 
