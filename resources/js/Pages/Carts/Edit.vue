@@ -30,6 +30,11 @@
             class="pb-8 pr-6 w-full"
           ></div>
         </div>
+        <div>
+          <div class="pb-8 pr-6 w-full">
+            <a :href="cartUrl" target="_blank" class="btn-gol-primary">Cart Url</a>
+          </div>
+        </div>
       </div>
       <form @submit.prevent="update">
         <div class="flex flex-wrap -mb-8 -mr-6 p-8">
@@ -267,6 +272,11 @@ export default {
         total_payable: this.cart.payment?.total_payable,
       }),
     };
+  },
+  computed: {
+    cartUrl() {
+      return "/products/" + this.cart.product.id + "/buy/" + this.cart.cart_ref;
+    },
   },
   methods: {
     update() {
