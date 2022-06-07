@@ -48,6 +48,7 @@ class SendFirstEmail extends Command
         $carts = Cart::with('user')
             ->whereDate('renewal_date', '<', $target_date)
             ->whereHas('user', function ($q) {
+                // TODO aggiungere ignorare clienti con with_accident a true
                 $q->whereNull('email_verified_at');
             })
             ->get();
