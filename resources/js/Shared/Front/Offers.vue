@@ -66,13 +66,14 @@
               v-text="$filters.formatPrice(parseFloat(offer.total_payable))"
             ></td>
             <td class="p-4 border border-primary">
-              <Link
+              <a
                 :href="offer.contract.contract_filepath"
                 target="_blank"
                 class="btn-gol"
+                download
               >
                 {{ __("Download") }}
-              </Link>
+              </a>
             </td>
           </tr>
         </tbody>
