@@ -90,6 +90,7 @@ class SiteController extends Controller
                 'name' => $product->name,
                 'type' => Str::slug($product->productType->name, '-'),
                 'detailed_description' => $product->detailed_description,
+                'conditions' => $product->conditions,
                 'conditional_fields' => $product->conditionalFields,
                 'hex_color' => $product->hex_color,
                 'offers' => $product->productOffers,
