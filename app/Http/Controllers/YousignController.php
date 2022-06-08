@@ -32,6 +32,9 @@ class YousignController extends Controller
     // procedure.finished
     public function yousign_procedure_finished(Request $request)
     {
+        activity()
+            ->event('TEST_signature_procedure_finished')
+            ->log("Yousign hit received");
         if (!empty($request->header('x-cart-header'))) {
             $cart_header = $request->header('x-cart-header');
             $cart = Cart::where('cart_ref', $cart_header)->first();
