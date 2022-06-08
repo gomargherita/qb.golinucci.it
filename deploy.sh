@@ -9,9 +9,6 @@ php artisan down
 # Update git project
 git pull origin $(git rev-parse --abbrev-ref HEAD)
 
-# Fix permissions
-sudo chown -R mmasi:www-data /var/www/stagingqb.golinucci.it/
-
 # Run pending migrations:
 php artisan migrate
 
@@ -26,6 +23,9 @@ sudo rm -rf storage/framework/views/*
 
 # Update assets
 npm update && npm run prod
+
+# Fix permissions
+sudo chown -R mmasi:www-data /var/www/stagingqb.golinucci.it/
 
 # Set application online
 php artisan up
