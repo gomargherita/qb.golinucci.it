@@ -548,7 +548,7 @@ class SiteBuyProductController extends Controller
             ];
         } catch (Throwable $e) {
             activity()
-                ->causedBy($user)
+                ->causedBy(auth()->user())
                 ->event('certificate_generation')
                 ->log("An error occurred on generating a certificate on initialization;" . $e->getMessage());
             return [
@@ -637,7 +637,7 @@ class SiteBuyProductController extends Controller
             ];
         } catch (Throwable $e) {
             activity()
-                ->causedBy($user)
+                ->causedBy(auth()->user())
                 ->event('certificate_generation')
                 ->log("An error occurred on generating a certificate on validation;" . $e->getMessage());
             return [
@@ -665,7 +665,7 @@ class SiteBuyProductController extends Controller
             ];
         } catch (Throwable $e) {
             activity()
-                ->causedBy($user)
+                ->causedBy(auth()->user())
                 ->event('certificate_generation')
                 ->log("An error occurred on generating a certificate on upload;" . $e->getMessage());
             return [
@@ -694,7 +694,7 @@ class SiteBuyProductController extends Controller
             ];
         } catch (Throwable $e) {
             activity()
-                ->causedBy($user)
+                ->causedBy(auth()->user())
                 ->event('certificate_generation')
                 ->log("An error occurred on generating a certificate on transaction;" . $e->getMessage());
             return [
@@ -724,7 +724,7 @@ class SiteBuyProductController extends Controller
             ];
         } catch (Throwable $e) {
             activity()
-                ->causedBy($user)
+                ->causedBy(auth()->user())
                 ->event('certificate_generation')
                 ->log("An error occurred on generating a certificate on Download;" . $e->getMessage());
             return [
