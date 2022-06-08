@@ -38,7 +38,6 @@ class YousignController extends Controller
     // procedure.finished
     public function yousign_procedure_finished(Request $request)
     {
-        
         if (!empty($request->header('x-cart-header'))) {
             $cart_header = $request->header('x-cart-header');
             $cart = Cart::where('cart_ref', $cart_header)->first();
@@ -51,11 +50,10 @@ class YousignController extends Controller
                     ->event('signature_procedure_finished')
                     ->log("Yousign procedure finished for cart $cart->cart_ref - certificate {$cart->certificate->certificate_no};");
                 $request_content = json_decode($request->getContent(), true);
-                activity()
-                    ->event('TEST_signature_procedure_finished')
-                    ->log($request->getContent());
-                    return;
-                $file_id = $request_content['procedureFinished']['file']['id'];
+                
+                $files = $request_content['procedure']['files'];
+                $file_id = $files[0]['id'];
+
                 $certificate_folder = 'certificates/user_' . $cart->user->id . '/cart_' . $cart->id;
                 $client = new YousignApiLaravel();
                 $fileMemberSigned = $client->fileSigned($file_id);
