@@ -109,14 +109,14 @@ class Cart extends Model
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
             $query->where('carts.cart_ref', 'like', '%' . $search . '%')
-            // ->orWhere('client_details.first_name', 'like', '%' . $search . '%')
-            // ->orWhere('client_details.last_name', 'like', '%' . $search . '%')
-            ->orWhere('users.email', 'like', '%' . $search . '%')
-            ->orWhere('users.first_name', 'like', '%' . $search . '%')
-            ->orWhere('users.last_name', 'like', '%' . $search . '%')
-            ->orWhereHas('productStep', function($query) use ($search){
-                $query->where('step_name', 'like', '%' . $search . '%');
-            });
+                // ->orWhere('client_details.first_name', 'like', '%' . $search . '%')
+                // ->orWhere('client_details.last_name', 'like', '%' . $search . '%')
+                ->orWhere('users.email', 'like', '%' . $search . '%')
+                ->orWhere('users.first_name', 'like', '%' . $search . '%')
+                ->orWhere('users.last_name', 'like', '%' . $search . '%')
+                ->orWhereHas('productStep', function ($query) use ($search) {
+                    $query->where('step_name', 'like', '%' . $search . '%');
+                });
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {
                 $query->withTrashed();
@@ -134,10 +134,15 @@ class Cart extends Model
             // set renewal date empty // se vuoto non arriva da prima importazione via csv, quindi cliente nuovo
             if (empty($cart->renewal_date)) {
                 // get renewal date if exists in previous cart
-                $last_prev_certificate = Certificate::select(['end_validity_date'])->where([
-                    // controllo su product
-                    'product_id' => $cart->product->id,
-                ])->latest()->first();
+                $last_prev_certificate = Certificate::query()
+                    ->with('cart')
+                    ->select(['end_validity_date'])->where([
+                        // controllo su product
+                        'product_id' => $cart->product->id,
+                    ])->whereHas('cart', function ($q) {
+                        $q->where('user_id', auth()->user()->id);
+                    })
+                    ->latest()->first();
 
                 if ($last_prev_certificate) {
                     $cart->renewal_date = Carbon::parse($last_prev_certificate->end_validity_date)->toDateString();
@@ -146,10 +151,15 @@ class Cart extends Model
 
             // se non vuoto può arrivare dall'excel di importazione rinnovi
             if (empty($cart->retroactivity)) {
-                $last_prev_certificate = Certificate::select(['retroactivity'])->where([
-                    // controllo su product
-                    'product_id' => $cart->product->id,
-                ])->latest()->first();
+                $last_prev_certificate = Certificate::query()
+                    ->with('cart')
+                    ->select(['retroactivity'])->where([
+                        // controllo su product
+                        'product_id' => $cart->product->id,
+                    ])->whereHas('cart', function ($q) {
+                        $q->where('user_id', auth()->user()->id);
+                    })->latest()
+                    ->first();
 
                 if ($last_prev_certificate) {
                     $cart->retroactivity = Carbon::parse($last_prev_certificate->retroactivity)->toDateString();
