@@ -87,9 +87,9 @@ class YousignApiService
             //         //"X-Custom-Header" => $type . '-signature',
             //     ]);
             // } else {
-            $client->addWebhook('member.finished', route('front.yousign.member_finished', $this->cart), 'GET', [
-                "X-Cart-Header" => $this->cart->cart_ref,
-            ]);
+            // $client->addWebhook('member.finished', route('front.yousign.member_finished', $this->cart), 'GET', [
+            //     "X-Cart-Header" => $this->cart->cart_ref,
+            // ]);
             $client->addWebhook('procedure.finished', route('front.yousign.procedure_finished', $this->cart), 'GET', [
                 "X-Cart-Header" => $this->cart->cart_ref,
             ]);

@@ -12,22 +12,28 @@ class YousignController extends Controller
 {
 
     // member.finished
-    public function yousign_member_finished(Request $request)
-    {
-        if (!empty($request->header('x-cart-header'))) {
-            $cart_header = $request->header('x-cart-header');
-            $cart = Cart::where('cart_ref', $cart_header)->first();
-            if ($cart && $cart->signature->status == 'server_stamp_ok') {
-                $signature = $cart->signature;
-                $signature->status = 'member_ok';
-                $signature->save();
-                activity()
-                    ->on($signature)
-                    ->event('signature_member_finished')
-                    ->log("Yousign member sign finished for cart $cart->cart_ref - certificate {$cart->certificate->certificate_no};");
-            }
-        }
-    }
+    /** 
+     * problema notifica contemporanea a procedure.finished
+     * da yousign Stefano Negrini suggerisce:
+     * - quando avete un solo firmatario, settare il webhook a livello di member e procedura è ridondante, non serve (a voi di scegliere se utilizzare solo uno o l'altro)
+     * - quando avete più firmatari potete ma non siete obbligati ad utilizzarli entrambi (e.g. con procedura ne riceverete solo uno al completamento del tutto - con firmatari paralleli, o potete considerare la procedura completa quando tutti i webhook member sono stati effettuatidi usare direttamente 
+     */
+    // public function yousign_member_finished(Request $request)
+    // {
+    //     if (!empty($request->header('x-cart-header'))) {
+    //         $cart_header = $request->header('x-cart-header');
+    //         $cart = Cart::where('cart_ref', $cart_header)->first();
+    //         if ($cart && $cart->signature->status == 'server_stamp_ok') {
+    //             $signature = $cart->signature;
+    //             $signature->status = 'member_ok';
+    //             $signature->save();
+    //             activity()
+    //                 ->on($signature)
+    //                 ->event('signature_member_finished')
+    //                 ->log("Yousign member sign finished for cart $cart->cart_ref - certificate {$cart->certificate->certificate_no};");
+    //         }
+    //     }
+    // }
 
     // procedure.finished
     public function yousign_procedure_finished(Request $request)
@@ -38,7 +44,7 @@ class YousignController extends Controller
         if (!empty($request->header('x-cart-header'))) {
             $cart_header = $request->header('x-cart-header');
             $cart = Cart::where('cart_ref', $cart_header)->first();
-            if ($cart && $cart->signature->status == 'member_ok') {
+            if ($cart && $cart->signature->status == 'server_stamp_ok') {
                 $signature = $cart->signature;
                 $signature->status = 'procedure_finished';
                 $signature->save();
@@ -68,15 +74,13 @@ class YousignController extends Controller
         if (!empty($request->header('x-cart-header'))) {
             $cart_header = $request->header('x-cart-header');
             $cart = Cart::where('cart_ref', $cart_header)->first();
-            if ($cart && $cart->signature->status == 'member_ok') {
-                $signature = $cart->signature;
-                $signature->status = 'procedure_error';
-                $signature->save();
-                activity()
-                    ->on($signature)
-                    ->event('signature_procedure_error')
-                    ->log("Yousign procedure error for cart $cart->cart_ref - certificate {$cart->certificate->certificate_no};");
-            }
+            $signature = $cart->signature;
+            $signature->status = 'procedure_error';
+            $signature->save();
+            activity()
+                ->on($signature)
+                ->event('signature_procedure_error')
+                ->log("Yousign procedure error for cart $cart->cart_ref - certificate {$cart->certificate->certificate_no};");
         }
     }
 
