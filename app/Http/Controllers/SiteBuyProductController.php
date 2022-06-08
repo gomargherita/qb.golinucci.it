@@ -117,19 +117,20 @@ class SiteBuyProductController extends Controller
 
         $num_additional_fields = $product->conditionalFields->count();
 
+        // TODO vedere come sfruttare UpdateClientDetailsRequest invece che dover ridefinire le regole uguali
         $validated = $request->validate([
             'user_id' => ['required'],
-            'first_name' => ['required'],
-            'last_name' => ['required'],
-            'fiscal_code' => ['required'],
-            'gender' => ['required'],
+            'first_name' => ['required', 'max:25'],
+            'last_name' => ['required', 'max:25'],
+            'fiscal_code' => ['required', 'max:16'],
+            'gender' => ['required', 'in:M,F', 'max:1'],
             'dob' => ['date'],
-            'address' => ['required'],
-            'city' => ['required'],
-            'province' => ['required'],
-            'country' => ['required'],
-            'postal_code' => ['required'],
             'phone' => ['required', 'max:30', 'phone:IT,mobile'],
+            'address' => ['required', 'max:150'],
+            'city' => ['required', 'max:50'],
+            'province' => ['required', 'max:2'],
+            'country' => ['required', 'max:2'],
+            'postal_code' => ['required', 'max:5'],
             'product_client_details' => ['required', 'array', 'min:' . $num_additional_fields, 'max:' . $num_additional_fields],
             'product_client_details.*.pivot.selected_field_value' => ['required'],
             'confirmation' => ['accepted']
