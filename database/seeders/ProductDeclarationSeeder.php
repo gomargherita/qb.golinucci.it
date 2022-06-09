@@ -119,7 +119,7 @@ class ProductDeclarationSeeder extends Seeder
             ),
             array(
                 "declaration_id" => 14,
-                "declaration" => "Di approvare il questionario di valutazione del Test di Coerenza del contratto di R.C. Professionale Colpa Grave ai sensi dell’art. 58 del Regolamento IVASS n. 40 del 02/08/2018<p><b>Esigenze Assicurative</b></p><ul><li>Protezione dalla Responsabilità Civile, ai sensi della legge 24/17 (c.d. Legge Gelli), nello svolgimento dell'attività lavorativa, che provocano DANNI MATERIALI a Terzi quali lesioni a persone o danni a cose</li><li>Protezione dalla Responsabilità Civile, ai sensi della legge 24/17 (c.d. Legge Gelli), nello svolgimento dell'attività lavorativa, che provocano DANNI IMMATERIALI a Terzi, come da indicazioni sulla proposta di assicurazione</li></ul>",
+                "declaration" => "Di approvare il questionario di valutazione del Test di Coerenza del contratto di R.C. Professionale Colpa Grave ai sensi dell’art. 58 del Regolamento IVASS n. 40 del 02/08/2018 definito dalle <b>Esigenze Assicurative</b>:<br><ul><li>Protezione dalla Responsabilità Civile, ai sensi della legge 24/17 (c.d. Legge Gelli), nello svolgimento dell'attività lavorativa, che provocano DANNI MATERIALI a Terzi quali lesioni a persone o danni a cose</li><li>Protezione dalla Responsabilità Civile, ai sensi della legge 24/17 (c.d. Legge Gelli), nello svolgimento dell'attività lavorativa, che provocano DANNI IMMATERIALI a Terzi, come da indicazioni sulla proposta di assicurazione</li></ul>",
                 "notes" => NULL,
                 "declaration_id" => 14,
                 "customer_type_id" => 6,
@@ -127,8 +127,7 @@ class ProductDeclarationSeeder extends Seeder
             ),
             array(
                 "declaration_id" => 14,
-                "declaration" => "Di confermare che le dichiarazioni rese sono conformi a verità di non aver omesso alcun elemento influente sulla
-                valutazione del rischio",
+                "declaration" => "Di confermare che le dichiarazioni rese sono conformi a verità di non aver omesso alcun elemento influente sulla valutazione del rischio",
                 "notes" => NULL,
                 "declaration_id" => 14,
                 "customer_type_id" => 6,
