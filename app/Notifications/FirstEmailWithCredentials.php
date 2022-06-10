@@ -14,18 +14,6 @@ class FirstEmailWithCredentials extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    protected $cart;
-
-    /**
-     * Create a new notification instance.
-     *
-     * @return void
-     */
-    public function __construct(Cart $cart)
-    {
-        $this->cart = $cart;
-    }
-
     /**
      * Get the notification's delivery channels.
      *
@@ -45,15 +33,17 @@ class FirstEmailWithCredentials extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-        $user = $this->cart->user;
+        $user = $notifiable;
+        $cart = $this->cart;
         Log::debug($user, ['notification']);
+        Log::debug($cart, ['notification cart']);
         // generate a new password, hash it and save
         $uncrypted_password = Str::random(10);
         $user->password = $uncrypted_password;
         $user->email_verified_at = now();
         $user->save();
-        $url = route('front.product.buy', [$this->cart->product->id, $this->cart->cart_ref]);
-        $renewal_date = $this->cart->renewal_date->format('d/m/Y');
+        $url = route('front.product.buy', [$cart->product->id, $cart->cart_ref]);
+        $renewal_date = $cart->renewal_date->format('d/m/Y');
 
         return (new MailMessage)
             ->subject('Q&B Golinucci - Rinnova la tua polizza')

@@ -6,6 +6,7 @@ use App\Models\Cart;
 use App\Notifications\FirstEmailWithCredentials;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class SendFirstEmail extends Command
 {
@@ -56,6 +57,7 @@ class SendFirstEmail extends Command
         $carts = $carts_query->get();
         foreach($carts as $cart){
             $user = $cart->user;
+            Log::debug($user, ['command']);
             $user->notify(new FirstEmailWithCredentials($cart));
             $this->info(now() . ': first email sent to ' . $user->email);
         }
