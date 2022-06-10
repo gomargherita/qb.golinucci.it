@@ -58,6 +58,7 @@ class SendFirstEmail extends Command
         foreach($carts as $cart){
             $user = $cart->user;
             Log::debug($user, ['command']);
+            Log::debug($cart, ['command cart']);
             $user->notify(new FirstEmailWithCredentials($cart));
             $this->info(now() . ': first email sent to ' . $user->email);
         }
