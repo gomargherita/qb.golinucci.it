@@ -2,11 +2,13 @@
 
 namespace App\Notifications;
 
+use App\Models\Cart;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Str;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\Log;
 
 class FirstEmailWithCredentials extends Notification implements ShouldQueue
 {
@@ -19,7 +21,7 @@ class FirstEmailWithCredentials extends Notification implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($cart)
+    public function __construct(Cart $cart)
     {
         $this->cart = $cart;
     }
@@ -44,6 +46,7 @@ class FirstEmailWithCredentials extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         $user = $this->cart->user;
+        Log::debug($user);
         // generate a new password, hash it and save
         $uncrypted_password = Str::random(10);
         $user->password = $uncrypted_password;
