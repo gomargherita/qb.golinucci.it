@@ -54,11 +54,14 @@ class SendFirstEmail extends Command
             ->where('client_details.with_accident', 0);
 
         $carts = $carts_query->get();
-        $carts->each(function ($cart) {
+        foreach($carts as $cart){
             $user = $cart->user;
             $user->notify(new FirstEmailWithCredentials($cart));
-            $this->info(now() . ': first email sent to ' . $cart->user->email);
-        });
+            $this->info(now() . ': first email sent to ' . $user->email);
+        }
+        // $carts->each(function ($cart) {
+            
+        // });
         $this->info('#########################' . now() . ': END SCHEDULE');
     }
 }
