@@ -48,11 +48,19 @@ class SendFirstEmail extends Command
         $target_date = Carbon::now()->addDays($num_of_days)->format('Y-m-d');
 
         $carts_query = Cart::with(['user', 'user.clientDetails'])
-            ->join('users', 'carts.user_id', '=',  'users.id')
-            ->join('client_details', 'carts.user_id', '=',  'client_details.user_id')
-            ->whereDate('carts.renewal_date', '<=', $target_date)
-            ->whereNull('users.email_verified_at')
-            ->where('client_details.with_accident', 0);
+            // ->join('users', 'carts.user_id', '=',  'users.id')
+            // ->join('client_details', 'carts.user_id', '=',  'client_details.user_id')
+            // ->whereDate('carts.renewal_date', '<=', $target_date)
+            // ->whereNull('users.email_verified_at')
+            // ->where('client_details.with_accident', 0);
+
+            ->whereDate('renewal_date', '<=', $target_date)
+            ->whereHas('user', function ($q) {
+                $q->whereNull('email_verified_at');
+            })
+            ->whereHas('user.clientDetails', function ($q) {
+                $q->where('with_accident', 0);
+            });
 
         $carts = $carts_query->get();
         foreach($carts as $cart){
