@@ -6,6 +6,7 @@ use App\Http\Requests\StoreCartRequest;
 use App\Http\Requests\UpdateCartRequest;
 use App\Models\Cart;
 use App\Models\PaymentGateway;
+use App\Models\ProductStep;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
@@ -22,10 +23,11 @@ class CartController extends Controller
     public function index()
     {
         return Inertia::render('Carts/Index', [
-            'filters' => Request::all('search', 'trashed'),
+            'filters' => Request::all('search', 'steps', 'trashed'),
+            'all_product_steps' => ProductStep::all(), // TODO questa cosa va rivalutata quando verranno creati nuovi prodotti
             'carts' => Auth::user()->account->carts()
                 ->orderByDate()
-                ->filter(Request::only('search', 'trashed'))
+                ->filter(Request::only('search', 'steps', 'trashed'))
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($cart) => [

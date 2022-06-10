@@ -46,7 +46,7 @@ class FirstEmailWithCredentials extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         $user = $this->cart->user;
-        Log::debug($user);
+        Log::debug($user, ['notification']);
         // generate a new password, hash it and save
         $uncrypted_password = Str::random(10);
         $user->password = $uncrypted_password;
