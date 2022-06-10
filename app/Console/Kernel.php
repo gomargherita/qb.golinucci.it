@@ -16,10 +16,11 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('mail:first_send')
-            ->dailyAt('08:00')
-            ->appendOutputTo('send_first_email.log');
+            // ->dailyAt('08:00') // scatta alle 8 del mattino
+            ->everyTwoMinutes()
+            ->appendOutputTo('send_first_email.log')
             //->emailOutputOnFailure('masiorama@gmail.com');
-            //->environments(['staging', 'production']);
+            ->environments(['staging', 'production']);
     }
 
     /**
