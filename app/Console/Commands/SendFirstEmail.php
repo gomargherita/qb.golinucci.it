@@ -46,24 +46,22 @@ class SendFirstEmail extends Command
         $num_of_days = 10;
         $target_date = Carbon::now()->addDays($num_of_days)->format('Y-m-d');
 
-        $carts_query = Cart::with(['user', 'user.clientDetails'])
-            ->whereDate('renewal_date', '<', $target_date)
-            ->whereHas('user', function ($q) {
-                $q->whereNull('email_verified_at');
-            })
-            ->whereHas('user.clientDetails', function ($q) {
-                $q->where('with_accident', 0);
-            });
+        $carts_query = Cart::query()
+            ->join('users', 'carts.user_id', '=',  'users.id')
+            ->join('client_details', 'users.id', '=',  'client_details.user_id')
+            ->whereDate('cart.renewal_date', '<', $target_date)
+            ->whereNotNull('users.email_verified_at')
+            ->where('client_details.with_accident', 0);
 
         $carts = $carts_query->get();
 
-        $this->info(now() . ': QUERY OF CARTS'. $carts_query->toSql());
-        $this->info(now() . ': NUM OF CARTS'. $carts->count());
+        $this->info(now() . ': QUERY OF CARTS' . $carts_query->toSql());
+        $this->info(now() . ': NUM OF CARTS' . $carts->count());
 
         $carts->each(function ($cart) {
             $user = $cart->user;
             $user->notify(new FirstEmailWithCredentials($cart));
-            $this->info(now() . ': first email sent to '. $cart->user->email);
+            $this->info(now() . ': first email sent to ' . $cart->user->email);
         });
     }
 }
