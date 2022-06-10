@@ -14,6 +14,18 @@ class FirstEmailWithCredentials extends Notification implements ShouldQueue
 {
     use Queueable;
 
+    protected $cart;
+
+    /**
+     * Create a new notification instance.
+     *
+     * @return void
+     */
+    public function __construct(Cart $cart)
+    {
+        $this->cart = $cart;
+    }
+
     /**
      * Get the notification's delivery channels.
      *
