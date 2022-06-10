@@ -55,14 +55,14 @@
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Color"
           />
-          <file-input
+          <!-- <file-input
             v-model="form.image"
             :error="form.errors.image"
             class="pb-8 pr-6 w-full lg:w-1/2"
             type="file"
             accept="image/*"
             label="Image"
-          />
+          /> -->
           <select-input
             v-model="form.active"
             :error="form.errors.active"
@@ -119,7 +119,7 @@ export default {
         post_declarations: "",
         payments_description: "",
         hex_color: "",
-        image: null,
+        // image: null,
         active: 1,
       }),
     };

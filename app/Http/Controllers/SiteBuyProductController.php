@@ -524,7 +524,7 @@ class SiteBuyProductController extends Controller
     {
         try {
             $certificate = $cart->certificate;
-            // genero e salvo il pdf con estratto conto dell'acquisto
+            // genero e salvo il pdf con proforma fattura dell'acquisto
             $paymentToPdf = new PaymentCertificateToPdfService($cart);
             $paymentToPdf->generateAndPersist();
             $user = auth()->user();

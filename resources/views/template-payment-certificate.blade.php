@@ -67,7 +67,7 @@
             {!! $client_details !!}<br>
         </div>
         <div style="text-align: center;">
-            <h1>ESTRATTO CONTO</h1>
+            <h1>PROFORMA FATTURA</h1>
         </div>
         <div>
             Data: {{ $payment_date }}
@@ -94,7 +94,7 @@
                     <td>(I)</td>
                 </tr>
                 <tr>
-                    <td colspan="4">ASSISTENZA PER GESTIONE ED EMISSIONE</td>
+                    <td colspan="4">COSTI DI GESTIONE ED EMISSIONE</td>
                     <td>{{ $admin_fee }}</td>
                     <td>(II)</td>
                 </tr>

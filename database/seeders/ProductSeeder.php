@@ -24,7 +24,7 @@ class ProductSeeder extends Seeder
                 'account_id' => '1',
                 'product_type_id' => '1',
                 'pre_declarations' => 'Io sottoscritto/a in qualità di assicurato della polizza RC colpa Grave e Patrimoniale, in ottemperanza del Regolamento IVASS n. 40 del 02/08/2018 (Modificato ed Integrato dal Provvedimento IVASS N.97 del 04/08/2020), prima di essere vincolato da un contratto offerto mediante tecniche di comunicazione a distanza, dichiaro:',
-                'post_declarations' => 'Testo post dichiarazioni',
+                'post_declarations' => '',
                 'hex_color' => '#6CB8EB',
                 'conditions' => '<p>
             La polizza è aggiornata alle disposizioni contenute nella Legge 24/17 (Legge Gelli),

@@ -71,7 +71,7 @@
             <option :value="1" :selected="form.active == 1">{{ __("Yes") }}</option>
             <option :value="0" :selected="form.active == 0">{{ __("No") }}</option>
           </select-input>
-          <file-input
+          <!-- <file-input
             v-model="form.image"
             :error="form.errors.image"
             class="pb-8 pr-6 w-full lg:w-1/2"
@@ -79,7 +79,7 @@
             accept="image/*"
             label="Image"
             @input="form.image = $event.target.files[0]"
-          />
+          /> -->
         </div>
         <h2 class="text-2xl font-bold flex flex-wrap -mb-8 -mr-6 p-8">
           {{ __("Declarations") }}
@@ -306,7 +306,7 @@ export default {
         post_declarations: this.product.post_declarations,
         payments_description: this.product.payments_description,
         hex_color: this.product.hex_color,
-        image: this.product.image,
+        // image: this.product.image,
         active: this.product.active,
       }),
     };
@@ -314,7 +314,7 @@ export default {
   methods: {
     update() {
       this.form.post(`/admin/products/${this.product.id}`, {
-        onSuccess: () => this.form.reset("image"),
+        // onSuccess: () => this.form.reset("image"),
       });
     },
     destroy() {

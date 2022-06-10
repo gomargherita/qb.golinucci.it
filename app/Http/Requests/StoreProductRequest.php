@@ -30,10 +30,10 @@ class StoreProductRequest extends FormRequest
             'detailed_description' => ['required', 'not_regex:/^(<p><\/p>)$/i'],
             'conditions' => ['required', 'not_regex:/^(<p><\/p>)$/i'],
             'pre_declarations' => ['required', 'not_regex:/^(<p><\/p>)$/i'],
-            'post_declarations' => ['required', 'not_regex:/^(<p><\/p>)$/i'],
+            'post_declarations' => ['not_regex:/^(<p><\/p>)$/i'],
             'payments_description' => ['required', 'not_regex:/^(<p><\/p>)$/i'],
             'hex_color' => ['required'],
-            'image' => ['required', 'image'],
+            //'image' => ['required', 'image'],
             'active' => ['required', 'boolean'],
         ];
     }
