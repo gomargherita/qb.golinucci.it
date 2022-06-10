@@ -4,6 +4,11 @@
     <h1 class="mb-8 text-3xl font-bold">{{ __("Carts") }}</h1>
     <div class="flex items-center justify-between mb-6">
       <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
+        <label class="block text-gray-700">{{ __("Current Step") }}:</label>
+        <select v-model="form.steps" class="form-select mt-1 w-full">
+          <option :value="null" />
+          <option v-for="product_step in all_product_steps" :value="product_step.id">{{ product_step.step_number }}. {{ product_step.step_name }}</option>
+        </select>
         <label class="block text-gray-700">{{ __("Trashed") }}:</label>
         <select v-model="form.trashed" class="form-select mt-1 w-full">
           <option :value="null" />
@@ -127,6 +132,7 @@ export default {
   layout: Layout,
   props: {
     filters: Object,
+    all_product_steps: Array,
     carts: Object,
   },
   data() {
@@ -134,6 +140,7 @@ export default {
       form: {
         search: this.filters.search,
         trashed: this.filters.trashed,
+        steps: this.filters.steps,
       },
     };
   },

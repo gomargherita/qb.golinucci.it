@@ -21,9 +21,6 @@ class ConfirmedOfflinePayment extends Notification
     public function __construct($payment)
     {
         $this->payment = $payment;
-
-        if (App::environment(['local', 'staging'])) {
-        }
     }
 
     /**

@@ -113,10 +113,12 @@ class Cart extends Model
                 // ->orWhere('client_details.last_name', 'like', '%' . $search . '%')
                 ->orWhere('users.email', 'like', '%' . $search . '%')
                 ->orWhere('users.first_name', 'like', '%' . $search . '%')
-                ->orWhere('users.last_name', 'like', '%' . $search . '%')
-                ->orWhereHas('productStep', function ($query) use ($search) {
-                    $query->where('step_name', 'like', '%' . $search . '%');
-                });
+                ->orWhere('users.last_name', 'like', '%' . $search . '%');
+                // ->orWhereHas('productStep', function ($query) use ($search) {
+                //     $query->where('step_name', 'like', '%' . $search . '%');
+                // });
+        })->when($filters['steps'] ?? null, function ($query, $step) {
+            $query->where('carts.product_step_id', $step);
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {
                 $query->withTrashed();
