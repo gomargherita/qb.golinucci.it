@@ -45,28 +45,32 @@ class FirstEmailWithCredentials extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-        $user = $notifiable;
-        $cart = $this->cart;
-        Log::debug($user, ['notification']);
-        Log::debug($cart, ['notification cart']);
-        // generate a new password, hash it and save
-        $uncrypted_password = Str::random(10);
-        $user->password = $uncrypted_password;
-        $user->email_verified_at = now();
-        $user->save();
-        $url = route('front.product.buy', [$cart->product->id, $cart->cart_ref]);
-        $renewal_date = $cart->renewal_date->format('d/m/Y');
+        try {
+            $user = $notifiable;
+            $cart = $this->cart;
+            Log::debug($user, ['notification']);
+            Log::debug($cart, ['notification cart']);
+            // generate a new password, hash and save it 
+            $uncrypted_password = Str::random(10);
+            $user->password = $uncrypted_password;
+            $user->email_verified_at = now();
+            $user->save();
+            $url = route('front.product.buy', [$cart->product->id, $cart->cart_ref]);
+            $renewal_date = $cart->renewal_date->format('d/m/Y');
 
-        return (new MailMessage)
-            ->subject('Q&B Golinucci - Rinnova la tua polizza')
-            ->greeting("Salve $user->name")
-            ->line("Il $renewal_date scadrà la tua polizza.")
-            ->line("Per procedere al rinnovo ti basta accedere al nostro sito con le seguenti credenziali:")
-            ->line("Email: $user->email")
-            ->line("Password: $uncrypted_password")
-            ->line("Clicca sul pulsante sottostante per iniziare la procedura di rinnovo.")
-            ->action('Rinnova la tua polizza', $url)
-            ->salutation('Grazie per aver scelto i prodotti Golinucci!');
+            return (new MailMessage)
+                ->subject('Q&B Golinucci - Rinnova la tua polizza')
+                ->greeting("Salve $user->name")
+                ->line("Il $renewal_date scadrà la tua polizza.")
+                ->line("Per procedere al rinnovo ti basta accedere al nostro sito con le seguenti credenziali:")
+                ->line("Email: $user->email")
+                ->line("Password: $uncrypted_password")
+                ->line("Clicca sul pulsante sottostante per iniziare la procedura di rinnovo.")
+                ->action('Rinnova la tua polizza', $url)
+                ->salutation('Grazie per aver scelto i prodotti Golinucci!');
+        } catch (\Exception $e) {
+            abort(500);
+        }
     }
 
     /**
