@@ -42,26 +42,23 @@ class SendFirstEmail extends Command
     {
         // grab all carts with renewal_date < 14days
         // da importare un cron tipo 30  2  1-30  jun  *  php artisan mail:first_send...
-        $this->info(now() . ': START SCHEDULE');
+        $this->info('#########################' . now() . ': START SCHEDULE');
         $num_of_days = 10;
         $target_date = Carbon::now()->addDays($num_of_days)->format('Y-m-d');
 
         $carts_query = Cart::query()
             ->join('users', 'carts.user_id', '=',  'users.id')
             ->join('client_details', 'users.id', '=',  'client_details.user_id')
-            ->whereDate('cart.renewal_date', '<', $target_date)
-            ->whereNotNull('users.email_verified_at')
+            ->whereDate('carts.renewal_date', '<=', $target_date)
+            ->whereNull('users.email_verified_at')
             ->where('client_details.with_accident', 0);
 
         $carts = $carts_query->get();
-
-        $this->info(now() . ': QUERY OF CARTS' . $carts_query->toSql());
-        $this->info(now() . ': NUM OF CARTS' . $carts->count());
-
         $carts->each(function ($cart) {
             $user = $cart->user;
             $user->notify(new FirstEmailWithCredentials($cart));
             $this->info(now() . ': first email sent to ' . $cart->user->email);
         });
+        $this->info('#########################' . now() . ': END SCHEDULE');
     }
 }

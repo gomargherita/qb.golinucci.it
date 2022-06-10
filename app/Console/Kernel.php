@@ -18,9 +18,8 @@ class Kernel extends ConsoleKernel
         $schedule->command('mail:first_send')
             // ->dailyAt('08:00') // scatta alle 8 del mattino
             ->everyTwoMinutes()
-            ->appendOutputTo('send_first_email.log')
+            ->appendOutputTo('send_first_email.log');
             //->emailOutputOnFailure('masiorama@gmail.com');
-            ->environments(['staging', 'production']);
     }
 
     /**
