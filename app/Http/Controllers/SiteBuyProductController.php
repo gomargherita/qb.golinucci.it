@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateFrontClientDetailsRequest;
 use App\Imports\MedmalRenewalsImport;
 use App\Models\Cart;
 use App\Models\Certificate;
@@ -111,35 +112,14 @@ class SiteBuyProductController extends Controller
         ]);
     }
 
-    public function store_step1(Product $product, Cart $cart, Request $request)
+    public function store_step1(Product $product, Cart $cart, UpdateFrontClientDetailsRequest $request)
     {
         $user = auth()->user();
         $cart = $this->verifyAndGetCartOrRedirect($user, $product, $cart);
-
-        $num_additional_fields = $product->conditionalFields->count();
-
-        // TODO vedere come sfruttare UpdateClientDetailsRequest invece che dover ridefinire le regole uguali
-        $validated = $request->validate([
-            'user_id' => ['required'],
-            'first_name' => ['required', 'max:25'],
-            'last_name' => ['required', 'max:25'],
-            'fiscal_code' => ['required', 'max:16'],
-            'gender' => ['required', 'in:M,F', 'max:1'],
-            'dob' => ['date'],
-            'phone' => ['required', 'max:30', 'phone:IT,mobile'],
-            'address' => ['required', 'max:150'],
-            'city' => ['required', 'max:50'],
-            'province' => ['required', 'max:2'],
-            'country' => ['required', 'max:2'],
-            'postal_code' => ['required', 'max:5'],
-            'product_client_details' => ['required', 'array', 'min:' . $num_additional_fields, 'max:' . $num_additional_fields],
-            'product_client_details.*.pivot.selected_field_value' => ['required'],
-            'confirmation' => ['accepted']
-        ]);
+        $validated = $request->validated();
 
         DB::transaction(function () use ($user, $validated, $cart) {
             $clientDetails = ClientDetail::updateOrCreate(['user_id'   => $user->id], $validated);
-
             $rebuildProductClientDetails = [];
             foreach ($validated['product_client_details'] as $el) {
                 $conditional_field_id = $el['pivot']['conditional_field_id'];
@@ -148,7 +128,6 @@ class SiteBuyProductController extends Controller
             }
 
             $clientDetails->productClientDetails()->sync($rebuildProductClientDetails);
-
             $cart->updateCartStep(2);
         });
 
