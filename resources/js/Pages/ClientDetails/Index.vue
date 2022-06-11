@@ -4,6 +4,12 @@
     <h1 class="mb-8 text-3xl font-bold">{{ __("Client details") }}</h1>
     <div class="flex items-center justify-between mb-6">
       <search-filter v-model="form.search" class="mr-4 w-full max-w-md" @reset="reset">
+        <label class="block text-gray-700">{{ __("Accidents") }}:</label>
+        <select v-model="form.with_accident" class="form-select mt-1 w-full">
+          <option :value="null" />
+          <option value="no">{{ __("Without") }} {{ __("Accident") }}</option>
+          <option value="yes">{{ __("With") }} {{ __("Accident") }}</option>
+        </select>
         <label class="block text-gray-700">{{ __("Trashed") }}:</label>
         <select v-model="form.trashed" class="form-select mt-1 w-full">
           <option :value="null" />
@@ -114,6 +120,7 @@ export default {
       form: {
         search: this.filters.search,
         trashed: this.filters.trashed,
+        with_accident: this.filters.accident,
       },
     };
   },

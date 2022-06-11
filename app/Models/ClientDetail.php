@@ -112,6 +112,12 @@ class ClientDetail extends Model
             // ->orWhereHas('accounts', function($query) use ($search){
             //     $query->where('name', 'like', '%' . $search . '%');
             // });
+        })->when($filters['with_accident'] ?? null, function ($query, $with_accident) {
+            if ($with_accident === 'yes') {
+                $query->where('client_details.with_accident', 1);
+            } elseif ($with_accident === 'no'){
+                $query->where('client_details.with_accident', 0);
+            }
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {
             if ($trashed === 'with') {
                 $query->withTrashed();

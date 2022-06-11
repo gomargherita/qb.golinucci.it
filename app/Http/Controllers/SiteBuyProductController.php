@@ -81,6 +81,7 @@ class SiteBuyProductController extends Controller
     private function step1(Product $product, Cart $cart)
     {
         $user = auth()->user();
+        // TODO verificare che i dati vengano estratti per specifico prodotto
         $clientDetails = ClientDetail::query()
             ->with('productClientDetails:field_name')
             ->where([
@@ -786,10 +787,6 @@ class SiteBuyProductController extends Controller
                 abort(401);
             }
         }
-
-        // if (empty($cart)) {
-        //     return redirect()->route('front.product.buy', ['product' => $product]);
-        // }
 
         return $cart;
     }

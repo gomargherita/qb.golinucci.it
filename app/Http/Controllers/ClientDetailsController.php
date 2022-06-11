@@ -17,10 +17,10 @@ class ClientDetailsController extends Controller
     public function index()
     {
         return Inertia::render('ClientDetails/Index', [
-            'filters' => Request::all('search', 'trashed'),
+            'filters' => Request::all('search', 'with_accident', 'trashed'),
             'clientDetails' => Auth::user()->account->clientDetails()
                 ->orderByName()
-                ->filter(Request::only('search', 'trashed'))
+                ->filter(Request::only('search', 'with_accident', 'trashed'))
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($client_detail) => [

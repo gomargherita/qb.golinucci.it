@@ -12,6 +12,8 @@
     "Manage Users": "Manage Users",
     "Logout": "Logout",
     "Dashboard": "Dashboard",
+    "With": "With",
+    "Without": "Without",
     "Cart": "Cart",
     "Carts": "Carts",
     "Payment": "Payment",
@@ -60,6 +62,8 @@
     "Province": "Province",
     "Postal Code": "Postal Code",
     "Phone": "Phone",
+    "Accidents": "Accidents",
+    "Accident": "Accident",
     "I confirm the correctness of the above data": "I confirm the correctness of the above data",
 
     "Bold": "Bold",

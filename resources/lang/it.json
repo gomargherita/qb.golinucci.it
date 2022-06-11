@@ -12,6 +12,8 @@
     "Manage users": "Gestisci utenti",
     "Logout": "Logout",
     "Dashboard": "Dashboard",
+    "With": "Con",
+    "Without": "Senza",
     "Cart": "Carrello",
     "Carts": "Carrelli",
     "Payment": "Pagamento",
@@ -60,6 +62,8 @@
     "Province": "Provincia",
     "Postal Code": "CAP",
     "Phone": "Telefono",
+    "Accidents": "Sinistri",
+    "Accident": "Sinistro",
     "I confirm the correctness of the above data": "Confermo la correttezza dei dati inseriti",
 
     "Bold": "Grassetto",
