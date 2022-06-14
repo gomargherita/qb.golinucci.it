@@ -1389,10 +1389,18 @@ class ProductOfferSeeder extends Seeder
 
         foreach ($productOffers as $productOffer) {
 
-            if ($productOffer['product_group'] == 6) {
-                $contract_id = 1;
-            } else if ($productOffer['product_group'] == 8) {
-                $contract_id = 2;
+            if ($productOffer['indemnity_limit_patrimonial'] == 1000000) {
+                if ($productOffer['product_group'] == 6) {
+                    $contract_id = 1;
+                } else if ($productOffer['product_group'] == 8) {
+                    $contract_id = 2;
+                }
+            } else if ($productOffer['indemnity_limit_patrimonial'] == 500000) {
+                if ($productOffer['product_group'] == 6) {
+                    $contract_id = 3;
+                } else if ($productOffer['product_group'] == 8) {
+                    $contract_id = 4;
+                }
             }
 
             $productOfferCreated = ProductOffer::factory()->create([

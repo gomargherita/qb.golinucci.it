@@ -18,9 +18,9 @@ class LloydsDoprintService
             $requestor_id = config('doprint.sandbox.requestor_id');
         } else {
             // live
-            $api_key = config('doprint.sandbox.api_key');
-            $wsdl = config('doprint.sandbox.wsdl');
-            $requestor_id = config('doprint.sandbox.requestor_id');
+            $api_key = config('doprint.live.api_key');
+            $wsdl = config('doprint.live.wsdl');
+            $requestor_id = config('doprint.live.requestor_id');
         }
         if (empty($wsdl) || empty($requestor_id) || empty($api_key)) {
             throw new \Exception("Al least one parameter is missing");
@@ -359,32 +359,26 @@ class LloydsDoprintService
 
     public static function uploadAttachments($cart)
     {
-        // Upload PER RINNOVI
+        // Upload PER RINNOVI E NUOVI
         // 1. scheda prodotto (generato on the fly, pagina 6 della polizza),
         $scheda_folder = 'certificates/user_' . $cart->user_id . '/cart_' . $cart->id;
         $scheda = Storage::disk('private')->get($scheda_folder . '/scheda.pdf');
         LloydsDoprintService::uploadRequest($cart, $scheda);
 
         // 2. wording
-        // pubblico file WORDING BINDER NL 2021_SECTION_A_RENEW.pdf
-        // privato WORDING BINDER NL 2021_SECTION B_RENEW.pdf
+        // pubblico con flag_prev_2022 file WORDING BINDER NL 2021_SECTION_A_PREV2022.pdf
+        // privato con flag_prev_2022 WORDING BINDER NL 2021_SECTION B_PREV2022.pdf
+        // pubblico senza flag_prev_2022 file WORDING BINDER NL 2021_SECTION_A.pdf
+        // privato senza flag_prev_2022 WORDING BINDER NL 2021_SECTION B.pdf
         $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_filepath));
+
         LloydsDoprintService::uploadRequest($cart, $wording);
 
         // 3. ATTACHING CLAUSES
         $attaching_clauses = Storage::disk('private')->get('attaching_clauses/ATTACHING_CLAUSES.pdf');
         LloydsDoprintService::uploadRequest($cart, $attaching_clauses);
 
-        // Upload PER NUOVI
-        // 1. scheda prodotto (da generare, pagina 6 della polizza),
-
-        // 2. wording
-        // per pubblico WORDING BINDER NL 2021_SECTION_A
-        // per privato WORDING BINDER NL 2021_SECTION B
-
-        // 3. attach
-        // ATTACHING CLAUSES
-
+        // Upload SOLO PER NUOVI
         // 4. modulo di adesione
         // da generare
     }

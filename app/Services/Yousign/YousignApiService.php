@@ -70,8 +70,8 @@ class YousignApiService
             $client = new YousignApiLaravel();
 
             // see all possibilities at https://dev.yousign.com/
-            $client->setProcedureKeyValue('name', 'Polizza Medici Colpa Grave ' . $this->user->first_name . ' ' . $this->user->last_name . '(' . $this->user->email . ')');
-            $client->setProcedureKeyValue('description', 'Polizza Medici Colpa Grave ' . $this->user->first_name . ' ' . $this->user->last_name . '(' . $this->user->email . ')');
+            $client->setProcedureKeyValue('name', 'Polizza Medici Colpa Grave ' . $this->user->clientDetails->first_name . ' ' . $this->user->clientDetails->last_name . ' (' . $this->user->email . ')');
+            $client->setProcedureKeyValue('description', 'Polizza Medici Colpa Grave ' . $this->user->clientDetails->first_name . ' ' . $this->user->clientDetails->last_name . ' (' . $this->user->email . ')');
             // to set default expiration date to the signature // TODO 1 settimana? 1 Mese?
             $client->setProcedureKeyValue('expiresAt', Carbon::now()->addMonth(1));
 
@@ -118,7 +118,7 @@ class YousignApiService
                 $member_signer = $client->addMember($this->user->clientDetails->first_name, $this->user->clientDetails->last_name, $this->user->email, $this->user->clientDetails->phone, $procedure['id'], 'signer', 1);
             }
 
-            $reason_signer = "Signed by " . $this->user->firstname . " " . $this->user->lastname . " (Yousign)";
+            $reason_signer = "Signed by " . $this->user->clientDetails->firstname . " " . $this->user->clientDetails->lastname . " (Yousign)";
 
             // to determine position see https://placeit.yousign.fr/
             $field_name_signer = 'firma_cliente_contratto';

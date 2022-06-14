@@ -533,7 +533,7 @@ class SiteBuyProductController extends Controller
                 ->log("An error occurred on generating a certificate on initialization;" . $e->getMessage());
             return [
                 'error' => true,
-                'message' => 'Inizializzazione certificato fallita. Si prega di contattarci via telefono o email'
+                'message' => 'Inizializzazione certificato fallita. Si prega di ricaricare la pagina e riprovare oppure contattarci al numero 0547 22351 o via email.'
             ];
         }
     }
@@ -560,7 +560,7 @@ class SiteBuyProductController extends Controller
                 ->log("An error occurred on generating a certificate on handshake;" . $e->getMessage());
             return [
                 'error' => true,
-                'message' => 'Connessione fallita. Si prega di contattarci via telefono o email'
+                'message' => 'Connessione fallita. Si prega di ricaricare la pagina e riprovare oppure contattarci al numero 0547 22351 o via email.'
             ];
         }
     }
@@ -622,7 +622,7 @@ class SiteBuyProductController extends Controller
                 ->log("An error occurred on generating a certificate on validation;" . $e->getMessage());
             return [
                 'error' => true,
-                'message' => 'Validazione certificato fallita. Si prega di contattarci via telefono o email'
+                'message' => 'Validazione certificato fallita. Si prega di ricaricare la pagina e riprovare oppure contattarci al numero 0547 22351 o via email.'
             ];
         }
     }
@@ -650,7 +650,7 @@ class SiteBuyProductController extends Controller
                 ->log("An error occurred on generating a certificate on upload;" . $e->getMessage());
             return [
                 'error' => true,
-                'message' => 'Upload file fallito. Si prega di contattarci via telefono o email'
+                'message' => 'Upload file fallito. Si prega di ricaricare la pagina e riprovare oppure contattarci al numero 0547 22351 o via email.'
             ];
         }
     }
@@ -679,7 +679,7 @@ class SiteBuyProductController extends Controller
                 ->log("An error occurred on generating a certificate on transaction;" . $e->getMessage());
             return [
                 'error' => true,
-                'message' => 'Transazione fallita. Si prega di contattarci via telefono o email'
+                'message' => 'Transazione fallita. Si prega di ricaricare la pagina e riprovare oppure contattarci al numero 0547 22351 o via email.'
             ];
         }
     }
@@ -709,7 +709,7 @@ class SiteBuyProductController extends Controller
                 ->log("An error occurred on generating a certificate on Download;" . $e->getMessage());
             return [
                 'error' => true,
-                'message' => 'Preparazione certificato fallita. Si prega di contattarci via telefono o email'
+                'message' => 'Preparazione certificato fallita. Si prega di ricaricare la pagina e riprovare oppure contattarci al numero 0547 22351 o via email.'
             ];
         }
     }
