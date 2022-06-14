@@ -46,10 +46,10 @@ class ContractSeeder extends Seeder
                 'contract_filepath' => '/storage/contracts/WORDING_BINDER_NL_2021_SECTION_B_PREV2022.pdf' // medico, privato, rinnovo
             ],
             [
-                'contract_filepath' => '/storage/contracts/WORDING_BINDER_NL_2021_SECTION_A' // medico pubblico, nuovo cliente
+                'contract_filepath' => '/storage/contracts/WORDING_BINDER_NL_2021_SECTION_A.pdf' // medico pubblico, nuovo cliente
             ],
             [
-                'contract_filepath' => '/storage/contracts/WORDING_BINDER_NL_2021_SECTION_B' // medico privato, nuovo cliente
+                'contract_filepath' => '/storage/contracts/WORDING_BINDER_NL_2021_SECTION_B.pdf' // medico privato, nuovo cliente
             ],
         )->create();
     }
