@@ -6,7 +6,7 @@
       Manca solo un ultimo step: firmare i tuoi documenti.<br />
       <span class="font-bold text-xl text-red-500">ATTENZIONE</span><br />
       <span class="font-bold text-lg"
-        >Per firmare il documento visiona tutte le pagine e clicca sul buttone FIRMA in
+        >Per firmare il documento visiona tutte le pagine sottostanti e infine clicca sul bottone FIRMA verde in
         basso a destra.</span
       >
     </p>

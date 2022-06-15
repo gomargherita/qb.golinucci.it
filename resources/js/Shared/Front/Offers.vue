@@ -70,7 +70,6 @@
                 :href="offer.contract.contract_filepath"
                 target="_blank"
                 class="btn-gol"
-                download
               >
                 {{ __("Download") }}
               </a>

@@ -132,28 +132,28 @@
         </div>
       </Link>
     </div>
-    <!-- <div class="mb-4">
-      <Link class="group flex items-center py-3" :href="route('reports')">
+    <div class="mb-4">
+      <Link class="group flex items-center py-3" :href="route('bordereauxs')">
         <icon
-          name="printer"
+          name="bordereaux"
           class="mr-2 w-4 h-4"
           :class="
-            isUrl('admin/reports')
+            isUrl('admin/bordereauxs')
               ? 'fill-primary'
               : 'fill-gray-900 group-hover:fill-primary'
           "
         />
         <div
           :class="
-            isUrl('admin/reports')
+            isUrl('admin/bordereauxs')
               ? 'text-primary'
               : 'text-gray-900 group-hover:text-primary'
           "
         >
-          {{ __("Reports") }}
+          {{ __("Bordereaux") }}
         </div>
       </Link>
-    </div> -->
+    </div>
     <div class="mb-4">
       <a class="group flex items-center py-3" href="/" target="_blank">
         <icon

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BordereauxController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ImagesController;
@@ -142,7 +143,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'check_role']], func
     Route::put('doprintCounters/{doprintCounter}', [DoprintCounterController::class, 'update'])
         ->name('doprintCounters.update');
 
-    Route::get('/private-files/{file?}', [FileController::class, 'get'])->where('file', '(.*)')->name('privateFiles');;
+    Route::get('bordereauxs', [BordereauxController::class, 'index'])->name('bordereauxs');
+    Route::post('bordereauxs', [BordereauxController::class, 'download'])->name('bordereauxs.download');
+
+    Route::get('private-files/{file?}', [FileController::class, 'get'])->where('file', '(.*)')->name('privateFiles');
 });
 
 // Images
@@ -160,14 +164,6 @@ Route::get('language/{language}', function ($language) {
 })->name('language');
 
 // public frontend
-
-// Route::get('generate-pdf', function () {
-//     $cart = Cart::where('id', 2)->first();
-//     $declarationToPdf = new PaymentCertificateToPdfService($cart);
-//     $declarationToPdf->generateAndPersist();
-// });
-
-
 Route::controller(SiteController::class)->group(function () {
     Route::get('/', 'home')->name('front.home');
     Route::get('/user-account', 'userAccount')->name('front.useraccount')->middleware(['auth']);
