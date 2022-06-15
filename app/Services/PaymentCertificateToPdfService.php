@@ -19,16 +19,28 @@ class PaymentCertificateToPdfService
         $this->cart = $cart;
     }
 
+    private function setCertificateDates()
+    {
+        $renewal_date = (empty($this->cart->renewal_date)) ? $this->cart->payment->paid_at : $this->cart->renewal_date;
+
+        $dates = [
+            'start_validity_date' => $renewal_date,
+            'end_validity_date' => Carbon::parse($renewal_date)->addMonths($this->cart->productOffer->months)
+        ];
+
+        return $dates;
+    }
+
     public function generateAndPersist()
     {
         $user = $this->cart->user;
         $clientDetails = $user->clientDetails;
-        $certificate = $this->cart->certificate;
         $product_name  = $this->cart->product->name;
-        $start_validity_date = $certificate->start_validity_date->format('d/m/Y');
-        $end_validity_date = $certificate->end_validity_date->format('d/m/Y');
+        $dates = $this->setCertificateDates();
+        $start_validity_date = $dates['start_validity_date']->format('d/m/Y');
+        $end_validity_date = $dates['end_validity_date']->format('d/m/Y');
         $payment_date = Carbon::parse($this->cart->payment->paid_at)->format('d/m/Y');
-        $rif_gol = $certificate->certificate_no;
+        $rif_gol = $this->cart->payment->payment_no;
         $gross_premium = number_format(
             $this->cart->gross_premium,
             2,
@@ -72,5 +84,4 @@ class PaymentCertificateToPdfService
         Storage::disk('private')->put($policy_response_folder . '/payment-certificate.pdf', $pdf->stream());
         return $policy_response_folder . '/payment-certificate.pdf';
     }
-
 }

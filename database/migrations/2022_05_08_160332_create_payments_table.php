@@ -19,6 +19,7 @@ class CreatePaymentsTable extends Migration
             $table->id();
             $table->foreignIdFor(Cart::class)->constrained();
             $table->foreignIdFor(PaymentGateway::class)->constrained();
+            $table->string('payment_no', 20)->nullable()->unique();
             $table->decimal('total_payable');
             $table->boolean('paid')->default(0);
             $table->string('transaction_ref')->nullable();

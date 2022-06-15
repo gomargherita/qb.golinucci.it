@@ -16,6 +16,7 @@ class Payment extends Model
     protected $fillable = [
         'cart_id',
         'payment_gateway_id',
+        'payment_no',
         'paid',
         'total_payable',
         'transaction_ref',
@@ -27,10 +28,6 @@ class Payment extends Model
         'paid_at' => 'date'
     ];
 
-    public function getPaidAtAttribute($value)
-    {
-        return $value;
-    }
 
     public function cart(): BelongsTo
     {
@@ -40,6 +37,20 @@ class Payment extends Model
     public function paymentGateway(): BelongsTo
     {
         return $this->belongsTo(PaymentGateway::class);
+    }
+
+    public function updatePaymentPaymentNo(){
+        if(empty($this->payment_no)){
+            $productCounter = ProductCounter::where([
+                'product_id' => $this->cart->product_id,
+                'payment_gateway_id' => $this->payment_gateway_id,
+                'year' => date("Y")
+            ])->firstOrFail();
+            $productCounter->counter = $productCounter->counter + 1;
+            $productCounter->save();
+            $this->payment_no = $productCounter->prefix . $productCounter->counter;
+            $this->save();
+        }
     }
 
     public function updatePaymentStatus()
@@ -55,6 +66,7 @@ class Payment extends Model
             ->logOnly([
                 'cart_id',
                 'payment_gateway_id',
+                'payment_no',
                 'paid',
                 'total_payable',
                 'transaction_ref',

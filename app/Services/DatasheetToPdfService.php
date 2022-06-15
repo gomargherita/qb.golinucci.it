@@ -43,7 +43,7 @@ class DatasheetToPdfService
         $start_validity_date = $certificate->start_validity_date->format('d/m/Y');
         $end_validity_date = $certificate->end_validity_date->format('d/m/Y');
         $insurance_deductible = '0'; // franchigia
-        $rif_gol = $certificate->certificate_no;
+        $rif_gol = $this->cart->payment->payment_no;
         //= Product::where('id', $this->cart->product_id)->first();
         $data = [
             'fullname' => $clientDetails->last_name . ' ' . $clientDetails->first_name,

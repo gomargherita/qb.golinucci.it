@@ -30,7 +30,7 @@ class YousignController extends Controller
     //             activity()
     //                 ->on($signature)
     //                 ->event('signature_member_finished')
-    //                 ->log("Yousign member sign finished for cart $cart->cart_ref - certificate {$cart->certificate->certificate_no};");
+    //                 ->log("Yousign member sign finished for cart $cart->cart_ref - certificate {$cart->payment->payment_no};");
     //         }
     //     }
     // }
@@ -48,7 +48,7 @@ class YousignController extends Controller
                 activity()
                     ->on($signature)
                     ->event('signature_procedure_finished')
-                    ->log("Yousign procedure finished for cart $cart->cart_ref - certificate {$cart->certificate->certificate_no};");
+                    ->log("Yousign procedure finished for cart $cart->cart_ref - certificate {$cart->payment->payment_no};");
                 $request_content = json_decode($request->getContent(), true);
                 
                 $files = $request_content['procedure']['files'];
@@ -63,7 +63,7 @@ class YousignController extends Controller
                 activity()
                     ->on($signature)
                     ->event('signature_file_stored_finished')
-                    ->log("Cart $cart->cart_ref - certificate {$cart->certificate->certificate_no} persisted on storage, final email sent;");
+                    ->log("Cart $cart->cart_ref - certificate {$cart->payment->payment_no} persisted on storage, final email sent;");
             }
         }
     }
@@ -80,7 +80,7 @@ class YousignController extends Controller
             activity()
                 ->on($signature)
                 ->event('signature_procedure_error')
-                ->log("Yousign procedure error for cart $cart->cart_ref - certificate {$cart->certificate->certificate_no};");
+                ->log("Yousign procedure error for cart $cart->cart_ref - certificate {$cart->payment->payment_no};");
         }
     }
 
@@ -97,7 +97,7 @@ class YousignController extends Controller
                 activity()
                     ->on($signature)
                     ->event('signature_procedure_expired')
-                    ->log("Yousign procedure expired for cart $cart->cart_ref - certificate {$cart->certificate->certificate_no};");
+                    ->log("Yousign procedure expired for cart $cart->cart_ref - certificate {$cart->payment->payment_no};");
             }
         }
     }
@@ -115,7 +115,7 @@ class YousignController extends Controller
                 activity()
                     ->on($signature)
                     ->event('signature_member_refused')
-                    ->log("Yousign procedure refused for cart $cart->cart_ref - certificate {$cart->certificate->certificate_no};");
+                    ->log("Yousign procedure refused for cart $cart->cart_ref - certificate {$cart->payment->payment_no};");
             }
         }
     }
@@ -133,7 +133,7 @@ class YousignController extends Controller
                 activity()
                     ->on($signature)
                     ->event('signature_stamp_ok')
-                    ->log("Yousign server stamp generation ok for cart $cart->cart_ref - certificate {$cart->certificate->certificate_no};");
+                    ->log("Yousign server stamp generation ok for cart $cart->cart_ref - certificate {$cart->payment->payment_no};");
             }
         }
     }
@@ -151,7 +151,7 @@ class YousignController extends Controller
                 activity()
                     ->on($signature)
                     ->event('signature_stamp_error')
-                    ->log("Yousign server stamp generation error for cart $cart->cart_ref - certificate {$cart->certificate->certificate_no};");
+                    ->log("Yousign server stamp generation error for cart $cart->cart_ref - certificate {$cart->payment->payment_no};");
             }
         }
     }

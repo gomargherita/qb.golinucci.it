@@ -398,6 +398,10 @@ class SiteBuyProductController extends Controller
         if (isset($response['status']) && $response['status'] == 'COMPLETED') {
             $payment = Payment::query()->where(['cart_id' => $cart->id])->findOrFail($payment_id);
             $payment->updatePaymentStatus();
+            $payment->updatePaymentPaymentNo();
+            // genero e salvo il pdf con proforma fattura dell'acquisto
+            $paymentToPdf = new PaymentCertificateToPdfService($cart);
+            $paymentToPdf->generateAndPersist();
             $cart->updateCartStep(5);
         } else {
             return redirect()
@@ -453,7 +457,6 @@ class SiteBuyProductController extends Controller
         $certificate = Certificate::firstOrCreate(
             ['cart_id' => $cart->id],
             [
-                //'certificate_no' => $certificate_no, // set in certificate boot method
                 'product_id' => $cart->product_id,
                 'product_offer_id' => $cart->product_offer_id,
                 'contract_id' => $cart->productOffer->contract->id,
@@ -494,7 +497,7 @@ class SiteBuyProductController extends Controller
                 ->causedBy($user)
                 ->on($certificate)
                 ->event('certificate_generation')
-                ->log("Completed certificate $certificate->certificate_no generation;");
+                ->log("Completed certificate $certificate->id generation;");
 
             return redirect()->route('front.product.buy', compact('product', 'cart'));
         }
@@ -504,22 +507,21 @@ class SiteBuyProductController extends Controller
     {
         try {
             $certificate = $cart->certificate;
-            // genero e salvo il pdf con proforma fattura dell'acquisto
-            $paymentToPdf = new PaymentCertificateToPdfService($cart);
-            $paymentToPdf->generateAndPersist();
+            $certificate->doprint_current_step = 'handshake';
+            $certificate->save();
             $user = auth()->user();
             if (empty($certificate->doprint_token)) {
                 activity()
                     ->causedBy($user)
                     ->on($certificate)
                     ->event('certificate_generation')
-                    ->log("Initiate certificate $certificate->certificate_no generation;");
+                    ->log("Initiate certificate $certificate->id generation;");
             } else {
                 activity()
                     ->causedBy($user)
                     ->on($certificate)
                     ->event('certificate_generation')
-                    ->log("Re-Initiate certificate $certificate->certificate_no generation due to previous error;");
+                    ->log("Re-Initiate certificate $certificate->id generation due to previous error;");
             }
 
             return [

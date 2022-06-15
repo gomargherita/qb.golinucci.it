@@ -56,7 +56,7 @@ class YousignApiService
             activity()
                 ->on($signature)
                 ->event('server_stamp_error_after_loop')
-                ->log("Yousign server stamp generation error loop exausted for cart {$this->cart->cart_ref} - certificate {$this->cart->certificate->certificate_no};");
+                ->log("Yousign server stamp generation error loop exausted for cart {$this->cart->cart_ref} - certificate {$this->cart->payment->payment_no};");
             throw new \Exception("Issue with Yousign server stamp response");
         }
 

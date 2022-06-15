@@ -23,7 +23,6 @@ class Certificate extends Model
         'start_validity_date',
         'end_validity_date',
         'retroactivity',
-        'certificate_no',
         'doprint_token',
         'doprint_current_step',
         'doprint_certificate_no',
@@ -78,24 +77,6 @@ class Certificate extends Model
         $this->attributes['retroactivity'] = $retroactivity;
     }
 
-    public static function boot()
-    {
-        parent::boot();
-        static::saving(function ($certificate) {
-            if (empty($certificate->certificate_no)) {
-                $productCounter = ProductCounter::where([
-                    'product_id' => $certificate->cart->product_id,
-                    'payment_gateway_id' => $certificate->cart->payment->payment_gateway_id,
-                    'year' => date("Y")
-                ])->firstOrFail();
-                $productCounter->counter = $productCounter->counter + 1;
-                $productCounter->save();
-                $certificate->certificate_no = $productCounter->prefix . $productCounter->counter;
-                $certificate->doprint_current_step = 'handshake'; // set first step after initialization
-            }
-        });
-    }
-
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
@@ -104,7 +85,6 @@ class Certificate extends Model
                 'product_id',
                 'product_offer_id',
                 'contract_id',
-                'certificate_no',
                 'doprint_token',
                 'doprint_current_step',
                 'doprint_certificate_no',
