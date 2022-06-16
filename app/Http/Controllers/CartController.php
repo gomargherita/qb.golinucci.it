@@ -91,7 +91,7 @@ class CartController extends Controller
                     [
                         'id' => $payment->id,
                         'paid' => $payment->paid,
-                        'paid_at' => $payment->paid_at->format('Y-m-d'),
+                        'paid_at' => $payment->paid_at?->format('Y-m-d'),
                         'payment_gateway_id' => $payment->payment_gateway_id,
                         'payment_no' => $payment->payment_no,
                         'transaction_ref' => $payment->transaction_ref
