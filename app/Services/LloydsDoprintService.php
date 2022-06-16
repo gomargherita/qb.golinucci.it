@@ -131,7 +131,7 @@ class LloydsDoprintService
         $start_date = $certificate->start_validity_date->format('Y-m-d');
         $end_date = $certificate->end_validity_date->format('Y-m-d');
         // TODO proposal date rinnovo metto start_date, nuovo metto data di pagamento
-        $proposal_date = $cart->payment->paid_at; // TODO VERIFICARE CON FRANCESCO 
+        $proposal_date = $cart->payment->paid_at->format('Y-m-d'); // TODO VERIFICARE CON FRANCESCO 
 
         $CertificateDateTimeDetails = $xml->getElementsByTagName('CertificateDateTimeDetails')->item(0);
         $CertificateDateTimeDetails->getElementsByTagName('InceptionDate')->item(0)->textContent = $start_date;
