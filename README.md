@@ -16,11 +16,16 @@ https://beyondco.de/blog/laravel-caches-and-all-ways-to-clear-them
 ## Check supervisor
 - sudo supervisorctl status
 https://laravel.com/docs/8.x/queues#starting-supervisor
+vim /etc/supervisor/conf.d/laravel-worker.conf
+sudo supervisorctl reread
+sudo supervisorctl update
 
 ## Crontab
 
 lista cron
-- crontab -l
+# * * * * * cd /var/www/stagingqb.golinucci.it && php artisan schedule:run >> /dev/null 2>&1
+# * * * * * cd /var/www/qb.golinucci.it && php artisan schedule:run >> /dev/null 2>&1
+- sudo crontab -u www-data -l
 
 modifica cron
-- crontab -e
+- sudo crontab -u www-data -e
