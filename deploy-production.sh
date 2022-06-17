@@ -26,7 +26,7 @@ sudo rm -rf storage/framework/views/*
 sudo -u www-data /usr/local/bin/composer dump-autoload
 
 # Update assets
-npm update && npm run prod
+npm install && npm run prod
 
 # Set application online
 sudo -u www-data php artisan up
