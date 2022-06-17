@@ -3,14 +3,17 @@
 namespace App\Exports;
 
 use App\Models\Payment;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 use function PHPSTORM_META\map;
 
-class BdxMedmalPaymentsExport implements FromQuery, WithHeadingRow
+class BdxMedmalPaymentsExport implements FromView, WithHeadingRow
 {
     use Exportable;
 
@@ -19,54 +22,108 @@ class BdxMedmalPaymentsExport implements FromQuery, WithHeadingRow
         $this->date = $date;
     }
 
-    public function headings(): array
-    {
-        return [
-            'NOME',
-            'COGNOME',
-            'CODICE FISCALE',
-            'INDIRIZZO',
-            'CAP',
-            'CITTA\'',
-            'PROVINCIA',
-            'NAZIONE',
-            'EMAIL',
-            'TELEFONO UFFICIO', // fisso 0
-            'TELEFONO CELLULARE',
-            'PARTITAIVA', // vuoto
-            'TIPOATTIVITA',
-            'START DATE',
-            'END DATE',
-            'ACCOUNT EXECUTIVE', // fisso Paolo Golinucci
-            'ACCOUNT HANDLER', // fisso Paolo Golinucci
-            'POLICY NUMBER', // num polizza Lloyds (meglio) oppure  se non riesco quello contabile
-            'PREMIUM (EXCL. TAX)', // formattato con virgola, tipo 40,7
-            'TAX',
-            'COMMISSION',
-            'ADMIN FEE',
-            'TOTAL PREMIUM + TAX + ADMIN FEE',
-            'INVOICE NUMBER',
-            'INTRODUCER', // fisso 50464394
-            'INTRODUCER 2', // vuoto
-            'INSURER', // fisso Lloyd's
-            'INSURER ACCOUNT', // fisso Carpenter Colpa Grave
-            'POLICY DESCRIPTION', // come INVOICE NUMBER
-            'CONTACT REF',
-            'CONTACT NOTES', // specializzazione
-            'DATA DI NASCITA', // formato giorno/mese/anno
-            'BUSINESS EVENT', // fisso New business
-            'VERSION REF',
-            'REMARKETED' // ?
-        ];
-    }
+    // public function headings(): array
+    // {
+    //     return [
+    //         'NOME',
+    //         'COGNOME',
+    //         'CODICE FISCALE',
+    //         'INDIRIZZO',
+    //         'CAP',
+    //         'CITTA\'',
+    //         'PROVINCIA',
+    //         'NAZIONE',
+    //         'EMAIL',
+    //         'TELEFONO UFFICIO', // fisso 0
+    //         'TELEFONO CELLULARE',
+    //         'PARTITAIVA', // vuoto
+    //         'TIPOATTIVITA',
+    //         'START DATE',
+    //         'END DATE',
+    //         'ACCOUNT EXECUTIVE', // fisso Paolo Golinucci
+    //         'ACCOUNT HANDLER', // fisso Paolo Golinucci
+    //         'POLICY NUMBER', // num polizza Lloyds (meglio) oppure  se non riesco quello contabile
+    //         'PREMIUM (EXCL. TAX)', // formattato con virgola, tipo 40,7
+    //         'TAX',
+    //         'COMMISSION',
+    //         'ADMIN FEE',
+    //         'TOTAL PREMIUM + TAX + ADMIN FEE',
+    //         'INVOICE NUMBER',
+    //         'INTRODUCER', // fisso 50464394
+    //         'INTRODUCER 2', // vuoto
+    //         'INSURER', // fisso Lloyd's
+    //         'INSURER ACCOUNT', // fisso Carpenter Colpa Grave
+    //         'POLICY DESCRIPTION', // come INVOICE NUMBER
+    //         'CONTACT REF',
+    //         'CONTACT NOTES', // specializzazione
+    //         'DATA DI NASCITA', // formato giorno/mese/anno
+    //         'BUSINESS EVENT', // fisso New business
+    //         'VERSION REF',
+    //         'REMARKETED' // ?
+    //     ];
+    // }
 
-    public function query()
+    // public function query()
+    // {
+    //     $payments_data = Payment::query();
+
+    //     if (!is_null($this->date)) {
+    //         $payments_data->whereDate('paid_at', $this->date);
+    //     }
+    //     return $payments_data;
+    // }
+    public function view(): View
     {
-        $payments_data = Payment::query();
+        $payments_data = DB::table('payments')
+            ->join('carts', 'payments.cart_id', '=', 'carts.id')
+            ->join('products', 'carts.product_id', '=', 'products.id')
+            ->leftJoin('certificates', 'carts.id', '=', 'certificates.cart_id')
+            ->join('users', 'carts.user_id', '=', 'users.id')
+            ->join('client_details', 'users.id', '=', 'client_details.user_id')
+            ->leftJoin('product_client_details as pcd1', function($join) {
+                $join->on('client_details.id', '=', 'pcd1.client_detail_id');
+                $join->where('pcd1.conditional_field_id', 1);
+            })
+            ->leftJoin('product_client_details as pcd2', function($join) {
+                $join->on('client_details.id', '=', 'pcd2.client_detail_id');
+                $join->where('pcd2.conditional_field_id', 4);
+            })
+            ->select(
+                'carts.product_id as pid',
+                'client_details.first_name',
+                'client_details.last_name',
+                'client_details.fiscal_code',
+                'client_details.address',
+                'client_details.postal_code',
+                'client_details.city',
+                'client_details.province',
+                'client_details.country',
+                'users.email',
+                'client_details.phone',
+                'pcd1.selected_field_value as tipoattivita',// TODO tipo attività da prendere da product_client_details
+                'carts.renewal_date', // 'certificates.start_validity_date',
+                // 'certificates.end_validity_date',
+                'certificates.doprint_certificate_no',
+                'carts.net_plus_access_premium',
+                'carts.tax',
+                'carts.admin_fee',
+                'payments.total_payable',
+                'payments.payment_no',
+                'client_details.contact_ref',
+                'client_details.version_ref',
+                'pcd2.selected_field_value as contactnotes',// contact notes da prendere da product_client_details
+                'client_details.dob',
+            )
+            ->where('carts.product_id', 1);
 
         if (!is_null($this->date)) {
-            $payments_data->whereDate('paid_at', $this->date);
+            $payments_data->whereDate('payments.paid_at', $this->date);
         }
-        return $payments_data;
+
+        $payments = $payments_data->get();
+
+        return view('template-bordereaux', [
+            'payments' => $payments
+        ]);
     }
 }

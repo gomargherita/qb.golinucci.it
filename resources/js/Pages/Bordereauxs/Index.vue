@@ -59,13 +59,24 @@ export default {
       let response = {};
       let url = route("bordereauxs.download", params);
 
-      await axios
-        .post(url)
+      await axios({
+        method: "post",
+        url: url,
+        responseType: "blob", // important
+        headers: {
+          "Content-Type":
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "Content-Disposition": "attachment; filename=export.xlsx",
+          "X-Requested-With": "XMLHttpRequest",
+        },
+      })
         .then((res) => {
           if (res.data.error) {
             throw res.data;
           }
           response = res.data;
+          var file = window.URL.createObjectURL(response);
+          window.location.assign(file);
         })
         .catch((err) => {
           throw err;

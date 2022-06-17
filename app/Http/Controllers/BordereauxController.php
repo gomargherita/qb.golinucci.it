@@ -28,7 +28,6 @@ class BordereauxController extends Controller
         $request_all = $request->all();
         $date = ($request_all) ? $request_all['date'] : null;
 
-        //return Excel::download(new BdxMedmalPaymentsExport($date), 'payments.xlsx');
-        return Excel::download(new BdxMedmalPaymentsExport($date), 'payments.csv');
+        return Excel::download(new BdxMedmalPaymentsExport($date), 'payments.xlsx');
     }
 }
