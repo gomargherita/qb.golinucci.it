@@ -25,7 +25,8 @@ sudo rm -rf storage/framework/views/*
 npm update && npm run prod
 
 # Fix permissions
-sudo chown -R www-data:www-data /var/www/qb.golinucci.it/storage/
+sudo chgrp -R www-data storage bootstrap/cache
+sudo chmod -R ug+rwx storage bootstrap/cache
 
 # Set application online
 php artisan up
