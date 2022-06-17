@@ -4,13 +4,16 @@
 cd /var/www/stagingqb.golinucci.it || exit
 
 # Set application offline
-php artisan down
+sudo -u www-data php artisan down
 
 # Update git project
 git pull origin $(git rev-parse --abbrev-ref HEAD)
 
+# Fix permissions
+sudo chown -R www-data:www-data /var/www/stagingqb.golinucci.it
+
 # Run pending migrations:
-php artisan migrate
+sudo -u www-data php artisan migrate
 
 # Remove cached data
 sudo rm -rf storage/framework/cache/data/*
@@ -19,17 +22,13 @@ sudo rm -rf storage/framework/views/*
 # php artisan optimize:clear
 
 # Update composer class autoloader
-/usr/local/bin/composer dump-autoload
+sudo -u www-data /usr/local/bin/composer dump-autoload
 
 # Update assets
 npm update && npm run prod
 
-# Fix permissions
-sudo chgrp -R www-data storage bootstrap/cache
-sudo chmod -R ug+rwx storage bootstrap/cache
-
 # Set application online
-php artisan up
+sudo -u www-data php artisan up
 
 # Restart queue worker
-php artisan queue:restart
+sudo -u www-data php artisan queue:restart
