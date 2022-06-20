@@ -24,7 +24,20 @@ class ProductSeeder extends Seeder
                 'account_id' => '1',
                 'product_type_id' => '1',
                 'pre_declarations' => 'Io sottoscritto/a in qualità di assicurato della polizza RC colpa Grave e Patrimoniale, in ottemperanza del Regolamento IVASS n. 40 del 02/08/2018 (Modificato ed Integrato dal Provvedimento IVASS N.97 del 04/08/2020), prima di essere vincolato da un contratto offerto mediante tecniche di comunicazione a distanza, dichiaro:',
-                'post_declarations' => '',
+                'post_declarations' => ' ',
+                'description' => '<p>
+                La Legge 24/17 (Gelli-Bianco) dispone l\'obbligo di assicurazione di RESPONSABILITA\' CIVILE PER "COLPA GRAVE" per i dipendenti di strutture sanitarie pubbliche o private.<br>
+Per adempiere a questo obbligo e proteggersi da questi rischi un esercente la Professione Sanitaria deve aderire ad una polizza a copertura individuale.<br>
+Per rispondere a questa esigenza la Golinucci S.r.l ha studiato delle specifiche polizze di Responsabilità Civile, con massimali di copertura fino a € 5.000.000
+                </p>',
+                'detailed_description' => '<p>
+                La Polizza è finalizzata a tenere indenne l\'Assicurato di ogni somma che sia tenuto a pagare in conseguenza di Danni Materiali (lesioni personali o danneggiamenti a cose) o Danni Patrimoniali (danni immateriali, garanzia spesso esclusa da molte polizze) causati a terzi, inclusi i pazienti, nello svolgimento dell’attività professionale di causati a terzi, inclusi i pazienti, nello svolgimento dell’attività professionale sanitaria, compresa attività intramoenia allargata.<br>
+ L\'art. 10 c. 3 della Legge24/17 pone a carico di ogni esercente la professione sanitaria l\'obbligo di una polizza di Responsabilità civile per  "Colpa Grave".<br>
+Questa polizza non può essere stipulata dall’Ente di Appartenenza, ma da ogni singolo Personale Sanitario a tutela del proprio patrimonio in caso dell’azione di rivalsa per “Responsabilità Civile per Colpa Grave”. <br>
+Che cosa copre?<br>
+1.	la somma che l’Assicurato, è tenuto a rimborsare a seguito di sentenza di Responsabilità Civile per “Colpa Grave”, in conseguenza di atti od omissioni nell’esercizio delle sue mansioni o funzioni di Personale Sanitario.
+2.	Responsabilità civile da Colpa Lieve: per Danni derivanti da interventi di primo soccorso eseguiti per dovere di solidarietà o emergenza sanitaria, anche al difuori dell\'attività retribuita
+                </p>',
                 'hex_color' => '#6CB8EB',
                 'conditions' => '<p>
             La polizza è aggiornata alle disposizioni contenute nella Legge 24/17 (Legge Gelli),

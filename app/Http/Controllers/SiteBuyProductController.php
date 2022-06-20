@@ -597,6 +597,7 @@ class SiteBuyProductController extends Controller
                     'accessori' => $cart->accessory, // 10% di sovrapprezzo sul netto; 44/10
                     'tax' => $cart->tax, // tasse calcolate su premio + accessori
                     'price_with_tax' => $cart->gross_premium, // premio + accessori + tax (no fee)
+                    'indemnity_limit' => $cart->indemnity_limit
                 ];
 
                 $datasheetToPdf = new DatasheetToPdfService($cart);
