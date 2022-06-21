@@ -70,7 +70,7 @@ class PaymentController extends Controller
                 $payment->updatePaymentPaymentNo();
                 $paymentToPdf = new PaymentCertificateToPdfService($payment->cart);
                 $paymentToPdf->generateAndPersist();
-                auth()->user()->notify(new ConfirmedOfflinePayment($payment));
+                $payment->cart->user->notify(new ConfirmedOfflinePayment($payment));
                 $payment->cart->updateCartStep(5);
             }
         }
