@@ -139,7 +139,13 @@ class LloydsDoprintService
         $CertificateDateTimeDetails->getElementsByTagName('ProposalDate')->item(0)->textContent = $proposal_date;
 
         $RiskDetailsLB = $xml->getElementsByTagName('RiskDetailsLB')->item(0);
-        $RiskDetailsLB->getElementsByTagName('LimitIndemnitySumInsured')->item(0)->textContent = '€ '.$cart_details['indemnity_limit'].'=';
+        $indemnity_limit = number_format(
+            $cart_details['indemnity_limit'],
+            2,
+            ",",
+            "."
+        );
+        $RiskDetailsLB->getElementsByTagName('LimitIndemnitySumInsured')->item(0)->textContent = '€ '.$indemnity_limit.'=';
 
         $RiskPremiumDetails = $xml->getElementsByTagName('RiskPremiumDetails')->item(0);
         $RiskPremiumDetails->getElementsByTagName('Premium')->item(0)->textContent = $cart_details['price'];
