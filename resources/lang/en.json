@@ -67,5 +67,8 @@
     "I confirm the correctness of the above data": "I confirm the correctness of the above data",
 
     "Bold": "Bold",
-    "Italic": "Italic"
+    "Italic": "Italic",
+
+    "Service Unavailable": "Service Unavailable",
+    "Mainteinance description": "We are currently offline due to some work we are doing on our website. We will be back online soon."
 }

@@ -51,6 +51,9 @@
                 <div class="title">
                     @yield('message')
                 </div>
+                <div class="">
+                    @yield('description')
+                </div>
             </div>
         </div>
     </body>
