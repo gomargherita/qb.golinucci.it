@@ -29,7 +29,7 @@ class CartController extends Controller
             'carts' => Auth::user()->account->carts()
                 ->orderByDate()
                 ->filter(Request::only('search', 'steps', 'trashed'))
-                ->paginate(10)
+                ->paginate(20)
                 ->withQueryString()
                 ->through(fn ($cart) => [
                     'id' => $cart->id,

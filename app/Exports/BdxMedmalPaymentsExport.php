@@ -60,6 +60,7 @@ class BdxMedmalPaymentsExport implements FromView, WithHeadingRow
     //         'BUSINESS EVENT', // fisso New business
     //         'VERSION REF',
     //         'REMARKETED' // ?
+    //         'PAYMENT DATE' // notificato il 22/6/22
     //     ];
     // }
 
@@ -109,12 +110,14 @@ class BdxMedmalPaymentsExport implements FromView, WithHeadingRow
                 'carts.admin_fee',
                 'payments.total_payable',
                 'payments.payment_no',
+                'payments.paid_at',
                 'client_details.contact_ref',
                 'client_details.version_ref',
                 'pcd2.selected_field_value as contactnotes',// contact notes da prendere da product_client_details
                 'client_details.dob',
             )
-            ->where('carts.product_id', 1);
+            ->where('carts.product_id', 1)
+            ->whereNotNull('payments.paid_at');
 
         if (!is_null($this->date)) {
             $payments_data->whereDate('payments.paid_at', $this->date);

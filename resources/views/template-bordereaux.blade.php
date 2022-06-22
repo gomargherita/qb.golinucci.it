@@ -36,6 +36,7 @@
             <th>BUSINESS EVENT</th>
             <th>VERSION REF</th>
             <th>REMARKETED</th>
+            <th>PAYMENT DATE</th>
         </tr>
     </thead>
     <tbody>
@@ -103,6 +104,7 @@
             <td>New business</td>
             <td>{{ $payment->version_ref }}</td>
             <td>{{ ($payment->contact_ref) ? 'Yes' : '' }}</td>
+            <td>{{ $payment->paid_at ? date('d/m/Y', strtotime($payment->paid_at)) : '' }}</td>
         </tr>
         @endforeach
     </tbody>
