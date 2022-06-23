@@ -117,7 +117,7 @@ class LloydsDoprintService
         $PolicyHolder->getElementsByTagName('City')->item(0)->textContent = $customer_details['city'];
         $PolicyHolder->getElementsByTagName('PostCode')->item(0)->textContent = $customer_details['postal_code'];
         $PolicyHolder->getElementsByTagName('Region')->item(0)->textContent = $customer_details['province'];
-        $PolicyHolder->getElementsByTagName('FiscalCode')->item(0)->textContent = $customer_details['fiscal_code'];
+        $PolicyHolder->getElementsByTagName('FiscalCode')->item(0)->textContent = strtoupper($customer_details['fiscal_code']);
         $PolicyHolder->getElementsByTagName('GenderType')->item(0)->textContent = $customer_details['gender'];
         $PolicyHolder->getElementsByTagName('Country')->item(0)->textContent = $customer_details['country'];
         // $PolicyHolder->getElementsByTagName('JobTitle')->item(0)->textContent = 'aaaaaaaa';
