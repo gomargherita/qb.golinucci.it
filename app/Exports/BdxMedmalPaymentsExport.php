@@ -64,15 +64,6 @@ class BdxMedmalPaymentsExport implements FromView, WithHeadingRow
     //     ];
     // }
 
-    // public function query()
-    // {
-    //     $payments_data = Payment::query();
-
-    //     if (!is_null($this->date)) {
-    //         $payments_data->whereDate('paid_at', $this->date);
-    //     }
-    //     return $payments_data;
-    // }
     public function view(): View
     {
         $payments_data = DB::table('payments')

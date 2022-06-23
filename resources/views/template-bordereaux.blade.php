@@ -49,7 +49,13 @@
             <td>{{ $payment->postal_code }}</td>
             <td>{{ $payment->city }}</td>
             <td>{{ $payment->province }}</td>
-            <td>{{ $payment->country }}</td>
+            <td>
+                @switch($payment->country)
+                @case('IT')
+                Italy
+                @break
+                @endswitch
+            </td>
             <td>{{ $payment->email }}</td>
             <td>0</td>
             <td>{{ $payment->phone }}</td>
