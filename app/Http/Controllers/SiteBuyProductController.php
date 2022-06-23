@@ -508,8 +508,10 @@ class SiteBuyProductController extends Controller
     {
         try {
             $certificate = $cart->certificate;
-            $certificate->doprint_current_step = 'handshake';
-            $certificate->save();
+            if ($certificate->doprint_current_step == 'initialization') {
+                $certificate->doprint_current_step = 'handshake';
+                $certificate->save();
+            }
             $user = auth()->user();
             if (empty($certificate->doprint_token)) {
                 activity()
