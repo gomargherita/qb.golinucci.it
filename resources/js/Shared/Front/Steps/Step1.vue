@@ -230,7 +230,7 @@
         <span class="italic text-gray-700 text-sm">Attenzione: è obbligatorio inserire un numero di cellulare valido per procedere alla firma elettronica, altrimenti sarà impossibile completare l'operazione.</span>
       </div>
 
-      <div class="col-span-2">
+      <div class="md:col-span-2">
         <p class="my-4 font-bold">Campi per preselezionare l'offerta di prodotto</p>
       </div>
       <template v-if="product.conditional_fields.length">
@@ -266,7 +266,7 @@
           </div>
         </div>
       </template>
-      <div class="col-span-2">
+      <div class="md:col-span-2">
         <div class="my-2 text-sm" v-html="product.client_details_declaration"></div>
         <label class="flex items-center mt-6 select-none" for="confirmation">
           <input
