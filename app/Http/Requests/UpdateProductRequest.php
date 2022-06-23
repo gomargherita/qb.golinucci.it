@@ -29,6 +29,7 @@ class UpdateProductRequest extends FormRequest
             'description' => ['required', 'not_regex:/^(<p><\/p>)$/i'],
             'detailed_description' => ['required', 'not_regex:/^(<p><\/p>)$/i'],
             'conditions' => ['required', 'not_regex:/^(<p><\/p>)$/i'],
+            'client_details_declaration' => ['required', 'not_regex:/^(<p><\/p>)$/i'],
             'pre_declarations' => ['required', 'not_regex:/^(<p><\/p>)$/i'],
             'post_declarations' => ['not_regex:/^(<p><\/p>)$/i'],
             'payments_description' => ['required', 'not_regex:/^(<p><\/p>)$/i'],

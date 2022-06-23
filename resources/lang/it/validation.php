@@ -157,7 +157,7 @@ return [
 
     'attributes' => [
         'gender' => 'Sesso',
-        'confirmation' => 'Conferma correttenza dei dati inseriti',
+        'confirmation' => 'Confermo l\'assenza di ...',
         'signature' => 'Firmatario',
         'selected_declarations' => 'Dichiarazioni'
     ],

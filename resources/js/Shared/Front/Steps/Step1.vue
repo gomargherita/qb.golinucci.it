@@ -267,14 +267,15 @@
         </div>
       </template>
       <div class="col-span-2">
+        <div class="my-2 text-sm" v-html="product.client_details_declaration"></div>
         <label class="flex items-center mt-6 select-none" for="confirmation">
           <input
             id="confirmation"
             v-model="form.confirmation"
-            class="mr-1"
+            class="mr-4 p-3"
             type="checkbox"
           />
-          <span class="text-sm">{{
+          <span class="text-lg text-red-500">{{
             __("I confirm the correctness of the above data")
           }}</span>
         </label>

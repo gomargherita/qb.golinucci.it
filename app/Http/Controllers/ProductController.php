@@ -84,6 +84,7 @@ class ProductController extends Controller
                 'description' => $product->description,
                 'detailed_description' => $product->detailed_description,
                 'conditions' => $product->conditions,
+                'client_details_declaration' => $product->client_details_declaration,
                 'pre_declarations' => $product->pre_declarations,
                 'post_declarations' => $product->post_declarations,
                 'payments_description' => $product->payments_description,

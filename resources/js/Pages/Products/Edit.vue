@@ -54,6 +54,12 @@
             class="pb-8 pr-6 w-full"
             label="Conditions"
           />
+          <editor
+            v-model="form.client_details_declaration"
+            :error="form.errors.client_details_declaration"
+            class="pb-8 pr-6 w-full"
+            label="Client details declaration"
+          />
           <text-input
             v-model="form.hex_color"
             :error="form.errors.hex_color"
@@ -302,6 +308,7 @@ export default {
         description: this.product.description,
         detailed_description: this.product.detailed_description,
         conditions: this.product.conditions,
+        client_details_declaration: this.product.client_details_declaration,
         pre_declarations: this.product.pre_declarations,
         post_declarations: this.product.post_declarations,
         payments_description: this.product.payments_description,

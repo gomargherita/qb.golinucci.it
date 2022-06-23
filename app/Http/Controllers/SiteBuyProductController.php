@@ -102,6 +102,7 @@ class SiteBuyProductController extends Controller
                 'type' => Str::slug($product->productType->name, '-'),
                 'detailed_description' => $product->detailed_description,
                 'conditions' => $product->conditions,
+                'client_details_declaration' => $product->client_details_declaration,
                 'conditional_fields' => $product->conditionalFields,
                 'hex_color' => $product->hex_color,
                 'offers' => $product->productOffers,
