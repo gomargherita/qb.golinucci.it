@@ -108,6 +108,7 @@ class BdxMedmalPaymentsExport implements FromView, WithHeadingRow
                 'client_details.dob',
             )
             ->where('carts.product_id', 1)
+            ->whereNotNull('payments.deleted_at')
             ->whereNotNull('payments.paid_at');
 
         if (!is_null($this->date)) {

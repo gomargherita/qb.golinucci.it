@@ -86,6 +86,8 @@ class PaymentController extends Controller
      */
     public function destroy(Payment $payment)
     {
-        //
+        $payment->delete();
+
+        return Redirect::back()->with('success', 'Payment deleted.');
     }
 }

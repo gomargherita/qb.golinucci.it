@@ -131,6 +131,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'check_role']], func
     Route::put('payments/{payment}', [PaymentController::class, 'update'])
         ->name('payments.update');
 
+    Route::delete('payments/{payment}', [PaymentController::class, 'destroy'])
+        ->name('payments.destroy');
+
     Route::get('productCounters/{productCounter}/edit', [ProductCounterController::class, 'edit'])
         ->name('productCounters.edit');
 

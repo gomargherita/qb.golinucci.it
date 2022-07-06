@@ -40,7 +40,7 @@ class Payment extends Model
     }
 
     public function updatePaymentPaymentNo(){
-        if(empty($this->payment_no)){
+        if(empty($this->payment_no) && $this->paid == 1){
             $productCounter = ProductCounter::where([
                 'product_id' => $this->cart->product_id,
                 'payment_gateway_id' => $this->payment_gateway_id,

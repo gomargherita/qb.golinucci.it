@@ -25,7 +25,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
-use Maatwebsite\Excel\Facades\Excel;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Throwable;
 
@@ -314,7 +313,6 @@ class SiteBuyProductController extends Controller
             'payment_gateway_id_selected' => ['required', 'integer'],
         ]);
 
-        // recupero o genero un record di payment
         $payment = Payment::firstOrCreate(
             [
                 'cart_id' => $cart->id
@@ -324,6 +322,11 @@ class SiteBuyProductController extends Controller
                 'total_payable' => $cart->total_payable,
             ]
         );
+
+        if($payment->payment_gateway_id != $validated['payment_gateway_id_selected']) {
+            $payment->payment_gateway_id = $validated['payment_gateway_id_selected'];
+            $payment->save();
+        }
 
         if ($validated['payment_gateway_id_selected'] == 1) {
             // paypal
@@ -776,8 +779,4 @@ class SiteBuyProductController extends Controller
         return $cart;
     }
 
-    // public function testImport()
-    // {
-    //     Excel::import(new MedmalRenewalsImport, storage_path('app/public/' . 'database-giugno-settembre.csv'));
-    // }
 }

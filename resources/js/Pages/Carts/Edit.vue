@@ -115,8 +115,36 @@
               type="date"
               pattern="\d{4}-\d{2}-\d{2}"
             />
+
+            <div class="pb-8 pr-6 w-full lg:w-full">
+              <b class="text-red-500">Attenzione!</b>: prima di segnare un pagamento come
+              pagato controllare che il <b>metodo di pagamento sia corretto</b> perché non
+              sarà più possibile correggere a mano il numero di certificato di
+              pagamento.<br />
+              Ricordare che con il metodo di pagamento con bonifico bancario, una volta
+              segnato il pagamento come pagato, la procedura invia al cliente una mail che
+              conferma il pagamento e fa procedere il cliente dallo step 5.<br />
+              In caso di problemi e di prenotazione di un numero di certificato sbagliato
+              è possibile ricorrere alla cancellazione del record di pagamento (da usare
+              con parsimonia, poiché serve poi anche cambiare lo step del carrello per
+              ricreare il record di pagamento SE E SOLO SE il cliente non ha ancora
+              proceduto alla generazione del certificato Lloyds).<br />
+              <b
+                >Numero certificato di pagamento prenotato:
+                {{ this.cart.payment?.payment_no }}</b
+              >
+            </div>
           </div>
           <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
+            <button
+              v-if="!cart.payment?.deleted_at"
+              class="text-red-600 hover:underline"
+              tabindex="-1"
+              type="button"
+              @click="destroy_payment"
+            >
+              {{ __("Delete") }} {{ __("Payment") }}
+            </button>
             <loading-button
               :loading="form_payment.processing"
               class="btn-gol-primary ml-auto"
@@ -284,6 +312,11 @@ export default {
     },
     update_payment() {
       this.form_payment.put(`/admin/payments/${this.cart.payment?.id}`);
+    },
+    destroy_payment() {
+      if (confirm("Are you sure you want to delete this payment?")) {
+        this.$inertia.delete(`/admin/payments/${this.cart.payment?.id}`);
+      }
     },
     destroy() {
       if (confirm("Are you sure you want to delete this cart?")) {
