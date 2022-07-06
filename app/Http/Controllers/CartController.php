@@ -94,6 +94,7 @@ class CartController extends Controller
                         'paid_at' => $payment->paid_at?->format('Y-m-d'),
                         'payment_gateway_id' => $payment->payment_gateway_id,
                         'payment_no' => $payment->payment_no,
+                        'total_payable' => $payment->total_payable,
                         'transaction_ref' => $payment->transaction_ref
                     ]
                     : null,
