@@ -117,6 +117,7 @@
             />
 
             <div class="pb-8 pr-6 w-full lg:w-full">
+              <b>Importo pagamento</b>: {{ this.cart.payment?.total_payable }}<br>
               <b class="text-red-500">Attenzione!</b>: prima di segnare un pagamento come
               pagato controllare che il <b>metodo di pagamento sia corretto</b> perché non
               sarà più possibile correggere a mano il numero di certificato di
@@ -130,7 +131,7 @@
               ricreare il record di pagamento SE E SOLO SE il cliente non ha ancora
               proceduto alla generazione del certificato Lloyds).<br />
               <b
-                >Numero certificato di pagamento prenotato:
+                >Numero certificato di pagamento assegnato:
                 {{ this.cart.payment?.payment_no }}</b
               >
             </div>
