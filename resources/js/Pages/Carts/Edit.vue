@@ -117,23 +117,27 @@
             />
 
             <div class="pb-8 pr-6 w-full lg:w-full">
-              <b>Importo pagamento</b>: {{ this.cart.payment?.total_payable }}<br>
-              <b class="text-red-500">Attenzione!</b>: prima di segnare un pagamento come
-              pagato controllare che il <b>metodo di pagamento sia corretto</b> perché non
-              sarà più possibile correggere a mano il numero di certificato di
-              pagamento.<br />
-              Ricordare che con il metodo di pagamento con bonifico bancario, una volta
-              segnato il pagamento come pagato, la procedura invia al cliente una mail che
-              conferma il pagamento e fa procedere il cliente dallo step 5.<br />
-              In caso di problemi e di prenotazione di un numero di certificato sbagliato
-              è possibile ricorrere alla cancellazione del record di pagamento (da usare
-              con parsimonia, poiché serve poi anche cambiare lo step del carrello per
-              ricreare il record di pagamento SE E SOLO SE il cliente non ha ancora
-              proceduto alla generazione del certificato Lloyds).<br />
-              <b
-                >Numero certificato di pagamento assegnato:
-                {{ this.cart.payment?.payment_no }}</b
-              >
+              <p class="mb-2">
+                <b>Importo pagamento</b>: {{ this.cart.payment?.total_payable }}<br />
+                <b
+                  >Numero certificato di pagamento assegnato:
+                  {{ this.cart.payment?.payment_no }}
+                </b>
+              </p>
+              <p class="mb-2">
+                <b class="text-red-500">Attenzione!</b>: prima di segnare un pagamento
+                come pagato controllare che il
+                <b>metodo di pagamento sia corretto</b> perché non sarà più possibile
+                correggere a mano il numero di certificato di pagamento.<br />
+                Ricordare che con il metodo di pagamento con bonifico bancario, una volta
+                segnato il pagamento come pagato, la procedura invia al cliente una mail
+                che conferma il pagamento e fa procedere il cliente dallo step 5.<br />
+                In caso di problemi e di prenotazione di un numero di certificato
+                sbagliato è possibile ricorrere alla cancellazione del record di pagamento
+                (da usare con parsimonia, poiché serve poi anche cambiare lo step del
+                carrello per ricreare il record di pagamento SE E SOLO SE il cliente non
+                ha ancora proceduto alla generazione del certificato Lloyds).
+              </p>
             </div>
           </div>
           <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
