@@ -34,7 +34,9 @@ class User extends Authenticatable implements HasMedia
         'last_name',
         'email',
         'password',
-        'owner'
+        'owner',
+        'new_client',
+        'email_verified_at'
     ];
 
     /**
@@ -54,6 +56,7 @@ class User extends Authenticatable implements HasMedia
      */
     protected $casts = [
         'owner' => 'boolean',
+        'new_client' => 'boolean',
         'email_verified_at' => 'datetime',
     ];
 

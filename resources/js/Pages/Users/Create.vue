@@ -47,6 +47,15 @@
             <option :value="false">{{ __("No") }}</option>
           </select-input>
           <select-input
+            v-model="form.new_client"
+            :error="form.errors.new_client"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="New client"
+          >
+            <option :value="true">{{ __("Yes") }}</option>
+            <option :value="false">{{ __("No") }}</option>
+          </select-input>
+          <select-input
             v-model="form.role"
             :error="form.errors.role"
             class="pb-8 pr-6 w-full lg:w-1/2"
@@ -108,6 +117,7 @@ export default {
         email: "",
         password: "",
         owner: false,
+        new_client: false,
         role: "",
         photo: null,
       }),

@@ -76,6 +76,7 @@ class UsersController extends Controller
                 'first_name' => $user->first_name,
                 'last_name' => $user->last_name,
                 'email' => $user->email,
+                'new_client' => $user->new_client,
                 'owner' => $user->owner,
                 'photo' => $user->getFirstMedia('user'),
                 'deleted_at' => $user->deleted_at,

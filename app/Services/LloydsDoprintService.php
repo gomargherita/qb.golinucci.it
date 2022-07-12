@@ -74,9 +74,13 @@ class LloydsDoprintService
 
         $xml = new DOMDocument('1.0', 'utf-8');
 
-        //$xml->load("../xml/base.xml");
-        // TODO questo dovrà essere differenziato tra utente a rinnovo e utenti nuovi (cambia il numero di allegati, lloyds_new_base.xml)
-        $xml_base = Storage::disk('private')->get('lloyds_renew_base.xml');
+        // Differenziato tra utente a rinnovo e utenti nuovi
+        if ($cart->user->new_client) {
+            $xml_base = Storage::disk('private')->get('lloyds_new_base.xml');
+        } else {
+            $xml_base = Storage::disk('private')->get('lloyds_renew_base.xml');
+        }
+
         $xml->loadXML($xml_base);
 
         // Document Index
@@ -85,7 +89,7 @@ class LloydsDoprintService
         $DocumentIndex->getElementsByTagName('ContractType')->item(0)->textContent = $contract_type;
 
         $authority_type = $customer_details['authority_type'];
-        if ($authority_type == 'Pubblico/ASL') {
+        if ($authority_type == 'Pubblico') {
             $product_name = "COLPA GRAVE - STRUTTURA SANITARIA PUBBLICA";
         } else {
             $product_name = "COLPA GRAVE - STRUTTURA SANITARIA PRIVATA";
@@ -145,7 +149,7 @@ class LloydsDoprintService
             ",",
             "."
         );
-        $RiskDetailsLB->getElementsByTagName('LimitIndemnitySumInsured')->item(0)->textContent = '€ '.$indemnity_limit.'=';
+        $RiskDetailsLB->getElementsByTagName('LimitIndemnitySumInsured')->item(0)->textContent = '€ ' . $indemnity_limit . '=';
 
         $RiskPremiumDetails = $xml->getElementsByTagName('RiskPremiumDetails')->item(0);
         $RiskPremiumDetails->getElementsByTagName('Premium')->item(0)->textContent = $cart_details['price'];
@@ -192,10 +196,19 @@ class LloydsDoprintService
         $ProposalFormAttachment = $CertificateAttachments->getElementsByTagName('OtherAttachment')->item(1);
         $ProposalFormAttachment->getElementsByTagName('FileHash')->item(0)->textContent = $attachingClauses2Hashpdf;
 
+        $policy_response_folder = 'certificates/user_' . $cart->user_id . '/cart_' . $cart_details['cart_id'];
+
+        // add proposal for new clients
+        if ($cart->user->new_client) {
+            $newApplication = Storage::disk('private')->get($policy_response_folder . '/new-application.pdf');
+            $newApplication2Hashpdf = base64_encode(md5($newApplication, true));
+            $ProposalFormAttachment = $CertificateAttachments->getElementsByTagName('OtherAttachment')->item(2);
+            $ProposalFormAttachment->getElementsByTagName('FileHash')->item(0)->textContent = $newApplication2Hashpdf;
+        }
+
         $strxml = $xml->saveXML();
         $document = base64_encode($strxml);
-
-        $policy_response_folder = 'certificates/user_' . $cart->user_id . '/cart_' . $cart_details['cart_id'];
+        
         Storage::disk('private')->put($policy_response_folder . '/policy_response.xml', $strxml);
 
         $documentHash = base64_encode(md5($strxml, true));
@@ -370,8 +383,8 @@ class LloydsDoprintService
     {
         // Upload PER RINNOVI E NUOVI
         // 1. scheda prodotto (generato on the fly, pagina 6 della polizza),
-        $scheda_folder = 'certificates/user_' . $cart->user_id . '/cart_' . $cart->id;
-        $scheda = Storage::disk('private')->get($scheda_folder . '/scheda.pdf');
+        $cart_folder = 'certificates/user_' . $cart->user_id . '/cart_' . $cart->id;
+        $scheda = Storage::disk('private')->get($cart_folder . '/scheda.pdf');
         LloydsDoprintService::uploadRequest($cart, $scheda);
 
         // 2. wording
@@ -387,9 +400,11 @@ class LloydsDoprintService
         $attaching_clauses = Storage::disk('private')->get('attaching_clauses/ATTACHING_CLAUSES.pdf');
         LloydsDoprintService::uploadRequest($cart, $attaching_clauses);
 
-        // Upload SOLO PER NUOVI
-        // 4. modulo di adesione
-        // da generare
+        // 4. modulo di adesione SOLO PER NUOVI clienti
+        if ($cart->user->new_client) {
+            $new_proposal = Storage::disk('private')->get($cart_folder . '/new-application.pdf');
+            LloydsDoprintService::uploadRequest($cart, $new_proposal);
+        }
     }
 } // End Class
 

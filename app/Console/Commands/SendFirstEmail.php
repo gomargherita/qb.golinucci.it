@@ -56,7 +56,8 @@ class SendFirstEmail extends Command
 
             ->whereDate('renewal_date', '<=', $target_date)
             ->whereHas('user', function ($q) {
-                $q->whereNull('email_verified_at');
+                $q->whereNull('email_verified_at')
+                ->where('new_client', 0);
             })
             ->whereHas('user.clientDetails', function ($q) {
                 $q->where('with_accident', 0);

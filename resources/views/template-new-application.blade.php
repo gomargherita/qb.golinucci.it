@@ -24,7 +24,7 @@
 
         footer {
             position: fixed;
-            bottom: -50px;
+            bottom: -40px;
             left: 0px;
             right: 0px;
             height: 60px;
@@ -127,7 +127,7 @@
                         MASSIMALE DI RISARCIMENTO: &euro; {{ $indemnity_limit }}
                     </li>
                     <li>
-                        PERIODO DI RETROATTIVITA': 10 ANNI (ai quali si aggiungono gli anni di precedente copertura assicurativa trascorsi con Golinucci Srl il con il massimo di 14 anni)
+                        PERIODO DI RETROATTIVITA': 10 ANNI (ai quali si aggiungono gli anni di precedente copertura assicurativa trascorsi con Golinucci Srl con il massimo di 14 anni)
                     </li>
                 </ol>
             </div>
@@ -146,6 +146,10 @@
                 </ol>
                 <p>SE PRIMA DELLA DATA DI SOTTOSCRIZIONE DEL PRESENTE MODULOSI FOSSE A CONOSCENZA DI FATTI E CIRCOSTANZE NOTE, COME SOPRA DEFINITO, LA SEGNALAZIONE VA FATTA ALLA PRECEDENTE COMPAGNIA ASSICURATIVA</p>
                 <p><b>Inoltre il Sottoscritto dichiara di non svolgere il ruolo di Direttore di una C.R.A. (ex R.S.A.)</b></p>
+                <p style="text-align:right;">
+                    Per conferma&nbsp;
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAvgAAAL4BsOPnlwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAFxSURBVEiJ3da7axVREMfxz+jFBwEhighaWQghBIs0aSxTaCorOwX/gFgFbC0NISBYC5ImZUiIklI7qysY0MJGm5TaBCwUJ0VO4Hjdu4n30Tgwxc7j9z07e/bsRmYap50ah2hETEbEI+hExJcR6b7MzCcRcQ07mImIG5Aj8Kdl1FP4WmI/8aBTreA5Pg6w8r3M3IqIObzCJfzAvczcru/gdmYaxHEH+0XnO25VueEAuF/GkdjDzZ784AAs4Xfp/4zrDTV/A3AGF1uEAytV73tcwXkstAJwFtv4gMsN4h2sVX1vcKH4Wzw7DjCFbyX2BwQTeF31bOBcya2XWDugBGd7IWX7vavqX+B01bNzYkADZBefqtrlhtE1AvqeRZnZxbzDfT1TRpdYyszH/fp6rfWw64H8wsPMXD2pOIc7otUysxsR87h69OqPFHAEQfdfxRnT9+D/AtTPYDEi7g6hNX0cYGEI8b7WweaINXfrixj3b8sB5tOks04krOwAAAAASUVORK5CYII=" />
+                </p>
             </div>
         </div>
         <div style="page-break-before: always;"></div>
