@@ -49,7 +49,7 @@ class BdxMedmalPaymentsExport implements FromView, WithHeadingRow
     //         'ADMIN FEE',
     //         'TOTAL PREMIUM + TAX + ADMIN FEE',
     //         'INVOICE NUMBER',
-    //         'INTRODUCER', // fisso 50464394
+    //         'INTRODUCER', // fisso 50464394 per pubblico, fisso 50464460 per privato SPECIFICA MODIFICATA IL 4 Luglio
     //         'INTRODUCER 2', // vuoto
     //         'INSURER', // fisso Lloyd's
     //         'INSURER ACCOUNT', // fisso Carpenter Colpa Grave
@@ -80,6 +80,14 @@ class BdxMedmalPaymentsExport implements FromView, WithHeadingRow
                 $join->on('client_details.id', '=', 'pcd2.client_detail_id');
                 $join->where('pcd2.conditional_field_id', 4);
             })
+            ->leftJoin('product_client_details as pcd3', function($join) {
+                $join->on('client_details.id', '=', 'pcd3.client_detail_id');
+                $join->where('pcd3.conditional_field_id', 2);
+            })
+            ->leftJoin('product_client_details as pcd4', function($join) {
+                $join->on('client_details.id', '=', 'pcd4.client_detail_id');
+                $join->where('pcd4.conditional_field_id', 3);
+            })
             ->select(
                 'carts.product_id as pid',
                 'client_details.first_name',
@@ -92,8 +100,8 @@ class BdxMedmalPaymentsExport implements FromView, WithHeadingRow
                 'client_details.country',
                 'users.email',
                 'client_details.phone',
-                'pcd1.selected_field_value as tipoattivita',// TODO tipo attività da prendere da product_client_details
-                'carts.renewal_date', // 'certificates.start_validity_date',
+                'pcd1.selected_field_value as tipoattivita',
+                'carts.renewal_date', // if renewal_date null uso payment_at // 'certificates.start_validity_date',
                 // 'certificates.end_validity_date',
                 'certificates.doprint_certificate_no',
                 'carts.net_plus_access_premium',
@@ -105,6 +113,8 @@ class BdxMedmalPaymentsExport implements FromView, WithHeadingRow
                 'client_details.contact_ref',
                 'client_details.version_ref',
                 'pcd2.selected_field_value as contactnotes',// contact notes da prendere da product_client_details
+                'pcd3.selected_field_value as authority_type',
+                'pcd4.selected_field_value as authority',
                 'client_details.dob',
             )
             ->where('carts.product_id', 1)

@@ -37,6 +37,8 @@
             <th>VERSION REF</th>
             <th>REMARKETED</th>
             <th>PAYMENT DATE</th>
+            <th>ENTE</th>
+            <th>TIPO ENTE</th>
         </tr>
     </thead>
     <tbody>
@@ -88,8 +90,24 @@
 
                 @endswitch
             </td>
-            <td>{{ $payment->renewal_date ? date('d/m/Y', strtotime($payment->renewal_date)) : '' }}</td>
-            <td>{{ $payment->renewal_date ? date('d/m/Y', strtotime("+12 months", strtotime($payment->renewal_date))) : '' }}</td>
+            <td>
+                @if ($payment->renewal_date)
+                {{ date('d/m/Y', strtotime($payment->renewal_date)) }}
+                @elseif ($payment->paid_at)
+                {{ date('d/m/Y', strtotime($payment->paid_at)) }}
+                @else
+                {{ '' }}
+                @endif
+            </td>
+            <td>
+                @if ($payment->renewal_date)
+                {{ date('d/m/Y', strtotime("+12 months", strtotime($payment->renewal_date))) }}
+                @elseif ($payment->paid_at)
+                {{ date('d/m/Y', strtotime("+12 months", strtotime($payment->paid_at))) }}
+                @else
+                {{ '' }}
+                @endif
+            </td>
             <td>Paolo Golinucci</td>
             <td>Paolo Golinucci</td>
             <td>{{ $payment->doprint_certificate_no}}</td>
@@ -99,7 +117,18 @@
             <td>{{ $payment->admin_fee }}</td>
             <td>{{ $payment->total_payable }}</td>
             <td>{{ $payment->payment_no }}</td>
-            <td>50464394</td>
+            <td>
+                @switch($payment->authority_type)
+                @case(1)
+                50464394
+                @break
+
+                @case(2)
+                50464460
+                @break
+
+                @endswitch
+            </td>
             <td></td>
             <td>Lloyd's</td>
             <td>Carpenter Colpa Grave</td>
@@ -111,6 +140,19 @@
             <td>{{ $payment->version_ref }}</td>
             <td>{{ ($payment->contact_ref) ? 'Yes' : '' }}</td>
             <td>{{ $payment->paid_at ? date('d/m/Y', strtotime($payment->paid_at)) : '' }}</td>
+            <td>{{ $payment->authority }}</td>
+            <td>
+                @switch($payment->authority_type)
+                @case(1)
+                Pubblico
+                @break
+
+                @case(2)
+                Privato-Pubblico
+                @break
+
+                @endswitch
+            </td>
         </tr>
         @endforeach
     </tbody>
