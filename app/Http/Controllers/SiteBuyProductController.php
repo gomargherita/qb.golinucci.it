@@ -18,6 +18,7 @@ use App\Rules\ProjectDeclarationsRule;
 use App\Services\DatasheetToPdfService;
 use App\Services\LloydsDoprintService;
 use App\Services\DeclarationsToPdfService;
+use App\Services\NewApplicationToPdfService;
 use App\Services\PaymentCertificateToPdfService;
 use App\Services\Yousign\YousignApiService;
 use Illuminate\Foundation\Auth\User;
@@ -227,6 +228,12 @@ class SiteBuyProductController extends Controller
         $cart->product_offer_id = $request->product_offer_id_selected;
         $cart->save();
 
+        // genero e salvo il pdf new proposal se new client
+        if($user->new_client){
+            $new_proposal = new NewApplicationToPdfService($cart);
+            $new_proposal->generateAndPersist();
+        }
+
         $cart->updateCartStep(3);
 
         return redirect()->route('front.product.buy', compact('product', 'cart'));
@@ -323,7 +330,7 @@ class SiteBuyProductController extends Controller
             ]
         );
 
-        if($payment->payment_gateway_id != $validated['payment_gateway_id_selected']) {
+        if ($payment->payment_gateway_id != $validated['payment_gateway_id_selected']) {
             $payment->payment_gateway_id = $validated['payment_gateway_id_selected'];
             $payment->save();
         }
@@ -778,5 +785,4 @@ class SiteBuyProductController extends Controller
 
         return $cart;
     }
-
 }

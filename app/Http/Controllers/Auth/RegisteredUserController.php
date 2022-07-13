@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Role;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
@@ -35,16 +36,29 @@ class RegisteredUserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'first_name' => 'required|string|max:25',
+            'last_name' => 'required|string|max:25',
+            'email' => 'required|string|email|max:50|unique:users',
+            'password' => ['required', 'min:8', 'confirmed', Rules\Password::defaults()],
+            'password_confirmation' => 'required|min:8'
         ]);
 
+        $account_id = 1; // valido per Golinucci
+
         $user = User::create([
-            'name' => $request->name,
+            'account_id' => $account_id, 
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'owner' => false,
+            'new_client' => 1,
+            'email_verified_at' => now() // IMPORTANT!!! this field is used to send first email to renewals via csv, so for new registered it has to have a value
         ]);
+
+        // assign user role
+        setPermissionsTeamId($account_id); // valido per Golinucci
+        $user->assignRole(Role::ROLE_USER);
 
         event(new Registered($user));
 

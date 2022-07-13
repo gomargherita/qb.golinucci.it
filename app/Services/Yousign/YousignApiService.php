@@ -72,8 +72,8 @@ class YousignApiService
             // see all possibilities at https://dev.yousign.com/
             $client->setProcedureKeyValue('name', 'Polizza Medici Colpa Grave ' . $this->user->clientDetails->first_name . ' ' . $this->user->clientDetails->last_name . ' (' . $this->user->email . ')');
             $client->setProcedureKeyValue('description', 'Polizza Medici Colpa Grave ' . $this->user->clientDetails->first_name . ' ' . $this->user->clientDetails->last_name . ' (' . $this->user->email . ')');
-            // to set default expiration date to the signature // TODO 1 settimana? 1 Mese?
-            $client->setProcedureKeyValue('expiresAt', Carbon::now()->addMonth(1));
+            // to set default expiration date to the signature // TODO 1 settimana? 1 Mese? // Richiesta Francesco  di mettere 6 mesi
+            $client->setProcedureKeyValue('expiresAt', Carbon::now()->addMonth(6));
 
             // add webhooks 
             // if (App::environment(['local'])) {

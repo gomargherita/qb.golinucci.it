@@ -156,10 +156,12 @@ return [
     */
 
     'attributes' => [
-        'gender' => 'Sesso',
+        'first_name' => 'nome',
+        'last_name' => 'cognome',
+        'gender' => 'sesso',
         'confirmation' => 'Confermo l\'assenza di ...',
-        'signature' => 'Firmatario',
-        'selected_declarations' => 'Dichiarazioni'
+        'signature' => 'firmatario',
+        'selected_declarations' => 'dichiarazioni'
     ],
 
     'phone' => 'Il campo :attribute contiene un numero di telefono non valido.',

@@ -36,9 +36,18 @@
           </label>
         </div>
         <div class="flex px-10 py-4 bg-gray-100 border-t border-gray-100">
-          <Link :href="route('password.request')" class="mt-3">
-            {{ __("Forgot password") }}
-          </Link>
+          <div>
+            <div>
+              <Link :href="route('password.request')" class="mt-3 underline text-sm text-gray-600 hover:text-gray-900">
+                {{ __("Forgot password") }}
+              </Link>
+            </div>
+            <div>
+              <Link :href="route('register')" class="mt-3 underline text-sm text-gray-600 hover:text-gray-900">
+                {{ __("No account? Register") }}
+              </Link>
+            </div>
+          </div>
           <loading-button
             :loading="form.processing"
             class="btn-gol-primary ml-auto"

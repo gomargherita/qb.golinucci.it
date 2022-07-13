@@ -27,7 +27,7 @@ class NewApplicationToPdfService
         $certificate = $this->cart->certificate;
         $authority = $clientDetails->getConditionalFieldMatchById(3, false);
         $authority_type = $clientDetails->getConditionalFieldMatchById(2);
-        $authority_type_public_flag = ($authority_type == 'Pubblico/ASL') ? true : false;
+        $authority_type_public_flag = ($authority_type == 'Pubblico') ? true : false;
         $title = $this->getTitle($authority_type_public_flag);
         $specialization = $clientDetails->getConditionalFieldMatchById(4, false);
         $profession = $clientDetails->getConditionalFieldMatchById(1);
