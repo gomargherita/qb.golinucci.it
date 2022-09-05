@@ -19,7 +19,7 @@ class Kernel extends ConsoleKernel
             ->dailyAt('08:00') // scatta alle 8 del mattino
             //->everyTenMinutes() // utile per test
             ->appendOutputTo('send_first_email.log')
-            ->emailOutputOnFailure('masiorama@gmail.com');
+            ->emailOutputOnFailure(config('mail-extra.mail_on_failure'));
     }
 
     /**
