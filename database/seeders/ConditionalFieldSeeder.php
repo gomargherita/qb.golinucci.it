@@ -33,8 +33,8 @@ class ConditionalFieldSeeder extends Seeder
             'field_label' => 'Tipologia Ente',
             'field_type' => 'select',
             'field_value' => json_encode([
-                1 => 'Pubblico/ASL',
-                2 => 'Privato'
+                1 => 'Pubblico',
+                2 => 'Privato-Pubblico'
             ]),
         ]);
 

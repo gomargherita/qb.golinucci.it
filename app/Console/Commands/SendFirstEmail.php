@@ -2,13 +2,13 @@
 
 namespace App\Console\Commands;
 
-use App\Console\CommandWrapper;
 use App\Models\Cart;
 use App\Notifications\FirstEmailWithCredentials;
+use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
-class SendFirstEmail extends CommandWrapper
+class SendFirstEmail extends Command
 {
     /**
      * The name and signature of the console command.
@@ -56,14 +56,15 @@ class SendFirstEmail extends CommandWrapper
 
             ->whereDate('renewal_date', '<=', $target_date)
             ->whereHas('user', function ($q) {
-                $q->whereNull('email_verified_at');
+                $q->whereNull('email_verified_at')
+                ->where('new_client', 0);
             })
             ->whereHas('user.clientDetails', function ($q) {
                 $q->where('with_accident', 0);
             });
 
         $carts = $carts_query->get();
-        foreach ($carts as $cart) {
+        foreach($carts as $cart){
             $user = $cart->user;
             Log::debug($user, ['command']);
             Log::debug($cart, ['command cart']);

@@ -20,6 +20,7 @@
     "Payment Gateway": "Payment Gateway",
     "Client detail": "Client detail",
     "Client details": "Client details",
+    "New client": "New client",
     "Declarations": "Declarations",
     "Payments": "Payments",
     "No user details found": "No user details found",
@@ -34,6 +35,7 @@
     "Update": "Update",
     "Delete": "Delete",
     "Forgot password": "Forgot password",
+    "Confirm password": "Confirm password",
     "Forgot your password? Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.": "Forgot your password? Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.",
     "Choose you new password": "Choose you new password",
     "Name": "Name",
@@ -71,5 +73,8 @@
     "Italic": "Italic",
 
     "Service Unavailable": "Service Unavailable",
-    "Mainteinance description": "We are currently offline due to some work we are doing on our website. We will be back online soon."
+    "Mainteinance description": "We are currently offline due to some work we are doing on our website. We will be back online soon.",
+    "Register": "Register",
+    "No account? Register": "No account? Register",
+    "Already registered?": "Already registered?"
 }
