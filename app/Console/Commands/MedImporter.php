@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Console\CommandWrapper;
 use App\Imports\MedmalRenewalsImport;
+use App\Models\User;
 use Illuminate\Support\Facades\App;
 use Illuminate\Database\QueryException;
 use Maatwebsite\Excel\Facades\Excel;
@@ -61,6 +62,28 @@ class MedImporter extends CommandWrapper
         // check if provided file exists
         if (!file_exists(storage_path('app/fixtures/' . $csvFile))) {
             $this->error('The provided file does not exist.');
+            return CommandWrapper::FAILURE;
+        }
+
+        // collect the emails in the CSV file
+        $emails = [];
+        $index = 0;
+        $csv = fopen(storage_path('app/fixtures/' . $csvFile), 'r');
+        while (($row = fgetcsv($csv, 4096)) !== false) {
+            $index ++;
+            if ($index === 1) {
+                continue;
+            }
+            $emails[] = $row[10];
+        }
+
+        // check if there are colliding Users with the same email in the DB
+        $collidingUsers = User::whereIn('email', $emails)->get();
+        if ($collidingUsers->count()) {
+            $this->error('There are colliding Users with the same email in the DB. Cannot import. Please, fix every collision before importing.');
+            foreach ($collidingUsers as $collidingUser) {
+                $this->error("Colliding email: " . $collidingUser->email);
+            }
             return CommandWrapper::FAILURE;
         }
 

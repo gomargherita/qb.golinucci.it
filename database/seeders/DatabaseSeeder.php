@@ -27,7 +27,6 @@ class DatabaseSeeder extends Seeder
             ProductStepSeeder::class,
             ProductDeclarationSeeder::class,
             DoprintCounterSeeder::class,
-            UserMedGiugno2022Seeder::class
         ]);
     }
 }
