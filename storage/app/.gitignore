@@ -1,3 +1,5 @@
 *
+!fixtures/.gitkeep
 !public/
 !.gitignore
+!.gitkeep
