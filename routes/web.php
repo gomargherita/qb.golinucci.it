@@ -174,6 +174,7 @@ Route::controller(SiteController::class)->group(function () {
     Route::get('/products', 'products')->name('front.products');
     Route::get('/products/{product}', 'product')->name('front.product');
 });
+Route::get('private-files/{file?}', [FileController::class, 'getUser'])->where('file', '(.*)')->name('privateFilesUser')->middleware(['auth']);
 
 
 Route::group(['middleware' => ['auth']], function () {
