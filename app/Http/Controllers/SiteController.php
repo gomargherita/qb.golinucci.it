@@ -51,16 +51,20 @@ class SiteController extends Controller
         $certificates = array();
         $documents = array();
         $user = auth()->user();
+        $noProds = false;
 
-        $carts = Cart::join('products', 'carts.product_id', '=', 'products.id')->where('user_id', $user->id)->select(DB::raw('carts.user_id, carts.id, carts.indemnity_limit, carts.indemnity_limit_patrimonial, DATE_FORMAT(carts.retroactivity, "%d-%m-%Y") as retroactivity2, products.name as nome'))->get();
-        
+        $carts = Cart::join('products', 'carts.product_id', '=', 'products.id')->where('user_id', $user->id)->where('carts.product_step_id', 7)->select(DB::raw('carts.user_id, carts.id, carts.indemnity_limit, carts.indemnity_limit_patrimonial, DATE_FORMAT(carts.retroactivity, "%d-%m-%Y") as retroactivity2, products.name as nome'))->get();
         foreach($carts as $cart){
-            $certificates[$cart->id] = Certificate::join('carts', 'carts.id', '=', 'certificates.cart_id')->where('cart_id', $cart->id)->select(DB::raw('certificates.doprint_certificate_no, DATE_FORMAT(certificates.start_validity_date, "%d-%m-%Y") as start, DATE_FORMAT(certificates.end_validity_date, "%d-%m-%Y") as end'))->get();
+            print_r($cart);
+            $certificates[$cart->id] = Certificate::join('carts', 'carts.id', '=', 'certificates.cart_id')->where('cart_id', $cart->id)->where('product_step_id', '7')->select(DB::raw('certificates.doprint_certificate_no, DATE_FORMAT(certificates.start_validity_date, "%d-%m-%Y") as start, DATE_FORMAT(certificates.end_validity_date, "%d-%m-%Y") as end'))->get();
             $certificate_folder = 'certificates/user_' . $cart->user_id . '/cart_' . $cart->id;
             $documents[$cart->id]['certificate_final'] = Storage::disk('private')->exists($certificate_folder . '/' . 'certificate-final.pdf') ? route('privateFilesUser', $certificate_folder . '/' . 'certificate-final.pdf') : null;
             $documents[$cart->id]['declarations'] = Storage::disk('private')->exists($certificate_folder . '/' . 'declarations.pdf') ? route('privateFilesUser', $certificate_folder . '/' . 'declarations.pdf') : null;
             $documents[$cart->id]['payment_certificate'] = Storage::disk('private')->exists($certificate_folder . '/' . 'payment-certificate.pdf') ? route('privateFilesUser', $certificate_folder . '/' . 'payment-certificate.pdf') : null;
         }
+        if(count($carts) == 0){
+            $noProds = true;
+        };
 
         
 
@@ -77,6 +81,7 @@ class SiteController extends Controller
                 'carts' => $carts,
                 'certificates' => $certificates,
                 'documents' => $documents,
+                'noProds' => $noProds,
             ]
         ]);
     }

@@ -40,80 +40,85 @@
     <h2>
       {{ __("My products") }}
     </h2>
-        <div v-for="cart in user.carts">
+        <div v-if="user.noProds == false">
+          <div v-for="cart in user.carts">
 
-          <div>
-          <p class="text-center text-gray-800" style="font-weight: bold; font-size:17px">{{ cart.nome }}</p>
+            <div>
+            <p class="text-center text-gray-800" style="font-weight: bold; font-size:17px">{{ cart.nome }}</p>
 
-          <table style="width: wrap; margin:auto">
-            <tbody>
-              <tr>
-                <td style="font-weight: bold">Limite indennità:</td>
-                <td style="padding-left:10px;">{{ cart.indemnity_limit }}€</td>
-              </tr>
-              <tr>
-                <td style="font-weight: bold">Limite indennità patrimoniale:</td>
-                <td style="padding-left:10px;">{{ cart.indemnity_limit_patrimonial }}€</td>
-              </tr>
-              <tr>
-                <td style="font-weight: bold">Retroattività:</td>
-                <td style="padding-left:10px;">{{ cart.retroactivity2 }}</td>
-              </tr>
-              <tr>
-                <td style="font-weight: bold">Numero di certificato:</td>
-                <td style="padding-left:10px;">{{ user.certificates[cart.id][0].doprint_certificate_no }}</td>
-              </tr>
-              <tr>
-                <td style="font-weight: bold">Data di inizio validità:</td>
-                <td style="padding-left:10px;">{{ user.certificates[cart.id][0].start }}</td>
-              </tr>
-              <tr>
-                <td style="font-weight: bold">Data di fine validità:</td>
-                <td style="padding-left:10px;">{{ user.certificates[cart.id][0].end }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <br>
+            <table style="width: wrap; margin:auto">
+              <tbody>
+                <tr>
+                  <td style="font-weight: bold">Limite indennità:</td>
+                  <td style="padding-left:10px;">{{ cart.indemnity_limit }}€</td>
+                </tr>
+                <tr>
+                  <td style="font-weight: bold">Limite indennità patrimoniale:</td>
+                  <td style="padding-left:10px;">{{ cart.indemnity_limit_patrimonial }}€</td>
+                </tr>
+                <tr>
+                  <td style="font-weight: bold">Retroattività:</td>
+                  <td style="padding-left:10px;">{{ cart.retroactivity2 }}</td>
+                </tr>
+                <tr>
+                  <td style="font-weight: bold">Numero di certificato:</td>
+                  <td style="padding-left:10px;">{{ user.certificates[cart.id][0].doprint_certificate_no }}</td>
+                </tr>
+                <tr>
+                  <td style="font-weight: bold">Data di inizio validità:</td>
+                  <td style="padding-left:10px;">{{ user.certificates[cart.id][0].start }}</td>
+                </tr>
+                <tr>
+                  <td style="font-weight: bold">Data di fine validità:</td>
+                  <td style="padding-left:10px;">{{ user.certificates[cart.id][0].end }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <br>
 
 
-        <div class="mt-6 bg-white rounded shadow overflow-x-auto">
-      <div class="bg-white rounded-md shadow overflow-hidden text-center">
-        <div style="display: inline-block" v-if="!user.documents[cart.id]['declarations']" class="flex flex-wrap p-8">
-          Non sono ancora presenti le dichiarazioni.
-        </div>
-        <div style="display: inline-block" v-if="user.documents[cart.id]['declarations']" class="flex flex-wrap p-8">
-          <a :href="user.documents[cart.id]['declarations']" target="_blank" class="btn-gol-primary" style="color:white"
-            >Dichiarazioni</a
-          >
-        </div>
-        <div style="display: inline-block" v-if="!user.documents[cart.id]['payment_certificate']" class="flex flex-wrap p-8">
-          Non è ancora presente proforma fattura.
-        </div>
-        <div style="display: inline-block" v-if="user.documents[cart.id]['payment_certificate']" class="flex flex-wrap p-8">
-          <a
-            :href="user.documents[cart.id]['payment_certificate']"
-            target="_blank"
-            class="btn-gol-primary" style="color:white"
-            >Proforma fattura</a
-          >
-        </div>
-        <div style="display: inline-block" v-if="!user.documents[cart.id]['certificate_final']" class="flex flex-wrap p-8">
-          Non è ancora presente la polizza.
-        </div>
-        <div style="display: inline-block" v-if="user.documents[cart.id]['certificate_final']" class="flex flex-wrap p-8">
-          <a
-            :href="user.documents[cart.id]['certificate_final']"
-            target="_blank"
-            class="btn-gol-primary" style="color:white"
-            >Polizza</a
-          >
+          <div class="mt-6 bg-white rounded shadow overflow-x-auto">
+        <div class="bg-white rounded-md shadow overflow-hidden text-center">
+          <div style="display: inline-block" v-if="!user.documents[cart.id]['declarations']" class="flex flex-wrap p-8">
+            Non sono ancora presenti le dichiarazioni.
+          </div>
+          <div style="display: inline-block" v-if="user.documents[cart.id]['declarations']" class="flex flex-wrap p-8">
+            <a :href="user.documents[cart.id]['declarations']" target="_blank" class="btn-gol-primary" style="color:white"
+              >Dichiarazioni</a
+            >
+          </div>
+          <div style="display: inline-block" v-if="!user.documents[cart.id]['payment_certificate']" class="flex flex-wrap p-8">
+            Non è ancora presente proforma fattura.
+          </div>
+          <div style="display: inline-block" v-if="user.documents[cart.id]['payment_certificate']" class="flex flex-wrap p-8">
+            <a
+              :href="user.documents[cart.id]['payment_certificate']"
+              target="_blank"
+              class="btn-gol-primary" style="color:white"
+              >Proforma fattura</a
+            >
+          </div>
+          <div style="display: inline-block" v-if="!user.documents[cart.id]['certificate_final']" class="flex flex-wrap p-8">
+            Non è ancora presente la polizza.
+          </div>
+          <div style="display: inline-block" v-if="user.documents[cart.id]['certificate_final']" class="flex flex-wrap p-8">
+            <a
+              :href="user.documents[cart.id]['certificate_final']"
+              target="_blank"
+              class="btn-gol-primary" style="color:white"
+              >Polizza</a
+            >
+          </div>
         </div>
       </div>
-    </div>
 
-        <hr style="border: 1px solid #000">
-        <br>
+          <hr style="border: 1px solid #000">
+          <br>
+          </div>
+        </div>
+        <div v-else>
+          <p class="text-center">Non ci sono prodotti acquistati.</p>
         </div>
 
   </section>
