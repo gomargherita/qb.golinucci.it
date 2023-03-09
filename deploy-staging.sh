@@ -7,7 +7,7 @@ cd /var/www/stagingqb.golinucci.it || exit
 sudo -u www-data php artisan down
 
 # Update git project
-git checkout develop
+git checkout dev
 git pull origin $(git rev-parse --abbrev-ref HEAD)
 
 # Fix permissions
