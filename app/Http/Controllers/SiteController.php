@@ -55,7 +55,6 @@ class SiteController extends Controller
 
         $carts = Cart::join('products', 'carts.product_id', '=', 'products.id')->where('user_id', $user->id)->where('carts.product_step_id', 7)->select(DB::raw('carts.user_id, carts.id, carts.indemnity_limit, carts.indemnity_limit_patrimonial, DATE_FORMAT(carts.retroactivity, "%d-%m-%Y") as retroactivity2, products.name as nome'))->get();
         foreach($carts as $cart){
-            print_r($cart);
             $certificates[$cart->id] = Certificate::join('carts', 'carts.id', '=', 'certificates.cart_id')->where('cart_id', $cart->id)->where('product_step_id', '7')->select(DB::raw('certificates.doprint_certificate_no, DATE_FORMAT(certificates.start_validity_date, "%d-%m-%Y") as start, DATE_FORMAT(certificates.end_validity_date, "%d-%m-%Y") as end'))->get();
             $certificate_folder = 'certificates/user_' . $cart->user_id . '/cart_' . $cart->id;
             $documents[$cart->id]['certificate_final'] = Storage::disk('private')->exists($certificate_folder . '/' . 'certificate-final.pdf') ? route('privateFilesUser', $certificate_folder . '/' . 'certificate-final.pdf') : null;
@@ -65,8 +64,6 @@ class SiteController extends Controller
         if(count($carts) == 0){
             $noProds = true;
         };
-
-        
 
         return Inertia::render('Sites/User-account', [
             'user' => [
