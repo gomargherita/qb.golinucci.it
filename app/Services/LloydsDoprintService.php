@@ -132,10 +132,10 @@ class LloydsDoprintService
 
         // Start End Date
         // IMPORTANTE la data di START deve ricadere entro la data di validità del Binder
-        $start_date = $certificate->start_validity_date->format('Y-m-d');
-        $end_date = $certificate->end_validity_date->format('Y-m-d');
+        $start_date = "2021-12-12";
+        $end_date = "2022-12-12";
         // TODO proposal date rinnovo metto start_date, nuovo metto data di pagamento
-        $proposal_date = $cart->payment->paid_at->format('Y-m-d'); // TODO VERIFICARE CON FRANCESCO 
+        $proposal_date = "2021-12-12"; // TODO VERIFICARE CON FRANCESCO 
 
         $CertificateDateTimeDetails = $xml->getElementsByTagName('CertificateDateTimeDetails')->item(0);
         $CertificateDateTimeDetails->getElementsByTagName('InceptionDate')->item(0)->textContent = $start_date;

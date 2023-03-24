@@ -5,7 +5,7 @@ return [
     'api_url' => env('YOUSIGN_API_URL', 'https://staging-api.yousign.com/'),
     'app_url' => env('YOUSIGN_APP_URL', 'https://staging-app.yousign.com/'),
     'staging' => [
-        'email' => env('YOUSIGN_STAGING_EMAIL', ''),
-        'phone' => env('YOUSIGN_STAGING_CELLPHONE', ''),
+        'email' => env('YOUSIGN_STAGING_EMAIL', 'teatty.teati@gmail.com'),
+        'phone' => env('YOUSIGN_STAGING_CELLPHONE', '+393281885226'),
     ]
 ];

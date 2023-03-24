@@ -60,18 +60,34 @@
                   <td style="font-weight: bold">Retroattività:</td>
                   <td style="padding-left:10px;">{{ cart.retroactivity2 }}</td>
                 </tr>
-                <tr>
+                
+                <tr v-if="user.certificates[cart.id][0] !== undefined">
                   <td style="font-weight: bold">Numero di certificato:</td>
                   <td style="padding-left:10px;">{{ user.certificates[cart.id][0].doprint_certificate_no }}</td>
                 </tr>
-                <tr>
+                <tr v-if="user.certificates[cart.id][0] !== undefined">
                   <td style="font-weight: bold">Data di inizio validità:</td>
                   <td style="padding-left:10px;">{{ user.certificates[cart.id][0].start }}</td>
                 </tr>
-                <tr>
+                <tr v-if="user.certificates[cart.id][0] !== undefined">
                   <td style="font-weight: bold">Data di fine validità:</td>
                   <td style="padding-left:10px;">{{ user.certificates[cart.id][0].end }}</td>
                 </tr>
+                <div v-else>
+                  <tr>
+                    <td style="font-weight: bold">Numero di certificato:</td>
+                    <td style="padding-left:10px;">Non presente.</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: bold">Data di inizio validità:</td>
+                    <td style="padding-left:10px;">Non presente.</td>
+                  </tr>
+                  <tr>
+                    <td style="font-weight: bold">Data di fine validità:</td>
+                    <td style="padding-left:10px;">Non presente.</td>
+                  </tr>
+                </div>
+
               </tbody>
             </table>
           </div>
