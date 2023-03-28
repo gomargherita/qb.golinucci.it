@@ -31,12 +31,37 @@ use Throwable;
 
 class SiteBuyProductController extends Controller
 {
+    public function isRenewal(Cart $cart){
+        $check = Cart::where('cart_ref', $cart->cart_ref)->first();
+        if(empty($check->cart_ref)){
+            abort(404);
+        }
+        $cart_ref = $check->cart_ref;
+
+        $new_cart_ref = DB::select(DB::raw('SELECT new_cart_ref FROM renewals WHERE new_cart_ref = "'.$cart_ref.'";'));
+        if(!empty($new_cart_ref)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
 
     public function buy(Product $product, Cart $cart = null)
     {
         $user = auth()->user();
 
         if (!empty($cart)) {
+            if($this->isRenewal($cart)){
+                $expiration_date = date_create($cart->expired_at);
+                $now = date_create(date('d-m-Y'));
+                $interval = date_diff($expiration_date,$now);
+                $interval = $interval->format("%R%a");
+                if($interval > -1){
+                    abort(419);
+                }
+            }
+
             $cart = $this->verifyAndGetCartOrRedirect($user, $product, $cart);
 
             $next_step = $cart->product_step_id;
@@ -77,6 +102,48 @@ class SiteBuyProductController extends Controller
 
             return redirect()->route('front.product.buy', ['product' => $product, 'cart' => $cart]);
         }
+    }
+
+    public function renew(Product $product, Cart $cart)
+    {
+        $user = auth()->user();
+        $check = Cart::where('cart_ref', $cart->cart_ref)->first();
+        if(empty($check->cart_ref)){
+            abort(404);
+        }
+        $cart_ref = $check->cart_ref;
+
+        $old_cart_end_date = DB::select(DB::raw('SELECT end_validity_date FROM qb2.carts JOIN qb2.certificates where carts.id = certificates.cart_id and cart_ref = "'.$cart_ref.'";'));
+        $old_cart_end_date = $old_cart_end_date[0]->end_validity_date;
+
+        $end = date_create($old_cart_end_date);
+        $today = date_create(date('d-m-Y'));
+
+        $interval = date_diff($end,$today);
+        $interval = $interval->format("%R%a");
+        //if($interval <= -30){
+        //    abort(403);
+        //}
+        DB::statement("UPDATE users SET new_client=0 WHERE id=".$user->id.";");
+
+        $new_cart_ref = DB::select(DB::raw('SELECT new_cart_ref FROM renewals WHERE old_cart_ref = "'.$cart_ref.'";'));
+        if(!empty($new_cart_ref)){
+            return redirect()->route('front.product.buy', ['product' => $product, 'cart' => $new_cart_ref[0]->new_cart_ref]);
+        }
+        
+        $newCart = Cart::create([
+            'user_id' => $user->id,
+            'product_id' => $product->id,
+            'product_offer_id' => $cart->product_offer_id,
+            'retroactivity' => $cart->retroactivity,
+            'product_step_id' => 1,
+            'expired_at' => $end->modify('+2 month'),
+            'locked' => 'N',
+            'cart_ref' => uniqid()
+        ]);
+        DB::statement('INSERT INTO renewals (old_cart_ref, new_cart_ref) VALUES ("'. $cart->cart_ref.'", "'. $newCart->cart_ref.'");');
+
+        return redirect()->route('front.product.buy', ['product' => $product, 'cart' => $newCart]);
     }
 
     private function step1(Product $product, Cart $cart)

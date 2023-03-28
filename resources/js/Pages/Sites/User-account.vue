@@ -58,7 +58,7 @@
                 </tr>
                 <tr>
                   <td style="font-weight: bold">Retroattività:</td>
-                  <td style="padding-left:10px;">{{ cart.retroactivity2 }}</td>
+                  <td style="padding-left:10px;">{{ user.certificates[cart.id][0].retroactivity2 }}</td>
                 </tr>
                 
                 <tr v-if="user.certificates[cart.id][0] !== undefined">
@@ -126,8 +126,25 @@
               >Polizza</a
             >
           </div>
+          
         </div>
       </div>
+      <div v-if="user.certificates[cart.id][0] !== undefined">
+        <!-- <div style="text-align:center" v-if="user.isExpiring[cart.id] > -30 && user.isRenewed[cart.id] == false"> -->
+        <div style="text-align:center" v-if="-29 > -30 && user.isRenewed[cart.id] == false">
+          <p style="color:red">La polizza è in scadenza, clicca su "RINNOVA" per rinnovarla.</p>
+          <a
+              :href="route('front.product.renew', {
+                'product': cart.product_id,
+                'cart': cart.cart_ref})"
+              target="_blank"
+              class="btn-gol-primary" style="color:white; background-color: red;"
+              >RINNOVA</a
+            >
+          
+
+        </div>
+      </div><br>
 
           <hr style="border: 1px solid #000">
           <br>
