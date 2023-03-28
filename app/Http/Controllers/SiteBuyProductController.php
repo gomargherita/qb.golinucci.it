@@ -113,7 +113,7 @@ class SiteBuyProductController extends Controller
         }
         $cart_ref = $check->cart_ref;
 
-        $old_cart_end_date = DB::select(DB::raw('SELECT end_validity_date FROM qb2.carts JOIN qb2.certificates where carts.id = certificates.cart_id and cart_ref = "'.$cart_ref.'";'));
+        $old_cart_end_date = DB::select(DB::raw('SELECT end_validity_date FROM carts JOIN certificates where carts.id = certificates.cart_id and cart_ref = "'.$cart_ref.'";'));
         $old_cart_end_date = $old_cart_end_date[0]->end_validity_date;
 
         $end = date_create($old_cart_end_date);
