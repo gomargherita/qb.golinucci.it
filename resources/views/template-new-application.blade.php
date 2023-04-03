@@ -134,7 +134,7 @@
             <div style="margin:5px 0;">
                 <h3>Sinistrosità</h3>
                 <p>
-                    Io sottoscritto dichiaro di essere consapevole che, ai sensi dell’art. 8 b), sono escluse le Richieste di Risarcimento connesse a Fatti o Circostanze che fossero già note all’Assicurato prima della data di inizio del Periodo di Assicurazione. Configurano Fatti e Circostanze note:
+                    Io sottoscritto dichiaro di essere consapevole che, ai sensi dell’art. 8.1 b), sono escluse le Richieste di Risarcimento connesse a Fatti o Circostanze che fossero già note all’Assicurato prima della data di inizio del Periodo di Assicurazione e non notificate alla Golinucci SRL. Configurano Fatti e Circostanze note:
                 </p>
                 <ol>
                     <li>La sentenza di condanna in sede civile o penale;</li>
@@ -195,6 +195,12 @@
                 <p style="text-align:right;">
                     Firma: <span style="font-size:16px;font-style:italic;">{{ $fullname }}</span><br>
                     Data: {{ $data_generazione }}
+                </p>
+            </div>
+            <br>
+            <div style="margin:5px 0;">
+                <p>
+                    Data del modulo di proposta: {{ $data_effetto }}
                 </p>
             </div>
     </main>

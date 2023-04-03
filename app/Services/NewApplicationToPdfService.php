@@ -61,6 +61,7 @@ class NewApplicationToPdfService
             'indemnity_limit_patrimonial' => $indemnity_limit_patrimonial,
             'insurance_deductible' => $insurance_deductible,
             'data_generazione' => Carbon::now()->format('Y-m-d'),
+            'data_effetto' => $this->cart->renewal_date->format('d-m-Y'),
         ];
 
         PDF::setOptions([

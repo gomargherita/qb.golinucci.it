@@ -51,6 +51,8 @@ class SiteBuyProductController extends Controller
     {
         $user = auth()->user();
 
+        DB::statement("UPDATE users SET new_client=1 WHERE id=".$user->id.";");
+
         if (!empty($cart)) {
             if($this->isRenewal($cart)){
                 $expiration_date = date_create($cart->expired_at);
@@ -107,6 +109,9 @@ class SiteBuyProductController extends Controller
     public function renew(Product $product, Cart $cart)
     {
         $user = auth()->user();
+
+        DB::statement("UPDATE users SET new_client=1 WHERE id=".$user->id.";");
+
         $check = Cart::where('cart_ref', $cart->cart_ref)->first();
         if(empty($check->cart_ref)){
             abort(404);
@@ -124,7 +129,6 @@ class SiteBuyProductController extends Controller
         //if($interval <= -30){
         //    abort(403);
         //}
-        DB::statement("UPDATE users SET new_client=0 WHERE id=".$user->id.";");
 
         $new_cart_ref = DB::select(DB::raw('SELECT new_cart_ref FROM renewals WHERE old_cart_ref = "'.$cart_ref.'";'));
         if(!empty($new_cart_ref)){
