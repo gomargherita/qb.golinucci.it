@@ -2,17 +2,24 @@
 
 namespace App\Notifications;
 
+use App\Http\Controllers\SiteBuyProductController;
 use Illuminate\Bus\Queueable;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use App\Models\RenewalsEmail;
+use Illuminate\Support\Facades\DB;
+
+
 
 class RenewEmail extends Notification implements ShouldQueue
 {
     use Queueable;
 
     protected $cart;
+    protected $end_validity_date;
 
     /**
      * Create a new notification instance.
@@ -21,7 +28,10 @@ class RenewEmail extends Notification implements ShouldQueue
      */
     public function __construct($cart)
     {
-        $this->cart = $cart;
+        $this->cart = $cart->cart;
+        $this->end_validity_date = $cart->end_validity_date;
+
+        //error_log($cart->cart->product);die;
     }
 
     /**
@@ -45,8 +55,8 @@ class RenewEmail extends Notification implements ShouldQueue
     {
         $user = $this->cart->user;
         $url = route('front.product.renew', [$this->cart->product_id, $this->cart->cart_ref]);
-        $renewal_date = $this->cart->renewal_date->format('d/m/Y');
-
+        DB::statement('INSERT INTO renewals_email (old_cart_ref) VALUES ("'. $this->cart->cart_ref.'");');
+        $renewal_date = $this->end_validity_date->format('d/m/Y');
         return (new MailMessage)
             ->subject('Q&B Golinucci - Rinnova la tua polizza')
             ->greeting("Salve $user->name")
@@ -54,7 +64,7 @@ class RenewEmail extends Notification implements ShouldQueue
             ->line("Per procedere al rinnovo ti basta accedere al nostro sito con le tue credenziali.")
             ->line("Clicca sul pulsante sottostante per iniziare la procedura di rinnovo.")
             ->action('Rinnova la tua polizza', $url)
-            ->line("Se ha altre polizze in scadenza (tutela legale, infortuni, responsabilità civile vita privata, ecc..) riceverà’ altra separata email per il loro rinnovo.")
+            ->line("Se hai altre polizze in scadenza (tutela legale, infortuni, responsabilità civile vita privata, ecc..) riceverai un'altra separata email per il loro rinnovo.")
             ->salutation('Grazie per aver scelto i prodotti Golinucci!');
     }
 

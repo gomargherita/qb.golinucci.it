@@ -2,13 +2,14 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Cart;
+use App\Models\Certificate;
 use App\Notifications\RenewEmail;
 use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
-class SendFirstEmail extends Command
+class SendRenewals extends Command
 {
     /**
      * The name and signature of the console command.
@@ -47,25 +48,24 @@ class SendFirstEmail extends Command
         $num_of_days = 25; // updated on 2022-09-21
         $target_date = Carbon::now()->addDays($num_of_days)->format('Y-m-d');
 
-        $carts_query = Cart::with(['user', 'user.clientDetails'])
-            // ->join('users', 'carts.user_id', '=',  'users.id')
-            // ->join('client_details', 'carts.user_id', '=',  'client_details.user_id')
-            // ->whereDate('carts.renewal_date', '<=', $target_date)
-            // ->whereNull('users.email_verified_at')
-            // ->where('client_details.with_accident', 0);
-
-            ->whereDate('renewal_date', '<=', $target_date)
-            ->whereHas('user.clientDetails', function ($q) {
+        $carts_query = Certificate::with(['cart', 'cart.user', 'cart.user.clientDetails', 'cart.product'])
+            ->whereDate('end_validity_date', '<=', $target_date)
+            ->whereHas('cart.user.clientDetails', function ($q) {
                 $q->where('with_accident', 0);
             });
-
         $carts = $carts_query->get();
-        foreach ($carts as $cart) {
-            $user = $cart->user;
-            Log::debug($user, ['command']);
-            Log::debug($cart, ['command cart']);
-            $user->notify(new RenewEmail($cart));
-            $this->info(now() . ': renewal email sent to ' . $user->email);
+
+        foreach ($carts as $certificate) {
+            $user = $certificate->cart->user;
+
+            $old_cart_ref = DB::select(DB::raw('SELECT old_cart_ref FROM renewals_email WHERE old_cart_ref = "'.$certificate->cart->cart_ref.'";'));
+            if(empty($old_cart_ref)){
+                //error_log($user);die;
+                Log::debug($user, ['command']);
+                Log::debug($certificate, ['command cart']);//error_log($certificate);die;
+                $user->notify(new RenewEmail($certificate));
+                $this->info(now() . ': renewal email sent to ' . $user->email);
+            }
         }
         // $carts->each(function ($cart) {
             

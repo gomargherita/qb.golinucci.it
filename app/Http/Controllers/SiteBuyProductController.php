@@ -63,6 +63,11 @@ class SiteBuyProductController extends Controller
                     abort(419);
                 }
             }
+            else{
+                $cart->renewal_date = null;
+                $cart->retroactivity = null;
+                $cart->save();
+            }
 
             $cart = $this->verifyAndGetCartOrRedirect($user, $product, $cart);
 
@@ -106,11 +111,14 @@ class SiteBuyProductController extends Controller
         }
     }
 
-    public function renew(Product $product, Cart $cart)
+    static public function renew(Product $product, Cart $cart, $user_id=null)
     {
-        $user = auth()->user();
+        if($user_id == null){
+            $user_id = auth()->user();
+            $user_id = $user_id->id;
+        }
 
-        DB::statement("UPDATE users SET new_client=1 WHERE id=".$user->id.";");
+        DB::statement("UPDATE users SET new_client=1 WHERE id=".$user_id.";");
 
         $check = Cart::where('cart_ref', $cart->cart_ref)->first();
         if(empty($check->cart_ref)){
@@ -126,7 +134,7 @@ class SiteBuyProductController extends Controller
 
         $interval = date_diff($end,$today);
         $interval = $interval->format("%R%a");
-        if($interval <= -30){
+        if($interval < -30){
             abort(403);
         }
 
@@ -136,12 +144,11 @@ class SiteBuyProductController extends Controller
         }
         
         $newCart = Cart::create([
-            'user_id' => $user->id,
+            'user_id' => $user_id,
             'product_id' => $product->id,
             'product_offer_id' => $cart->product_offer_id,
-            'retroactivity' => $cart->retroactivity,
             'product_step_id' => 1,
-            'expired_at' => $end->modify('+2 month'),
+            'expired_at' => $end->modify('+60 day'),
             'locked' => 'N',
             'cart_ref' => uniqid()
         ]);
