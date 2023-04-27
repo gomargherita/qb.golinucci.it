@@ -45,24 +45,47 @@ class NewApplicationToPdfService
         );
         $insurance_deductible = '0'; // franchigia
         //= Product::where('id', $this->cart->product_id)->first();
-        $data = [
-            'authority_type_public_flag' => $authority_type_public_flag,
-            'title' => $title,
-            'fullname' => $clientDetails->last_name . ' ' . $clientDetails->first_name,
-            'fiscal_code' => $clientDetails->fiscal_code,
-            'profession' => $profession,
-            'specialization' => $specialization,
-            'authority' => $authority,
-            'authority_type' => $authority_type,
-            'address' => $clientDetails->address . '' . $clientDetails->postal_code . ' - ' . $clientDetails->city . ' (' . $clientDetails->province . ')',
-            'email' => $user->email,
-            'phone' => $clientDetails->phone,
-            'indemnity_limit' => $indemnity_limit,
-            'indemnity_limit_patrimonial' => $indemnity_limit_patrimonial,
-            'insurance_deductible' => $insurance_deductible,
-            'data_generazione' => Carbon::now()->format('Y-m-d'),
-            'data_effetto' => $this->cart->renewal_date->format('d-m-Y'),
-        ];
+        if(isset($this->cart->renewal_date)){
+            $data = [
+                'authority_type_public_flag' => $authority_type_public_flag,
+                'title' => $title,
+                'fullname' => $clientDetails->last_name . ' ' . $clientDetails->first_name,
+                'fiscal_code' => $clientDetails->fiscal_code,
+                'profession' => $profession,
+                'specialization' => $specialization,
+                'authority' => $authority,
+                'authority_type' => $authority_type,
+                'address' => $clientDetails->address . '' . $clientDetails->postal_code . ' - ' . $clientDetails->city . ' (' . $clientDetails->province . ')',
+                'email' => $user->email,
+                'phone' => $clientDetails->phone,
+                'indemnity_limit' => $indemnity_limit,
+                'indemnity_limit_patrimonial' => $indemnity_limit_patrimonial,
+                'insurance_deductible' => $insurance_deductible,
+                'data_generazione' => Carbon::now()->format('d-m-Y'),
+                'data_effetto' => $this->cart->renewal_date->format('d-m-Y'),
+            ];
+        }
+        else{
+            $data = [
+                'authority_type_public_flag' => $authority_type_public_flag,
+                'title' => $title,
+                'fullname' => $clientDetails->last_name . ' ' . $clientDetails->first_name,
+                'fiscal_code' => $clientDetails->fiscal_code,
+                'profession' => $profession,
+                'specialization' => $specialization,
+                'authority' => $authority,
+                'authority_type' => $authority_type,
+                'address' => $clientDetails->address . '' . $clientDetails->postal_code . ' - ' . $clientDetails->city . ' (' . $clientDetails->province . ')',
+                'email' => $user->email,
+                'phone' => $clientDetails->phone,
+                'indemnity_limit' => $indemnity_limit,
+                'indemnity_limit_patrimonial' => $indemnity_limit_patrimonial,
+                'insurance_deductible' => $insurance_deductible,
+                'data_generazione' => Carbon::now()->format('d-m-Y'),
+                'data_effetto' => Carbon::now()->format('d-m-Y'),
+            ];
+        }
+        
 
         PDF::setOptions([
             // 'dpi' => 150,

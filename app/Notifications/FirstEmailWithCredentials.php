@@ -61,12 +61,13 @@ class FirstEmailWithCredentials extends Notification implements ShouldQueue
             return (new MailMessage)
                 ->subject('Q&B Golinucci - Rinnova la tua polizza')
                 ->greeting("Salve $user->name")
-                ->line("Il $renewal_date scadrà la tua polizza.")
-                ->line("Per procedere al rinnovo ti basta accedere al nostro sito con le seguenti credenziali:")
+                ->line("Il $renewal_date scadrà la tua polizza di Responsabilita’ Civile Professionale.")
+                ->line("Per procedere al rinnovo ti ed ottenere la nuova polizza online ti basta accedere al nostro sito con le seguenti credenziali:")
                 ->line("Email: $user->email")
                 ->line("Password: $uncrypted_password")
                 ->line("Clicca sul pulsante sottostante per iniziare la procedura di rinnovo.")
                 ->action('Rinnova la tua polizza', $url)
+                ->line("Se ha altre polizze in scadenza (tutela legale, infortuni, responsabilità civile vita privata, ecc..) riceverà’ altra separata email per il loro rinnovo.")
                 ->salutation('Grazie per aver scelto i prodotti Golinucci!');
         } catch (\Exception $e) {
             abort(500);

@@ -126,9 +126,9 @@ class SiteBuyProductController extends Controller
 
         $interval = date_diff($end,$today);
         $interval = $interval->format("%R%a");
-        //if($interval <= -30){
-        //    abort(403);
-        //}
+        if($interval <= -30){
+            abort(403);
+        }
 
         $new_cart_ref = DB::select(DB::raw('SELECT new_cart_ref FROM renewals WHERE old_cart_ref = "'.$cart_ref.'";'));
         if(!empty($new_cart_ref)){

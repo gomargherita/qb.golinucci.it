@@ -167,7 +167,6 @@
                 </ol>
                 <p style="text-align:right;">
                     Firma: <span style="font-size:16px;font-style:italic;">{{ $fullname }}</span><br>
-                    Data: {{ $data_generazione }}
                 </p>
             </div>
             <div style="margin:5px 0;">
@@ -185,7 +184,6 @@
                 </p>
                 <p style="text-align:right;">
                     Firma: <span style="font-size:16px;font-style:italic;">{{ $fullname }}</span><br>
-                    Data: {{ $data_generazione }}
                 </p>
             </div>
             <div style="margin:5px 0;">
@@ -194,15 +192,9 @@
                 </p>
                 <p style="text-align:right;">
                     Firma: <span style="font-size:16px;font-style:italic;">{{ $fullname }}</span><br>
-                    Data: {{ $data_generazione }}
                 </p>
             </div>
             <br>
-            <div style="margin:5px 0;">
-                <p>
-                    Data del modulo di proposta: {{ $data_effetto }}
-                </p>
-            </div>
     </main>
 </body>
 

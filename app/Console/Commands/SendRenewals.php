@@ -1,0 +1,75 @@
+<?php
+
+namespace App\Console\Commands;
+
+use App\Models\Cart;
+use App\Notifications\RenewEmail;
+use Illuminate\Console\Command;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Log;
+
+class SendFirstEmail extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'mail:renew';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Send email with renewal info';
+
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
+    /**
+     * Execute the console command.
+     *
+     * @return int
+     */
+    public function handle()
+    {
+        // grab all carts with renewal_date < 25 days
+        // da importare un cron tipo 30  2  1-30  jun  *  php artisan mail:first_send...
+        $this->info('#########################' . now() . ': START SCHEDULE');
+        $num_of_days = 25; // updated on 2022-09-21
+        $target_date = Carbon::now()->addDays($num_of_days)->format('Y-m-d');
+
+        $carts_query = Cart::with(['user', 'user.clientDetails'])
+            // ->join('users', 'carts.user_id', '=',  'users.id')
+            // ->join('client_details', 'carts.user_id', '=',  'client_details.user_id')
+            // ->whereDate('carts.renewal_date', '<=', $target_date)
+            // ->whereNull('users.email_verified_at')
+            // ->where('client_details.with_accident', 0);
+
+            ->whereDate('renewal_date', '<=', $target_date)
+            ->whereHas('user.clientDetails', function ($q) {
+                $q->where('with_accident', 0);
+            });
+
+        $carts = $carts_query->get();
+        foreach ($carts as $cart) {
+            $user = $cart->user;
+            Log::debug($user, ['command']);
+            Log::debug($cart, ['command cart']);
+            $user->notify(new RenewEmail($cart));
+            $this->info(now() . ': renewal email sent to ' . $user->email);
+        }
+        // $carts->each(function ($cart) {
+            
+        // });
+        $this->info('#########################' . now() . ': END SCHEDULE');
+    }
+}

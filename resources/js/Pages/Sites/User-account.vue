@@ -130,8 +130,8 @@
         </div>
       </div>
       <div v-if="user.certificates[cart.id][0] !== undefined">
-        <!-- <div style="text-align:center" v-if="user.isExpiring[cart.id] > -30 && user.isRenewed[cart.id] == false"> -->
-        <div style="text-align:center" v-if="-29 > -30 && user.isRenewed[cart.id] == false">
+        <div style="text-align:center" v-if="user.isExpiring[cart.id] > -30 && user.isRenewed[cart.id] == false">
+        <!-- <div style="text-align:center" v-if="-29 > -30 && user.isRenewed[cart.id] == false"> -->
           <p style="color:red">La polizza è in scadenza, clicca su "RINNOVA" per rinnovarla.</p>
           <a
               :href="route('front.product.renew', {

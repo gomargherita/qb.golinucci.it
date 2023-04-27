@@ -44,16 +44,17 @@ class RenewEmail extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         $user = $this->cart->user;
-        $url = route('front.product.buy', [$this->payment->cart->product->id, $this->payment->cart->cart_ref]);
+        $url = route('front.product.renew', [$this->cart->product_id, $this->cart->cart_ref]);
         $renewal_date = $this->cart->renewal_date->format('d/m/Y');
 
         return (new MailMessage)
             ->subject('Q&B Golinucci - Rinnova la tua polizza')
             ->greeting("Salve $user->name")
-            ->line("Il $renewal_date scadrà la tua polizza.")
+            ->line("Il $renewal_date scadrà la tua polizza di Responsabilita’ Civile Professionale.")
             ->line("Per procedere al rinnovo ti basta accedere al nostro sito con le tue credenziali.")
             ->line("Clicca sul pulsante sottostante per iniziare la procedura di rinnovo.")
             ->action('Rinnova la tua polizza', $url)
+            ->line("Se ha altre polizze in scadenza (tutela legale, infortuni, responsabilità civile vita privata, ecc..) riceverà’ altra separata email per il loro rinnovo.")
             ->salutation('Grazie per aver scelto i prodotti Golinucci!');
     }
 

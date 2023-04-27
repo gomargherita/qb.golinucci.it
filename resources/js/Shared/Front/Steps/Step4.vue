@@ -14,7 +14,14 @@
               name="paypal"
               class="block mx-auto w-full max-w-xs fill-white"
               height="50"
-            />
+              />
+              <div class="text-center" v-if="payment_gateway.name == 'Paypal'">
+              
+              Carte<br>
+              MASTERCARD<br>
+              VISA<br>
+              AMERICAN EXPRESS<br>
+              </div>
             <div class="text-center" v-if="payment_gateway.name == 'BBM'">
               Bonifico Bancario
             </div>
