@@ -20,6 +20,12 @@ class Kernel extends ConsoleKernel
             //->everyTenMinutes() // utile per test
             ->appendOutputTo('send_first_email.log')
             ->emailOutputOnFailure(config('mail-extra.mail_on_failure'));
+
+            $schedule->command('mail:renew')
+            ->dailyAt('08:00') // scatta alle 8 del mattino
+            //->everyTenMinutes() // utile per test
+            ->appendOutputTo('renew_email.log')
+            ->emailOutputOnFailure(config('renew_email.mail_on_failure'));
     }
 
     /**
