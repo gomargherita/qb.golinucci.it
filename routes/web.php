@@ -174,6 +174,7 @@ Route::controller(SiteController::class)->group(function () {
     Route::get('/products', 'products')->name('front.products');
     Route::get('/products/{product}', 'product')->name('front.product');
 });
+Route::get('private-files/{file?}', [FileController::class, 'getUser'])->where('file', '(.*)')->name('privateFilesUser')->middleware(['auth']);
 
 
 Route::group(['middleware' => ['auth']], function () {
@@ -181,6 +182,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/paypal_redirect', 'paypal_redirect')->name('front.paypal_redirect');
         Route::scopeBindings()->group(function () {
             Route::get('/products/{product}/buy/{cart:cart_ref?}', 'buy')->name('front.product.buy'); // pagina per il flusso di acquisto
+            Route::get('/products/{product}/renew/{cart:cart_ref}', 'renew')->name('front.product.renew'); // pagina per il flusso di RINNOVO
             Route::post('/products/{product}/store_step1/{cart:cart_ref}', 'store_step1')->name('front.product.store_step1');
             Route::post('/products/{product}/store_step2/{cart:cart_ref}', 'store_step2')->name('front.product.store_step2');
             Route::post('/products/{product}/store_step3/{cart:cart_ref}', 'store_step3')->name('front.product.store_step3');

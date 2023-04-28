@@ -14,7 +14,13 @@
               name="paypal"
               class="block mx-auto w-full max-w-xs fill-white"
               height="50"
-            />
+              />
+              <div class="text-center" v-if="payment_gateway.name == 'Paypal'">
+                MASTERCARD<br>
+              VISA<br>
+              AMERICAN EXPRESS<br>
+              <strong>Se si desidera pagare con carta,<br>nella pagina seguente cliccare su "Paga con una carta"</strong>
+              </div>
             <div class="text-center" v-if="payment_gateway.name == 'BBM'">
               Bonifico Bancario
             </div>

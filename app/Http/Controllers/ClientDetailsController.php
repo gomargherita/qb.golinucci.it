@@ -5,12 +5,16 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreClientDetailsRequest;
 use App\Http\Requests\UpdateClientDetailsRequest;
 use App\Models\ClientDetail;
+use App\Models\ProductClientDetail;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\Rule;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
+
 
 class ClientDetailsController extends Controller
 {
@@ -62,6 +66,12 @@ class ClientDetailsController extends Controller
 
     public function edit(ClientDetail $client_detail)
     {
+        $product_client_details = $client_detail->ProductClientDetails();
+        $client_detail_id = $product_client_details->pluck('client_detail_id');
+        $conditional_field_id = $product_client_details->pluck('conditional_field_id');
+        $selected_field_value = $product_client_details->pluck('selected_field_value');
+        
+
         return Inertia::render('ClientDetails/Edit', [
             // 'can' => [
             //     'delete_client_detail' => $currentUser->can('client_details.delete')
@@ -85,6 +95,9 @@ class ClientDetailsController extends Controller
                 'with_accident' => $client_detail->with_accident,
                 'flag_prev_2022' => $client_detail->flag_prev_2022,
                 'deleted_at' => $client_detail->deleted_at,
+                'client_detail_id' => $client_detail_id,
+                'conditional_field_id' => $conditional_field_id,
+                'selected_field_value' => $selected_field_value,
             ],
             'user' => $client_detail->user ? $client_detail->user : null,
         ]);
@@ -93,6 +106,16 @@ class ClientDetailsController extends Controller
     public function update(UpdateClientDetailsRequest $request, ClientDetail $client_detail)
     {
         $client_detail->update($request->validated());
+        
+        for($i=0; $i<4; $i++){
+            DB::table('product_client_details')
+            ->where('client_detail_id', $request['client_detail_id'][$i])
+            ->where('conditional_field_id', $request['conditional_field_id'][$i])
+            ->update([
+                'selected_field_value' => $request['selected_field_value'][$i],
+                'updated_at' => Carbon::now(),
+            ]);
+        }
 
         return Redirect::back()->with('success', 'ClientDetail updated.');
     }

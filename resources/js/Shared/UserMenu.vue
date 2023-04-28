@@ -20,6 +20,12 @@
     <div class="mb-2 md:mb-0">
       <Link
         class="block py-2 w-full text-left text-white hover:bg-primary"
+        :href="route('front.useraccount')"
+        as="button"
+        >{{ __("My Profile") }}
+      </Link>
+      <Link
+        class="block py-2 w-full text-left text-white hover:bg-primary"
         :href="route('logout')"
         method="delete"
         as="button"
