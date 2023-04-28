@@ -210,42 +210,6 @@
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Note"
           />
-          <select-input
-            v-model="form.selected_field_value[0]"
-            :error="form.errors.selected_field_value"
-            class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Qualifica dell'Assicurato"
-          >
-            <option :value="null" />
-            <option value="1">Dirigente Medico</option>
-            <option value="2">Medico Convenzionato</option>
-            <option value="3">Medico Specialista in Formazione</option>
-            <option value="4">Personale sanitario</option>
-            <option value="5">Dirigente Sanitario non Medico</option>
-            <option value="6">Dirigente Infermieristico</option>
-          </select-input>
-          <select-input
-            v-model="form.selected_field_value[1]"
-            :error="form.errors.selected_field_value"
-            class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Tipologia ente"
-          >
-            <option :value="null" />
-            <option value="1">Pubblico</option>
-            <option value="2">Privato-Pubblico</option>
-          </select-input>
-          <text-input
-            v-model="form.selected_field_value[2]"
-            :error="form.errors.selected_field_value"
-            class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Ente di appartenenza"
-          />
-          <text-input
-            v-model="form.selected_field_value[3]"
-            :error="form.errors.selected_field_value"
-            class="pb-8 pr-6 w-full lg:w-1/2"
-            label="Specializzazione"
-          />
           <checkbox-input
             v-model="form.with_accident"
             :error="form.errors.with_accident"
@@ -380,13 +344,6 @@ export default {
         note: this.client_detail.note,
         with_accident: this.client_detail.with_accident,
         flag_prev_2022: this.client_detail.flag_prev_2022,
-        client_detail_id: this.client_detail.client_detail_id,
-        conditional_field_id: this.client_detail.conditional_field_id,
-        selected_field_value: this.client_detail.selected_field_value,/*
-        selected_field_value_0: this.client_detail.selected_field_value[0],
-        selected_field_value_1: this.client_detail.selected_field_value[1],
-        selected_field_value_2: this.client_detail.selected_field_value[2],
-        selected_field_value_3: this.client_detail.selected_field_value[3],*/
       }),
     };
   },

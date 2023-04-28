@@ -4,15 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Account;
 use App\Models\Product;
-use App\Models\Cart;
-use Doctrine\DBAL\ArrayParameterType;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\DB;
-use App\Models\Certificate;
-
-
 
 class SiteController extends Controller
 {
@@ -48,46 +41,7 @@ class SiteController extends Controller
 
     public function userAccount()
     {
-        $certificates = array();
-        $documents = array();
-        $isExpiring = array();
         $user = auth()->user();
-        $isRenewed = array();
-        $noProds = false;
-
-        $carts = Cart::join('products', 'carts.product_id', '=', 'products.id')->where('user_id', $user->id)->where('carts.product_step_id', 7)->select(DB::raw('carts.user_id, carts.id, carts.indemnity_limit, carts.indemnity_limit_patrimonial, products.name as nome, carts.product_id, carts.cart_ref'))->get();
-        foreach($carts as $cart){
-            $certificates[$cart->id] = Certificate::join('carts', 'carts.id', '=', 'certificates.cart_id')->where('cart_id', $cart->id)->where('product_step_id', '7')->select(DB::raw('certificates.doprint_certificate_no, DATE_FORMAT(certificates.start_validity_date, "%d-%m-%Y") as start, DATE_FORMAT(certificates.end_validity_date, "%d-%m-%Y") as end, DATE_FORMAT(certificates.retroactivity, "%d-%m-%Y") as retroactivity2'))->get();
-            $certificate_folder = 'certificates/user_' . $cart->user_id . '/cart_' . $cart->id;
-            $documents[$cart->id]['certificate_final'] = Storage::disk('private')->exists($certificate_folder . '/' . 'certificate-final.pdf') ? route('privateFilesUser', $certificate_folder . '/' . 'certificate-final.pdf') : null;
-            $documents[$cart->id]['declarations'] = Storage::disk('private')->exists($certificate_folder . '/' . 'declarations.pdf') ? route('privateFilesUser', $certificate_folder . '/' . 'declarations.pdf') : null;
-            $documents[$cart->id]['payment_certificate'] = Storage::disk('private')->exists($certificate_folder . '/' . 'payment-certificate.pdf') ? route('privateFilesUser', $certificate_folder . '/' . 'payment-certificate.pdf') : null;
-
-            $end = date_create($certificates[$cart->id][0]->end);
-            $today = date_create(date('d-m-Y'));
-            $interval = date_diff($end,$today);
-            $interval = $interval->format("%R%a");
-            
-            $isExpiring[$cart->id] = $interval;
-            $new_cart_ref = DB::select(DB::raw('SELECT new_cart_ref FROM renewals WHERE old_cart_ref = "'.$cart->cart_ref.'";'));
-            if(!empty($new_cart_ref)){
-                $current_step = DB::select(DB::raw('SELECT product_step_id FROM carts WHERE cart_ref = "'.$new_cart_ref[0]->new_cart_ref.'";'));
-                if($current_step[0]->product_step_id == 7){
-                    $isRenewed[$cart->id] = true;
-                }
-                else{
-                    $isRenewed[$cart->id] = false;
-                }
-            }
-            else{
-                $isRenewed[$cart->id] = false;
-            }
-        }
-        if(count($carts) == 0){
-            $noProds = true;
-        };
-
-       
 
         return Inertia::render('Sites/User-account', [
             'user' => [
@@ -99,12 +53,6 @@ class SiteController extends Controller
                 //'photo' => $user->photo_path ? URL::route('image', ['path' => $user->photo_path, 'w' => 60, 'h' => 60, 'fit' => 'crop']) : null,
                 'role' => $user->getRoleNames()->first(),
                 'client_details' => $user->clientDetails ? $user->clientDetails : null,
-                'carts' => $carts,
-                'certificates' => $certificates,
-                'documents' => $documents,
-                'noProds' => $noProds,
-                'isExpiring' => $isExpiring,
-                'isRenewed' => $isRenewed,
             ]
         ]);
     }
