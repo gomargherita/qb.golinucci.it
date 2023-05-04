@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\UpdateFrontClientDetailsRequest;
 use App\Imports\MedmalRenewalsImport;
+use Carbon\Carbon;
 use App\Models\Cart;
 use App\Models\Certificate;
 use App\Models\ClientDetail;
@@ -51,7 +52,7 @@ class SiteBuyProductController extends Controller
     {
         $user = auth()->user();
 
-        DB::statement("UPDATE users SET new_client=1 WHERE id=".$user->id.";");
+        //DB::statement("UPDATE users SET new_client=1 WHERE id=".$user->id.";");
 
         if (!empty($cart)) {
             if($this->isRenewal($cart)){
@@ -64,9 +65,23 @@ class SiteBuyProductController extends Controller
                 }
             }
             else{
-                $cart->renewal_date = null;
-                $cart->retroactivity = null;
-                $cart->save();
+                // get renewal date if exists in previous cart
+                $last_prev_certificate = Certificate::query()
+                    ->with('cart')
+                    ->select(['end_validity_date'])->where([
+                        // controllo su product
+                        'product_id' => $cart->product->id,
+                    ])->whereHas('cart', function ($q) {
+                        $q->where('user_id', auth()->user()->id);
+                    })
+                    ->latest()->first();
+
+                if ($last_prev_certificate) {
+                    //$cart->renewal_date = Carbon::parse($last_prev_certificate->end_validity_date)->toDateString();
+                    $cart->renewal_date = null;
+                    $cart->retroactivity = null;
+                    $cart->save();
+                }
             }
 
             $cart = $this->verifyAndGetCartOrRedirect($user, $product, $cart);
@@ -118,12 +133,13 @@ class SiteBuyProductController extends Controller
             $user_id = $user_id->id;
         }
 
-        DB::statement("UPDATE users SET new_client=1 WHERE id=".$user_id.";");
-
         $check = Cart::where('cart_ref', $cart->cart_ref)->first();
         if(empty($check->cart_ref)){
             abort(404);
         }
+
+        DB::statement("UPDATE users SET new_client=0 WHERE id=".$user_id.";");
+
         $cart_ref = $check->cart_ref;
 
         $old_cart_end_date = DB::select(DB::raw('SELECT end_validity_date FROM carts JOIN certificates where carts.id = certificates.cart_id and cart_ref = "'.$cart_ref.'";'));
@@ -307,7 +323,7 @@ class SiteBuyProductController extends Controller
         $cart->save();
 
         // genero e salvo il pdf new proposal se new client
-        if($user->new_client){
+        if(true){
             $new_proposal = new NewApplicationToPdfService($cart);
             $new_proposal->generateAndPersist();
         }
