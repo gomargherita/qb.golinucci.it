@@ -75,7 +75,7 @@ class LloydsDoprintService
         $xml = new DOMDocument('1.0', 'utf-8');
 
         // Differenziato tra utente a rinnovo e utenti nuovi
-        if ($cart->user->new_client) {
+        if (true) {
             $xml_base = Storage::disk('private')->get('lloyds_new_base.xml');
         } else {
             $xml_base = Storage::disk('private')->get('lloyds_renew_base.xml');
@@ -199,7 +199,7 @@ class LloydsDoprintService
         $policy_response_folder = 'certificates/user_' . $cart->user_id . '/cart_' . $cart_details['cart_id'];
 
         // add proposal for new clients
-        if ($cart->user->new_client) {
+        if (true) {
             $newApplication = Storage::disk('private')->get($policy_response_folder . '/new-application.pdf');
             $newApplication2Hashpdf = base64_encode(md5($newApplication, true));
             $ProposalFormAttachment = $CertificateAttachments->getElementsByTagName('OtherAttachment')->item(2);
@@ -401,7 +401,7 @@ class LloydsDoprintService
         LloydsDoprintService::uploadRequest($cart, $attaching_clauses);
 
         // 4. modulo di adesione SOLO PER NUOVI clienti
-        if ($cart->user->new_client) {
+        if (true) {
             $new_proposal = Storage::disk('private')->get($cart_folder . '/new-application.pdf');
             LloydsDoprintService::uploadRequest($cart, $new_proposal);
         }
