@@ -76,12 +76,12 @@ class SiteBuyProductController extends Controller
                     })
                     ->latest()->first();
 
-                if ($last_prev_certificate) {
-                    //$cart->renewal_date = Carbon::parse($last_prev_certificate->end_validity_date)->toDateString();
-                    $cart->renewal_date = null;
-                    $cart->retroactivity = null;
-                    $cart->save();
-                }
+                //if ($last_prev_certificate) {
+                    ////$cart->renewal_date = Carbon::parse($last_prev_certificate->end_validity_date)->toDateString();
+                    //$cart->renewal_date = null;
+                    //$cart->retroactivity = null;
+                    //$cart->save();
+                //}
             }
 
             $cart = $this->verifyAndGetCartOrRedirect($user, $product, $cart);
@@ -142,8 +142,17 @@ class SiteBuyProductController extends Controller
 
         $cart_ref = $check->cart_ref;
 
-        $old_cart_end_date = DB::select(DB::raw('SELECT end_validity_date FROM carts JOIN certificates where carts.id = certificates.cart_id and cart_ref = "'.$cart_ref.'";'));
-        $old_cart_end_date = $old_cart_end_date[0]->end_validity_date;
+        $last_prev_certificate = Certificate::query()
+                    ->with('cart')
+                    ->select(['end_validity_date'])->where([
+                        // controllo su product
+                        'product_id' => $cart->product->id,
+                    ])->whereHas('cart', function ($q) {
+                        $q->where('user_id', auth()->user()->id);
+                    })
+                    ->latest()->first();
+
+        $old_cart_end_date = $last_prev_certificate->end_validity_date;
 
         $end = date_create($old_cart_end_date);
         $today = date_create(date('d-m-Y'));
