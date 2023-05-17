@@ -76,6 +76,21 @@ class SiteBuyProductController extends Controller
                     })
                     ->latest()->first();
 
+                if($last_prev_certificate != null){
+                    $scadenza = date_create($cart->expired_at);
+                    $ora = date_create(date('d-m-Y'));
+                    $interval = date_diff($scadenza,$ora);
+                    $interval = $interval->format("%R%a");
+
+                    if($interval > -1){
+                        $cart->renewal_date = null;
+                        $cart->retroactivity = null;
+                    }
+                    else{
+                        abort(308);
+                    }
+                }
+
                 //if ($last_prev_certificate) {
                     ////$cart->renewal_date = Carbon::parse($last_prev_certificate->end_validity_date)->toDateString();
                     //$cart->renewal_date = null;
