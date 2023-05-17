@@ -77,16 +77,17 @@ class SiteBuyProductController extends Controller
                     ->latest()->first();
 
                 if($last_prev_certificate != null){
-                    $scadenza = date_create($cart->expired_at);
+                    $scadenza = date_create($last_prev_certificate->end_validity_date);
+                    date_add($scadenza, date_interval_create_from_date_string('60 days'));
                     $ora = date_create(date('d-m-Y'));
-                    $interval = date_diff($scadenza,$ora);
-                    $interval = $interval->format("%R%a");
+                    $intervallo = date_diff($scadenza,$ora);
+                    $intervallo = $intervallo->format("%R%a");
 
-                    if($interval > -1){
-                        $cart->renewal_date = null;
-                        $cart->retroactivity = null;
-                    }
-                    else{
+                    $cart->renewal_date = null;
+                    $cart->retroactivity = null;
+                    $cart->save();
+
+                    if(!($intervallo > -1)){
                         abort(308);
                     }
                 }
