@@ -76,7 +76,7 @@ class SiteBuyProductController extends Controller
                     })
                     ->latest()->first();
 
-                if($last_prev_certificate != null){
+                if($last_prev_certificate != null && $cart->product_step_id < 5){
                     $scadenza = date_create($last_prev_certificate->end_validity_date);
                     date_add($scadenza, date_interval_create_from_date_string('60 days'));
                     $ora = date_create(date('d-m-Y'));
