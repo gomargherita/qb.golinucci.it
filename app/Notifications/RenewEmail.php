@@ -53,20 +53,31 @@ class RenewEmail extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
-        $user = $this->cart->user;
-        $url = route('front.product.renew', [$this->cart->product_id, $this->cart->cart_ref]);
-        DB::statement('INSERT INTO renewals_email (old_cart_ref) VALUES ("'. $this->cart->cart_ref.'");');
-        $renewal_date = $this->end_validity_date->format('d/m/Y');
-        return (new MailMessage)
-            ->subject('Q&B Golinucci - Rinnova la tua polizza')
-            ->greeting("Salve $user->name")
-            ->line("Il $renewal_date scadrà la tua polizza di Responsabilita’ Civile Professionale.")
-            ->line("Per procedere al rinnovo ti basta accedere al nostro sito con le tue credenziali.")
-            ->line("Clicca sul pulsante sottostante per iniziare la procedura di rinnovo.")
-            ->action('Rinnova la tua polizza', $url)
-            ->line("Se hai altre polizze in scadenza (tutela legale, infortuni, responsabilità civile vita privata, ecc..) riceverai un'altra separata email per il loro rinnovo.")
-            ->salutation('Grazie per aver scelto i prodotti Golinucci!');
-    }
+        try {
+            $user = $this->cart->user;
+            $uncrypted_password = Str::random(10);
+            $user->password = $uncrypted_password;
+            $user->email_verified_at = now();
+            $user->save();
+            $url = route('front.product.renew', [$this->cart->product_id, $this->cart->cart_ref]);
+            DB::statement('INSERT INTO renewals_email (old_cart_ref) VALUES ("'. $this->cart->cart_ref.'");');
+            $renewal_date = $this->end_validity_date->format('d/m/Y');
+
+            return (new MailMessage)
+                ->subject('Q&B Golinucci - Rinnova la tua polizza')
+                ->greeting("Salve $user->name")
+                ->line("Il $renewal_date scadrà la tua polizza di Responsabilita’ Civile Professionale.")
+                ->line("Per procedere al rinnovo ed ottenere la nuova polizza online ti basta accedere al nostro sito con le seguenti credenziali:")
+                ->line("Email: $user->email")
+                ->line("Password: $uncrypted_password")
+                ->line("Clicca sul pulsante sottostante per iniziare la procedura di rinnovo.")
+                ->action('Rinnova la tua polizza', $url)
+                ->line("Se hai altre polizze in scadenza (tutela legale, infortuni, responsabilità civile vita privata, ecc..) riceverai un'altra separata email per il loro rinnovo.")
+                ->salutation('Grazie per aver scelto i prodotti Golinucci!');
+            } catch (\Exception $e) {
+            abort(500);
+            }
+        }
 
     /**
      * Get the array representation of the notification.
