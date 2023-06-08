@@ -150,7 +150,7 @@ class SiteBuyProductController extends Controller
         }
 
         $check = Cart::where('cart_ref', $cart->cart_ref)->first();
-        if(empty($check->cart_ref)){
+        if(empty($check->cart_ref) || $check->user_id != $user_id){
             abort(404);
         }
 
