@@ -48,7 +48,7 @@ class PaypalGatewayPaymentCancel extends Notification implements ShouldQueue
         return (new MailMessage)
             ->error()
             ->subject('Q&B Golinucci - Annullamento pagamento tramite Paypal')
-            ->greeting("Salve $user->name")
+            ->greeting("Gentile $user->name")
             ->line('Attenzione: abbiamo riscontrato un errore e/o non è stato completato correttamente l\'ordine di pagamento con Paypal.')
             ->line('Ci siamo già attivati per gestire la problematica.')
             ->line('Ti contatteremo il prima possibile.')

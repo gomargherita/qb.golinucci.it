@@ -50,7 +50,7 @@ class FinalEmailWithAttachments extends Notification
 
         return (new MailMessage)
             ->subject('Q&B Golinucci - Polizza e documenti')
-            ->greeting("Salve $user->name")
+            ->greeting("Gentile $user->name")
             ->line('Può trovare in allegato la sua polizza e tutta la documentazione correlata al prodotto che ha acquistato.')
             ->line('Avendo Aderito alla Polizza le è riservata la "CARTA SERVIZI BENESSERE E PREVENZIONE", la quale permette l’accesso ai network convenzionati con Blue Assistance che garantiscono tre linee di servizi utili e vantaggiosi (DENTISTI - FISIOTERAPISTI - DIAGNOSTICI) per offrire all’assicurato e al suo nucleo familiare le migliori cure per la salute ed il benessere in tempi brevi, con la massima efficienza e a prezzi contenuti.')
             ->line('Per Ottenere il Codice di attivazione della CARTA SERVIZI basta andare sul sito: https://www.golinucci.it/card.')

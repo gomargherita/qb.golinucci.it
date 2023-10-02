@@ -46,7 +46,7 @@ class BankTransferGatewayPayment extends Notification
         
         return (new MailMessage)
             ->subject('Q&B Golinucci - Procedi al pagamento tramite Bonifico Bancario')
-            ->greeting("Salve $user->name")
+            ->greeting("Gentile $user->name")
             ->line('Per procedere con l\'acquisto della tua polizza occorre pagare la totalità del premio.')
             ->line('Ecco i dati per effettuare il bonifico:')
             ->line('Bonifico Bancario su c/c intestato a Golinucci srl IBAN IT69 D030 6923 9031 0000 0007 600 presso Banca Intesa San Paolo')
