@@ -38,7 +38,7 @@
             </th>
             <th class="p-4 font-light">Franchigia</th>
             <th class="p-4 font-light">Costo Annuo</th>
-            <th class="p-4 font-light">Wording</th>
+            <th class="p-4 font-light">Download</th>
           </tr>
         </thead>
         <tbody>
@@ -65,13 +65,21 @@
               class="p-4 border border-primary"
               v-text="$filters.formatPrice(parseFloat(offer.total_payable))"
             ></td>
-            <td class="p-4 border border-primary">
+            <td class="p-4 border border-primary" style="text-align: center;">
               <a
                 :href="offer.contract.contract_filepath"
                 target="_blank"
                 class="btn-gol"
               >
-                {{ __("Download") }}
+                {{ __("Contratto") }}
+              </a>
+              <p style="margin:0"></p>
+              <a
+                :href="offer.contract.dip"
+                target="_blank"
+                class="btn-gol"
+              >
+                {{ __("DIP") }}
               </a>
             </td>
           </tr>

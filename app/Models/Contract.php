@@ -17,6 +17,7 @@ class Contract extends Model
         return LogOptions::defaults()
             ->logOnly([
                 'contract_filepath',
+                'dip',
                 'contract_prop',
             ]);
     }
