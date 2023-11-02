@@ -65,13 +65,13 @@
               class="p-4 border border-primary"
               v-text="$filters.formatPrice(parseFloat(offer.total_payable))"
             ></td>
-            <td class="p-4 border border-primary" style="text-align: center;">
+            <td class="p-4 border border-primary" style="text-align: center; text-transform: none;">
               <a
                 :href="offer.contract.contract_filepath"
                 target="_blank"
                 class="btn-gol"
               >
-                {{ __("Contratto") }}
+                {{ __("Condizioni") }}
               </a>
               <p style="margin:0"></p>
               <a
@@ -79,7 +79,7 @@
                 target="_blank"
                 class="btn-gol"
               >
-                {{ __("DIP") }}
+                {{ __("DIP_doc_informativo") }}
               </a>
             </td>
           </tr>
