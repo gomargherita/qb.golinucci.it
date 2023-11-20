@@ -100,14 +100,14 @@ class LloydsDoprintService
         // VALE PER TUTTI GLI ENV
         // VERIFICARE CHE IN SANDBOX ESISTA UN BINDER CON GLI STESSI DATI DI PROD
         $BindingAuthorityDetails = $xml->getElementsByTagName('BindingAuthorityDetails')->item(0);
-        $BindingAuthorityDetails->getElementsByTagName('BARefDate')->item(0)->textContent = '2022-11-03';
-        $BindingAuthorityDetails->getElementsByTagName('BARefNo')->item(0)->textContent = '15';
-        $BindingAuthorityDetails->getElementsByTagName('BABrokersRef')->item(0)->textContent = 'CPG129822';
+        $BindingAuthorityDetails->getElementsByTagName('BARefDate')->item(0)->textContent = '2023-10-13';
+        $BindingAuthorityDetails->getElementsByTagName('BARefNo')->item(0)->textContent = '24';
+        $BindingAuthorityDetails->getElementsByTagName('BABrokersRef')->item(0)->textContent = 'CPG129823';
         $BindingAuthorityDetails->getElementsByTagName('BAPseudonym')->item(0)->textContent = 'GMB';
         $BindingAuthorityDetails->getElementsByTagName('BANumber')->item(0)->textContent = '1732';
         $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin1')->item(0)->textContent = '115647';
         $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin2')->item(0)->textContent = 'XKT';
-        $BindingAuthorityDetails->getElementsByTagName('BAUniqueMarketReference')->item(0)->textContent = 'B1732CPG129822';
+        $BindingAuthorityDetails->getElementsByTagName('BAUniqueMarketReference')->item(0)->textContent = 'B1732CPG129823';
 
         // Certificate Number
         $DocumentReferences = $xml->getElementsByTagName('DocumentReferences')->item(0);
