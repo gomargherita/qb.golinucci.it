@@ -121,8 +121,23 @@ class YousignApiService
             $reason_signer = "Signed by " . $this->user->clientDetails->firstname . " " . $this->user->clientDetails->lastname . " (Yousign)";
 
             // to determine position see https://placeit.yousign.fr/
+            switch($this->cart->productOffer->contract->contract_filepath){
+                case "/storage/contracts/WORDING_BINDER_NL_2023_SECTION_A_PREV2022.pdf":
+                    $position = "376,194,512,232";
+                    break;
+                case "/storage/contracts/WORDING_BINDER_NL_2023_SECTION_B_PREV2022.pdf":
+                    $position = "375,199,511,238";
+                    break;
+                case "/storage/contracts/WORDING_BINDER_NL_2023_SECTION_A.pdf":
+                    $position = "374,108,512,148";
+                    break;
+                case "/storage/contracts/WORDING_BINDER_NL_2023_SECTION_B.pdf":
+                    $position = "376,194,513,234";
+                    break;
+                        
+            }
             $field_name_signer = 'firma_cliente_contratto';
-            $fileObject_signer = $client->addFileObjectViaFieldName($file['id'], $member_signer['id'], $reason_signer, $field_name_signer, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
+            $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], $position, $reason_signer,  16, $field_name_signer, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
             $field_name_signer = 'firma_cliente_precontrattuale';
             $fileObject_signer = $client->addFileObjectViaFieldName($file['id'], $member_signer['id'], $reason_signer, $field_name_signer, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
             $field_name_signer = 'firma_cliente_privacy';
