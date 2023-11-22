@@ -346,6 +346,7 @@ class YousignApiLaravel
         $path = 'file_objects';
 
         $parameter = array(
+            //"type" => $type, non funziona
             "file" => $fileId,
             "member" => $memberId,
             "position" => $position,
