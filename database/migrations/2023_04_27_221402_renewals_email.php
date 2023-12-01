@@ -25,6 +25,6 @@ class RenewalsEmail extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('renewals_email');
     }
 }

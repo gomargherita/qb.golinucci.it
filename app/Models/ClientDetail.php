@@ -58,17 +58,16 @@ class ClientDetail extends Model
     {
         return $this->belongsTo(User::class);
     }
-
     public function productClientDetails(): BelongsToMany
     {
-        return $this->belongsToMany(
-            ConditionalField::class,
-            'product_client_details',
-            'client_detail_id',
-            'conditional_field_id'
-        )
-            ->withPivot('selected_field_value')
-            ->withTimestamps();
+            return $this->belongsToMany(
+                ConditionalField::class,
+                'product_client_details',
+                'client_detail_id',
+                'conditional_field_id',
+            )
+                ->withPivot('selected_field_value')
+                ->withTimestamps();
     }
 
     public function getDobAttribute($value)

@@ -146,6 +146,7 @@ class SiteController extends Controller
                 'conditional_fields' => $product->conditionalFields,
                 'hex_color' => $product->hex_color,
                 'offers' => $product->productOffers,
+                'table_elements' => json_decode($product->productOfferTable, true),
             ],
         ]);
     }

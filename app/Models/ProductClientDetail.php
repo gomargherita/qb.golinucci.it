@@ -14,6 +14,7 @@ class ProductClientDetail extends Model
         'client_detail_id',
         'conditional_field_id',
         'selected_field_value',
+        'product_id',
     ];
 
     public function conditionalField(): BelongsTo

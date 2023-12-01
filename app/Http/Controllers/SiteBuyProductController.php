@@ -21,6 +21,7 @@ use App\Services\LloydsDoprintService;
 use App\Services\DeclarationsToPdfService;
 use App\Services\NewApplicationToPdfService;
 use App\Services\PaymentCertificateToPdfService;
+use App\Services\PaymentBankersToPdfService;
 use App\Services\Yousign\YousignApiService;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
@@ -29,6 +30,8 @@ use Inertia\Inertia;
 use Illuminate\Support\Str;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Throwable;
+use App\Notifications\FinalEmailWithAttachments;
+
 
 class SiteBuyProductController extends Controller
 {
@@ -53,7 +56,6 @@ class SiteBuyProductController extends Controller
         $user = auth()->user();
 
         //DB::statement("UPDATE users SET new_client=1 WHERE id=".$user->id.";");
-
         if (!empty($cart)) {
             if($this->isRenewal($cart)){
                 $expiration_date = date_create($cart->expired_at);
@@ -87,7 +89,7 @@ class SiteBuyProductController extends Controller
                     $cart->retroactivity = null;
                     $cart->save();
 
-                    if(!($intervallo > -1)){
+                    if(!($intervallo > -1) && $product->id == 1){
                         abort(308);
                     }
                 }
@@ -102,30 +104,53 @@ class SiteBuyProductController extends Controller
 
             $cart = $this->verifyAndGetCartOrRedirect($user, $product, $cart);
 
-            $next_step = $cart->product_step_id;
+            if($cart->product->id == 1){
+                $next_step = $cart->product_step_id;
 
-            switch ($next_step) {
-                case 1:
-                    return $this->step1($product, $cart);
-                    break;
-                case 2:
-                    return $this->step2($product, $cart);
-                    break;
-                case 3:
-                    return $this->step3($product, $cart);
-                    break;
-                case 4:
-                    return $this->step4($product, $cart, request('payment'));
-                    break;
-                case 5:
-                    return $this->step5($product, $cart, request('documentGeneration'));
-                    break;
-                case 6:
-                    return $this->step6($product, $cart);
-                    break;
-                case 7:
-                    return $this->step7($product, $cart);
-                    break;
+                switch ($next_step) {
+                    case 1:
+                        return $this->step1($product, $cart);
+                        break;
+                    case 2:
+                        return $this->step2($product, $cart);
+                        break;
+                    case 3:
+                        return $this->step3($product, $cart);
+                        break;
+                    case 4:
+                        return $this->step4($product, $cart, request('payment'));
+                        break;
+                    case 5:
+                        return $this->step5($product, $cart, request('documentGeneration'));
+                        break;
+                    case 6:
+                        return $this->step6($product, $cart);
+                        break;
+                    case 7:
+                        return $this->step7($product, $cart);
+                        break;
+                }
+            }
+            if($cart->product->id == 2 || $cart->product->id == 3 || $cart->product->id == 4){
+                $next_step = $cart->product_step_id;
+
+                switch ($next_step) {
+                    case 1:
+                        return $this->step1($product, $cart);
+                        break;
+                    case 2:
+                        return $this->step2($product, $cart);
+                        break;
+                    case 3:
+                        return $this->step3($product, $cart);
+                        break;
+                    case 4:
+                        return $this->step4($product, $cart, request('payment'));
+                        break;
+                    case 5:
+                        return $this->step5($product, $cart, request('documentGeneration'));
+                        break;
+                }
             }
         } else {
             // se cart assente o locked, genero un cart ref e creo il carrello
@@ -202,19 +227,34 @@ class SiteBuyProductController extends Controller
     {
         $user = auth()->user();
         // TODO verificare che i dati vengano estratti per specifico prodotto
+        $arrayProductConditions = array();
+        foreach($product->productCondition as $singleCondition){
+            array_push($arrayProductConditions, $singleCondition->conditional_field_id);
+        }
+
         $clientDetails = ClientDetail::query()
-            ->with('productClientDetails:field_name')
+        ->with(['productClientDetails' => function ($query) use ($arrayProductConditions) {
+            $query->whereIn('conditional_field_id', $arrayProductConditions)
+                   ->where('field_name', 'like', '%'); // Use the '%' wildcard here
+        }])
             ->where([
-                'user_id' => $user->id
+                'user_id' => $user->id,
             ])
             ->latest('id')
             ->first();
+            
 
         $product = $product->load([
             'productOffers'
         ]);
 
-        return Inertia::render('Sites/BuyProduct', [
+        if($product->id == 1){
+            $redirect = 'Sites/BuyProduct';
+        }
+        else{
+            $redirect = 'Sites/BuyProductBankers';
+        }
+        return Inertia::render($redirect, [
             'product' => [
                 'id' => $product->id,
                 'name' => $product->name,
@@ -225,7 +265,8 @@ class SiteBuyProductController extends Controller
                 'conditional_fields' => $product->conditionalFields,
                 'hex_color' => $product->hex_color,
                 'offers' => $product->productOffers,
-                'steps' => $product->productSteps->count()
+                'steps' => $product->productSteps->count(),
+                'step' => $product->productSteps[0],
             ],
             'cart' => $cart,
             'clientDetails' => $clientDetails
@@ -247,7 +288,7 @@ class SiteBuyProductController extends Controller
                 $rebuildProductClientDetails[$conditional_field_id] = ['selected_field_value' => $selected_field_value];
             }
 
-            $clientDetails->productClientDetails()->sync($rebuildProductClientDetails);
+            $clientDetails->productClientDetails()->syncWithoutDetaching($rebuildProductClientDetails);
             $cart->updateCartStep(2);
         });
 
@@ -257,18 +298,28 @@ class SiteBuyProductController extends Controller
     private function step2(Product $product, Cart $cart)
     {
         $user = auth()->user();
-        $clientDetails = ClientDetail::query()
+        $clientDetails = ClientDetail::query($product)
             ->where([
                 'user_id' => $user->id
             ])->latest('id')->first();
 
+        
         $flag_prev_2022 = $clientDetails->flag_prev_2022;
 
-        $product = $product->load([
-            'productOffers' => function ($query) use ($flag_prev_2022) {
-                $query->with(['conditionalFields', 'contract'])->where('flag_prev_2022', $flag_prev_2022);
-            }
-        ]);
+        if($product->product_type_id == 1){
+            $product = $product->load([
+                'productOffers' => function ($query) use ($flag_prev_2022) {
+                    $query->with(['conditionalFields', 'contract'])->where('flag_prev_2022', $flag_prev_2022);
+                }
+            ]);
+        }
+        else{
+            $product = $product->load([
+                'productOffers' => function ($query) use ($flag_prev_2022) {
+                    $query->with(['conditionalFields', 'contract']);
+                }
+            ]);
+        }
 
         $conditionalFieldsIds = $product
             ->conditionalFields()
@@ -307,7 +358,13 @@ class SiteBuyProductController extends Controller
             return $value != null;
         });
 
-        return Inertia::render('Sites/BuyProduct', [
+        if($product->id == 1){
+            $redirect = 'Sites/BuyProduct';
+        }
+        else{
+            $redirect = 'Sites/BuyProductBankers';
+        }
+        return Inertia::render($redirect, [
             'product' => [
                 'id' => $product->id,
                 'name' => $product->name,
@@ -317,6 +374,7 @@ class SiteBuyProductController extends Controller
                 'conditional_fields' => $product->conditionalFields,
                 'hex_color' => $product->hex_color,
                 'offers' => $offers,
+                'table_elements' => json_decode($product->productOfferTable, true),
                 'steps' => $product->productSteps->count(),
             ],
             'cart' => $cart,
@@ -348,7 +406,7 @@ class SiteBuyProductController extends Controller
         $cart->save();
 
         // genero e salvo il pdf new proposal se new client
-        if(true){
+        if($product->id == 1){
             $new_proposal = new NewApplicationToPdfService($cart);
             $new_proposal->generateAndPersist();
         }
@@ -360,7 +418,13 @@ class SiteBuyProductController extends Controller
 
     private function step3(Product $product, Cart $cart)
     {
-        return Inertia::render('Sites/BuyProduct', [
+        if($product->id == 1){
+            $redirect = 'Sites/BuyProduct';
+        }
+        else{
+            $redirect = 'Sites/BuyProductBankers';
+        }
+        return Inertia::render($redirect, [
             'product' => [
                 'id' => $product->id,
                 'name' => $product->name,
@@ -415,7 +479,13 @@ class SiteBuyProductController extends Controller
             $payment_gateways = PaymentGateway::where(['public' => 1])->get();
             $productObject['payment_gateways'] = $payment_gateways;
 
-            return Inertia::render('Sites/BuyProduct', [
+            if($product->id == 1){
+                $redirect = 'Sites/BuyProduct';
+            }
+            else{
+                $redirect = 'Sites/BuyProductBankers';
+            }
+            return Inertia::render($redirect, [
                 'product' => $productObject,
                 'cart' => $cart
             ]);
@@ -423,7 +493,13 @@ class SiteBuyProductController extends Controller
             $payment_data = Payment::query()->where(['cart_id' => $cart->id])->findOrFail($payment);
             $productObject['payment'] = $payment_data;
 
-            return Inertia::render('Sites/BuyProduct', [
+            if($product->id == 1){
+                $redirect = 'Sites/BuyProduct';
+            }
+            else{
+                $redirect = 'Sites/BuyProductBankers';
+            }
+            return Inertia::render($redirect, [
                 'product' => $productObject,
                 'cart' => $cart
             ]);
@@ -530,8 +606,72 @@ class SiteBuyProductController extends Controller
             $payment->updatePaymentStatus();
             $payment->updatePaymentPaymentNo();
             // genero e salvo il pdf con proforma fattura dell'acquisto
-            $paymentToPdf = new PaymentCertificateToPdfService($cart);
-            $paymentToPdf->generateAndPersist();
+            if($product->product_type_id == 1){
+                $paymentToPdf = new PaymentCertificateToPdfService($cart);
+                $paymentToPdf->generateAndPersist();
+            }
+
+            //BANCARI
+            //bancari
+        if($product->product_type_id == 2){
+            
+            if(Carbon::now()->format('d-m-y') < "31-12-2023"){
+                $startReal = Carbon::parse('31-12-2023')->format('Y-m-d');
+            }
+            else{
+                $startReal = $cart->renewal_date;
+            }
+            if($cart->productOffer->months == 12){
+                $endReal = Carbon::parse('01-12-2024')->endOfYear()->format('Y-m-d');
+            }
+            else{
+                $endReal = Carbon::parse($startReal)->addMonths($cart->productOffer->months);
+            }
+
+            if(!isset($endReal)){
+                $certificate = Certificate::firstOrCreate(
+                    ['cart_id' => $cart->id],
+                    [
+                        'product_id' => $cart->product_id,
+                        'product_offer_id' => $cart->product_offer_id,
+                        'contract_id' => $cart->productOffer->contract->id,
+                        'start_validity_date' => $startReal,
+                        //'retroactivity' => $cart->retroactivity
+                    ]
+                );
+            }
+            else{
+                $certificate = Certificate::firstOrCreate(
+                    ['cart_id' => $cart->id],
+                    [
+                        'product_id' => $cart->product_id,
+                        'product_offer_id' => $cart->product_offer_id,
+                        'contract_id' => $cart->productOffer->contract->id,
+                        'start_validity_date' => $startReal,
+                        'end_validity_date' => $endReal,
+                        //'retroactivity' => $cart->retroactivity
+                    ]
+                );
+            }
+            $certificate->save();
+            $declarationToPdf = new PaymentBankersToPdfService($cart);
+            $declarationToPdf->generateAndPersist();
+
+            
+
+
+            activity()
+                ->causedBy(auth()->user())
+                ->on($certificate)
+                ->event('certificate_generation')
+                ->log("Completed certificate $certificate->id generation;");
+
+            $cart->user->notify(new FinalEmailWithAttachments($cart));
+        }
+        //fine bancari
+
+
+
             $cart->updateCartStep(5);
         } else {
             return redirect()
@@ -566,7 +706,14 @@ class SiteBuyProductController extends Controller
 
     private function step5(Product $product, Cart $cart)
     {
-        return Inertia::render('Sites/BuyProduct', [
+        
+        if($product->id == 1){
+            $redirect = 'Sites/BuyProduct';
+        }
+        else{
+            $redirect = 'Sites/BuyProductBankers';
+        }
+        return Inertia::render($redirect, [
             'product' => [
                 'id' => $product->id,
                 'name' => $product->name,
@@ -574,7 +721,7 @@ class SiteBuyProductController extends Controller
                 'hex_color' => $product->hex_color,
                 'steps' => $product->productSteps->count(),
                 'documentGenerator' => [],
-                'completedDocumentGenerator' => false
+                'completedDocumentGenerator' => false,
             ],
             'cart' => $cart,
         ]);
@@ -864,7 +1011,13 @@ class SiteBuyProductController extends Controller
             $product_signature_error = 'Si è verificato un errore con la procedura di firma.';
         }
 
-        return Inertia::render('Sites/BuyProduct', [
+        if($product->id == 1){
+            $redirect = 'Sites/BuyProduct';
+        }
+        else{
+            $redirect = 'Sites/BuyProductBankers';
+        }
+        return Inertia::render($redirect, [
             'product' => [
                 'id' => $product->id,
                 'name' => $product->name,
@@ -881,7 +1034,13 @@ class SiteBuyProductController extends Controller
 
     private function step7(Product $product, Cart $cart)
     {
-        return Inertia::render('Sites/BuyProduct', [
+        if($product->id == 1){
+            $redirect = 'Sites/BuyProduct';
+        }
+        else{
+            $redirect = 'Sites/BuyProductBankers';
+        }
+        return Inertia::render($redirect, [
             'product' => [
                 'id' => $product->id,
                 'name' => $product->name,

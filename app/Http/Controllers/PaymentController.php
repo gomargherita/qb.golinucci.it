@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StorePaymentRequest;
 use App\Http\Requests\UpdatePaymentRequest;
 use App\Models\Payment;
+use App\Models\Cart;
 use App\Notifications\ConfirmedOfflinePayment;
 use App\Services\PaymentCertificateToPdfService;
 use Illuminate\Support\Facades\Redirect;
+use App\Http\Controllers\CartController;
 
 class PaymentController extends Controller
 {
@@ -64,13 +66,25 @@ class PaymentController extends Controller
     {
         $validated = $request->validated();
 
+        $cart = Cart::find($request->cart_id);
+
+
         if ($payment->update($validated)) {
+
             if ($validated['paid'] && $payment->cart->product_step_id == 4) {
                 // genero e salvo il pdf con proforma fattura dell'acquisto
                 $payment->updatePaymentPaymentNo();
-                $paymentToPdf = new PaymentCertificateToPdfService($payment->cart);
-                $paymentToPdf->generateAndPersist();
-                $payment->cart->user->notify(new ConfirmedOfflinePayment($payment));
+                if($cart->product_id == 1){
+                    $paymentToPdf = new PaymentCertificateToPdfService($payment->cart);
+                    $paymentToPdf->generateAndPersist();
+                    $payment->cart->user->notify(new ConfirmedOfflinePayment($payment));
+                }
+                if($cart->product_id == 2 || $cart->product_id == 3 || $cart->product_id == 4){
+                    $controller = new CartController();
+                    
+                    $controller->step5($cart->product, $cart, $cart->user_id);
+                    //CartController::step5($cart->product, $cart, $cart->user_id);
+                }
                 $payment->cart->updateCartStep(5);
             }
         }

@@ -46,6 +46,12 @@ class FirstEmailWithCredentials extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         try {
+            if($this->cart->product_id == 1){
+                $cc = "sanitari@golinucci.it";
+            }
+            else{
+                $cc = "bancari@golinucci.it";
+            }
             $user = $notifiable;
             $cart = $this->cart;
             Log::debug($user, ['notification']);
@@ -59,6 +65,7 @@ class FirstEmailWithCredentials extends Notification implements ShouldQueue
             $renewal_date = $cart->renewal_date->format('d/m/Y');
 
             return (new MailMessage)
+                ->cc($cc)
                 ->subject('Q&B Golinucci - Rinnova la tua polizza')
                 ->greeting("Gentile $user->name")
                 ->line("Il $renewal_date scadrà la tua polizza di Responsabilita’ Civile Professionale.")

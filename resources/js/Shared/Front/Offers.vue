@@ -1,7 +1,7 @@
 <template>
   <div class="mt-8">
     <div v-if="product.conditional_fields.length">
-      <div class="text-center">{{ __("Filtra tra le nostre offerte di polizza") }}</div>
+      <div v-if="product.id == 1" class="text-center">{{ __("Filtra tra le nostre offerte di polizza") }}</div>
       <div class="offer-filters grid grid-cols-1 mx-auto text-center gap-4 mt-8">
         <div v-for="conditional_field in product.conditional_fields">
           <template v-if="!conditional_field.only_client_details">
@@ -29,25 +29,22 @@
         <thead class="rounded-lg">
           <tr class="uppercase bg-primary text-white">
             <th class="p-4 font-light"></th>
-            <th class="p-4 font-light">
-              Massimale per Danni Materiali e Immateriali per la Professione Sanitaria
+            <th v-for="table_element in JSON.parse(product.table_elements.table_elements)" class="p-4 font-light">
+                {{table_element}}            
             </th>
-            <th class="p-4 font-light">
-              Massimale R.C Patrimoniale da funzioni di carattere amminstrativo e/o
-              organizzativo
-            </th>
-            <th class="p-4 font-light">Franchigia</th>
-            <th class="p-4 font-light">Costo Annuo</th>
-            <th class="p-4 font-light">Download</th>
           </tr>
         </thead>
         <tbody>
+
           <tr v-if="!filteredRows.length">
             <td colspan="6" class="p-4">
               {{ __("Select a combination using filters above") }}
             </td>
           </tr>
+
+          <!-- Prodotto MEDICI -->
           <tr
+          v-if="product.id == 1"
             v-for="(offer, index) in filteredRows"
             class="odd:bg-white even:bg-slate-100 uppercase"
           >
@@ -83,6 +80,60 @@
               </a>
             </td>
           </tr>
+
+          <!-- Prodotto BANCARI -->
+          <template
+            v-if="product.id == 2 || product.id == 3 || product.id == 4"
+            v-for="(offer, index) in filteredRows"
+          >
+          <tr v-if="offer.hide == 0" class="odd:bg-white even:bg-slate-100 uppercase">
+            <td class="p-4 border border-primary">{{ offer.combination }}</td>
+            <td v-if="offer.indemnity_limit == 0"
+              class="p-4 border border-primary"
+              v-text="'------'"
+            ></td>
+            <td v-if="offer.indemnity_limit != 0"
+              class="p-4 border border-primary"
+              v-text="$filters.formatPrice(offer.indemnity_limit)"
+            ></td>
+            <td v-if="offer.indemnity_limit_patrimonial == 0"
+              class="p-4 border border-primary"
+              v-text="'------'"
+            ></td>
+            <td v-if="offer.indemnity_limit_patrimonial != 0"
+              class="p-4 border border-primary"
+              v-text="$filters.formatPrice(offer.indemnity_limit_patrimonial)"
+            ></td>
+            <td v-if="offer.legal_fees == 0"
+              class="p-4 border border-primary"
+              v-text="'------'"
+            ></td>
+            <td v-if="offer.legal_fees != 0"
+              class="p-4 border border-primary"
+              v-text="$filters.formatPrice(parseFloat(offer.legal_fees))"
+            ></td>
+            <td v-for="(price, index) in bankersOffers[offer.combination-1]"
+              class="p-4 border border-primary"
+              v-text="$filters.formatPrice(parseFloat(price))"
+            ></td>
+            <td v-if="bankersOffers[offer.combination-1].length < 3"
+            class="p-4 border border-primary"
+            v-text="'-'">
+            </td>
+            <td class="p-4 border border-primary">
+              <a
+                :href="offer.contract.contract_filepath"
+                target="_blank"
+                class="btn-gol"
+              >
+                {{ __("Download") }}
+              </a>
+            </td>
+          </tr>
+          </template>
+
+
+
         </tbody>
       </table>
     </div>
@@ -99,6 +150,8 @@ export default {
   },
   data() {
     return {
+      offers: [],
+      offers_flags: {},
       filter_conditions: {},
       objectToCompare: {},
     };
@@ -115,6 +168,16 @@ export default {
         this.objectToCompare = v;
       },
     },
+    bankersOffers(){
+      for(let i=0; i<this.product.offers.length; i++){
+        if(this.offers_flags[this.product.offers[i].combination] == null){
+          this.offers.push([]);
+          this.offers_flags[this.product.offers[i].combination] = "true";
+        }
+        this.offers[this.product.offers[i].combination-1].push(this.product.offers[i].total_payable);
+      }    
+      return(this.offers);
+    },
   },
   methods: {
     filter() {
@@ -125,9 +188,13 @@ export default {
           this.objectToCompareEdit[conditional_field.id] =
             conditional_field.pivot.selected_field_value;
         });
+
+        //console.log(this.emptyFilter);
+        
         // console.log(this.filter_conditions, this.objectToCompare);
         conditional_fields_flag = isEqual(this.objectToCompare, this.filter_conditions);
         // console.log("equal ", conditional_fields_flag);
+        
         return conditional_fields_flag;
       });
     },

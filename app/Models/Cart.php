@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\DB;
@@ -37,6 +38,7 @@ class Cart extends Model
         'declarations_signature',
         'expired_at',
         'locked',
+        'custom_end_date',
     ];
 
     protected $casts = [
@@ -174,7 +176,10 @@ class Cart extends Model
             DB::transaction(function () use ($cart) {
                 // recuperare o creare anagrafica
                 $clientDetails = ClientDetail::query()
-                    // ->with('productClientDetails:field_name')
+                ->with(['productClientDetails' => function ($query) use ($cart) {
+                    //$query->where('product_id', $cart->product->id);
+                    }])
+
                     ->latest('id')
                     ->firstOrCreate([
                         'user_id' => $cart->user->id,
@@ -185,14 +190,22 @@ class Cart extends Model
 
                 // recuperare o creare product anagrafica
                 $product = Product::find($cart->product_id);
-                if ($clientDetails->productClientDetails->count() != $product->conditionalFields->count()) {
-                    foreach ($product->conditionalFields as $conditionalField) {
-                        ProductClientDetail::create([
-                            'client_detail_id' => $clientDetails->id,
-                            'conditional_field_id' => $conditionalField->id,
-                        ]);
+                //if ($clientDetails->productClientDetails->count() != $product->conditionalFields->count()) {
+                    $arrayDetails = array();
+                    foreach($clientDetails->productClientDetails as $detail){
+                        array_push($arrayDetails, $detail->id);
                     }
-                }
+
+                    foreach ($product->conditionalFields as $conditionalField) {
+                        if(!in_array($conditionalField->id, $arrayDetails)){
+                            ProductClientDetail::create([
+                                'client_detail_id' => $clientDetails->id,
+                                'conditional_field_id' => $conditionalField->id,
+                                'product_id' => $product->id,
+                            ]);
+                        }
+                    }
+                //}
             });
         });
     }
@@ -207,6 +220,7 @@ class Cart extends Model
                 'product_offer_id',
                 'cart_ref',
                 'renewal_date',
+                'custom_end_date',
                 'total_payable',
                 'admin_fee',
                 'gross_premium',

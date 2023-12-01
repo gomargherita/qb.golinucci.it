@@ -206,7 +206,6 @@
           <option value="VT">VITERBO</option>
         </SelectInput>
       </div>
-
       <div>
         <TextInput
           id="postal_code"
@@ -279,6 +278,15 @@
             __("I confirm the correctness of the above data")
           }}</span>
         </label>
+        <label v-if="product.id == 4" class="flex items-center mt-6 select-none" for="confirmation-sinistri">
+          <input
+            id="confirmation-sinistri"
+            v-model="form.confirmation_sinistri"
+            class="mr-4 p-3"
+            type="checkbox"
+          />
+          <span class="text-lg text-red-500">Confermo l'assenza di sinistri</span>
+        </label>
       </div>
     </div>
     <div>
@@ -300,7 +308,7 @@
 <script>
 import BuyLoadingButton from "@/Shared/BuyLoadingButton";
 import BreezeValidationErrors from "@/Shared/ValidationErrors.vue";
-
+import Layout from "@/Shared/Layouts/EmptyLayout.vue"
 import TextInput from "@/Shared/TextInput.vue";
 import SelectInput from "@/Shared/SelectInput.vue";
 import HTwo from "@/Shared/Front/HTwo";
@@ -318,6 +326,7 @@ export default {
     product: Object,
   },
   data() {
+    
     return {
       form: this.$inertia.form({
         user_id: this.$page.props.auth.user.id,
@@ -334,8 +343,15 @@ export default {
         phone: this.$page.props.clientDetails.phone,
         product_client_details: this.$page.props.clientDetails.product_client_details,
         confirmation: false,
+        confirmation_sinistri: (this.product.id == 4) ? false : true,
       }),
     };
+  },
+  computed: {
+    we(){
+      console.log("ecco i product client details");
+      console.log(this.$page.props.clientDetails.product_client_details);
+    }
   },
   methods: {
     submit() {

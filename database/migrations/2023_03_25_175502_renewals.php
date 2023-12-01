@@ -26,6 +26,6 @@ class Renewals extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('renewals');
     }
 }

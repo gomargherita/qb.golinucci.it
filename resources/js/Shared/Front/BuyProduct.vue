@@ -18,12 +18,12 @@
         ></div>
       </template>
     </div>
-
     <Step1 v-if="current_step == 1" :product="product" :cart="cart" />
     <Step2 v-if="current_step == 2" :product="product" :cart="cart" />
     <Step3 v-if="current_step == 3" :product="product" :cart="cart" />
     <Step4 v-if="current_step == 4" :product="product" :cart="cart" />
-    <Step5 v-if="current_step == 5" :product="product" :cart="cart" />
+    <Step5 v-if="current_step == 5 && product.type == 'medici'" :product="product" :cart="cart" />
+    <Step5_2 v-if="current_step == 5 && product.type == 'bancari'" :product="product" :cart="cart" />
     <Step6 v-if="current_step == 6" :product="product" :cart="cart" />
     <Step7 v-if="current_step == 7" :product="product" :cart="cart" />
   </div>
@@ -36,6 +36,7 @@ import Step2 from "@/Shared/Front/Steps/Step2";
 import Step3 from "@/Shared/Front/Steps/Step3";
 import Step4 from "@/Shared/Front/Steps/Step4";
 import Step5 from "@/Shared/Front/Steps/Step5";
+import Step5_2 from "@/Shared/Front/Steps_product_type_2/Step5_2";
 import Step6 from "@/Shared/Front/Steps/Step6";
 import Step7 from "@/Shared/Front/Steps/Step7";
 
@@ -47,6 +48,7 @@ export default {
     Step3,
     Step4,
     Step5,
+    Step5_2,
     Step6,
     Step7
   },

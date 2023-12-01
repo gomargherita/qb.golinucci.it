@@ -6,14 +6,14 @@
           name="dashboard"
           class="mr-2 w-4 h-4"
           :class="
-            isUrl('admin/dashboard')
+            isUrl(false, 'admin/dashboard')
               ? 'fill-primary'
               : 'fill-gray-900 group-hover:fill-primary'
           "
         />
         <div
           :class="
-            isUrl('admin/dashboard')
+            isUrl(false, 'admin/dashboard')
               ? 'text-primary'
               : 'text-gray-900 group-hover:text-primary'
           "
@@ -28,14 +28,14 @@
           name="products"
           class="mr-2 w-4 h-4"
           :class="
-            isUrl('admin/products')
+            isUrl(false, 'admin/products')
               ? 'fill-primary'
               : 'fill-gray-900 group-hover:fill-primary'
           "
         />
         <div
           :class="
-            isUrl('admin/products')
+            isUrl(false, 'admin/products')
               ? 'text-primary'
               : 'text-gray-900 group-hover:text-primary'
           "
@@ -50,14 +50,14 @@
           name="roles"
           class="mr-2 w-4 h-4"
           :class="
-            isUrl('admin/roles')
+            isUrl(false, 'admin/roles')
               ? 'fill-primary'
               : 'fill-gray-900 group-hover:fill-primary'
           "
         />
         <div
           :class="
-            isUrl('admin/roles')
+            isUrl(false, 'admin/roles')
               ? 'text-primary'
               : 'text-gray-900 group-hover:text-primary'
           "
@@ -72,14 +72,14 @@
           name="users"
           class="mr-2 w-4 h-4"
           :class="
-            isUrl('admin/users')
+            isUrl(false, 'admin/users')
               ? 'fill-primary'
               : 'fill-gray-900 group-hover:fill-primary'
           "
         />
         <div
           :class="
-            isUrl('admin/users')
+            isUrl(false, 'admin/users')
               ? 'text-primary'
               : 'text-gray-900 group-hover:text-primary'
           "
@@ -94,14 +94,14 @@
           name="office"
           class="mr-2 w-4 h-4"
           :class="
-            isUrl('admin/clientDetails')
+            isUrl(false, 'admin/clientDetails')
               ? 'fill-primary'
               : 'fill-gray-900 group-hover:fill-primary'
           "
         />
         <div
           :class="
-            isUrl('admin/clientDetails')
+            isUrl(false, 'admin/clientDetails')
               ? 'text-primary'
               : 'text-gray-900 group-hover:text-primary'
           "
@@ -111,24 +111,46 @@
       </Link>
     </div>
     <div class="mb-4">
-      <Link class="group flex items-center py-3" :href="route('carts')">
+      <Link class="group flex items-center py-3" :href="route('carts', 1)">
         <icon
           name="cart"
           class="mr-2 w-4 h-4"
           :class="
-            isUrl('admin/carts')
+            isUrl(true, 'admin/carts/1')
               ? 'fill-primary'
               : 'fill-gray-900 group-hover:fill-primary'
           "
         />
         <div
           :class="
-            isUrl('admin/cart')
+            isUrl(true, 'admin/carts/1')
               ? 'text-primary'
               : 'text-gray-900 group-hover:text-primary'
           "
         >
-          {{ __("Carts") }}
+          {{ __("Carrelli Medici") }}
+        </div>
+      </Link>
+    </div>
+    <div class="mb-4">
+      <Link class="group flex items-center py-3" :href="route('carts', 2)">
+        <icon
+          name="cart"
+          class="mr-2 w-4 h-4"
+          :class="
+            isUrl(true, 'admin/carts/2')
+              ? 'fill-primary'
+              : 'fill-gray-900 group-hover:fill-primary'
+          "
+        />
+        <div
+          :class="
+            isUrl(true, 'admin/carts/2')
+              ? 'text-primary'
+              : 'text-gray-900 group-hover:text-primary'
+          "
+        >
+          {{ __("Carrelli Bancari") }}
         </div>
       </Link>
     </div>
@@ -138,14 +160,14 @@
           name="bordereaux"
           class="mr-2 w-4 h-4"
           :class="
-            isUrl('admin/bordereauxs')
+            isUrl(false, 'admin/bordereauxs')
               ? 'fill-primary'
               : 'fill-gray-900 group-hover:fill-primary'
           "
         />
         <div
           :class="
-            isUrl('admin/bordereauxs')
+            isUrl(false, 'admin/bordereauxs')
               ? 'text-primary'
               : 'text-gray-900 group-hover:text-primary'
           "
@@ -181,10 +203,13 @@ export default {
     },
   },
   methods: {
-    isUrl(...urls) {
+    isUrl(strict, ...urls) {
       let currentUrl = this.$page.url.substr(1);
       if (urls[0] === "") {
         return currentUrl === "";
+      }
+      if(strict){
+        return currentUrl == urls[0];
       }
       return urls.filter((url) => currentUrl.startsWith(url)).length;
     },

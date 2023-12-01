@@ -40,7 +40,8 @@ class UpdateFrontClientDetailsRequest extends FormRequest
             'postal_code' => ['required', 'max:5'],
             'product_client_details' => ['required', 'array'],
             'product_client_details.*.pivot.selected_field_value' => ['required'],
-            'confirmation' => ['accepted']
+            'confirmation' => ['accepted'],
+            'confirmation_sinistri' => ['accepted'] 
         ];
     }
 

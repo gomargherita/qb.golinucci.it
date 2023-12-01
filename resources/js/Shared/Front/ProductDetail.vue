@@ -3,9 +3,12 @@
     <div class="flex flex-col justify-between gap-12">
       <div v-if="product" class="bg-gray-100 md:min-h-96 min-h-max shadow">
         <div class="md:flex">
-          <div class="w-full md:w-2/5">
-            <img src="/img/medic.jpg" class="w-full min-h-96 h-full object-cover" />
-          </div>
+            <div v-if="product.id == '1'" class="w-full md:w-2/5">
+                <img src="/img/medic.jpg" class="w-full min-h-96 h-full object-cover" />
+              </div>
+              <div v-if="product.id == '2'" class="w-full md:w-2/5">
+                <img src="/img/bankers.jpg" class="w-full min-h-96 h-full object-cover" />
+              </div>
           <div class="w-full md:w-3/5">
             <div
               :style="`border-color: ${product.hex_color};`"

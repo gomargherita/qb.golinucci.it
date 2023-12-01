@@ -50,6 +50,11 @@ class Product extends Model implements HasMedia
         return $this->belongsTo(ProductType::class);
     }
 
+    public function productCondition(): HasMany
+    {
+        return $this->hasMany(ProductCondition::class);
+    }
+
     public function conditionalFields(): BelongsToMany
     {
         return $this->belongsToMany(
@@ -63,6 +68,11 @@ class Product extends Model implements HasMedia
     public function productOffers(): HasMany
     {
         return $this->hasMany(ProductOffer::class);
+    }
+
+    public function productOfferTable(): HasOne
+    {
+        return $this->hasOne(ProductOfferTable::class);
     }
 
     public function productCounters(): HasMany

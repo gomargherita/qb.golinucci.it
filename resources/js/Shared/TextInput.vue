@@ -8,7 +8,7 @@
       class="form-input"
       :class="{ error: error }"
       :type="type"
-      :value="modelValue"
+      :value="modelValue || customDate" 
       @input="$emit('update:modelValue', $event.target.value)"
     />
     <div v-if="error" class="form-error">{{ error }}</div>
@@ -34,6 +34,7 @@ export default {
     error: String,
     label: String,
     modelValue: String,
+    customDate: String,  // New prop for custom date
   },
   emits: ["update:modelValue"],
   methods: {

@@ -13,18 +13,11 @@
           >
             <thead class="rounded-lg">
               <tr class="uppercase bg-primary text-white">
-                <th class="p-4 font-light">
-                  Massimale per Danni Materiali e Immateriali per la Professione Sanitaria
-                </th>
-                <th class="p-4 font-light">
-                  Massimale R.C Patrimoniale da funzioni di carattere amminstrativo e/o
-                  organizzativo
-                </th>
-                <th class="p-4 font-light">Franchigia</th>
-                <th class="p-4 font-light">Costo Annuo</th>
-                <th class="p-4 font-light">Wording</th>
-                <th class="p-4 font-light">Scegli</th>
-              </tr>
+            <th v-for="table_element in JSON.parse(product.table_elements.table_elements)" class="p-4 font-light">
+                {{table_element}}            
+            </th>
+            <th v-if="product.id == 1" class="p-4 font-light">Scegli</th>
+          </tr>
             </thead>
             <tbody>
               <tr v-if="product.offers.length == 0">
@@ -32,7 +25,11 @@
                   {{ __("No offer available.") }}
                 </td>
               </tr>
+              
+              
+              <!-- Prodotto MEDICI -->
               <tr
+              v-if="product.id == 1"
                 v-for="(offer, index) in product.offers"
                 class="odd:bg-white even:bg-slate-100 uppercase"
               >
@@ -51,6 +48,7 @@
                 ></td>
                 <td class="p-4 border border-primary" style="text-align: center;  text-transform: none;">
                   <a
+
                 :href="offer.contract.contract_filepath"
                 target="_blank"
                 class="btn-gol"
@@ -82,6 +80,74 @@
                   </label>
                 </td>
               </tr>
+
+
+
+              <!-- Prodotto BANCARI -->
+              <template
+                v-if="product.id == 2 || product.id == 3 || product.id == 4"
+                v-for="(offer, index) in product.offers"
+              >
+              <tr v-if="offer.hide == 0" class="odd:bg-white even:bg-slate-100 uppercase">
+                <td v-if="offer.indemnity_limit == 0"
+              class="p-4 border border-primary"
+              v-text="'------'"
+            ></td>
+            <td v-if="offer.indemnity_limit != 0"
+              class="p-4 border border-primary"
+              v-text="$filters.formatPrice(offer.indemnity_limit)"
+            ></td>
+            <td v-if="offer.indemnity_limit_patrimonial == 0"
+              class="p-4 border border-primary"
+              v-text="'------'"
+            ></td>
+                <td v-if="offer.indemnity_limit_patrimonial != 0"
+                  class="p-4 border border-primary"
+                  v-text="$filters.formatPrice(offer.indemnity_limit_patrimonial)"
+                ></td>
+                <td v-if="offer.legal_fees == 0"
+              class="p-4 border border-primary"
+              v-text="'------'"
+            ></td>
+                <td v-if="offer.legal_fees != 0"
+                  class="p-4 border border-primary"
+                  v-text="$filters.formatPrice(parseFloat(offer.legal_fees))"
+                ></td>
+                <td v-for="(price, index) in bankersOffers[offer.combination-1]"
+                  class="p-4 border border-primary">
+                  {{ $filters.formatPrice(parseFloat(price)) }}
+
+                  <label
+                    class="flex items-center mt-6 select-none"
+                    for="product_offer_id_selected"
+                    style="display: inline;"
+
+                  >
+                    <input
+                      name="product_offer_id_selected"
+                      :data-offer_id="offers_id[offer.combination-1][index]"
+                      class="mr-1"
+                      type="radio"
+                      @click="offerSelected"
+                      :checked="offers_id[offer.combination-1][index] == this.form.product_offer_id_selected"
+                    />
+                  </label>
+                </td>
+                <td v-if="bankersOffers[offer.combination-1].length < 3"
+            class="p-4 border border-primary"
+            v-text="'-'">
+            </td>
+                <td class="p-4 border border-primary">
+                  <a
+                    :href="offer.contract.contract_filepath"
+                    target="_blank"
+                    class="btn-gol"
+                  >
+                    {{ __("Download") }}
+                  </a>
+                </td>
+              </tr>
+            </template>
             </tbody>
           </table>
         </div>
@@ -123,12 +189,30 @@ export default {
   },
   data() {
     return {
+      offers: [],
+      offers_flags: {},
+      offers_id: [],
       filter_conditions: {},
       objectToCompare: {},
       form: this.$inertia.form({
         product_offer_id_selected: (this.cart.product_offer_id) ? this.cart.product_offer_id : null,
       }),
     };
+  },
+  computed:{
+    bankersOffers(){
+      for(let i=0; i<this.product.offers.length; i++){
+        if(this.offers_flags[this.product.offers[i].combination] == null){
+          this.offers.push([]);
+          this.offers_id.push([]);
+          this.offers_flags[this.product.offers[i].combination] = "true";
+        }
+
+        this.offers_id[this.product.offers[i].combination-1].push(this.product.offers[i].id);
+        this.offers[this.product.offers[i].combination-1].push(this.product.offers[i].total_payable);
+      }
+      return(this.offers);
+    },
   },
   methods: {
     offerSelected: function (evt) {

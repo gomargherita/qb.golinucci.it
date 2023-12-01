@@ -56,9 +56,11 @@ class UsersController extends Controller
                 })
                 ->toMediaCollection('user');
         }
-
+        
         $user->assignRole(Role::ROLE_USER);
 
+        $user->email_verified_at = now();
+        $user->save();
         return Redirect::route('users')->with('success', 'User created.');
     }
 

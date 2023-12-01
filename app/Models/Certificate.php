@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Validation\Rules\Exists;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
@@ -62,7 +63,21 @@ class Certificate extends Model
         }
 
         $this->attributes['start_validity_date'] = $renewal_date;
-        $this->attributes['end_validity_date'] = Carbon::parse($renewal_date)->addMonths($this->productOffer->months);
+
+        //se il prodotto è medici esegui sempre l'if
+        if($this->cart->product->id == 1){
+            $this->attributes['end_validity_date'] = Carbon::parse($renewal_date)->addMonths($this->productOffer->months);
+        }
+        
+        else if(($this->cart->product->id == 2 || $this->cart->product->id == 3 ||$this->cart->product->id == 4) && !array_key_exists("end_validity_date", $this->attributes)){
+            if($this->productOffer->months == 12){
+                $this->attributes['end_validity_date'] = Carbon::parse($renewal_date)->endOfYear();
+            }
+            else{
+                $this->attributes['end_validity_date'] = Carbon::parse($renewal_date)->addMonths($this->productOffer->months);
+            }
+        }
+        
     }
 
     // se esistono certificati completati precedenti allora fa fede la retroattività di quelli

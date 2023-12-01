@@ -2,14 +2,16 @@
   <div>
     <Head :title="form.cart_ref" />
     <h1 class="mb-8 text-3xl font-bold">
-      <Link class="text-primary hover:text-secondary-400" :href="route('carts')">{{
+      <Link class="text-primary hover:text-secondary-400" :href="route('carts', 1)">{{
         __("Bordereaux")
       }}</Link>
     </h1>
 
     <div class="mt-6 bg-white rounded shadow overflow-x-auto">
       <div class="bg-white rounded-md shadow overflow-hidden">
+        <h1 class="mb-8 text-3xl font-bold -mb-8 -mr-6 p-8">Medici</h1>
         <form>
+          
           <div class="flex flex-wrap -mb-8 -mr-6 p-8">
             <text-input
               v-model="form.date"
@@ -22,11 +24,60 @@
           </div>
           <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
             <a
-              @click="download({ date: this.form.date })"
+              @click="download({ date: this.form.date, prodotto: 'medici'})"
               type="button"
               class="btn-gol-primary ml-auto"
               target="_blank"
               >{{ __("Download") }}</a
+            >
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="mt-6 bg-white rounded shadow overflow-x-auto">
+      <div class="bg-white rounded-md shadow overflow-hidden">
+        <h1 class="mb-8 text-3xl font-bold -mb-8 -mr-6 p-8">Bancari</h1>
+
+        <form>
+          <div class="flex flex-wrap -mb-8 -mr-6 p-8">
+            <text-input
+              v-model="form.date"
+              :error="form.errors.date"
+              class="pb-8 pr-6 w-full lg:w-1/2"
+              label="Payment date"
+              type="date"
+              pattern="\d{4}-\d{2}-\d{2}"
+            />
+          </div>
+          <div class="-mb-8 -mr-6 p-8">
+            <a
+              @click="download({ date: this.form.date, prodotto: 'bancari-ER-Daily'})"
+              type="button"
+              class="btn-gol-primary ml-auto m-6"
+              target="_blank"
+              >ER Daily</a
+            >
+            <a
+              @click="download({ date: this.form.date, prodotto: 'bancari-ER-Static'})"
+              type="button"
+              class="btn-gol-primary ml-auto m-6"
+              target="_blank"
+              >ER</a
+            >
+            <a
+              @click="download({ date: this.form.date, prodotto: 'bancari-SA'})"
+              type="button"
+              class="btn-gol-primary ml-auto m-6"
+              target="_blank"
+              >SA</a
+            >
+            <a
+              @click="download({ date: this.form.date, prodotto: 'bancari-RI'})"
+              type="button"
+              class="btn-gol-primary ml-auto m-6"
+              target="_blank"
+              >RI</a
             >
           </div>
         </form>
