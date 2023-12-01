@@ -22,7 +22,7 @@ class ProductController extends Controller
     {
         return Inertia::render('Products/Index', [
             'filters' => Request::all('search', 'trashed'),
-            'products' => Auth::user()->account->products()
+            'products' => Product::query()
                 ->orderByName()
                 ->filter(Request::only('search', 'trashed'))
                 ->paginate(10)
