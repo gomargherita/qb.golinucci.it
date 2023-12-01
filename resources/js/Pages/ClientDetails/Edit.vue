@@ -210,6 +210,7 @@
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Note"
           />
+          <!-- 
           <select-input
             v-model="form.selected_field_value[0]"
             :error="form.errors.selected_field_value"
@@ -245,7 +246,7 @@
             :error="form.errors.selected_field_value"
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Specializzazione"
-          />
+          /> -->
           <checkbox-input
             v-model="form.with_accident"
             :error="form.errors.with_accident"

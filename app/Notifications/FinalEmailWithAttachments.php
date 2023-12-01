@@ -61,13 +61,13 @@ class FinalEmailWithAttachments extends Notification
                 ->attach($file_path . '/payment-certificate.pdf');
         }
         else if($this->cart->product->product_type_id == 2){
-            $carta = "";
+            $carta = "CARTA SERVIZI: Salute e Benessere sempre con TE
+                    Servizio online di accesso ai network convenzionati con Blue Assistance che ti garantiscono tre linee di servizi utili e vantaggiosi (DENTISTI - FISIOTERAPISTI - DIAGNOSTICI) per offrire a te ed al tuo nucleo familiare le migliori cure per la salute ed il benessere in tempi brevi, con la massima efficienza e a prezzi contenuti.
+                   Per Ottenere il Codice di attivazione della CARTA SERVIZI: Salute e Benessere basta andare sul sito www.golinucci.it/card";
             switch($this->cart->product->id){
                 case 2:
                     $wording = Storage::disk('public')->getAdapter()->getPathPrefix()."/contracts/estratto-condizioni-2023.pdf";
-                    $carta = "CARTA SERVIZI: Salute e Benessere sempre con TE
-                    Servizio online di accesso ai network convenzionati con Blue Assistance che ti garantiscono tre linee di servizi utili e vantaggiosi (DENTISTI - FISIOTERAPISTI - DIAGNOSTICI) per offrire a te ed al tuo nucleo familiare le migliori cure per la salute ed il benessere in tempi brevi, con la massima efficienza e a prezzi contenuti.
-                   Per Ottenere il Codice di attivazione della CARTA SERVIZI: Salute e Benessere basta andare sul sito www.golinucci.it/card";
+                    
                     break;
                 case 3:
                     $wording = Storage::disk('public')->getAdapter()->getPathPrefix()."/contracts/modulo-adesione-sardegna-2023.pdf";
