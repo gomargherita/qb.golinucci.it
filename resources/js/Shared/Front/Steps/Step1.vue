@@ -279,13 +279,17 @@
           }}</span>
         </label>
         <label v-if="product.id == 4" class="flex items-center mt-6 select-none" for="confirmation-sinistri">
-          <input
-            id="confirmation-sinistri"
-            v-model="form.confirmation_sinistri"
-            class="mr-4 p-3"
-            type="checkbox"
-          />
-          <span class="text-lg text-red-500">Confermo l'assenza di sinistri</span>
+          <SelectInput
+          id="confirmation_sinistri"
+          v-model="form.confirmation_sinistri"
+          :error="form.errors.confirmation"
+          class="mt-1 block w-full"
+          label="Presenza di sinistri"
+        >
+          <option value="si">Sì</option>
+          <option value="no">No</option>
+          
+        </SelectInput>
         </label>
       </div>
     </div>
@@ -343,7 +347,7 @@ export default {
         phone: this.$page.props.clientDetails.phone,
         product_client_details: this.$page.props.clientDetails.product_client_details,
         confirmation: false,
-        confirmation_sinistri: (this.product.id == 4) ? false : true,
+        confirmation_sinistri: (this.product.id == 4) ? "si" : "no",
       }),
     };
   },
