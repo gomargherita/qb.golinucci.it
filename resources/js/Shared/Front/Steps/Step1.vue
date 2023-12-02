@@ -284,7 +284,7 @@
           v-model="form.confirmation_sinistri"
           :error="form.errors.confirmation"
           class="mt-1 block w-full"
-          label="Presenza di sinistri"
+          label="Negli ultimi 3 anni ci sono stati SINISTRI di ammanco di cassa o Responsabilità civile del Bancario che mi hanno coinvolto?"
         >
           <option value="si">Sì</option>
           <option value="no">No</option>
