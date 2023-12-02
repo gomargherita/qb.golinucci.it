@@ -279,6 +279,8 @@ class SiteBuyProductController extends Controller
         $cart = $this->verifyAndGetCartOrRedirect($user, $product, $cart);
         $validated = $request->validated();
 
+        
+        
         DB::transaction(function () use ($user, $validated, $cart) {
             $clientDetails = ClientDetail::updateOrCreate(['user_id'   => $user->id], $validated);
             $rebuildProductClientDetails = [];
@@ -289,6 +291,13 @@ class SiteBuyProductController extends Controller
             }
 
             $clientDetails->productClientDetails()->syncWithoutDetaching($rebuildProductClientDetails);
+
+
+            if($validated['confirmation_sinistri'] == "si"){
+                $clientDetails->with_accident = true;
+                $clientDetails->save();
+            }
+
             $cart->updateCartStep(2);
         });
 
@@ -304,6 +313,7 @@ class SiteBuyProductController extends Controller
             ])->latest('id')->first();
 
         
+
         $flag_prev_2022 = $clientDetails->flag_prev_2022;
 
         if($product->product_type_id == 1){
@@ -314,6 +324,9 @@ class SiteBuyProductController extends Controller
             ]);
         }
         else{
+            if($clientDetails->with_accident == true){
+                abort(480);
+            }
             $product = $product->load([
                 'productOffers' => function ($query) use ($flag_prev_2022) {
                     $query->with(['conditionalFields', 'contract']);

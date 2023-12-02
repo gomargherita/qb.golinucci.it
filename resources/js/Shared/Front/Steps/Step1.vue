@@ -286,6 +286,8 @@
           class="mt-1 block w-full"
           label="Negli ultimi 3 anni ci sono stati SINISTRI di ammanco di cassa o Responsabilità civile del Bancario che mi hanno coinvolto?"
         >
+        <option :value="null" />
+
           <option value="si">Sì</option>
           <option value="no">No</option>
           
@@ -347,7 +349,7 @@ export default {
         phone: this.$page.props.clientDetails.phone,
         product_client_details: this.$page.props.clientDetails.product_client_details,
         confirmation: false,
-        confirmation_sinistri: (this.product.id == 4) ? "si" : "no",
+        confirmation_sinistri: (this.product.id == 4) ? null : "no",
       }),
     };
   },

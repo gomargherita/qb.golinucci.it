@@ -41,7 +41,7 @@ class UpdateFrontClientDetailsRequest extends FormRequest
             'product_client_details' => ['required', 'array'],
             'product_client_details.*.pivot.selected_field_value' => ['required'],
             'confirmation' => ['accepted'],
-            'confirmation_sinistri' => ['required', 'in:confirmation_sinistri,no']
+            'confirmation_sinistri' => ['required']
         ];
     }
 
