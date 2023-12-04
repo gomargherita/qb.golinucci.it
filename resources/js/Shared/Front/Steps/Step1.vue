@@ -274,14 +274,14 @@
             class="mr-4 p-3"
             type="checkbox"
           />
-          <span v-if="product.id != 4" class="text-lg text-red-500">{{
+          <span v-if="product.id != 4 || cart.renewal_date != null" class="text-lg text-red-500">{{
             __("I confirm the correctness of the above data")
           }}</span>
           <span v-else class="text-lg text-red-500">
             Confermo la correttezza dei dati anagrafici
           </span>
         </label>
-        <label v-if="product.id == 4" class="flex items-center mt-6 select-none" for="confirmation-sinistri">
+        <label v-if="product.id == 4 && cart.renewal_date == null" class="flex items-center mt-6 select-none" for="confirmation-sinistri">
           <SelectInput
           id="confirmation_sinistri"
           v-model="form.confirmation_sinistri"
