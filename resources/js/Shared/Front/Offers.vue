@@ -76,7 +76,15 @@
                 target="_blank"
                 class="btn-gol"
               >
-                {{ __("DIP_doc_informativo") }}
+                {{ __("DIP") }}
+              </a>
+              <p style="margin:0"></p>
+              <a
+                :href="offer.contract.dip_aggiuntivo"
+                target="_blank"
+                class="btn-gol"
+              >
+                {{ __("DIP_AGGIUNTIVO") }}
               </a>
             </td>
           </tr>

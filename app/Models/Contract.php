@@ -18,6 +18,7 @@ class Contract extends Model
             ->logOnly([
                 'contract_filepath',
                 'dip',
+                'dip_aggiuntivo',
                 'contract_prop',
             ]);
     }
