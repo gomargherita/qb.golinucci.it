@@ -82,7 +82,7 @@ class BankersRenewalsImport implements OnEachRow, WithStartRow, WithCustomCsvSet
         catch(Exception $e){
             error_log("double: " . $primary_contact_email);
             $user = User::where('email', $primary_contact_email)->first();
-            error_log("found: " . $user);
+            //error_log("found: " . $user);
         }
 
         if(substr($primary_contact_mobile, 0, 3) != "+39" && $primary_contact_mobile != 0){
