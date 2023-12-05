@@ -353,7 +353,7 @@ export default {
         phone: this.$page.props.clientDetails.phone,
         product_client_details: this.$page.props.clientDetails.product_client_details,
         confirmation: false,
-        confirmation_sinistri: (this.product.id == 4) ? null : "no",
+        confirmation_sinistri: (this.product.id == 4 && this.cart.renewal_date == null) ? null : "no",
       }),
     };
   },

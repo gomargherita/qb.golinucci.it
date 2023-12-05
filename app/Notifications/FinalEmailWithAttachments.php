@@ -79,6 +79,7 @@ class FinalEmailWithAttachments extends Notification
 
 
             return (new MailMessage)
+                ->cc('bancari@golinucci.it')
                 ->subject('Q&B Golinucci - Polizza e documenti')
                 ->greeting("Salve $user->name")
                 ->line('Può trovare in allegato la sua polizza e tutta la documentazione correlata al prodotto che ha acquistato.')
@@ -88,7 +89,7 @@ class FinalEmailWithAttachments extends Notification
                 ->line('Possiamo cogliere questa occasione per ringraziare per la fiducia accordataci e se possiamo essere di ulteriore aiuto o assistenza su altre questioni assicurative, non esiti a contattarci.')
                 ->line($carta)
 
-                ->line("<strong>Golinucci Srl<strong> Viale Bovio 194 - 47521- Cesena
+                ->line("Golinucci Srl Viale Bovio 194 - 47521- Cesena
                 Tel: 054722351 Fax: 054725382
                 E-mail: bancari@golinucci.it
                 Broker di Assicurazioni Iscrizione RUI n. B000070946 del 19/03/2007 intermediario soggetto al controllo dell'Ivass")
