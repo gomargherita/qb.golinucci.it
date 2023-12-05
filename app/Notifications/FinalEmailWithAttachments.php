@@ -50,6 +50,7 @@ class FinalEmailWithAttachments extends Notification
 
         if($this->cart->product->product_type_id == 1){
             return (new MailMessage)
+                ->bcc('sanitari@golinucci.it')
                 ->subject('Q&B Golinucci - Polizza e documenti')
                 ->greeting("Salve $user->name")
                 ->line('Può trovare in allegato la sua polizza e tutta la documentazione correlata al prodotto che ha acquistato.')
@@ -58,7 +59,7 @@ class FinalEmailWithAttachments extends Notification
                 ->salutation('Grazie per aver scelto i prodotti Golinucci!')
                 ->attach($file_path . '/certificate-final.pdf')
                 ->attach($file_path . '/declarations.pdf')
-                ->attach($file_path . '/payment-certificate.pdf');
+                ->attach($file_path . '/payment-certificate.pdf')->from(['sanitari@golinucci.it' => 'Q&B Golinucci']);
         }
         else if($this->cart->product->product_type_id == 2){
             $carta = "CARTA SERVIZI: Salute e Benessere sempre con TE
@@ -79,7 +80,7 @@ class FinalEmailWithAttachments extends Notification
 
 
             return (new MailMessage)
-                ->cc('bancari@golinucci.it')
+                ->bcc('bancari@golinucci.it')
                 ->subject('Q&B Golinucci - Polizza e documenti')
                 ->greeting("Salve $user->name")
                 ->line('Può trovare in allegato la sua polizza e tutta la documentazione correlata al prodotto che ha acquistato.')

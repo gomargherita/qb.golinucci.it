@@ -66,7 +66,7 @@ class FirstEmailWithCredentials extends Notification implements ShouldQueue
 
             if($this->cart->product_id == 1){
                 return (new MailMessage)
-                    ->cc($cc)
+                    ->bcc($cc)
                     ->subject('Q&B Golinucci - Rinnova la tua polizza')
                     ->greeting("Gentile $user->name")
                     ->line("Il $renewal_date scadrà la tua polizza di Responsabilita’ Civile Professionale.")
@@ -76,11 +76,11 @@ class FirstEmailWithCredentials extends Notification implements ShouldQueue
                     ->line("Clicca sul pulsante sottostante per iniziare la procedura di rinnovo.")
                     ->action('Rinnova la tua polizza', $url)
                     ->line("Se hai altre polizze in scadenza (tutela legale, infortuni, responsabilità civile vita privata, ecc..) riceverai un'altra separata email per il loro rinnovo.")
-                    ->salutation('Grazie per aver scelto i prodotti Golinucci!');
+                    ->salutation('Grazie per aver scelto i prodotti Golinucci!')->from(['sanitari@golinucci.it' => 'Q&B Golinucci']);
             }
             else{
                 return (new MailMessage)
-                    ->cc($cc)
+                    ->bcc($cc)
                     ->subject('Q&B Golinucci - Rinnova la tua polizza')
                     ->greeting("Gentile $user->name")
                     ->line("Il $renewal_date scadrà la tua polizza di Responsabilita’ Civile Professionale.")

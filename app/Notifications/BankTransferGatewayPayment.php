@@ -58,7 +58,7 @@ class BankTransferGatewayPayment extends Notification
                 valuta di pagamento con bonifico bancario.
                 Riceverai successivamente una email con un link e ulteriori indicazioni per
                 procedere con la generazione della tua polizza.')
-                ->salutation('Grazie per aver scelto i prodotti Golinucci!');
+                ->salutation('Grazie per aver scelto i prodotti Golinucci!')->from(['sanitari@golinucci.it' => 'Q&B Golinucci']);
         }
         else if($this->payment->cart->product_id == 2){
             return (new MailMessage)

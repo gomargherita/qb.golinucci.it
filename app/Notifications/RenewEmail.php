@@ -70,7 +70,7 @@ class RenewEmail extends Notification implements ShouldQueue
             $renewal_date = $this->end_validity_date->format('d/m/Y');
 
             return (new MailMessage)
-                ->cc($cc)
+                ->bcc($cc)
                 ->subject('Q&B Golinucci - Rinnova la tua polizza')
                 ->greeting("Gentile $user->name")
                 ->line("Il $renewal_date scadrà la tua polizza di Responsabilita’ Civile Professionale.")

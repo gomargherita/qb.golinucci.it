@@ -52,7 +52,7 @@ class ConfirmedOfflinePayment extends Notification
                 ->line('Abbiamo appena confermato il pagamento del tuo prodotto.')
                 ->line('Per procedere e concludere la procedura di emissione della tua polizza ti basta cliccare sul pulsante sottostante e seguire le istruzioni.')
                 ->action('Clicca per procedere', $url)
-                ->salutation('Grazie per aver scelto i prodotti Golinucci!');
+                ->salutation('Grazie per aver scelto i prodotti Golinucci!')->from(['sanitari@golinucci.it' => 'Q&B Golinucci']);
         }
         else if($this->payment->cart->product->id == 2 || $this->payment->cart->product->id == 3 || $this->payment->cart->product->id == 4){
             return (new MailMessage)
