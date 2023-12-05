@@ -114,7 +114,7 @@ class LloydsDoprintService
         $BindingAuthorityDetails = $xml->getElementsByTagName('BindingAuthorityDetails')->item(0);
         $BindingAuthorityDetails->getElementsByTagName('BARefDate')->item(0)->textContent = '2023-10-13';
         $BindingAuthorityDetails->getElementsByTagName('BARefNo')->item(0)->textContent = '24';
-        $BindingAuthorityDetails->getElementsByTagName('BABrokersRef')->item(0)->textContent = 'B1732CPG129823';
+        $BindingAuthorityDetails->getElementsByTagName('BABrokersRef')->item(0)->textContent = 'CPG129823';
         $BindingAuthorityDetails->getElementsByTagName('BAPseudonym')->item(0)->textContent = 'GMB';
         $BindingAuthorityDetails->getElementsByTagName('BANumber')->item(0)->textContent = '1732';
         $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin1')->item(0)->textContent = '115647';
