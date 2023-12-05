@@ -82,7 +82,7 @@ class BankTransferGatewayPayment extends Notification
                 ->greeting("Gentile $user->name")
                 ->line('Per procedere con l\'acquisto della tua polizza occorre pagare la totalità del premio.')
                 ->line('Ecco i dati per effettuare il bonifico:')
-                ->line('Bonifico Bancario su c/c intestato a Golinucci srl IBAN IT63 J032 7323 9000 0020 0102 910 presso Solution bank')
+                ->line('Bonifico Bancario su c/c intestato a Golinucci srl IBAN IT63 J032 7323 9000 0020 0102 910 presso Istituto di credito romagnolo')
                 ->line('Importo: ' . $this->payment->total_payable . '€')
                 ->line('Causale: ' . $user->name . ' RC Professionale')
                 ->line('Nota importante: l\'emissione, e la relativa copertura, potrà
