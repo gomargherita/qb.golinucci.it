@@ -396,7 +396,8 @@ export default {
   },
   mounted() {
     //this.intervalId = setInterval(this.updateDates, 500);
-    console.log("non aggiorno le date");
+    //console.log("non aggiorno le date");
+    this.updateDates()
   },
 };
 
