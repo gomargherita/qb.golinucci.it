@@ -44,7 +44,7 @@ class BankTransferGatewayPayment extends Notification
     {
         $user = $this->payment->cart->user;
         
-        if($this->payment->cart->product->product_id == 1){
+        if($this->payment->cart->product_id == 1){
             return (new MailMessage)
                 ->subject('Q&B Golinucci - Procedi al pagamento tramite Bonifico Bancario')
                 ->greeting("Gentile $user->name")
@@ -60,7 +60,7 @@ class BankTransferGatewayPayment extends Notification
                 procedere con la generazione della tua polizza.')
                 ->salutation('Grazie per aver scelto i prodotti Golinucci!');
         }
-        else if($this->payment->cart->product->product_id == 2){
+        else if($this->payment->cart->product_id == 2){
             return (new MailMessage)
                 ->subject('Q&B Golinucci - Procedi al pagamento tramite Bonifico Bancario')
                 ->greeting("Gentile $user->name")
@@ -76,7 +76,7 @@ class BankTransferGatewayPayment extends Notification
                 procedere con la generazione della tua polizza.')
                 ->salutation('Grazie per aver scelto i prodotti Golinucci!');
         }
-        else if($this->payment->cart->product->product_id == 4 || $this->payment->cart->product->product_id == 3){
+        else if($this->payment->cart->product_id == 4 || $this->payment->cart->product_id == 3){
             return (new MailMessage)
                 ->subject('Q&B Golinucci - Procedi al pagamento tramite Bonifico Bancario')
                 ->greeting("Gentile $user->name")

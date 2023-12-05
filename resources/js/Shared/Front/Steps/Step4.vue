@@ -63,7 +63,12 @@
                 v-text="$filters.formatPrice(parseFloat(product.payment.total_payable))"
               ></span>
             </li>
-            <li>Bonifico Bancario su c/c intestato a Golinucci srl IBAN IT69 D030 6923 9031 0000 0007 600 presso Banca Intesa San Paolo</li>
+            <li v-if="product.id == 1 ">Bonifico Bancario su c/c intestato a Golinucci srl IBAN IT69 D030 6923 9031 0000 0007 600 presso Banca Intesa San Paolo</li>
+            <li v-if="product.id == 2 ">Bonifico Bancario su c/c intestato a Golinucci srl IBAN IT31 Z062 3023 9000 0003 0575 079 presso Crédit agricole Cariparma</li>
+
+            <li v-if="product.id == 3 ">Bonifico Bancario su c/c intestato a Golinucci srl IBAN IT63 J032 7323 9000 0020 0102 910 presso BCC Credito Cooperativo credito romagnolo</li>
+            <li v-if="product.id == 4 ">Bonifico Bancario su c/c intestato a Golinucci srl IBAN IT63 J032 7323 9000 0020 0102 910 presso BCC Credito Cooperativo credito romagnolo</li>
+
           </ul>
           <p>
             Riceverai una email al tuo indirizzo email con un riassunto di queste stesse

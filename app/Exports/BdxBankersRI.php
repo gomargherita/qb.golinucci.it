@@ -96,7 +96,7 @@ class BdxBankersRI implements FromView, WithHeadingRow
 
         $payments = $payments_data->get();
 
-        return view('template-bordereaux-bankers-RI', [
+        return view('template-bordereaux-bankers-ri', [
             'payments' => $payments
         ]);
     }
