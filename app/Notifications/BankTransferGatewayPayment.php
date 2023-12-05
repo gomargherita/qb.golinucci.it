@@ -44,20 +44,38 @@ class BankTransferGatewayPayment extends Notification
     {
         $user = $this->payment->cart->user;
         
-        return (new MailMessage)
-            ->subject('Q&B Golinucci - Procedi al pagamento tramite Bonifico Bancario')
-            ->greeting("Gentile $user->name")
-            ->line('Per procedere con l\'acquisto della tua polizza occorre pagare la totalità del premio.')
-            ->line('Ecco i dati per effettuare il bonifico:')
-            ->line('Bonifico Bancario su c/c intestato a Golinucci srl IBAN IT69 D030 6923 9031 0000 0007 600 presso Banca Intesa San Paolo')
-            ->line('Importo: ' . $this->payment->total_payable . '€')
-            ->line('Causale: ' . $user->name . ' RC Professionale')
-            ->line('Nota importante: l\'emissione, e la relativa copertura, potrà
-            essere portata avanti nel giorno lavorativo successivo a quello di data
-            valuta di pagamento con bonifico bancario.
-            Riceverai successivamente una email con un link e ulteriori indicazioni per
-            procedere con la generazione della tua polizza.')
-            ->salutation('Grazie per aver scelto i prodotti Golinucci!');
+        if($this->payment->cart->product->product_type_id == 1){
+            return (new MailMessage)
+                ->subject('Q&B Golinucci - Procedi al pagamento tramite Bonifico Bancario')
+                ->greeting("Gentile $user->name")
+                ->line('Per procedere con l\'acquisto della tua polizza occorre pagare la totalità del premio.')
+                ->line('Ecco i dati per effettuare il bonifico:')
+                ->line('Bonifico Bancario su c/c intestato a Golinucci srl IBAN IT69 D030 6923 9031 0000 0007 600 presso Banca Intesa San Paolo')
+                ->line('Importo: ' . $this->payment->total_payable . '€')
+                ->line('Causale: ' . $user->name . ' RC Professionale')
+                ->line('Nota importante: l\'emissione, e la relativa copertura, potrà
+                essere portata avanti nel giorno lavorativo successivo a quello di data
+                valuta di pagamento con bonifico bancario.
+                Riceverai successivamente una email con un link e ulteriori indicazioni per
+                procedere con la generazione della tua polizza.')
+                ->salutation('Grazie per aver scelto i prodotti Golinucci!');
+        }
+        else if($this->payment->cart->product->product_type_id == 2){
+            return (new MailMessage)
+                ->subject('Q&B Golinucci - Procedi al pagamento tramite Bonifico Bancario')
+                ->greeting("Gentile $user->name")
+                ->line('Per procedere con l\'acquisto della tua polizza occorre pagare la totalità del premio.')
+                ->line('Ecco i dati per effettuare il bonifico:')
+                ->line('Bonifico Bancario su c/c intestato a Golinucci srl IBAN IT31 Z062 3023 9000 0003 0575 079 presso Credit Agricole Cariparma')
+                ->line('Importo: ' . $this->payment->total_payable . '€')
+                ->line('Causale: ' . $user->name . ' RC Professionale')
+                ->line('Nota importante: l\'emissione, e la relativa copertura, potrà
+                essere portata avanti nel giorno lavorativo successivo a quello di data
+                valuta di pagamento con bonifico bancario.
+                Riceverai successivamente una email con un link e ulteriori indicazioni per
+                procedere con la generazione della tua polizza.')
+                ->salutation('Grazie per aver scelto i prodotti Golinucci!');
+        }
     }
 
     /**
