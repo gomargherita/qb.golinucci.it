@@ -74,7 +74,7 @@ class BankTransferGatewayPayment extends Notification
                 valuta di pagamento con bonifico bancario.
                 Riceverai successivamente una email con un link e ulteriori indicazioni per
                 procedere con la generazione della tua polizza.')
-                ->salutation('Grazie per aver scelto i prodotti Golinucci!');
+                ->salutation('Grazie per aver scelto i prodotti Golinucci!')->from(['bancari@golinucci.it' => 'Q&B Golinucci']);
         }
         else if($this->payment->cart->product_id == 4 || $this->payment->cart->product_id == 3){
             return (new MailMessage)
@@ -82,7 +82,7 @@ class BankTransferGatewayPayment extends Notification
                 ->greeting("Gentile $user->name")
                 ->line('Per procedere con l\'acquisto della tua polizza occorre pagare la totalità del premio.')
                 ->line('Ecco i dati per effettuare il bonifico:')
-                ->line('Bonifico Bancario su c/c intestato a Golinucci srl IBAN IT63 J032 7323 9000 0020 0102 910 presso BCC Credito Cooperativo credito romagnolo')
+                ->line('Bonifico Bancario su c/c intestato a Golinucci srl IBAN IT63 J032 7323 9000 0020 0102 910 presso BCC Credito Cooperativo romagnolo')
                 ->line('Importo: ' . $this->payment->total_payable . '€')
                 ->line('Causale: ' . $user->name . ' RC Professionale')
                 ->line('Nota importante: l\'emissione, e la relativa copertura, potrà
@@ -90,7 +90,7 @@ class BankTransferGatewayPayment extends Notification
                 valuta di pagamento con bonifico bancario.
                 Riceverai successivamente una email con un link e ulteriori indicazioni per
                 procedere con la generazione della tua polizza.')
-                ->salutation('Grazie per aver scelto i prodotti Golinucci!');
+                ->salutation('Grazie per aver scelto i prodotti Golinucci!')->from(['bancari@golinucci.it' => 'Q&B Golinucci']);
         }
 
     }

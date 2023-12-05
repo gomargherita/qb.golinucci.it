@@ -45,13 +45,25 @@ class ConfirmedOfflinePayment extends Notification
         $user = $this->payment->cart->user;
         $url = route('front.product.buy', [$this->payment->cart->product->id, $this->payment->cart->cart_ref]);
 
-        return (new MailMessage)
-            ->subject('Q&B Golinucci - Conferma pagamento tramite bonifico bancario')
-            ->greeting("Gentile $user->name")
-            ->line('Abbiamo appena confermato il pagamento del tuo prodotto.')
-            ->line('Per procedere e concludere la procedura di emissione della tua polizza ti basta cliccare sul pulsante sottostante e seguire le istruzioni.')
-            ->action('Clicca per procedere', $url)
-            ->salutation('Grazie per aver scelto i prodotti Golinucci!');
+        if($this->payment->cart->product->id == 1){
+            return (new MailMessage)
+                ->subject('Q&B Golinucci - Conferma pagamento tramite bonifico bancario')
+                ->greeting("Gentile $user->name")
+                ->line('Abbiamo appena confermato il pagamento del tuo prodotto.')
+                ->line('Per procedere e concludere la procedura di emissione della tua polizza ti basta cliccare sul pulsante sottostante e seguire le istruzioni.')
+                ->action('Clicca per procedere', $url)
+                ->salutation('Grazie per aver scelto i prodotti Golinucci!');
+        }
+        else if($this->payment->cart->product->id == 2 || $this->payment->cart->product->id == 3 || $this->payment->cart->product->id == 4){
+            return (new MailMessage)
+                ->subject('Q&B Golinucci - Conferma pagamento tramite bonifico bancario')
+                ->greeting("Gentile $user->name")
+                ->line('Abbiamo appena confermato il pagamento del tuo prodotto.')
+                ->line('Per procedere e concludere la procedura di emissione della tua polizza ti basta cliccare sul pulsante sottostante e seguire le istruzioni.')
+                ->action('Clicca per procedere', $url)
+                ->salutation('Grazie per aver scelto i prodotti Golinucci!')->from(['bancari@golinucci.it' => 'Q&B Golinucci']);
+            
+        }
     }
 
     /**

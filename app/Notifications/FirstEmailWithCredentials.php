@@ -64,18 +64,34 @@ class FirstEmailWithCredentials extends Notification implements ShouldQueue
             $url = route('front.product.buy', [$cart->product->id, $cart->cart_ref]);
             $renewal_date = $cart->renewal_date->format('d/m/Y');
 
-            return (new MailMessage)
-                ->cc($cc)
-                ->subject('Q&B Golinucci - Rinnova la tua polizza')
-                ->greeting("Gentile $user->name")
-                ->line("Il $renewal_date scadrà la tua polizza di Responsabilita’ Civile Professionale.")
-                ->line("Per procedere al rinnovo ed ottenere la nuova polizza online ti basta accedere al nostro sito con le seguenti credenziali:")
-                ->line("Email: $user->email")
-                ->line("Password: $uncrypted_password")
-                ->line("Clicca sul pulsante sottostante per iniziare la procedura di rinnovo.")
-                ->action('Rinnova la tua polizza', $url)
-                ->line("Se hai altre polizze in scadenza (tutela legale, infortuni, responsabilità civile vita privata, ecc..) riceverai un'altra separata email per il loro rinnovo.")
-                ->salutation('Grazie per aver scelto i prodotti Golinucci!');
+            if($this->cart->product_id == 1){
+                return (new MailMessage)
+                    ->cc($cc)
+                    ->subject('Q&B Golinucci - Rinnova la tua polizza')
+                    ->greeting("Gentile $user->name")
+                    ->line("Il $renewal_date scadrà la tua polizza di Responsabilita’ Civile Professionale.")
+                    ->line("Per procedere al rinnovo ed ottenere la nuova polizza online ti basta accedere al nostro sito con le seguenti credenziali:")
+                    ->line("Email: $user->email")
+                    ->line("Password: $uncrypted_password")
+                    ->line("Clicca sul pulsante sottostante per iniziare la procedura di rinnovo.")
+                    ->action('Rinnova la tua polizza', $url)
+                    ->line("Se hai altre polizze in scadenza (tutela legale, infortuni, responsabilità civile vita privata, ecc..) riceverai un'altra separata email per il loro rinnovo.")
+                    ->salutation('Grazie per aver scelto i prodotti Golinucci!');
+            }
+            else{
+                return (new MailMessage)
+                    ->cc($cc)
+                    ->subject('Q&B Golinucci - Rinnova la tua polizza')
+                    ->greeting("Gentile $user->name")
+                    ->line("Il $renewal_date scadrà la tua polizza di Responsabilita’ Civile Professionale.")
+                    ->line("Per procedere al rinnovo ed ottenere la nuova polizza online ti basta accedere al nostro sito con le seguenti credenziali:")
+                    ->line("Email: $user->email")
+                    ->line("Password: $uncrypted_password")
+                    ->line("Clicca sul pulsante sottostante per iniziare la procedura di rinnovo.")
+                    ->action('Rinnova la tua polizza', $url)
+                    ->line("Se hai altre polizze in scadenza (tutela legale, infortuni, responsabilità civile vita privata, ecc..) riceverai un'altra separata email per il loro rinnovo.")
+                    ->salutation('Grazie per aver scelto i prodotti Golinucci!')->from(['bancari@golinucci.it' => 'Q&B Golinucci']);
+            }
         } catch (\Exception $e) {
             abort(500);
         }

@@ -95,7 +95,7 @@ class FinalEmailWithAttachments extends Notification
                 Broker di Assicurazioni Iscrizione RUI n. B000070946 del 19/03/2007 intermediario soggetto al controllo dell'Ivass")
                 ->salutation('Grazie per aver scelto i prodotti Golinucci!')
                 ->attach($file_path . '/certificate-final.pdf')
-                ->attach($wording);
+                ->attach($wording)->from(['bancari@golinucci.it' => 'Q&B Golinucci']);
         }
     }
 
