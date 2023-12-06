@@ -34,6 +34,27 @@ class BordereauxController extends Controller
 
     public function download(Request $request)
     {
+        //cancella doppioni
+        DB::statement("DELETE FROM product_client_details as pcd WHERE pcd.client_detail_id IN (
+            SELECT id
+            FROM client_details
+            WHERE dob IS NULL
+              AND EXISTS (
+                SELECT 1
+                FROM client_details cd2
+                WHERE cd2.user_id = client_details.user_id
+                  AND cd2.gender IS NOT NULL
+              ));");
+            
+            DB::statement("DELETE FROM client_details
+            WHERE dob IS NULL
+              AND EXISTS (
+                SELECT *
+                FROM (SELECT * FROM client_details) AS cd2
+                WHERE cd2.user_id = client_details.user_id
+                  AND cd2.gender IS NOT NULL
+              );");
+
         // $requestContent = json_decode($request->getContent());
         $request_all = $request->all();
         $date = ($request_all) ? $request_all['date'] : null;

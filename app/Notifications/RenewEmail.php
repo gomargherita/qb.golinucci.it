@@ -80,7 +80,7 @@ class RenewEmail extends Notification implements ShouldQueue
                 ->line("Clicca sul pulsante sottostante per iniziare la procedura di rinnovo.")
                 ->action('Rinnova la tua polizza', $url)
                 ->line("Se hai altre polizze in scadenza (tutela legale, infortuni, responsabilità civile vita privata, ecc..) riceverai un'altra separata email per il loro rinnovo.")
-                ->salutation('Grazie per aver scelto i prodotti Golinucci!');
+                ->salutation('Grazie per aver scelto i prodotti Golinucci!')->from([$cc => 'Q&B Golinucci']);;
             } catch (\Exception $e) {
             abort(500);
             }
