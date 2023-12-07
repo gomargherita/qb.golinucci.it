@@ -54,8 +54,8 @@ class FirstEmailWithCredentials extends Notification implements ShouldQueue
             }
             $user = $notifiable;
             $cart = $this->cart;
-            //Log::debug($user, ['notification']);
-            //Log::debug($cart, ['notification cart']);
+            Log::debug($user, ['notification']);
+            Log::debug($cart, ['notification cart']);
             // generate a new password, hash and save it 
             $uncrypted_password = Str::random(10);
             $user->password = $uncrypted_password;
