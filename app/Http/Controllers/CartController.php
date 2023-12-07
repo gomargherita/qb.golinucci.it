@@ -570,8 +570,18 @@ class CartController extends Controller
 
 
     public function sendFirstEmail(Cart $cart){
+
         try{
             $cart->user->notify(new FirstEmailWithCredentials($cart));
+
+            try{
+                $renewal_date = $cart->renewal_date;
+                $offer = $cart->product_offer_id;
+            }
+            catch(Throwable $e){
+                return Redirect::back()->with('error', 'Email NON inviata. Il carrello potrebbe non essere un rinnovo oppure il cliente non ha scelto nessuna offerta');
+            }
+
             return Redirect::back()->with('success', 'Email con CREDENZIALI RINNOVO inviata.');
         }
         catch(Throwable $e){
