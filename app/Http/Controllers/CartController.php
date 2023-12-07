@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
 use App\Http\Requests\UpdateFrontClientDetailsRequest;
+use App\Http\Requests\UpdateBackClientDetailsRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\ProductOffer;
 use App\Services\NewApplicationToPdfService;
@@ -28,6 +29,7 @@ use App\Rules\ProjectDeclarationsRule;
 use App\Services\DeclarationsToPdfService;
 use App\Services\PaymentBankersToPdfService;
 use App\Notifications\FinalEmailWithAttachments;
+use App\Notifications\FirstEmailWithCredentials;
 use App\Models\Certificate;
 use Throwable;
 use Carbon\Carbon;
@@ -235,12 +237,11 @@ class CartController extends Controller
         ]);
     }
 
-    public function store_step1(Product $product, Cart $cart, UpdateFrontClientDetailsRequest $request)
+    public function store_step1(Product $product, Cart $cart, UpdateBackClientDetailsRequest $request)
     {
         $user = User::find($request->user_id);
         $cart = $this->verifyAndGetCartOrRedirect($user, $product, $cart);
         $validated = $request->validated();
-
         DB::transaction(function () use ($user, $validated, $cart) {
             $clientDetails = ClientDetail::updateOrCreate(['user_id'   => $user->id], $validated);
             $rebuildProductClientDetails = [];
@@ -567,6 +568,17 @@ class CartController extends Controller
         }
     }
 
+
+    public function sendFirstEmail(Cart $cart){
+        try{
+            $cart->user->notify(new FirstEmailWithCredentials($cart));
+            return Redirect::back()->with('success', 'Email con CREDENZIALI RINNOVO inviata.');
+        }
+        catch(Throwable $e){
+            return Redirect::back()->with('error', 'Email NON inviata.');
+        }
+    }
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -647,6 +659,14 @@ class CartController extends Controller
         $declarationToPdf = new PaymentBankersToPdfService($cart);
         $declarationToPdf->generateAndPersist();
         return Redirect::back()->with('success', 'Date di decorrenza aggiornate.')->with('reload', true);
+    }
+
+
+    public function certificateUpdate(Cart $cart)
+    {
+        $declarationToPdf = new PaymentBankersToPdfService($cart);
+        $declarationToPdf->generateAndPersist();
+        return Redirect::back()->with('success', 'Certificato aggiornato nel sistema.')->with('reload', true);
     }
 
     public function destroy(Cart $cart)

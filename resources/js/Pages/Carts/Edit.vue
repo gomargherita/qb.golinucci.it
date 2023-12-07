@@ -253,6 +253,14 @@
               <div class="flex items-center px-8 py-4 border-t border-gray-100 ">
                 <a @click="send_email" target="_blank" class="btn-gol-primary  ml-auto">Invia email con il certificato</a>
               </div>
+
+              <div class="flex items-center px-8 py-4 border-t border-gray-100 ">
+                <a @click="send_first_email" target="_blank" class="btn-gol-primary  ml-auto">Invia manualmente email con password</a>
+              </div>
+
+              <div class="flex items-center px-8 py-4 border-t border-gray-100 ">
+                <a @click="certificate_update" target="_blank" class="btn-gol-primary  ml-auto">Aggiorna certificato</a>
+              </div>
           </div>
         </form>
       </div>
@@ -386,8 +394,14 @@ export default {
     send_email() {
       this.$inertia.get(`/admin/carts/${this.cart.id}/sendemail`)
     },
+    send_first_email() {
+      this.$inertia.get(`/admin/carts/${this.cart.id}/sendfirstemail`)
+    },
     update_decorrenza(){
       this.form_update_decorrenza.put(`/admin/carts/${this.cart.id}/updatedecorrenza`);
+    },
+    certificate_update(){
+      this.form_update_decorrenza.put(`/admin/carts/${this.cart.id}/certificateupdate`);
     },
     updateDates(){
       this.form_update_decorrenza.startDate = this.start_date;
