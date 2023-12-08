@@ -29,6 +29,7 @@ use App\Services\DeclarationsToPdfService;
 use App\Services\PaymentBankersToPdfService;
 use App\Notifications\FinalEmailWithAttachments;
 use App\Models\Certificate;
+use App\Notifications\FirstEmailWithCredentials;
 use Throwable;
 use Carbon\Carbon;
 
@@ -566,6 +567,17 @@ class CartController extends Controller
             return Redirect::back()->with('error', 'Email NON inviata.');
         }
     }
+
+    public function sendFirstEmail(Cart $cart){
+        try{
+            $cart->user->notify(new FirstEmailWithCredentials($cart));
+            return Redirect::back()->with('success', 'Email per RINNOVO inviata.');
+        }
+        catch(Throwable $e){
+            return Redirect::back()->with('error', 'Email NON inviata.');
+        }
+    }
+
 
     /**
      * Show the form for editing the specified resource.
