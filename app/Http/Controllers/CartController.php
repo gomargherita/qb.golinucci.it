@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
-use App\Http\Requests\UpdateFrontClientDetailsRequest;
+use App\Http\Requests\UpdateBackClientDetailsRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\ProductOffer;
 use App\Services\NewApplicationToPdfService;
@@ -236,7 +236,7 @@ class CartController extends Controller
         ]);
     }
 
-    public function store_step1(Product $product, Cart $cart, UpdateFrontClientDetailsRequest $request)
+    public function store_step1(Product $product, Cart $cart, UpdateBackClientDetailsRequest $request)
     {
         $user = User::find($request->user_id);
         $cart = $this->verifyAndGetCartOrRedirect($user, $product, $cart);
@@ -569,6 +569,10 @@ class CartController extends Controller
     }
 
     public function sendFirstEmail(Cart $cart){
+        if($cart->renewal_date == null || $cart->product_offer_id == null){
+            return Redirect::back()->with('error', 'Questo carrello non è un rinnovo. Nessuna mail inviata.');
+        }
+
         try{
             $cart->user->notify(new FirstEmailWithCredentials($cart));
             return Redirect::back()->with('success', 'Email per RINNOVO inviata.');

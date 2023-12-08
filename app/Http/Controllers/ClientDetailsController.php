@@ -105,7 +105,27 @@ class ClientDetailsController extends Controller
 
     public function update(UpdateClientDetailsRequest $request, ClientDetail $client_detail)
     {
-        $client_detail->update($request->validated());
+        if(auth()->user()->owner == 1){
+            $client_detail->first_name = $request->input('first_name');
+            $client_detail->last_name = $request->input('last_name');
+            $client_detail->fiscal_code = $request->input('fiscal_code');
+            $client_detail->gender = $request->input('gender');
+            $client_detail->dob = $request->input('dob');
+            $client_detail->phone = $request->input('phone');
+            $client_detail->address = $request->input('address');
+            $client_detail->city = $request->input('city');
+            $client_detail->province = $request->input('province');
+            $client_detail->country = $request->input('country');
+            $client_detail->postal_code = $request->input('postal_code');
+            $client_detail->note = $request->input('note');
+            $client_detail->with_accident = $request->input('with_accident');
+            $client_detail->flag_prev_2022 = $request->input('flag_prev_2022');
+            $client_detail->save();
+            //$client_detail->update($request->all());
+        }
+        else{
+            $client_detail->update($request->validated());
+        }
         
         for($i=0; $i<4; $i++){
             DB::table('product_client_details')

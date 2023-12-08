@@ -46,7 +46,9 @@ class ClientDetail extends Model
         'confirmation' => 'boolean',
         'with_accident' => 'boolean',
         'flag_prev_2022' => 'boolean',
-        'phone' => E164PhoneNumberCast::class . ':IT',
+        //'phone' => E164PhoneNumberCast::class . ':IT',
+        'phone' => 'string',
+
     ];
 
     public function resolveRouteBinding($value, $field = null)
