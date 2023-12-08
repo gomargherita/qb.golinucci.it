@@ -177,6 +177,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'check_role']], func
     Route::post('bordereauxs', [BordereauxController::class, 'download'])->name('bordereauxs.download');
 
     Route::get('private-files/{file?}', [FileController::class, 'get'])->where('file', '(.*)')->name('privateFiles');
+
+    Route::put('carts/{cart}/certificateupdate', [CartController::class, 'certificateUpdate'])
+    ->name('carts.certificateupdate');
 });
 
 // Images

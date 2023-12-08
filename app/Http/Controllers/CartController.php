@@ -649,6 +649,13 @@ class CartController extends Controller
         return Redirect::back()->with('success', 'Date di decorrenza aggiornate.')->with('reload', true);
     }
 
+    public function certificateUpdate(Cart $cart)
+    {
+        $declarationToPdf = new PaymentBankersToPdfService($cart);
+        $declarationToPdf->generateAndPersist();
+        return Redirect::back()->with('success', 'Certificato aggiornato nel sistema.')->with('reload', true);
+    }
+
     public function destroy(Cart $cart)
     {
         $cart->delete();
