@@ -127,7 +127,7 @@ class ClientDetailsController extends Controller
             $client_detail->update($request->validated());
         }
         
-        for($i=0; $i<4; $i++){
+        for($i=0; $i<9; $i++){
             DB::table('product_client_details')
             ->where('client_detail_id', $request['client_detail_id'][$i])
             ->where('conditional_field_id', $request['conditional_field_id'][$i])
