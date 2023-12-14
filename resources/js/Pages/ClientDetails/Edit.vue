@@ -210,7 +210,7 @@
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Note"
           />
-          <!-- 
+          <h1 class="mb-8 text-3xl font-bold w-full">Medici</h1>
           <select-input
             v-model="form.selected_field_value[0]"
             :error="form.errors.selected_field_value"
@@ -246,7 +246,59 @@
             :error="form.errors.selected_field_value"
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Specializzazione"
-          /> -->
+          />
+          <h1 class="mb-8 text-3xl font-bold w-full">Bancari</h1>
+          <text-input
+            v-model="form.selected_field_value[4]"
+            :error="form.errors.selected_field_value"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="Telefono Ufficio"
+          />
+          <text-input
+            v-model="form.selected_field_value[5]"
+            :error="form.errors.selected_field_value"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="First/Cisl di appartenenza"
+          />
+          <text-input
+            v-model="form.selected_field_value[6]"
+            :error="form.errors.selected_field_value"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="Banca"
+          />
+          <text-input
+            v-model="form.selected_field_value[7]"
+            :error="form.errors.selected_field_value"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="Codice ABI"
+          />
+          <select-input
+            v-model="form.selected_field_value[8]"
+            :error="form.errors.selected_field_value"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="Regione di appartenenza"
+          >
+            <option :value="null" />
+            <option value="1">Abruzzo</option>
+            <option value="2">Basilicata</option>
+            <option value="3">Calabria</option>
+            <option value="4">Campania</option>
+            <option value="5">Friuli Venezia Giulia</option>
+            <option value="6">Lazio</option>
+            <option value="7">Liguria</option>
+            <option value="8">Lombardia</option>
+            <option value="9">Marche</option>
+            <option value="10">Molise</option>
+            <option value="11">Piemonte</option>
+            <option value="12">Puglia</option>
+            <option value="13">Sardegna</option>
+            <option value="14">Sicilia</option>
+            <option value="15">Toscana</option>
+            <option value="16">Trentino Alto Adige</option>
+            <option value="17">Umbria</option>
+            <option value="18">Val d'Aosta</option>
+            <option value="19">Veneto</option>
+          </select-input>
           <checkbox-input
             v-model="form.with_accident"
             :error="form.errors.with_accident"
@@ -383,11 +435,17 @@ export default {
         flag_prev_2022: this.client_detail.flag_prev_2022,
         client_detail_id: this.client_detail.client_detail_id,
         conditional_field_id: this.client_detail.conditional_field_id,
-        selected_field_value: this.client_detail.selected_field_value,/*
-        selected_field_value_0: this.client_detail.selected_field_value[0],
+        selected_field_value: this.client_detail.selected_field_value,
+        /*selected_field_value_0: this.client_detail.selected_field_value[0],
         selected_field_value_1: this.client_detail.selected_field_value[1],
         selected_field_value_2: this.client_detail.selected_field_value[2],
-        selected_field_value_3: this.client_detail.selected_field_value[3],*/
+        selected_field_value_3: this.client_detail.selected_field_value[3],
+        selected_field_value_4: this.client_detail.selected_field_value[4],
+        selected_field_value_5: this.client_detail.selected_field_value[5],
+        selected_field_value_6: this.client_detail.selected_field_value[6],
+        selected_field_value_7: this.client_detail.selected_field_value[7],
+        selected_field_value_8: this.client_detail.selected_field_value[8],*/
+
       }),
     };
   },

@@ -126,15 +126,22 @@ class ClientDetailsController extends Controller
         else{
             $client_detail->update($request->validated());
         }
-        
-        for($i=0; $i<4; $i++){
+            //dd($request);
+        for($i=0; $i<count($request['selected_field_value']); $i++){
+
+            $rebuildProductClientDetails = [];
+
+            $rebuildProductClientDetails[$i+1] = ['selected_field_value' => $request['selected_field_value'][$i]];
+            $client_detail->productClientDetails()->syncWithoutDetaching($rebuildProductClientDetails);
+
+            /*
             DB::table('product_client_details')
             ->where('client_detail_id', $request['client_detail_id'][$i])
             ->where('conditional_field_id', $request['conditional_field_id'][$i])
             ->update([
                 'selected_field_value' => $request['selected_field_value'][$i],
                 'updated_at' => Carbon::now(),
-            ]);
+            ]);*/
         }
 
         return Redirect::back()->with('success', 'ClientDetail updated.');
