@@ -66,9 +66,7 @@ class Certificate extends Model
 
         //se il prodotto è medici esegui sempre l'if
         if($this->cart->product->id == 1){
-            if(!array_key_exists("end_validity_date", $this->attributes)){
-                $this->attributes['end_validity_date'] = Carbon::parse($renewal_date)->addMonths($this->productOffer->months);
-            }
+            $this->attributes['end_validity_date'] = Carbon::parse($renewal_date)->addMonths($this->productOffer->months);
         }
         
         else if(($this->cart->product->id == 2 || $this->cart->product->id == 3 ||$this->cart->product->id == 4) && !array_key_exists("end_validity_date", $this->attributes)){
