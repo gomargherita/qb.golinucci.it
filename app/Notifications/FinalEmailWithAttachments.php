@@ -71,7 +71,7 @@ class FinalEmailWithAttachments extends Notification
                     $wording = Storage::disk('public')->getAdapter()->getPathPrefix()."/contracts/italia-sardegna.pdf";
                     break;
                 case 4:
-                    $wording = Storage::disk('public')->getAdapter()->getPathPrefix()."/contracts/estratto-condizioni-2023-RI.pdf";
+                    $wording = Storage::disk('public')->getAdapter()->getPathPrefix()."/contracts/C.G.A.-CONV.-GOLINUCCI.pdf";
                     break;
             }
 
