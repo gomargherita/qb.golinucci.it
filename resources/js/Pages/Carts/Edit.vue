@@ -215,7 +215,7 @@
           </div>
         </form>
         <br><br>
-        <form v-if="cart.product.product_type_id == 2" @submit.prevent="update_decorrenza" >
+        <form  @submit.prevent="update_decorrenza" >
 
           <div class="mt-6 bg-white rounded shadow overflow-x-auto px-8 py-4">
             <div class="flex flex-wrap ">
@@ -249,16 +249,16 @@
           </div>
           </div>
 
-          <div>
+          <div v-if="cart.product.product_type_id == 2">
               <div class="flex items-center px-8 py-4 border-t border-gray-100 ">
                 <a @click="send_email" target="_blank" class="btn-gol-primary  ml-auto">Invia email con il certificato</a>
               </div>
           </div>
-        <div>
+        <div v-if="cart.product.product_type_id == 2">
           <div class="flex items-center px-8 py-4 border-t border-gray-100 ">
                 <a @click="certificate_update" target="_blank" class="btn-gol-primary  ml-auto">Aggiorna certificato</a>
           </div>
-          <div>
+          <div v-if="cart.product.product_type_id == 2">
           <div class="flex items-center px-8 py-4 border-t border-gray-100 ">
                 <a @click="send_first_email" target="_blank" class="btn-gol-primary  ml-auto">Manda email con credenziali rinnovo</a>
           </div>
