@@ -665,14 +665,35 @@ class CartController extends Controller
         //$cart->update($request->validated());
         //echo "cio";
         //dd($request);return;
-        $certificate = Certificate::find($cart->certificate->id);
-        $certificate->start_validity_date = $request->startDate;
-        $certificate->end_validity_date = $request->endDate;
-        //dd($cart);
-        $certificate->save();
-        $declarationToPdf = new PaymentBankersToPdfService($cart);
-        $declarationToPdf->generateAndPersist();
-        return Redirect::back()->with('success', 'Date di decorrenza aggiornate.')->with('reload', true);
+        if($cart->product->product_type_id == 1 ){
+            $certificate = Certificate::firstOrCreate(
+                ['cart_id' => $cart->id],
+                [
+                    'product_id' => $cart->product_id,
+                    'product_offer_id' => $cart->product_offer_id,
+                    'contract_id' => $cart->productOffer->contract->id,
+                    'start_validity_date' => $cart->renewal_date,
+                    'retroactivity' => $cart->retroactivity
+                ]
+            );
+
+            $certificate->start_validity_date = $request->startDate;
+            $certificate->end_validity_date = $request->endDate;
+            //dd($cart);
+            $certificate->save();
+            return Redirect::back()->with('success', 'Date di decorrenza aggiornate.')->with('reload', true);
+        }
+
+        if($cart->product->product_type_id == 2 ){
+            $certificate = Certificate::find($cart->certificate->id);
+            $certificate->start_validity_date = $request->startDate;
+            $certificate->end_validity_date = $request->endDate;
+            //dd($cart);
+            $certificate->save();
+            $declarationToPdf = new PaymentBankersToPdfService($cart);
+            $declarationToPdf->generateAndPersist();
+            return Redirect::back()->with('success', 'Date di decorrenza aggiornate.')->with('reload', true);
+        }
     }
 
     public function certificateUpdate(Cart $cart)
