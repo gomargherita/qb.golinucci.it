@@ -244,12 +244,22 @@ class CartController extends Controller
 
         DB::transaction(function () use ($user, $validated, $cart) {
             $clientDetails = ClientDetail::updateOrCreate(['user_id'   => $user->id], $validated);
+
+            if($clientDetails->dob == null){
+                $clientDetails->dob = "1970-01-01";
+            }
+            if($clientDetails->gender == null){
+                $clientDetails->gender = '';
+            }
+            $clientDetails->save();
+
             $rebuildProductClientDetails = [];
             foreach ($validated['product_client_details'] as $el) {
                 $conditional_field_id = $el['pivot']['conditional_field_id'];
                 $selected_field_value = $el['pivot']['selected_field_value'];
                 $rebuildProductClientDetails[$conditional_field_id] = ['selected_field_value' => $selected_field_value];
             }
+
 
             $clientDetails->productClientDetails()->syncWithoutDetaching($rebuildProductClientDetails);
             $cart->updateCartStep(2);
