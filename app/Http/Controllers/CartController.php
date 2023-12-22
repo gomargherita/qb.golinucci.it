@@ -677,8 +677,13 @@ class CartController extends Controller
                 ]
             );
 
-            $certificate->start_validity_date = $request->startDate;
-            $certificate->end_validity_date = $request->endDate;
+            if($request->startDate != null){
+                $certificate->start_validity_date = $request->startDate;
+            }
+
+            if($request->endDate != null){
+                $certificate->end_validity_date = $request->endDate;
+            }
 
             if($request->retroactivity != null){
                 $cart->retroactivity = $request->retroactivity;
