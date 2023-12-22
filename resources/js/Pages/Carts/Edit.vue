@@ -217,6 +217,7 @@
         <br><br>
         <form  @submit.prevent="update_decorrenza" >
 
+          <p class="mt-6 bg-white rounded shadow overflow-x-auto px-8 py-4" v-if="cart.product.id == 1">Attenzione: modificare queste date solo se il carrello è allo step 4.</p>
           <div class="mt-6 bg-white rounded shadow overflow-x-auto px-8 py-4">
             <div class="flex flex-wrap ">
               <text-input
@@ -239,6 +240,17 @@
                 type="date"
                 pattern="\d{4}-\d{2}-\d{2}"
                 :customDate=end_date
+              />
+            </div>
+            <div v-if="cart.product.id == 1" class="flex flex-wrap ">
+              <text-input
+                v-model="form_update_decorrenza.retroactivity"
+                :error="form_update_decorrenza.errors.retroactivity"
+                class="pb-8 pr-6 w-full lg:w-1/2"
+                label="Retroattività"
+                type="date"
+                pattern="\d{4}-\d{2}-\d{2}"
+                :customDate=retroactivity
               />
             </div>
             <div>
@@ -364,6 +376,7 @@ export default {
         cart_id: this.cart.id,
         startDate: this.startDate,
         endDate: this.endDate,
+        retroactivity: this.retroactivity
       })
     };
   },

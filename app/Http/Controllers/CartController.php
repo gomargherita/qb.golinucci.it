@@ -679,6 +679,11 @@ class CartController extends Controller
 
             $certificate->start_validity_date = $request->startDate;
             $certificate->end_validity_date = $request->endDate;
+
+            if($request->retroactivity != null){
+                $cart->retroactivity = $request->retroactivity;
+                $cart->save();
+            }
             //dd($cart);
             $certificate->save();
             return Redirect::back()->with('success', 'Date di decorrenza aggiornate.')->with('reload', true);
