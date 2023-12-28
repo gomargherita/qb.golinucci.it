@@ -578,9 +578,14 @@ class CartController extends Controller
         }
     }
 
-    public function sendFirstEmail(Cart $cart){
-        if($cart->renewal_date == null || $cart->product_offer_id == null){
-            return Redirect::back()->with('error', 'Questo carrello non è un rinnovo. Nessuna mail inviata.');
+    public function sendFirstEmail(Cart $cart, $product_id){
+        if($cart->renewal_date == null || $cart->product_id == null){
+            $cart->renewal_date = '2023-12-31';
+            $cart->product_id = intval($product_id);
+            $cart->save();
+
+            //dd($cart);
+            return $this->sendFirstEmail($cart, $product_id);
         }
 
         try{

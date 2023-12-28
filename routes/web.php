@@ -140,7 +140,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'check_role']], func
     Route::get('carts/{cart}/sendemail', [CartController::class, 'sendEmail'])
         ->name('carts.sendemail');
 
-    Route::get('carts/{cart}/sendfirstemail', [CartController::class, 'sendFirstEmail'])
+    Route::get('carts/{cart}/{product_id}/sendfirstemail', [CartController::class, 'sendFirstEmail'])
         ->name('carts.sendfirstemail');
 
     Route::put('carts/{cart}/updatedecorrenza', [CartController::class, 'updateDecorrenza'])

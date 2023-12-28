@@ -272,7 +272,10 @@
           </div>
           <div v-if="cart.product.product_type_id == 2">
           <div class="flex items-center px-8 py-4 border-t border-gray-100 ">
-                <a @click="send_first_email" target="_blank" class="btn-gol-primary  ml-auto">Manda email con credenziali rinnovo</a>
+                <a @click="send_first_email(2)" target="_blank" class="btn-gol-primary  ml-auto">ER - Manda email con credenziali rinnovo</a>
+          </div>
+          <div class="flex items-center px-8 py-4 border-t border-gray-100 ">
+                <a @click="send_first_email(4)" target="_blank" class="btn-gol-primary  ml-auto">RI - Manda email con credenziali rinnovo</a>
           </div>
           </div>
         </div>
@@ -410,8 +413,8 @@ export default {
     send_email() {
       this.$inertia.get(`/admin/carts/${this.cart.id}/sendemail`)
     },
-    send_first_email() {
-      this.$inertia.get(`/admin/carts/${this.cart.id}/sendfirstemail`)
+    send_first_email(product_id) {
+      this.$inertia.get(`/admin/carts/${this.cart.id}/${product_id}/sendfirstemail`)
     },
     update_decorrenza(){
       this.form_update_decorrenza.put(`/admin/carts/${this.cart.id}/updatedecorrenza`);
