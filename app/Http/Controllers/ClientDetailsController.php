@@ -72,6 +72,16 @@ class ClientDetailsController extends Controller
         $selected_field_value = $product_client_details->pluck('selected_field_value');
         
 
+        $field_value = [];
+        if($conditional_field_id[0] > 0){
+            for($j=0; $j<$conditional_field_id[0]-1; $j++){
+              array_push($field_value, "");
+            }
+          }
+          for($i=0; $i<count($conditional_field_id); $i++){
+            array_push($field_value, $selected_field_value[$i]);
+          }
+
         return Inertia::render('ClientDetails/Edit', [
             // 'can' => [
             //     'delete_client_detail' => $currentUser->can('client_details.delete')
@@ -98,6 +108,7 @@ class ClientDetailsController extends Controller
                 'client_detail_id' => $client_detail_id,
                 'conditional_field_id' => $conditional_field_id,
                 'selected_field_value' => $selected_field_value,
+                'field_value' => $field_value,
             ],
             'user' => $client_detail->user ? $client_detail->user : null,
         ]);
@@ -127,11 +138,11 @@ class ClientDetailsController extends Controller
             $client_detail->update($request->validated());
         }
             //dd($request);
-        for($i=0; $i<count($request['selected_field_value']); $i++){
+        for($i=0; $i<count($request['field_value']); $i++){
 
             $rebuildProductClientDetails = [];
 
-            $rebuildProductClientDetails[$i+1] = ['selected_field_value' => $request['selected_field_value'][$i]];
+            $rebuildProductClientDetails[$i+1] = ['selected_field_value' => $request['field_value'][$i]];
             $client_detail->productClientDetails()->syncWithoutDetaching($rebuildProductClientDetails);
 
             /*

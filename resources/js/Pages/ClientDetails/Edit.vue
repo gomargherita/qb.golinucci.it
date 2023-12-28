@@ -212,8 +212,8 @@
           />
           <h1 class="mb-8 text-3xl font-bold w-full">Medici</h1>
           <select-input
-            v-model="form.selected_field_value[0]"
-            :error="form.errors.selected_field_value"
+            v-model="form.field_value[0]"
+            :error="form.errors.field_value"
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Qualifica dell'Assicurato"
           >
@@ -226,8 +226,8 @@
             <option value="6">Dirigente Infermieristico</option>
           </select-input>
           <select-input
-            v-model="form.selected_field_value[1]"
-            :error="form.errors.selected_field_value"
+            v-model="form.field_value[1]"
+            :error="form.errors.field_value"
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Tipologia ente"
           >
@@ -236,45 +236,45 @@
             <option value="2">Privato-Pubblico</option>
           </select-input>
           <text-input
-            v-model="form.selected_field_value[2]"
-            :error="form.errors.selected_field_value"
+            v-model="form.field_value[2]"
+            :error="form.errors.field_value"
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Ente di appartenenza"
           />
           <text-input
-            v-model="form.selected_field_value[3]"
-            :error="form.errors.selected_field_value"
+            v-model="form.field_value[3]"
+            :error="form.errors.field_value"
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Specializzazione"
           />
           <h1 class="mb-8 text-3xl font-bold w-full">Bancari</h1>
           <text-input
-            v-model="form.selected_field_value[4]"
-            :error="form.errors.selected_field_value"
+            v-model="form.field_value[4]"
+            :error="form.errors.field_value"
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Telefono Ufficio"
           />
           <text-input
-            v-model="form.selected_field_value[5]"
-            :error="form.errors.selected_field_value"
+            v-model="form.field_value[5]"
+            :error="form.errors.field_value"
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="First/Cisl di appartenenza"
           />
           <text-input
-            v-model="form.selected_field_value[6]"
-            :error="form.errors.selected_field_value"
+            v-model="form.field_value[6]"
+            :error="form.errors.field_value"
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Banca"
           />
           <text-input
-            v-model="form.selected_field_value[7]"
-            :error="form.errors.selected_field_value"
+            v-model="form.field_value[7]"
+            :error="form.errors.field_value"
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Codice ABI"
           />
           <select-input
-            v-model="form.selected_field_value[8]"
-            :error="form.errors.selected_field_value"
+            v-model="form.field_value[8]"
+            :error="form.errors.field_value"
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Regione di appartenenza"
           >
@@ -436,6 +436,7 @@ export default {
         client_detail_id: this.client_detail.client_detail_id,
         conditional_field_id: this.client_detail.conditional_field_id,
         selected_field_value: this.client_detail.selected_field_value,
+        field_value: this.client_detail.field_value,
         /*selected_field_value_0: this.client_detail.selected_field_value[0],
         selected_field_value_1: this.client_detail.selected_field_value[1],
         selected_field_value_2: this.client_detail.selected_field_value[2],
