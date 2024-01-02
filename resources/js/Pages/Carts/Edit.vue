@@ -176,10 +176,17 @@
             <div class="pb-8 pr-6 w-full lg:w-full">
               <p class="mb-2">
                 <b>Importo pagamento</b>: {{ this.cart.payment?.total_payable }}<br />
-                <b
-                  >Numero certificato di pagamento assegnato:
+                <b>Numero certificato di pagamento assegnato:
+                  
                   {{ this.cart.payment?.payment_no }}
                 </b>
+              <br><br>
+                <text-input
+                  v-model="form_payment.payment_no"
+                  :error="form_payment.errors.payment_no"
+                  class="pb-8 pr-6 w-full lg:w-1/2"
+                  label="Modifica numero pagamento"
+                />
               </p>
               <p class="mb-2">
                 <b class="text-red-500">Attenzione!</b>: prima di segnare un pagamento
@@ -374,6 +381,7 @@ export default {
         transaction_ref: this.cart.payment?.transaction_ref,
         paid_at: this.cart.payment?.paid_at,
         total_payable: this.cart.payment?.total_payable,
+        payment_no: this.cart.payment?.payment_no
       }),
       form_update_decorrenza: this.$inertia.form({
         cart_id: this.cart.id,

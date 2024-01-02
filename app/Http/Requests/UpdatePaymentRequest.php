@@ -29,6 +29,7 @@ class UpdatePaymentRequest extends FormRequest
             'paid' => ['boolean'],
             'transaction_ref' => ['nullable', 'max:125'],
             'paid_at' => ['nullable', 'required_unless:paid,false', 'date'],
+            'payment_no' => ['nullable', 'max:125'],
         ];
     }
 }

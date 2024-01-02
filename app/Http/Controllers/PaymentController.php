@@ -68,28 +68,31 @@ class PaymentController extends Controller
 
         $cart = Cart::find($request->cart_id);
 
+        try{
+            if ($payment->update($validated)) {
 
-        if ($payment->update($validated)) {
-
-            if ($validated['paid'] && $payment->cart->product_step_id == 4) {
-                // genero e salvo il pdf con proforma fattura dell'acquisto
-                $payment->updatePaymentPaymentNo();
-                if($cart->product_id == 1){
-                    $paymentToPdf = new PaymentCertificateToPdfService($payment->cart);
-                    $paymentToPdf->generateAndPersist();
-                    $payment->cart->user->notify(new ConfirmedOfflinePayment($payment));
+                if ($validated['paid'] && $payment->cart->product_step_id == 4) {
+                    // genero e salvo il pdf con proforma fattura dell'acquisto
+                    $payment->updatePaymentPaymentNo();
+                    if($cart->product_id == 1){
+                        $paymentToPdf = new PaymentCertificateToPdfService($payment->cart);
+                        $paymentToPdf->generateAndPersist();
+                        $payment->cart->user->notify(new ConfirmedOfflinePayment($payment));
+                    }
+                    if($cart->product_id == 2 || $cart->product_id == 3 || $cart->product_id == 4){
+                        $controller = new CartController();
+                        
+                        $controller->step5($cart->product, $cart, $cart->user_id);
+                        //CartController::step5($cart->product, $cart, $cart->user_id);
+                    }
+                    $payment->cart->updateCartStep(5);
                 }
-                if($cart->product_id == 2 || $cart->product_id == 3 || $cart->product_id == 4){
-                    $controller = new CartController();
-                    
-                    $controller->step5($cart->product, $cart, $cart->user_id);
-                    //CartController::step5($cart->product, $cart, $cart->user_id);
-                }
-                $payment->cart->updateCartStep(5);
             }
-        }
 
-        return Redirect::back()->with('success', 'Payment updated.');
+            return Redirect::back()->with('success', 'Payment updated.');
+        } catch(\Exception $e){
+            return Redirect::back()->with('error', 'Errore: il numero di certificato è già usato da qualcun altro?');
+        }
     }
 
     /**
