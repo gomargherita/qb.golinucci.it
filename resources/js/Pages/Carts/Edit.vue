@@ -181,12 +181,22 @@
                   {{ this.cart.payment?.payment_no }}
                 </b>
               <br><br>
+              <template v-if="cart.product.product_type_id == 1">
                 <text-input
                   v-model="form_payment.payment_no"
                   :error="form_payment.errors.payment_no"
                   class="pb-8 pr-6 w-full lg:w-1/2"
                   label="Modifica numero pagamento"
-                />
+                  disabled/>
+              </template>
+              <template v-if="cart.product.product_type_id == 2">
+                <text-input
+                  v-model="form_payment.payment_no"
+                  :error="form_payment.errors.payment_no"
+                  class="pb-8 pr-6 w-full lg:w-1/2"
+                  label="Modifica numero pagamento"
+                  />
+              </template>
               </p>
               <p class="mb-2">
                 <b class="text-red-500">Attenzione!</b>: prima di segnare un pagamento
