@@ -115,8 +115,15 @@ class YousignApiService
                 $cellphone = $configYousignStaging['phone'];
                 $member_signer = $client->addMember($this->user->clientDetails->first_name, $this->user->clientDetails->last_name, $email, $cellphone, $procedure['id'], 'signer', 1);
             } else {
-                $member_signer = $client->addMember($this->user->clientDetails->first_name, $this->user->clientDetails->last_name, $this->user->email, $this->user->clientDetails->phone, $procedure['id'], 'signer', 1);
+                if(str_starts_with($this->user->clientDetails->phone, "+39")){
+                    $member_signer = $client->addMember($this->user->clientDetails->first_name, $this->user->clientDetails->last_name, $this->user->email, $this->user->clientDetails->phone, $procedure['id'], 'signer', 1);
+                }
+                else{
+                    $member_signer = $client->addMember($this->user->clientDetails->first_name, $this->user->clientDetails->last_name, $this->user->email, "+39".$this->user->clientDetails->phone, $procedure['id'], 'signer', 1);
+                }
             }
+
+                
 
             $reason_signer = "Signed by " . $this->user->clientDetails->firstname . " " . $this->user->clientDetails->lastname . " (Yousign)";
 
