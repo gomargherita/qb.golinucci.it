@@ -500,11 +500,11 @@ class CartController extends Controller
             );
         }
         else{
-            if(Carbon::now()->format('d-m-y') < "31-12-2023"){
+            if(Carbon::now()->lt("31-12-2023")){
                 $startReal = Carbon::parse('31-12-2023')->format('Y-m-d');
             }
             else{
-                $startReal = $cart->renewal_date;
+                $startReal = $cart->payment->paid_at->format('Y-m-d');
             }
             if($cart->productOffer->months == 12){
                 $endReal = Carbon::parse('01-12-2024')->endOfYear()->format('Y-m-d');
