@@ -3,6 +3,7 @@
 namespace App\Services\Yousign;
 
 use App\Models\Signature;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Storage;
@@ -22,13 +23,21 @@ class YousignApiService
     protected $certificate_folder;
     protected $storage_path;
 
-    function __construct($cart)
+    function __construct($cart, $user=null)
     {
         if (empty($cart)) {
             throw new \Exception("Missing required cart parameter for Yousign precedure");
         }
         $this->cart = $cart;
-        $this->user = auth()->user();
+        //error_log("UTENTE".$user);
+        if($user == null){
+            $this->user = auth()->user();
+            //dd("FRONTEND".$this->user);
+        }
+        else{
+            $this->user = $user;
+            //dd("BACKEND".$this->user);
+        }
         $this->certificate_folder = 'certificates/user_' . $this->user->id . '/cart_' . $this->cart->id;
         $this->storage_path = Storage::disk('private')->getAdapter()->getPathPrefix();
     }
@@ -172,7 +181,7 @@ class YousignApiService
 
     private function generateServerStamp()
     {
-        $this->user = auth()->user();
+        //$this->user = auth()->user();
 
         $certificate_pdf = $this->storage_path . $this->certificate_folder . '/certificate.pdf';
         $client_ss = new YousignApiLaravel();

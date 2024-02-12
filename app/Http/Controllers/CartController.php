@@ -9,6 +9,12 @@ use App\Models\Cart;
 use App\Models\Payment;
 use App\Models\ClientDetail;
 use App\Models\Product;
+use App\Services\LloydsDoprintService;
+use Illuminate\Http\Request as RequestHttp;
+use App\Services\DatasheetToPdfService;
+use App\Services\Yousign\YousignApiService;
+use App\Models\Signature;
+use App\Notifications\ConfirmedOfflinePayment;
 
 use App\Models\PaymentGateway;
 use App\Models\User;
@@ -486,6 +492,9 @@ class CartController extends Controller
 
     public function step5(Product $product, Cart $cart, $user_id)
     {
+        if($cart->product_id == 1){
+            return $this->generateLloyds($cart);
+        }
         if($cart->custom_end_date != null){
             $certificate = Certificate::firstOrCreate(
                 ['cart_id' => $cart->id],
@@ -708,6 +717,349 @@ class CartController extends Controller
             $declarationToPdf = new PaymentBankersToPdfService($cart);
             $declarationToPdf->generateAndPersist();
             return Redirect::back()->with('success', 'Date di decorrenza aggiornate.')->with('reload', true);
+        }
+    }
+
+    public function updateToStep6(Cart $cart){
+        $cart->updateCartStep(6);
+        $this->step6($cart->product, $cart);
+        return redirect()->route("carts.edit", $cart);
+    }
+
+    private function step6(Product $product, Cart $cart)
+    {
+        try {
+            $yousignClient = new YousignApiService($cart, User::find($cart->user_id));
+            $signature = Signature::where('certificate_id', $cart->certificate->id)->first();
+
+            if (empty($signature)) {
+                $yousignMemberSignerId = $yousignClient->startYousignClientAndLaunchProcedure();
+                $payment = $cart->payment;
+                $payment->cart->user->notify(new ConfirmedOfflinePayment($payment));
+                //error_log($yousignMemberSignerId);
+            } else {
+                $yousignMemberSignerId = $signature->member_signer_id;
+            }
+        } catch (\Exception $e) {
+            //error_log("wualche errore".$e);
+             $product_signature_error = 'Si è verificato un errore con la procedura di firma.';
+        }
+
+        /*if($product->id == 1){
+            $redirect = 'Sites/BuyProduct';
+        }
+        else{
+            $redirect = 'Sites/BuyProductBankers';
+        }
+        return Inertia::render($redirect, [
+            'product' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'type' => Str::slug($product->productType->name, '-'),
+                'hex_color' => $product->hex_color,
+                'steps' => $product->productSteps->count(),
+                'yousign_url' => config('yousign.app_url'),
+                'yousign_member_signer_id' => $yousignMemberSignerId ?? null,
+                'signature_error' => $product_signature_error ?? null
+            ],
+            'cart' => $cart
+        ]);*/
+    }
+
+    public function generateLloyds(Cart $cart){
+        if($cart->product_step_id != 5){
+            return Redirect::back()->with('error', 'Il carrello non è allo step 5. Lloyds');
+        }
+        return $this->step5Lloyds($cart->product, $cart, $cart->user_id);
+        
+    }
+
+    public function step5Lloyds(Product $product, Cart $cart, $user_id){
+       
+        $redirect = 'Carts/Steps/Step5Lloyds';
+        return Inertia::render($redirect, [
+            'product' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'type' => Str::slug($product->productType->name, '-'),
+                'hex_color' => $product->hex_color,
+                'steps' => $product->productSteps->count(),
+                'documentGenerator' => [],
+                'completedDocumentGenerator' => false,
+            ],
+            'cart' => $cart,
+        ]);
+    }
+
+    public function storeLloyds(Product $product, Cart $cart, RequestHttp $request)
+    {
+        //return 500;
+        $user = User::find($cart->user_id);
+        $cart = $this->verifyAndGetCartOrRedirect($user, $product, $cart);
+        $certificate = Certificate::firstOrCreate(
+            ['cart_id' => $cart->id],
+            [
+                'product_id' => $cart->product_id,
+                'product_offer_id' => $cart->product_offer_id,
+                'contract_id' => $cart->productOffer->contract->id,
+                'start_validity_date' => $cart->renewal_date,
+                'retroactivity' => $cart->retroactivity
+            ]
+        );
+        
+        if (isset($request->method)) {
+            switch ($request->method) {
+                case 'initialization':
+                    $response = $this->store_step5_certificate_initialization($cart);
+                    break;
+                case 'handshake':
+                    $response = $this->store_step5_certificate_handshake($cart);
+                    break;
+                case 'validation':
+                    $response = $this->store_step5_certificate_validation($cart);
+                    break;
+                case 'upload':
+                    $response = $this->store_step5_certificate_upload($cart);
+                    break;
+                case 'transaction':
+                    $response = $this->store_step5_certificate_transaction($cart);
+                    break;
+                case 'download':
+                    $response = $this->store_step5_certificate_download($cart);
+                    break;
+                case 'completed':
+                    $response = $this->store_step5_certificate_download($cart);
+                    break;
+            }
+
+            return response()->json($response);
+        } else {
+            $cart->updateCartStep(6);
+
+            activity()
+                ->causedBy($user)
+                ->on($certificate)
+                ->event('certificate_generation')
+                ->log("Completed certificate $certificate->id generation;");
+
+            return Redirect::back();
+        }
+    }
+
+    private function store_step5_certificate_initialization(Cart $cart)
+    {        
+
+        try {
+            $certificate = $cart->certificate;
+            if ($certificate->doprint_current_step == null) {
+                $certificate->doprint_current_step = 'handshake';
+                $certificate->save();
+            }
+            $user = User::find($cart->user_id);
+            if (empty($certificate->doprint_token)) {
+                activity()
+                    ->causedBy($user)
+                    ->on($certificate)
+                    ->event('certificate_generation')
+                    ->log("Initiate certificate $certificate->id generation;");
+            } else {
+                activity()
+                    ->causedBy($user)
+                    ->on($certificate)
+                    ->event('certificate_generation')
+                    ->log("Re-Initiate certificate $certificate->id generation due to previous error;");
+            }
+
+            return [
+                'error' => false,
+                'message' => 'Inizializzazione certificato completata...'
+            ];
+        } catch (Throwable $e) {
+            activity()
+                ->causedBy(User::find($cart->user_id))
+                ->event('certificate_generation')
+                ->log("An error occurred on generating a certificate on initialization;" . $e->getMessage());
+            return [
+                'error' => true,
+                'message' => 'Inizializzazione certificato fallita. Si prega di ricaricare la pagina e riprovare oppure contattarci al numero 0547 22351 o via email.'
+            ];
+        }
+    }
+
+    private function store_step5_certificate_handshake(Cart $cart)
+    {
+        try {
+            $certificate = $cart->certificate;
+            // se validation allora rieseguo anche handshake
+            if ($certificate->doprint_current_step == 'handshake' && empty($certificate->doprint_token) || $certificate->doprint_current_step == 'validation' && !empty($certificate->doprint_token)) {
+                $certificate->doprint_token = LloydsDoprintService::handShake();
+                $certificate->doprint_current_step = 'validation';
+                $certificate->save();
+            }
+
+            return [
+                'error' => false,
+                'message' => 'Connessione avvenuta correttamente...'
+            ];
+        } catch (Throwable $e) {
+            activity()
+                ->causedBy(User::find($cart->user_id))
+                ->event('certificate_generation')
+                ->log("An error occurred on generating a certificate on handshake;" . $e->getMessage());
+            return [
+                'error' => true,
+                'message' => 'Connessione fallita. Si prega di ricaricare la pagina e riprovare oppure contattarci al numero 0547 22351 o via email.'
+            ];
+        }
+    }
+
+    private function store_step5_certificate_validation(Cart $cart)
+    {
+        try {
+            $user = User::find($cart->user_id);
+            $certificate = $cart->certificate;
+            if ($certificate->doprint_current_step == 'validation') {
+                $clientDetails = ClientDetail::where('user_id', $cart->user_id)->first();
+                $profession = $clientDetails->getConditionalFieldMatchById(1);
+                $authority_type = $clientDetails->getConditionalFieldMatchById(2);
+
+                $customer = [
+                    'profession' => $profession,
+                    'authority_type' => $authority_type,
+                    'first_name' => $clientDetails->first_name,
+                    'last_name' => $clientDetails->last_name,
+                    'address' => $clientDetails->address,
+                    'city' => $clientDetails->city,
+                    'postal_code' => $clientDetails->postal_code,
+                    'province' => $clientDetails->province, //'MI',
+                    'fiscal_code' => $clientDetails->fiscal_code,
+                    'gender' => $clientDetails->gender,
+                    'country' => ($clientDetails->country == 'IT') ? 'Italia' : $clientDetails->country
+                ];
+
+                $cart_details = [
+                    'cart_id' => $cart->id,
+                    'price' => $cart->net_premium,
+                    'accessori' => $cart->accessory, // 10% di sovrapprezzo sul netto; 44/10
+                    'tax' => $cart->tax, // tasse calcolate su premio + accessori
+                    'price_with_tax' => $cart->gross_premium, // premio + accessori + tax (no fee)
+                    'indemnity_limit' => $cart->indemnity_limit
+                ];
+
+                $datasheetToPdf = new DatasheetToPdfService($cart);
+                $scheda = $datasheetToPdf->generateAndPersist($profession); // passo profession perché già generato poco sopra
+
+                $isValid = LloydsDoprintService::validationRequest(
+                    $cart,
+                    $customer,
+                    $cart_details,
+                    $scheda
+                );
+                if ($isValid) {
+                    $certificate->doprint_current_step = 'upload';
+                    $certificate->save();
+                }
+            }
+            return [
+                'error' => false,
+                'message' => 'Validazione certificato completata...'
+            ];
+        } catch (Throwable $e) {
+            activity()
+                ->causedBy(User::find($cart->user_id))
+                ->event('certificate_generation')
+                ->log("An error occurred on generating a certificate on validation;" . $e->getMessage());
+            return [
+                'error' => true,
+                'message' => 'Validazione certificato fallita. Si prega di ricaricare la pagina e riprovare oppure contattarci al numero 0547 22351 o via email.'
+            ];
+        }
+    }
+
+    private function store_step5_certificate_upload(Cart $cart)
+    {
+
+        try {
+            $user = User::find($cart->user_id);
+            $certificate = $cart->certificate;
+            if ($certificate->doprint_current_step == 'upload') {
+                LloydsDoprintService::uploadAttachments($cart);
+                $certificate->doprint_current_step = 'transaction';
+                $certificate->save();
+            }
+
+            return [
+                'error' => false,
+                'message' => 'Upload file completato...'
+            ];
+        } catch (Throwable $e) {
+            activity()
+                ->causedBy(User::find($cart->user_id))
+                ->event('certificate_generation')
+                ->log("An error occurred on generating a certificate on upload;" . $e->getMessage());
+            return [
+                'error' => true,
+                'message' => 'Upload file fallito. Si prega di ricaricare la pagina e riprovare oppure contattarci al numero 0547 22351 o via email.'
+            ];
+        }
+    }
+
+    private function store_step5_certificate_transaction(Cart $cart)
+    {
+        try {
+            $user = User::find($cart->user_id);
+            $certificate = $cart->certificate;
+            if ($certificate->doprint_current_step == 'transaction') {
+                $isValid = LloydsDoprintService::transactionRequest($cart);
+                if ($isValid) {
+                    $certificate->doprint_current_step = 'download';
+                    $certificate->save();
+                }
+            }
+
+            return [
+                'error' => false,
+                'message' => 'Transazione completata...'
+            ];
+        } catch (Throwable $e) {
+            activity()
+                ->causedBy(User::find($cart->user_id))
+                ->event('certificate_generation')
+                ->log("An error occurred on generating a certificate on transaction;" . $e->getMessage());
+            return [
+                'error' => true,
+                'message' => 'Transazione fallita. Si prega di ricaricare la pagina e riprovare oppure contattarci al numero 0547 22351 o via email.'
+            ];
+        }
+    }
+
+    private function store_step5_certificate_download(Cart $cart)
+    {
+        try {
+            $user = User::find($cart->user_id);
+            $certificate = $cart->certificate;
+            if ($certificate->doprint_current_step == 'download') {
+                // // Download the certificate
+                $filename = 'certificate.pdf';
+                $isValid = LloydsDoprintService::downloadRequest($cart, $filename);
+                if ($isValid) {
+                    $certificate->doprint_current_step = 'completed';
+                    $certificate->save();
+                }
+            }
+            return [
+                'error' => false,
+                'message' => 'Preparazione certificato completata...'
+            ];
+        } catch (Throwable $e) {
+            activity()
+                ->causedBy(User::find($cart->user_id))
+                ->event('certificate_generation')
+                ->log("An error occurred on generating a certificate on Download;" . $e->getMessage());
+            return [
+                'error' => true,
+                'message' => 'Preparazione certificato fallita. Si prega di ricaricare la pagina e riprovare oppure contattarci al numero 0547 22351 o via email.'
+            ];
         }
     }
 

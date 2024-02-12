@@ -276,6 +276,15 @@
                 <a @click="update_decorrenza" target="_blank" class="btn-gol-primary">Aggiorna date di decorrenza</a>
               </div>
           </div>
+          <br />
+          <div v-if="cart.product.id == 1" class="flex flex-wrap ">
+
+
+            <a @click="generate_lloyds" target="_blank" class="btn-gol-primary">Genera certificato Lloyd's</a>
+            </div><br />
+            <p>Generare il certificato solo se il carrello è allo step 5.</p>
+          
+
           </div>
 
           <div v-if="cart.product.product_type_id == 2">
@@ -398,6 +407,10 @@ export default {
         startDate: this.startDate,
         endDate: this.endDate,
         retroactivity: this.retroactivity
+      }),
+      form_generate_lloyds: this.$inertia.form({
+        cart_id: this.cart.id,
+        step: this.cart.step_number
       })
     };
   },
@@ -439,6 +452,9 @@ export default {
     },
     certificate_update(){
       this.form_update_decorrenza.put(`/admin/carts/${this.cart.id}/certificateupdate`);
+    },
+    generate_lloyds(){
+      this.form_generate_lloyds.get(`/admin/carts/${this.cart.id}/generatelloyds`);
     },
     updateDates(){
       this.form_update_decorrenza.startDate = this.start_date;

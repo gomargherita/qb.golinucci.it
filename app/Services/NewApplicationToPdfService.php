@@ -105,7 +105,7 @@ class NewApplicationToPdfService
     {
         $title = "Responsabilità Civile Personale Dipendente";
         if ($authority_type_public_flag) {
-            $title .= " del S.N.N.";
+            $title .= " del S.S.N.";
         } else {
             $title .= "/Collaboratore Privato";
         }

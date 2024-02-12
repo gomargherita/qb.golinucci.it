@@ -77,7 +77,7 @@ class PaymentController extends Controller
                     if($cart->product_id == 1){
                         $paymentToPdf = new PaymentCertificateToPdfService($payment->cart);
                         $paymentToPdf->generateAndPersist();
-                        $payment->cart->user->notify(new ConfirmedOfflinePayment($payment));
+                        //$payment->cart->user->notify(new ConfirmedOfflinePayment($payment));
                     }
                     if($cart->product_id == 2 || $cart->product_id == 3 || $cart->product_id == 4){
                         $controller = new CartController();

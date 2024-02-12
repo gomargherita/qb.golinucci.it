@@ -136,6 +136,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'check_role']], func
 
     Route::get('carts/{cart}/edit', [CartController::class, 'edit'])
         ->name('carts.edit');
+    
+        Route::get('carts/{cart}/updatestep6', [CartController::class, 'updateToStep6'])
+        ->name('carts.updatetostep6');
 
     Route::get('carts/{cart}/sendemail', [CartController::class, 'sendEmail'])
         ->name('carts.sendemail');
@@ -145,6 +148,12 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'check_role']], func
 
     Route::put('carts/{cart}/updatedecorrenza', [CartController::class, 'updateDecorrenza'])
         ->name('carts.updatedecorrenza');
+
+    Route::get('carts/{cart}/generatelloyds', [CartController::class, 'generateLloyds'])
+        ->name('carts.generatelloyds');
+
+    Route::post('carts/{cart}/storeLloyds', [CartController::class, 'storeLloyds'])
+        ->name('carts.storeLloyds');
 
     Route::put('carts/{cart}', [CartController::class, 'update'])
         ->name('carts.update');
