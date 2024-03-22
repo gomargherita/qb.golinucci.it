@@ -1,16 +1,26 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Notifications\EhealthEmail;
 
 use App\Models\Account;
 use App\Models\Product;
 use App\Models\Cart;
+use App\Models\EhealthBuyer;
+use App\Models\EhealthCode;
 use Doctrine\DBAL\ArrayParameterType;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use App\Models\Certificate;
+use App\Models\Payment;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Srmklive\PayPal\Services\PayPal as PayPalClient;
+use Illuminate\Support\Facades\Mail;
+
 
 
 
@@ -149,5 +159,134 @@ class SiteController extends Controller
                 'table_elements' => json_decode($product->productOfferTable, true),
             ],
         ]);
+    }
+
+    public function ehealth($id = null){
+        $code = EhealthCode::where('used', false)->first();
+        if($code == null){
+            return Inertia::render('Sites/eHealthNoCodici');
+        }
+
+        if(($id == null)){
+            return $this->ehealth_Step1();
+        }
+        else{
+            //dd(EhealthBuyer::find(intval($id)));
+            $buyer = EhealthBuyer::find(intval($id));
+            if($buyer == null){
+                return $this->ehealth_Step1();
+            }
+            else if($buyer->paid == true){
+                return Inertia::render('Sites/eHealthCompleto');
+            }
+            //step 2
+            $paypalClientId = config('paypal.' . config('paypal.mode') . '.client_id');
+
+            return Inertia::render('Sites/eHealthStep2', ['paypal_client_id' => $paypalClientId, 'id' => $id], );
+        }
+    }
+
+    public function ehealth_Step1(){
+        return Inertia::render('Sites/eHealthStep1');
+    }
+
+    public function ehealth_store_step1(Request $request){
+        $email = $request->input('email');
+        $name = $request->input('name');
+        $surname = $request->input('surname');
+
+        $buyer = EhealthBuyer::create(['name' => $name,
+                            'surname' => $surname,
+                            'email' => $email]);
+        
+        return redirect()->route('front.ehealth', ['id' => $buyer->id]);
+    }
+
+    public function ehealthPay($id){
+        $buyer = EhealthBuyer::find(intval($id));
+
+        $order = $this->create_order_paypal(90);
+        Log::info($buyer);
+        $buyer->transaction_ref = $order['id'];
+        $buyer->save();
+
+            //exec("explorer.exe");
+            return response()->json([
+                'order' => $order,
+                //'payment_id' => 1,
+            ],200);
+    }
+
+    private function create_order_paypal($cifra)
+    {
+        $provider = new PayPalClient;
+
+        $provider->setApiCredentials(config('paypal'));
+        $token = $provider->getAccessToken();
+        $provider->setAccessToken($token);
+
+        // Prepare Order
+        $order = $provider->createOrder([
+            'intent' => 'CAPTURE',
+            'purchase_units' => [[
+                'reference_id' => 'transaction_id_' . 1,
+                'amount' => [
+                    'currency_code' => 'EUR',
+                    'value' => $cifra
+                ]
+            ]]
+            /*,
+            'application_context' => [
+                'cancel_url' => route('front.product.store_step4_paypal_cancel', [
+                    'product' => $product,
+                    'cart' => $cart,
+                    'payment_id' => $payment->id
+                ]),
+                'return_url' => route('front.product.store_step4_paypal_return', [
+                    'product' => $product,
+                    'cart' => $cart,
+                    'payment_id' => $payment->id
+                ])
+            ]*/
+        ]);
+
+        //sleep(10);
+        
+
+        // Store Token so we can retrieve after PayPal sends them back to us
+        //$payment->transaction_ref = $order['id'];
+        //$payment->save();
+        $paypal_redirect_url = $order['links'][1]['href'];
+
+        return $order;
+    }
+
+    public function ehealthSendEmail($id){
+        $buyer = EhealthBuyer::find(intval($id));
+        
+        $provider = new PayPalClient;
+        $provider->setApiCredentials(config('paypal'));
+        
+        $provider->getAccessToken();
+        $response = $provider->capturePaymentOrder($buyer->transaction_ref);
+
+        if(isset($response['status']) && $response['status'] == 'COMPLETED' && $buyer->paid == false){
+            $buyer->paid = true;
+            $code = EhealthCode::where('used', false)->first();
+
+            $buyer->ehealth_code = $code->code;
+            $code->used = true;
+
+            $buyer->save();
+            $code->save();
+
+            Notification::route('mail', [
+                $buyer->email => $buyer->name." ".$buyer->surname,
+            ])->notify(new EhealthEmail($buyer));
+        }
+
+        return response()->json([
+            'esempio' => 'esempio',
+        ],200);
     }
 }
