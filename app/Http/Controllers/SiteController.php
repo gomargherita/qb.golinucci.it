@@ -205,7 +205,7 @@ class SiteController extends Controller
     public function ehealthPay($id){
         $buyer = EhealthBuyer::find(intval($id));
 
-        $order = $this->create_order_paypal(90);
+        $order = $this->create_order_paypal(1, $id);
         Log::info($buyer);
         $buyer->transaction_ref = $order['id'];
         $buyer->save();
@@ -217,7 +217,7 @@ class SiteController extends Controller
             ],200);
     }
 
-    private function create_order_paypal($cifra)
+    private function create_order_paypal($cifra, $id)
     {
         $provider = new PayPalClient;
 
@@ -229,7 +229,7 @@ class SiteController extends Controller
         $order = $provider->createOrder([
             'intent' => 'CAPTURE',
             'purchase_units' => [[
-                'reference_id' => 'transaction_id_' . 1,
+                'reference_id' => 'transaction_id_' . $id,
                 'amount' => [
                     'currency_code' => 'EUR',
                     'value' => $cifra
