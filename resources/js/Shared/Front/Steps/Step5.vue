@@ -3,6 +3,7 @@
   <HTwo :title="__('Generazione Documento')" />
   <div class="mt-8">
     <p class="text-center">
+      <span style="font-size:27px">Pagamento riuscito.</span><br>
       Siamo pronti a generare i tuoi documenti.<br>
       <span class="font-bold text-xl text-red-500">ATTENZIONE</span><br>
       <span class="font-bold text-lg"

@@ -633,6 +633,7 @@ class SiteBuyProductController extends Controller
 
     public function store_step4_paypal_return(Product $product, Cart $cart, String $payment_id)
     {
+        
         $p = Payment::find($payment_id);
         
         $provider = new PayPalClient;
@@ -642,11 +643,14 @@ class SiteBuyProductController extends Controller
         $response = $provider->capturePaymentOrder($p->transaction_ref);
 
         $payment_id = $p->id;
-        if(isset($response['status']) && $response['status'] == 'COMPLETED'){
+        Log::info($response);
+        
+        if(isset($response['purchase_units'][0]['payments']['captures'][0]['status']) && $response['purchase_units'][0]['payments']['captures'][0]['status'] == 'COMPLETED'){
             $payment = Payment::query()->where(['cart_id' => $cart->id])->findOrFail($payment_id);
             $payment->updatePaymentStatus();
             $payment->updatePaymentPaymentNo();
             // genero e salvo il pdf con proforma fattura dell'acquisto
+            
             if($product->product_type_id == 1){
                 $paymentToPdf = new PaymentCertificateToPdfService($cart);
                 $paymentToPdf->generateAndPersist();
@@ -711,16 +715,17 @@ class SiteBuyProductController extends Controller
         //fine bancari
             $cart->updateCartStep(5);
 
-        } else {
-            return redirect()
-                ->route('front.product.store_step4_paypal_cancel', [
-                    'product' => $product,
-                    'cart' => $cart,
-                    'payment_id' => $payment_id
-                ]);
-        }
 
-        return response()->json($response);
+            
+            return response()->json([
+                'info_paypal' => 'SUCCESS'
+            ], 200);
+        }
+        else{
+            return response()->json([
+                'info_paypal' => 'FAILED',
+            ], 200);
+        }
     }
 
     /**

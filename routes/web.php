@@ -233,7 +233,7 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('/products/{product}/store_step2/{cart:cart_ref}', 'store_step2')->name('front.product.store_step2');
             Route::post('/products/{product}/store_step3/{cart:cart_ref}', 'store_step3')->name('front.product.store_step3');
             Route::post('/products/{product}/store_step4/{cart:cart_ref}/{gateway}/', 'store_step4')->name('front.product.store_step4');
-            Route::get('/products/{product}/store_step4_paypal/{cart:cart_ref}/{payment_id}/r', 'store_step4_paypal_return')->name('front.product.store_step4_paypal_return');
+            Route::get('/products/{product}/store_step4_paypal/{cart:cart_ref}/{payment_id}/', 'store_step4_paypal_return')->name('front.product.store_step4_paypal_return');
             Route::get('/products/{product}/store_step4_paypal/{cart:cart_ref}/{payment_id}/c', 'store_step4_paypal_cancel')->name('front.product.store_step4_paypal_cancel');
             Route::post('/products/{product}/store_step5/{cart:cart_ref}', 'store_step5')->name('front.product.store_step5');
         });

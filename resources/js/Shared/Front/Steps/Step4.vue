@@ -201,7 +201,7 @@ export default {
               // Finalize the transaction after payer approval
               onApprove: async (data) => {
                 const csrfToken = document.head.querySelector('meta[name="csrf-token"]').content;
-                const response = await fetch("/products/"+product.id+"/store_step4_paypal/"+cart.cart_ref+"/"+ payment_id +"/r", {
+                const response = await fetch("/products/"+product.id+"/store_step4_paypal/"+cart.cart_ref+"/"+ String(payment_id), {
                   method: "GET",
                   // Use the "body" parameter to optionally pass additional order information
                   // such as product ID or amount
@@ -210,12 +210,21 @@ export default {
                   'X-CSRF-TOKEN': csrfToken, // Include the CSRF token in the headers
                 },
                 })
-                const orderData = await response;
-
                 
                 //console.log("prova");
                 //console.log(orderData);
-                location.reload();
+                const orderData = await response.json();
+                //console.log("prova");
+                if(orderData.info_paypal == "SUCCESS"){
+                  document.getElementById("pagamento-in-corso").innerHTML = "Pagamento riuscito.";
+                  location.reload();
+                }
+                else{
+                  document.getElementById("card-field-submit-button").style.display = "inline";
+                document.getElementById("paypal-button-container").style.display = "inline";
+                document.getElementById("bonifico").style.display = "inline";
+                  document.getElementById("pagamento-in-corso").innerHTML = "Pagamento NON riuscito. Riprovare.";
+                }
               },
               onError: function (error) {
                 // Do something with the error from the SDK
@@ -268,10 +277,10 @@ export default {
                   //.then((order) => console.log(order));
               },
               onApprove: async (data) => {
-                document.getElementById("pagamento-in-corso").innerHTML = "Pagamento riuscito.";
+                
 
                 const csrfToken = document.head.querySelector('meta[name="csrf-token"]').content;
-                const response = await fetch("/products/"+product.id+"/store_step4_paypal/"+cart.cart_ref+"/"+ payment_id +"/r", {
+                const response = await fetch("/products/"+product.id+"/store_step4_paypal/"+cart.cart_ref+"/"+ String(payment_id), {
                   method: "GET",
                   // Use the "body" parameter to optionally pass additional order information
                   // such as product ID or amount
@@ -280,10 +289,20 @@ export default {
                   'X-CSRF-TOKEN': csrfToken, // Include the CSRF token in the headers
                 },
                 })
-                const orderData = await response;
+                
+                const orderData = await response.json();
                 //console.log("prova");
-                //console.log(orderData);
-                location.reload();
+                if(orderData.info_paypal == "SUCCESS"){
+                  
+                  document.getElementById("pagamento-in-corso").innerHTML = "Pagamento riuscito.";
+                  location.reload();
+                }
+                else{
+                  document.getElementById("card-field-submit-button").style.display = "inline";
+                document.getElementById("paypal-button-container").style.display = "inline";
+                document.getElementById("bonifico").style.display = "inline";
+                  document.getElementById("pagamento-in-corso").innerHTML = "Pagamento NON riuscito. Riprovare.";
+                }
               },
               onError: function (error) {
                 document.getElementById("card-field-submit-button").style.display = "inline";
