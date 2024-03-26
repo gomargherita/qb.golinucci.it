@@ -484,7 +484,7 @@ class SiteBuyProductController extends Controller
             $cart->updateCartStep(5);
             return redirect()->route('front.product.buy', compact('product', 'cart')); 
         }
-        $paypalClientId = config('paypal.' . 'live' . '.client_id');
+        $paypalClientId = config('paypal.' . config('paypal.mode') . '.client_id');
         $productObject = [
             'id' => $product->id,
             'name' => $product->name,
