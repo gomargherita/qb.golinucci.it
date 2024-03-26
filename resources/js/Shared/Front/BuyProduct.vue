@@ -21,7 +21,7 @@
     <Step1 v-if="current_step == 1" :product="product" :cart="cart" />
     <Step2 v-if="current_step == 2" :product="product" :cart="cart" />
     <Step3 v-if="current_step == 3" :product="product" :cart="cart" />
-    <Step4 v-if="current_step == 4" :product="product" :cart="cart" />
+    <Step4 v-if="current_step == 4" :product="product" :cart="cart" :paypal_client_id="paypal_client_id" />
     <Step5 v-if="current_step == 5 && product.type == 'medici'" :product="product" :cart="cart" />
     <Step5_2 v-if="current_step == 5 && product.type == 'bancari'" :product="product" :cart="cart" />
     <Step6 v-if="current_step == 6" :product="product" :cart="cart" />
@@ -55,6 +55,7 @@ export default {
   props: {
     product: Object,
     cart: Object,
+    paypal_client_id: String
   },
   computed: {
     current_step() {

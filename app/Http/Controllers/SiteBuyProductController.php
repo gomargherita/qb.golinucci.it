@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Log;
+//use Debugbar;
 use App\Http\Requests\UpdateFrontClientDetailsRequest;
 use App\Imports\MedmalRenewalsImport;
 use Carbon\Carbon;
@@ -478,7 +480,11 @@ class SiteBuyProductController extends Controller
 
     private function step4(Product $product, Cart $cart, $payment = null)
     {
-
+        if($cart->payment != null && $cart->payment->paid == 1){
+            $cart->updateCartStep(5);
+            return redirect()->route('front.product.buy', compact('product', 'cart')); 
+        }
+        $paypalClientId = config('paypal.' . config('paypal.mode') . '.client_id');
         $productObject = [
             'id' => $product->id,
             'name' => $product->name,
@@ -500,7 +506,8 @@ class SiteBuyProductController extends Controller
             }
             return Inertia::render($redirect, [
                 'product' => $productObject,
-                'cart' => $cart
+                'cart' => $cart,
+                'paypal_client_id' => $paypalClientId
             ]);
         } else {
             $payment_data = Payment::query()->where(['cart_id' => $cart->id])->findOrFail($payment);
@@ -514,49 +521,63 @@ class SiteBuyProductController extends Controller
             }
             return Inertia::render($redirect, [
                 'product' => $productObject,
-                'cart' => $cart
+                'cart' => $cart,
+                'paypal_client_id' => $paypalClientId
             ]);
         }
     }
 
-    public function store_step4(Product $product, Cart $cart, Request $request)
+    public function store_step4(Product $product, Cart $cart, String $gateway, Request $request)
     {
+        if($cart->payment != null && $cart->payment->paid == 1){
+            $cart->updateCartStep(5);
+            return response()->json([
+                'reload' => 'reload']);
+        }
+
+        if($gateway == 'paypal'){
+            $gatewayid = 1;
+        }
+        else{
+            $gatewayid = 2;
+        }
         $user = auth()->user();
         $cart = $this->verifyAndGetCartOrRedirect($user, $product, $cart);
-
-        $validated = $request->validate([
-            'payment_gateway_id_selected' => ['required', 'integer'],
-        ]);
 
         $payment = Payment::firstOrCreate(
             [
                 'cart_id' => $cart->id
             ],
             [
-                'payment_gateway_id' => $validated['payment_gateway_id_selected'],
+                'payment_gateway_id' => $gatewayid,
                 'total_payable' => $cart->total_payable,
             ]
         );
 
-        if ($payment->payment_gateway_id != $validated['payment_gateway_id_selected']) {
-            $payment->payment_gateway_id = $validated['payment_gateway_id_selected'];
+            $payment->payment_gateway_id = $gatewayid;
             $payment->save();
-        }
-
-        if ($validated['payment_gateway_id_selected'] == 1) {
+        
+        if ($gateway == 'paypal') {
             // paypal
-            $url = $this->handle_step4paypal($cart, $product, $payment);
-            return redirect()->route('front.paypal_redirect', ['url' => $url]);
-        } else if ($validated['payment_gateway_id_selected'] == 2) {
+
+            $order = $this->create_order_paypal($cart, $product, $payment);
+            //exec("explorer.exe");
+            return response()->json([
+                'order' => $order,
+                'payment_id' => $payment->id,
+            ],200);
+            //return redirect()->route('front.paypal_redirect', ['url' => $url]);
+        } else {
             // bbm
             auth()->user()->notify(new BankTransferGatewayPayment($payment));
             return redirect()->route('front.product.buy', compact('product', 'cart', 'payment'));
         }
     }
 
-    private function handle_step4paypal(Cart $cart, Product $product, Payment $payment)
+    private function create_order_paypal(Cart $cart, Product $product, Payment $payment = null)
     {
         $provider = new PayPalClient;
+
         $provider->setApiCredentials(config('paypal'));
         $token = $provider->getAccessToken();
         $provider->setAccessToken($token);
@@ -570,7 +591,8 @@ class SiteBuyProductController extends Controller
                     'currency_code' => 'EUR',
                     'value' => $cart->total_payable
                 ]
-            ]],
+            ]]
+            /*,
             'application_context' => [
                 'cancel_url' => route('front.product.store_step4_paypal_cancel', [
                     'product' => $product,
@@ -582,15 +604,18 @@ class SiteBuyProductController extends Controller
                     'cart' => $cart,
                     'payment_id' => $payment->id
                 ])
-            ]
+            ]*/
         ]);
+
+        //sleep(10);
+        
 
         // Store Token so we can retrieve after PayPal sends them back to us
         $payment->transaction_ref = $order['id'];
         $payment->save();
         $paypal_redirect_url = $order['links'][1]['href'];
 
-        return $paypal_redirect_url;
+        return $order;
     }
     /**
      * Questo metodo mi serve per gestire la redirect esterna verso paypal per il pagamento
@@ -606,15 +631,18 @@ class SiteBuyProductController extends Controller
         abort(404);
     }
 
-    public function store_step4_paypal_return(Product $product, Cart $cart)
+    public function store_step4_paypal_return(Product $product, Cart $cart, String $payment_id)
     {
+        $p = Payment::find($payment_id);
+        
         $provider = new PayPalClient;
         $provider->setApiCredentials(config('paypal'));
+        
         $provider->getAccessToken();
-        $response = $provider->capturePaymentOrder(request('token'));
-        $payment_id = request('payment_id');
+        $response = $provider->capturePaymentOrder($p->transaction_ref);
 
-        if (isset($response['status']) && $response['status'] == 'COMPLETED') {
+        $payment_id = $p->id;
+        if(isset($response['status']) && $response['status'] == 'COMPLETED'){
             $payment = Payment::query()->where(['cart_id' => $cart->id])->findOrFail($payment_id);
             $payment->updatePaymentStatus();
             $payment->updatePaymentPaymentNo();
@@ -623,7 +651,6 @@ class SiteBuyProductController extends Controller
                 $paymentToPdf = new PaymentCertificateToPdfService($cart);
                 $paymentToPdf->generateAndPersist();
             }
-
             //BANCARI
             //bancari
         if($product->product_type_id == 2){
@@ -682,10 +709,8 @@ class SiteBuyProductController extends Controller
             $cart->user->notify(new FinalEmailWithAttachments($cart));
         }
         //fine bancari
-
-
-
             $cart->updateCartStep(5);
+
         } else {
             return redirect()
                 ->route('front.product.store_step4_paypal_cancel', [
@@ -695,7 +720,7 @@ class SiteBuyProductController extends Controller
                 ]);
         }
 
-        return redirect()->route('front.product.buy', compact('product', 'cart'));
+        return response()->json($response);
     }
 
     /**
