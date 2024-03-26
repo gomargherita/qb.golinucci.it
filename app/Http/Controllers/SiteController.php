@@ -180,7 +180,7 @@ class SiteController extends Controller
                 return Inertia::render('Sites/eHealthCompleto');
             }
             //step 2
-            $paypalClientId = config('paypal.' . config('paypal.mode') . '.client_id');
+            $paypalClientId = config('paypal.' . 'live' . '.client_id');
 
             return Inertia::render('Sites/eHealthStep2', ['paypal_client_id' => $paypalClientId, 'id' => $id], );
         }
