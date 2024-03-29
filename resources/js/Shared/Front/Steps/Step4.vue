@@ -17,11 +17,9 @@
               />-->
               <div class="text-center" v-if="payment_gateway.name == 'Paypal'">
                 <!-- <p>Paga con PayPal</p> -->
-                <div id="paypal-button-container" class="paypal-button-container" style="display:none"></div>
-                
-                <!--<hr>
-                oppure-->
-
+                <div id="paypal-button-container" class="paypal-button-container"></div>
+                <hr>
+                oppure
                 <!-- PayPal Logo --><table border="0" cellpadding="0" cellspacing="0" align="center"><tr><td align="center"></td></tr><tr><td align="center"><a href="https://www.paypal.com/webapps/mpp/paypal-popup" title="How PayPal Works" onclick="javascript:window.open('https://www.paypal.com/webapps/mpp/paypal-popup','WIPaypal','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=1060, height=700'); return false;"><img src="https://www.paypalobjects.com/webstatic/mktg/logo/AM_mc_vs_dc_ae.jpg" border="0" alt="PayPal Acceptance Mark"></a></td></tr></table><!-- PayPal Logo -->
 
                 <div id="checkout-form">
@@ -223,7 +221,7 @@ export default {
                 }
                 else{
                   document.getElementById("card-field-submit-button").style.display = "inline";
-                //document.getElementById("paypal-button-container").style.display = "inline";
+                document.getElementById("paypal-button-container").style.display = "inline";
                 document.getElementById("bonifico").style.display = "inline";
                   document.getElementById("pagamento-in-corso").innerHTML = "Pagamento NON riuscito. Riprovare.";
                 }
@@ -301,14 +299,14 @@ export default {
                 }
                 else{
                   document.getElementById("card-field-submit-button").style.display = "inline";
-                //document.getElementById("paypal-button-container").style.display = "inline";
+                document.getElementById("paypal-button-container").style.display = "inline";
                 document.getElementById("bonifico").style.display = "inline";
                   document.getElementById("pagamento-in-corso").innerHTML = "Pagamento NON riuscito. Riprovare.";
                 }
               },
               onError: function (error) {
                 document.getElementById("card-field-submit-button").style.display = "inline";
-                //document.getElementById("paypal-button-container").style.display = "inline";
+                document.getElementById("paypal-button-container").style.display = "inline";
                 document.getElementById("bonifico").style.display = "inline";
 
                 // Do something with the error from the SDK
