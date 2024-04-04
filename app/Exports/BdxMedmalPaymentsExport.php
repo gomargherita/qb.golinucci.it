@@ -126,6 +126,12 @@ class BdxMedmalPaymentsExport implements FromView, WithHeadingRow
 
         $payments = $payments_data->get();
 
+        $i = 0;
+        for($i=0; $i<count($payments); $i++){
+            $payments[$i]->payment_no = str_replace('-', '/', $payments[$i]->payment_no);
+        }
+        
+
         return view('template-bordereaux', [
             'payments' => $payments
         ]);

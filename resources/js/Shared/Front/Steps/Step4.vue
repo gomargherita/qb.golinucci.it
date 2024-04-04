@@ -103,12 +103,9 @@
             informazioni.
           </p>
           <p>
-            <b class="font-bold">
-              Nota importante: la transazione (e la generazione della polizza) potrà
-              essere portata avanti nel giorno lavorativo successivo a quello di data
-              valuta di pagamento con bonifico bancario.<br />
-              Riceverai successivamente una email con un link e ulteriori indicazioni per
-              procedere con generazione della tua polizza.</b
+            <p >
+              <b>Nota importante:</b> la <b>generazione della polizza</b> verrà presa in carico nel <b>giorno lavorativo successivo</b> a quello di data valuta del pagamento effettuato con bonifico bancario.<br />
+              Riceverai successivamente una email da parte nostra con un <b>link</b> per effettuare la <b>sottoscrizione</b> della polizza da remoto (invitiamo a controllare anche nella Posta Indesiderata).</p
             >
           </p>
         </div>
