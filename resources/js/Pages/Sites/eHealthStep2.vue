@@ -11,7 +11,7 @@
 
   <section id="main-content" class="container mx-auto p-2" >
     
-  <h1>Importo totale: 90€</h1><br>
+  <h1>Importo totale: 89,99€</h1><br>
   
   
   <div style="
@@ -50,7 +50,7 @@ export default {
   },
   layout: Layout,
   props: {
-    id: Number,
+    id: String,
     paypal_client_id: String,
   },
   data() {
@@ -92,6 +92,10 @@ export default {
                 },
                 })
                 const rawOrderData = await response.json();
+
+                if(rawOrderData.reload == "reload"){
+                  location.reload();
+                }
                 const orderData = rawOrderData.order;
 
                 payment_id = rawOrderData.payment_id;
@@ -101,12 +105,13 @@ export default {
                 if (orderData.id) {
                       return orderData.id;
                     } else {
-                      const errorDetail = orderData?.details?.[0];
-                      const errorMessage = errorDetail
-                        ? `${errorDetail.issue} ${errorDetail.description} (${orderData.debug_id})`
-                        : JSON.stringify(orderData);
-                
-                      throw new Error(errorMessage);
+                   //const errorDetail = orderData?.details?.[0];
+                      //const errorMessage = errorDetail
+                      //  ? `${errorDetail.issue} ${errorDetail.description} (${orderData.debug_id})`
+                      //  : JSON.stringify(orderData);
+                      console.log("1");
+                      document.getElementById("pagamento-in-corso").innerHTML = "Pagamento NON riuscito. Riprovare.";
+                      //throw new Error(errorMessage);
                     }
                         
                 //console.log(response.json());
@@ -117,7 +122,7 @@ export default {
               onApprove: async (data) => {
                 const csrfToken = document.head.querySelector('meta[name="csrf-token"]').content;
                 const response = await fetch("/ehealth/send_email/"+id, {
-                  method: "POST",
+                  method: "GET",
                   // Use the "body" parameter to optionally pass additional order information
                   // such as product ID or amount
                   headers: {
@@ -125,14 +130,26 @@ export default {
                   'X-CSRF-TOKEN': csrfToken, // Include the CSRF token in the headers
                 },
                 })
+
+                 //console.log("prova");
+                //console.log(orderData);
                 const orderData = await response.json();
                 //console.log("prova");
-                //console.log(orderData);
-                location.reload();
+               if(orderData.info_paypal == "SUCCESS"){
+                  document.getElementById("pagamento-in-corso").innerHTML = "Pagamento riuscito.";
+                  location.reload();
+                }
+                else{
+                  document.getElementById("card-field-submit-button").style.display = "inline";
+                document.getElementById("paypal-button-container").style.display = "inline";
+                console.log("2");
+
+                  document.getElementById("pagamento-in-corso").innerHTML = "Pagamento NON riuscito. Riprovare.";
+                }
               },
               onError: function (error) {
                 // Do something with the error from the SDK
-                resultMessage("Ci scusiamo, la transazione non può essere completata.<br><br>${error}",);
+                //resultMessage("Ci scusiamo, la transazione non può essere completata.<br><br>${error}",);
               },
             })
             .render("#paypal-button-container");
@@ -142,7 +159,9 @@ export default {
             const cardField = paypal.CardFields({
               createOrder: async (data) => {
                 document.getElementById("card-field-submit-button").style.display = "none";
-                document.getElementById("pagamento-in-corso").innerHTML = "Pagamento in corso... attendere prego";
+                document.getElementById("paypal-button-container").style.display = "none";
+
+                document.getElementById("pagamento-in-corso").innerHTML = "Tentativo di pagamento in corso... attendere prego";
                 const response = await fetch("/ehealth/pay/"+id, {
                   method: "POST",
                   // Use the "body" parameter to optionally pass additional order information
@@ -153,6 +172,9 @@ export default {
                 },
                 })
                 const rawOrderData = await response.json();
+                if(rawOrderData.reload == "reload"){
+                  location.reload();
+                }
                 const orderData = rawOrderData.order;
 
                 payment_id = rawOrderData.payment_id;
@@ -162,22 +184,26 @@ export default {
                 if (orderData.id) {
                       return orderData.id;
                     } else {
-                      const errorDetail = orderData?.details?.[0];
-                      const errorMessage = errorDetail
-                        ? `${errorDetail.issue} ${errorDetail.description} (${orderData.debug_id})`
-                        : JSON.stringify(orderData);
-                
-                      throw new Error(errorMessage);
+                      //const errorDetail = orderData?.details?.[0];
+                      //const errorMessage = errorDetail
+                      //  ? `${errorDetail.issue} ${errorDetail.description} (${orderData.debug_id})`
+                      //  : JSON.stringify(orderData);
+                      console.log("3");
+
+                      document.getElementById("pagamento-in-corso").innerHTML = "Pagamento NON riuscito. Riprovare.";
+
+                      //throw new Error(errorMessage);
                     }
                         
                 //console.log(response.json());
                   //.then((order) => console.log(order));
               },
               onApprove: async (data) => {
-                document.getElementById("pagamento-in-corso").innerHTML = "Pagamento riuscito.";
+
+
                 const csrfToken = document.head.querySelector('meta[name="csrf-token"]').content;
                 const response = await fetch("/ehealth/send_email/"+id, {
-                  method: "POST",
+                  method: "GET",
                   // Use the "body" parameter to optionally pass additional order information
                   // such as product ID or amount
                   headers: {
@@ -187,16 +213,31 @@ export default {
                 })
                 
                 const orderData = await response.json();
+                console.log(orderData);
                 //console.log("prova");
-                location.reload();
+                if(orderData.info_paypal == "SUCCESS"){
+                  
+                  document.getElementById("pagamento-in-corso").innerHTML = "Pagamento riuscito.";
+                  location.reload();
+                }
+                else{
+                  document.getElementById("card-field-submit-button").style.display = "inline";
+                document.getElementById("paypal-button-container").style.display = "inline";
+                console.log("4");
+
+                  document.getElementById("pagamento-in-corso").innerHTML = "Pagamento NON riuscito. Riprovare.";
+                }
               },
               onError: function (error) {
                 document.getElementById("card-field-submit-button").style.display = "inline";
+                document.getElementById("paypal-button-container").style.display = "inline";
 
                 // Do something with the error from the SDK
+                console.log("5");
+
                 document.getElementById("pagamento-in-corso").innerHTML = "Pagamento NON riuscito. Riprovare.";
 
-                resultMessage("Ci scusiamo, la transazione non può essere completata.<br><br>${error}",);
+                //resultMessage("Ci scusiamo, la transazione non può essere completata.<br><br>${error}",);
               },
             });
             
@@ -215,7 +256,6 @@ export default {
               expiryField.render("#card-expiry-field-container");
 
               // Add click listener to submit button and call the submit function on the CardField component
-              
               document
                 .getElementById("card-field-submit-button")
                 .addEventListener("click", () => {

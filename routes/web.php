@@ -218,7 +218,7 @@ Route::controller(SiteController::class)->group(function () {
     Route::get('/ehealth/{id?}', 'ehealth')->name('front.ehealth');
     Route::post('/ehealthStep2', 'ehealth_store_step1')->name('front.ehealthStep2');
     Route::post('/ehealth/pay/{id}', 'ehealthPay')->name('front.ehealthPay');
-    Route::post('/ehealth/send_email/{id}', 'ehealthSendEmail')->name('front.ehealthComplete');
+    Route::get('/ehealth/send_email/{id}', 'ehealthSendEmail')->name('front.ehealthComplete');
 });
 Route::get('private-files/{file?}', [FileController::class, 'getUser'])->where('file', '(.*)')->name('privateFilesUser')->middleware(['auth']);
 

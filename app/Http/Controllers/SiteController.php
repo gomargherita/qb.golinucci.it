@@ -162,6 +162,13 @@ class SiteController extends Controller
     }
 
     public function ehealth($id = null){
+        if($id != null){
+            $buyer = EhealthBuyer::find(intval($id));
+            if($buyer != null && $buyer->paid == true){
+                return Inertia::render('Sites/eHealthCompleto');
+            }
+        }
+
         $code = EhealthCode::where('used', false)->first();
         if($code == null){
             return Inertia::render('Sites/eHealthNoCodici');
@@ -175,9 +182,6 @@ class SiteController extends Controller
             $buyer = EhealthBuyer::find(intval($id));
             if($buyer == null){
                 return $this->ehealth_Step1();
-            }
-            else if($buyer->paid == true){
-                return Inertia::render('Sites/eHealthCompleto');
             }
             //step 2
             $paypalClientId = config('paypal.' . config('paypal.mode') . '.client_id');
@@ -194,10 +198,13 @@ class SiteController extends Controller
         $email = $request->input('email');
         $name = $request->input('name');
         $surname = $request->input('surname');
+        $codice_fiscale = $request->input('codice_fiscale');
+
 
         $buyer = EhealthBuyer::create(['name' => $name,
                             'surname' => $surname,
-                            'email' => $email]);
+                            'email' => $email,
+                            'codice_fiscale' => $codice_fiscale]);
         
         return redirect()->route('front.ehealth', ['id' => $buyer->id]);
     }
@@ -205,7 +212,13 @@ class SiteController extends Controller
     public function ehealthPay($id){
         $buyer = EhealthBuyer::find(intval($id));
 
-        $order = $this->create_order_paypal(1, $id);
+        if($buyer->paid == 1){
+            return response()->json([
+                'reload' => 'reload']);
+        }
+
+
+        $order = $this->create_order_paypal('89.99', $id);
       
         Log::info($buyer);
         $buyer->transaction_ref = $order['id'];
@@ -231,7 +244,7 @@ class SiteController extends Controller
         $order = $provider->createOrder([
             'intent' => 'CAPTURE',
             'purchase_units' => [[
-                'reference_id' => 'transaction_id_' . $id,
+                'reference_id' => 'transaction_id_ehealth_' . $id,
                 'amount' => [
                     'currency_code' => 'EUR',
                     'value' => $cifra
@@ -271,8 +284,8 @@ class SiteController extends Controller
         
         $provider->getAccessToken();
         $response = $provider->capturePaymentOrder($buyer->transaction_ref);
-
-        if(isset($response['status']) && $response['status'] == 'COMPLETED' && $buyer->paid == false){
+Log::info($response);
+        if(isset($response['purchase_units'][0]['payments']['captures'][0]['status']) && $response['purchase_units'][0]['payments']['captures'][0]['status'] == 'COMPLETED'){
             $buyer->paid = true;
             $code = EhealthCode::where('used', false)->first();
 
@@ -285,10 +298,14 @@ class SiteController extends Controller
             Notification::route('mail', [
                 $buyer->email => $buyer->name." ".$buyer->surname,
             ])->notify(new EhealthEmail($buyer));
+            return response()->json([
+                'info_paypal' => 'SUCCESS'
+            ], 200);
         }
-
-        return response()->json([
-            'esempio' => 'esempio',
-        ],200);
+        else{
+            return response()->json([
+                'info_paypal' => 'FAILED',
+            ], 200);
+        }
     }
 }

@@ -11,16 +11,19 @@
 
   <section id="main-content" class="container mx-auto p-2" >
     
-  <h1>Importo totale: 90€</h1><br>
+  <h1>Importo totale: 89,99€</h1><br>
   
   <p>Per procedere al pagamento, compilare i campi. <br> Inserire una email valida per ricevere correttamente il codice di accesso.</p>
 
   <form @submit.prevent="submit">
     <label for="name">Nome:</label><br>
-    <input type="text" id="name" name="name" v-model="formData.name" style="width:100%" required><br>
+    <input type="text" id="name" name="name" v-model="formData.name" style="width:100%" required><br><br>
     
     <label for="surname">Cognome:</label><br>
-    <input type="text" id="surname" name="surname" v-model="formData.surname" style="width:100%" required><br>
+    <input type="text" id="surname" name="surname" v-model="formData.surname" style="width:100%" required><br><br>
+
+    <label for="codice_fiscale">Codice fiscale:</label><br>
+    <input type="text" id="codice_fiscale" name="codice_fiscale" v-model="formData.codice_fiscale" style="width:100%" required><br><br>
     
     <label for="email">Email per la conferma:</label><br>
     <input type="email" id="email" name="email" v-model="formData.email" style="width:100%" required><br><br>
@@ -60,6 +63,7 @@ export default {
         email: "",
         name: "",
         surname: "",
+        codice_fiscale: "",
       }),
     };
   },
@@ -71,6 +75,7 @@ export default {
           name: this.formData.name,
           surname: this.formData.surname,
           email: this.formData.email,
+          codice_fiscale: this.formData.codice_fiscale,
         }),
         {
           preserveScroll: (page) => Object.keys(page.props.errors).length,

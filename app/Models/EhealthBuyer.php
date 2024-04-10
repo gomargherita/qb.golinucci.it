@@ -29,5 +29,6 @@ class EhealthBuyer extends Model
         'paid',
         'created_at',
         'updated_at',
+        'codice_fiscale',
     ];
 }
