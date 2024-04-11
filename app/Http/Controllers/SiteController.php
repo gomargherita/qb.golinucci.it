@@ -401,4 +401,8 @@ Log::info($response);
             ], 200);
         }
     }
+
+    function applePayAssociationFile(){
+        return Storage::disk('private')->get('domain-association-file-live');
+    }
 }

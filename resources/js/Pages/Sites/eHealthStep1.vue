@@ -30,7 +30,6 @@
 
     <label for="indirizzo_residenza">Indirizzo di residenza:</label><br>
     <input type="text" id="indirizzo_residenza" name="indirizzo_residenza" v-model="formData.indirizzo_residenza" style="width:100%" required><br><br>
-
     
     <label for="email">Email per la conferma:</label><br>
     <input type="email" id="email" name="email" v-model="formData.email" style="width:100%" required><br><br>

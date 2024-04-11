@@ -7,6 +7,7 @@
       content="Golinucci Q&B products meta description"
     />
   </Head>
+  
   <HOne :title="product" />
 
   <section id="main-content" class="container mx-auto p-2" >
@@ -18,7 +19,8 @@
   margin: auto;
   width: 50%;
   padding: 10px;">
-  <div id="paypal-button-container" class="paypal-button-container"></div>
+  <div id="paypal-button-container" class="paypal-button-container"></div><br>
+  <div  id="applepay-container"></div>
   </div>
   
     <hr>
@@ -60,18 +62,42 @@ export default {
     };
   },
   mounted(){
-    let paypalSDK = document.createElement('script')
-      paypalSDK.setAttribute('src', 'https://www.paypal.com/sdk/js?components=buttons,card-fields&currency=EUR&locale=it_IT&client-id='+this.paypal_client_id)
-      let id = this.id;
+    let applePaySDK = document.createElement('script');
+    applePaySDK.setAttribute('src', 'https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js');
 
+    let paypalSDK = document.createElement('script')
+      paypalSDK.setAttribute('src', 'https://www.paypal.com/sdk/js?components=buttons,card-fields,applepay&currency=EUR&locale=it_IT&client-id='+this.paypal_client_id)
+      let id = this.id;
+      let total_payable = this.total_payable;
       
-      document.head.appendChild(paypalSDK)
-      //console.log(this.paypal_client_id);
+      document.head.appendChild(paypalSDK);
+      document.head.appendChild(applePaySDK);
+      
+      let paypalLoaded = false;
+      let applepayLoaded = false;
+
       const csrfToken = document.head.querySelector('meta[name="csrf-token"]').content;
       let payment_id;
       //window.onload =  () => {
 
+
+
+        function checkIfReady(){
+          if (applepayLoaded && paypalLoaded){
+            setup_paypal();
+            setup_applepay();
+          }
+        }
         paypalSDK.onload = function() {
+          paypalLoaded = true;
+          checkIfReady()
+        }
+        applePaySDK.onload = function() {
+          applepayLoaded = true;
+          checkIfReady()
+        }
+
+        function setup_paypal (){
           //console.log(product);
           // Render the button component
           window.paypal
@@ -268,8 +294,121 @@ export default {
           }
 
 
-        //}
 
+          function setup_applepay() {
+          //APPLE PAY -------------------------------------------------------------
+
+          if (!window.ApplePaySession) {
+            console.error('This device does not support Apple Pay');
+          }
+          else if (!window.ApplePaySession.canMakePayments()) {
+            console.error('This device is not capable of making Apple Pay payments');
+          }
+          const applepay = paypal.Applepay();
+          applepay.config()
+          .then(applepayConfig => {
+            if (applepayConfig.isEligible) {
+              document.getElementById("applepay-container").innerHTML = '<apple-pay-button style="width: 100%; --apple-pay-button-height: 45px;" id="btn-appl" buttonstyle="black" type="buy" locale="it">';
+              document.getElementById("btn-appl").addEventListener("click", () => {
+
+                const paymentRequest = {
+                countryCode: applepayConfig.countryCode,
+                merchantCapabilities: applepayConfig.merchantCapabilities,
+                supportedNetworks: applepayConfig.supportedNetworks,
+                currencyCode: "EUR",
+                requiredShippingContactFields: [],
+                requiredBillingContactFields: ["postalAddress"],
+                total: {
+                  label: "Golinucci SRL",
+                  type: "final",
+                  amount: total_payable,
+                }
+                }
+
+                const session = new ApplePaySession(4, paymentRequest);
+                //console.log(session);
+                //console.log("sessione printata");
+
+                session.onvalidatemerchant = (event) => {
+                applepay.validateMerchant({
+                  validationUrl: event.validationURL,
+                  displayName: "Golinucci SRL"
+                })
+                .then(validateResult => {
+                  session.completeMerchantValidation(validateResult.merchantSession);
+                })
+                .catch(validateError => {
+                  console.error(validateError);
+                  session.abort();
+                });
+                };
+
+                session.onpaymentauthorized = (event) => {
+                //console.log('Your billing address is:', event.payment.billingContact);
+                //console.log('Your shipping address is:', event.payment.shippingContact);
+                fetch("/importo_libero/pay/"+id, {
+                  method: "POST",
+                  // Use the "body" parameter to optionally pass additional order information
+                  // such as product ID or amount
+                  headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRF-TOKEN': csrfToken, // Include the CSRF token in the headers
+                },
+                })
+                .then(res => res.json())
+                .then((createOrderData) => {
+                  if(createOrderData.reload == "reload"){
+                  location.reload();
+                  }
+                  console.log(createOrderData);
+                  var orderId = createOrderData.order.id;
+                  applepay.confirmOrder({
+                    orderId: orderId,
+                    token: event.payment.token,
+                    billingContact: event.payment.billingContact
+                  })
+                  .then(confirmResult => {
+                    session.completePayment(ApplePaySession.STATUS_SUCCESS);
+                    fetch("/importo_libero/check_payment/"+id, {
+                  method: "GET",
+                  // Use the "body" parameter to optionally pass additional order information
+                  // such as product ID or amount
+                  headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRF-TOKEN': csrfToken, // Include the CSRF token in the headers
+                },
+                })
+                    .then(res => res.json())
+                    .then(captureResult => {
+                      console.log(captureResult);
+                      location.reload();
+                    })
+                    .catch(captureError => console.error(captureError));
+                  })
+                  .catch(confirmError => {
+                    if (confirmError) {
+                      console.error('Error confirming order with applepay token');
+                      console.error(confirmError);
+                      session.completePayment(ApplePaySession.STATUS_FAILURE);
+                    }
+                  });
+                });
+              };
+
+
+              session.begin();
+              });
+              }
+          })
+          .catch(applepayConfigError => {
+            console.log(applepayConfigError);
+            console.error('Error while fetching Apple Pay configuration.');
+          });
+          console.log("preparato il listener");
+          //handleApplePayClick();
+
+        //APPLE PAY -------------------------------------------------------------
+        }
 
 
 
@@ -279,6 +418,8 @@ export default {
     const container = document.querySelector("#result-message");
     container.innerHTML = message;
   },
+        
+ 
     /*paymentGatewaySelected: function (evt) {
       this.form.payment_gateway_id_selected = evt.target.dataset.payment_id;
     },*/

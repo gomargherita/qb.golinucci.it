@@ -219,7 +219,7 @@ Route::controller(SiteController::class)->group(function () {
     Route::post('/importo_liberoStep2', 'importo_libero_store_step1')->name('front.importoLiberoStep2');
     Route::post('/importo_libero/pay/{id}', 'importoLiberoPay')->name('front.importoLiberoPay');
     Route::get('/importo_libero/check_payment/{id}', 'importoLiberoCheckPayment')->name('front.importoLiberoCheckPayment');
-
+    Route::get('/.well-known/apple-developer-merchantid-domain-association', 'applePayAssociationFile')->name('front.applePayAssociationFile');
 
     Route::get('/ehealth/{id?}', 'ehealth')->name('front.ehealth');
     Route::post('/ehealthStep2', 'ehealth_store_step1')->name('front.ehealthStep2');
