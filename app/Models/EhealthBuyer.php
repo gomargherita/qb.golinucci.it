@@ -30,5 +30,7 @@ class EhealthBuyer extends Model
         'created_at',
         'updated_at',
         'codice_fiscale',
+        'indirizzo_residenza',
+        'citta_residenza',
     ];
 }

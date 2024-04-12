@@ -24,6 +24,13 @@
 
     <label for="codice_fiscale">Codice fiscale:</label><br>
     <input type="text" id="codice_fiscale" name="codice_fiscale" v-model="formData.codice_fiscale" style="width:100%" required><br><br>
+
+    <label for="citta_residenza">Città di residenza:</label><br>
+    <input type="text" id="citta_residenza" name="citta_residenza" v-model="formData.citta_residenza" style="width:100%" required><br><br>
+
+    <label for="indirizzo_residenza">Indirizzo di residenza:</label><br>
+    <input type="text" id="indirizzo_residenza" name="indirizzo_residenza" v-model="formData.indirizzo_residenza" style="width:100%" required><br><br>
+
     
     <label for="email">Email per la conferma:</label><br>
     <input type="email" id="email" name="email" v-model="formData.email" style="width:100%" required><br><br>
@@ -64,6 +71,8 @@ export default {
         name: "",
         surname: "",
         codice_fiscale: "",
+        indirizzo_residenza: "",
+        citta_residenza: "",
       }),
     };
   },
@@ -76,6 +85,8 @@ export default {
           surname: this.formData.surname,
           email: this.formData.email,
           codice_fiscale: this.formData.codice_fiscale,
+          indirizzo_residenza: this.formData.indirizzo_residenza,
+          citta_residenza: this.formData.citta_residenza,
         }),
         {
           preserveScroll: (page) => Object.keys(page.props.errors).length,

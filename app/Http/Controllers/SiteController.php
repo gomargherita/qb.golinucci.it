@@ -7,6 +7,7 @@ use App\Models\Account;
 use App\Models\Product;
 use App\Models\Cart;
 use App\Models\EhealthBuyer;
+use App\Models\ImportoLiberoBuyer;
 use App\Models\EhealthCode;
 use Doctrine\DBAL\ArrayParameterType;
 use Inertia\Inertia;
@@ -161,6 +162,93 @@ class SiteController extends Controller
         ]);
     }
 
+    public function importo_libero($id = null){
+        if($id != null){
+            $buyer = ImportoLiberoBuyer::find(intval($id));
+            if($buyer != null && $buyer->paid == true){
+                return Inertia::render('Sites/importo_libero_completo');
+            }
+        }
+
+        if(($id == null)){
+            return $this->importo_liberoStep1();
+        }
+        else{
+            //dd(EhealthBuyer::find(intval($id)));
+            $buyer = ImportoLiberoBuyer::find(intval($id));
+            if($buyer == null){
+                return $this->importo_liberoStep1();
+            }
+            //step 2
+            $paypalClientId = config('paypal.' . config('paypal.mode') . '.client_id');
+
+            return Inertia::render('Sites/importo_liberoStep2', ['paypal_client_id' => $paypalClientId, 'id' => $id, 'total_payable' => $buyer->total_payable,], );
+        }
+    }
+    public function importo_liberoStep1(){
+        return Inertia::render('Sites/importo_liberoStep1');
+    }
+    public function importo_libero_store_step1(Request $request){
+        $email = $request->input('email');
+        $name = $request->input('name');
+        $surname = $request->input('surname');
+        $importo = $request->input('total_payable');
+        $causale = $request->input('causale');
+
+        $buyer = ImportoLiberoBuyer::create(['name' => $name,
+                            'surname' => $surname,
+                            'email' => $email,
+                            'causale' => $causale,
+                            'total_payable' => $importo]);
+        
+        return redirect()->route('front.importoLibero', ['id' => $buyer->id]);
+    }
+
+    public function importoLiberoPay($id){
+        $buyer = ImportoLiberoBuyer::find(intval($id));
+
+        if($buyer->paid == 1){
+            return response()->json([
+                'reload' => 'reload']);
+        }
+
+
+        $order = $this->create_order_paypal($buyer->total_payable, $id);
+      
+        Log::info($buyer);
+        $buyer->transaction_ref = $order['id'];
+        $buyer->save();
+
+            //exec("explorer.exe");
+            return response()->json([
+                'order' => $order,
+                //'payment_id' => 1,
+            ],200);
+    }
+
+    public function importoLiberoCheckPayment($id){
+        $buyer = ImportoLiberoBuyer::find(intval($id));
+        
+        $provider = new PayPalClient;
+        $provider->setApiCredentials(config('paypal'));
+        
+        $provider->getAccessToken();
+        $response = $provider->capturePaymentOrder($buyer->transaction_ref);
+Log::info($response);
+        if(isset($response['purchase_units'][0]['payments']['captures'][0]['status']) && $response['purchase_units'][0]['payments']['captures'][0]['status'] == 'COMPLETED'){
+            $buyer->paid = true;
+            $buyer->save();
+            return response()->json([
+                'info_paypal' => 'SUCCESS'
+            ], 200);
+        }
+        else{
+            return response()->json([
+                'info_paypal' => 'FAILED',
+            ], 200);
+        }
+    }
+
     public function ehealth($id = null){
         if($id != null){
             $buyer = EhealthBuyer::find(intval($id));
@@ -199,12 +287,17 @@ class SiteController extends Controller
         $name = $request->input('name');
         $surname = $request->input('surname');
         $codice_fiscale = $request->input('codice_fiscale');
+        $indirizzo_residenza = $request->input('indirizzo_residenza');
+        $citta_residenza = $request->input('citta_residenza');
+
 
 
         $buyer = EhealthBuyer::create(['name' => $name,
                             'surname' => $surname,
                             'email' => $email,
-                            'codice_fiscale' => $codice_fiscale]);
+                            'codice_fiscale' => $codice_fiscale,
+                            'indirizzo_residenza' => $indirizzo_residenza,
+                            'citta_residenza' => $citta_residenza]);
         
         return redirect()->route('front.ehealth', ['id' => $buyer->id]);
     }
@@ -244,7 +337,7 @@ class SiteController extends Controller
         $order = $provider->createOrder([
             'intent' => 'CAPTURE',
             'purchase_units' => [[
-                'reference_id' => 'transaction_id_ehealth_' . $id,
+                'reference_id' => 'transaction_id_pagamento_esterno_' . $id,
                 'amount' => [
                     'currency_code' => 'EUR',
                     'value' => $cifra

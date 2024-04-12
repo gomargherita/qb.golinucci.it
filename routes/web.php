@@ -215,6 +215,12 @@ Route::controller(SiteController::class)->group(function () {
     Route::get('/about-us', 'aboutUs')->name('front.aboutus');
     Route::get('/products', 'products')->name('front.products');
     Route::get('/products/{product}', 'product')->name('front.product');
+    Route::get('/importo_libero/{id?}', 'importo_libero')->name('front.importoLibero');
+    Route::post('/importo_liberoStep2', 'importo_libero_store_step1')->name('front.importoLiberoStep2');
+    Route::post('/importo_libero/pay/{id}', 'importoLiberoPay')->name('front.importoLiberoPay');
+    Route::get('/importo_libero/check_payment/{id}', 'importoLiberoCheckPayment')->name('front.importoLiberoCheckPayment');
+
+
     Route::get('/ehealth/{id?}', 'ehealth')->name('front.ehealth');
     Route::post('/ehealthStep2', 'ehealth_store_step1')->name('front.ehealthStep2');
     Route::post('/ehealth/pay/{id}', 'ehealthPay')->name('front.ehealthPay');
