@@ -1,6 +1,6 @@
 <template>
   <Head>
-    <title>Importo Libero - {{ __("Products") }}</title>
+    <title>Pagamento online - {{ __("Products") }}</title>
     <meta
       head-key="description"
       name="description"
@@ -58,7 +58,7 @@ export default {
   },
   data() {
     return {
-      product: 'Importo libero' // Initialize `product` with a default value
+      product: 'Pagamento online' // Initialize `product` with a default value
     };
   },
   mounted(){

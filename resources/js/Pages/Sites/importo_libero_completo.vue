@@ -1,6 +1,6 @@
 <template>
   <Head>
-    <title>Importo libero - {{ __("Products") }}</title>
+    <title>Pagamento online - {{ __("Products") }}</title>
     <meta
       head-key="description"
       name="description"
@@ -32,7 +32,7 @@ export default {
   layout: Layout,
   data() {
     return {
-      product: 'Importo libero', // Initialize `product` with a default value
+      product: 'Pagamento online', // Initialize `product` with a default value
 
       formData: this.$inertia.form({
         email: "",
