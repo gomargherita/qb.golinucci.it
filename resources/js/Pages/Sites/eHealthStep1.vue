@@ -27,7 +27,7 @@
 
   <section id="main-content" class="container mx-auto p-2" >
     
-  <h1>Importo totale: 89,99€</h1><br>
+  <h1>Importo totale: 90€</h1><br>
   
   <p>Per procedere al pagamento, compilare i campi. <br> Inserire una email valida per ricevere correttamente il codice di accesso.</p>
 

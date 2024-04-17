@@ -311,7 +311,7 @@ Log::info($response);
         }
 
 
-        $order = $this->create_order_paypal('89.99', $id);
+        $order = $this->create_order_paypal('90.00', $id);
       
         Log::info($buyer);
         $buyer->transaction_ref = $order['id'];

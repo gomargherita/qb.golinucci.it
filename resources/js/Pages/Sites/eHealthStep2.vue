@@ -11,7 +11,7 @@
 
   <section id="main-content" class="container mx-auto p-2" >
     
-  <h1>Importo totale: 89,99€</h1><br>
+  <h1>Importo totale: 90€</h1><br>
   
   
   <div style="
@@ -317,7 +317,7 @@ export default {
                 total: {
                   label: "Golinucci SRL",
                   type: "final",
-                  amount: "89.99",
+                  amount: "90.00",
                 }
                 }
 
