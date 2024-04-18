@@ -63,7 +63,7 @@ class EhealthEmail extends Notification implements ShouldQueue
             'surname' => $this->surname,
             'code' => $this->code
         ];
-            $cc = "sanitari@golinucci.it";
+            $cc = "info@golinucci.it";
             return (new MailMessage)
                 ->bcc($cc)
                 ->subject('CARTA VIRTUALHOSPITAL.BLUE')
@@ -72,7 +72,7 @@ class EhealthEmail extends Notification implements ShouldQueue
                     'surname' => $this->surname,
                     'code' => $this->code
                     ])
-                ->from([$cc => 'Q&B Golinucci']);;
+                ->from([$cc => 'Golinucci SRL']);;
         }
 
     /**

@@ -2,7 +2,7 @@
     <img  src="https://firma.golinucci.it/html/Golinucci_70.png" width="30%" alt="Golinucci">
 </a>
 <p>Gentile Cliente {{$name}} {{$surname}} <br>
-                grazie per aver acquistato l’innovativo servizio VIRTUAL HOSPITAL di Blue Health Center, tramite GOLINUCCI srl.<br>
+                grazie per aver acquistato l’innovativo servizio VIRTUAL HOSPITAL di Blue Health Center, al costo di 90€, tramite GOLINUCCI srl.<br>
                 Le comunichiamo il suo PIN per l’accesso a <br>
                 www.virtualhospital.blue <br><br>
                 {{$code}}<br><br>
