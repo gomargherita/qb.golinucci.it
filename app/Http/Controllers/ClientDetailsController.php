@@ -82,6 +82,14 @@ class ClientDetailsController extends Controller
             array_push($field_value, $selected_field_value[$i]);
           }
 
+          $motivo_blocco = $client_detail->motivo_blocco_invio;
+          if($client_detail->motivo_blocco_invio == null && $client_detail->with_accident == 1){
+            $motivo_blocco = 'Avvisi bloccati, nessun motivo specificato';
+          }
+          else if($client_detail->motivo_blocco_invio == null && $client_detail->with_accident == 0){
+            $motivo_blocco = 'Avvisi attivi';
+          }
+
         return Inertia::render('ClientDetails/Edit', [
             // 'can' => [
             //     'delete_client_detail' => $currentUser->can('client_details.delete')
@@ -103,6 +111,7 @@ class ClientDetailsController extends Controller
                 'varsion_ref' => $client_detail->version_ref,
                 'note' => $client_detail->note,
                 'with_accident' => $client_detail->with_accident,
+                'motivo_blocco_invio' => $motivo_blocco,
                 'flag_prev_2022' => $client_detail->flag_prev_2022,
                 'deleted_at' => $client_detail->deleted_at,
                 'client_detail_id' => $client_detail_id,
@@ -129,7 +138,14 @@ class ClientDetailsController extends Controller
             $client_detail->country = $request->input('country');
             $client_detail->postal_code = $request->input('postal_code');
             $client_detail->note = $request->input('note');
-            $client_detail->with_accident = $request->input('with_accident');
+            //$client_detail->with_accident = $request->input('with_accident');
+            if($request->input('motivo_blocco_invio') == "Avvisi attivi"){
+                $client_detail->with_accident = 0;
+            }
+            else{
+                $client_detail->with_accident = 1;
+            }
+            $client_detail->motivo_blocco_invio = $request->input('motivo_blocco_invio');
             $client_detail->flag_prev_2022 = $request->input('flag_prev_2022');
             $client_detail->save();
             //$client_detail->update($request->all());

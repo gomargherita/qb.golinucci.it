@@ -135,6 +135,10 @@ class Cart extends Model
         parent::boot();
 
         static::creating(function ($cart) {
+            $user_id = auth()->user()->id;
+            if(auth()->user()->owner == 1){
+                $user_id = $cart->user_id;
+            }
             // set renewal date empty // se vuoto non arriva da prima importazione via csv, quindi cliente nuovo
             if (empty($cart->renewal_date)) {
                 // get renewal date if exists in previous cart
@@ -143,8 +147,8 @@ class Cart extends Model
                     ->select(['end_validity_date'])->where([
                         // controllo su product
                         'product_id' => $cart->product->id,
-                    ])->whereHas('cart', function ($q) {
-                        $q->where('user_id', auth()->user()->id);
+                    ])->whereHas('cart', function ($q) use ($user_id) {
+                        $q->where('user_id', $user_id);
                     })
                     ->latest()->first();
 
@@ -160,8 +164,8 @@ class Cart extends Model
                     ->select(['retroactivity'])->where([
                         // controllo su product
                         'product_id' => $cart->product->id,
-                    ])->whereHas('cart', function ($q) {
-                        $q->where('user_id', auth()->user()->id);
+                    ])->whereHas('cart', function ($q) use ($user_id) {
+                        $q->where('user_id', $user_id);
                     })->latest()
                     ->first();
 

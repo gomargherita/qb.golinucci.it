@@ -75,7 +75,7 @@ class NewApplicationToPdfService
                 'specialization' => $specialization,
                 'authority' => $authority,
                 'authority_type' => $authority_type,
-                'address' => $clientDetails->address . '' . $clientDetails->postal_code . ' - ' . $clientDetails->city . ' (' . $clientDetails->province . ')',
+                'address' => $clientDetails->address . ' ' . $clientDetails->postal_code . ' - ' . $clientDetails->city . ' (' . $clientDetails->province . ')',
                 'email' => $user->email,
                 'phone' => $clientDetails->phone,
                 'indemnity_limit' => $indemnity_limit,

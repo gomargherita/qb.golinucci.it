@@ -22,7 +22,7 @@
           <option value="only">{{ __("Only Trashed") }}</option>
         </select>
       </search-filter>
-      <template v-if="product_type == 2">
+      <template v-if="product_type == 1 || product_type == 2">
       <Link class="btn-gol-primary" :href="route('carts.create', [product_type])">
         <span>{{ __("Create") }}</span>
         <span class="hidden md:inline">&nbsp;{{ __("Cart") }}</span>
@@ -37,6 +37,8 @@
             <th class="pb-4 pt-6 px-6">{{ __("Name") }}</th>
             <th class="pb-4 pt-6 px-6">{{ __("Surname") }}</th>
             <th class="pb-4 pt-6 px-6">{{ __("Cart ref") }}</th>
+            
+            <th v-if="product_type == 1" class="pb-4 pt-6 px-6">Rinnova polizza</th>
             <th class="pb-4 pt-6 px-6">{{ __("Current step") }}</th>
             <th class="pb-4 pt-6 px-6">{{ __("Product") }}</th>
             <th class="pb-4 pt-6 px-6">{{ __("Product offer") }}</th>
@@ -82,6 +84,22 @@
                 :href="route('carts.edit', cart.id)"
               >
                 {{ cart.cart_ref }}
+                <icon
+                  v-if="cart.deleted_at"
+                  name="trash"
+                  class="flex-shrink-0 ml-2 w-3 h-3 fill-gray-400"
+                />
+              </Link>
+            </td>
+            <td v-if="product_type == 1" class="border-t">
+              
+              <Link v-if="isRenewable[cart.cart_ref] == true"
+              style="background-color: #822622; color: white"
+                class="flex items-center px-6 py-4 focus:text-primary"
+                :href="route('carts.renew', cart.id)"
+              >
+              
+                Rinnova polizza
                 <icon
                   v-if="cart.deleted_at"
                   name="trash"
@@ -173,6 +191,7 @@ export default {
   props: {
     filters: Object,
     all_product_steps: Array,
+    isRenewable: Array,
     carts: Object,
     product_type: Number,
   },

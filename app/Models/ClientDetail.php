@@ -38,7 +38,8 @@ class ClientDetail extends Model
         'version_ref',
         'note',
         'with_accident',
-        'flag_prev_2022'
+        'flag_prev_2022',
+        'motivo_blocco_invio'
     ];
 
     protected $casts = [

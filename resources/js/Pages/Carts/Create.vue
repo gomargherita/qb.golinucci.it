@@ -142,10 +142,20 @@ export default {
     form: {
       deep: true,
       handler: throttle(function () {
-        this.$inertia.get("/admin/carts/2/create", pickBy(this.form), {
+        if(this.product_type == 1){
+          this.$inertia.get("/admin/carts/1/create", pickBy(this.form), {
           preserveState: true,
           replace: true,
         });
+        }
+        else
+        if(this.product_type == 2){
+          this.$inertia.get("/admin/carts/2/create", pickBy(this.form), {
+          preserveState: true,
+          replace: true,
+        });
+        }
+        
       }, 150),
     },
   },

@@ -162,7 +162,11 @@ class SiteController extends Controller
         ]);
     }
 
-    public function importo_libero($id = null){
+    public function benefit($id = null){
+        return $this->importo_libero($id, "benefit");
+    }
+
+    public function importo_libero($id = null, $page = 'importo_liberoStep1'){
         if($id != null){
             $buyer = ImportoLiberoBuyer::find(intval($id));
             if($buyer != null && $buyer->paid == true){
@@ -171,13 +175,13 @@ class SiteController extends Controller
         }
 
         if(($id == null)){
-            return $this->importo_liberoStep1();
+            return $this->importo_liberoStep1($page);
         }
         else{
             //dd(EhealthBuyer::find(intval($id)));
             $buyer = ImportoLiberoBuyer::find(intval($id));
             if($buyer == null){
-                return $this->importo_liberoStep1();
+                return $this->importo_liberoStep1($page);
             }
             //step 2
             $paypalClientId = config('paypal.' . config('paypal.mode') . '.client_id');
@@ -185,8 +189,8 @@ class SiteController extends Controller
             return Inertia::render('Sites/importo_liberoStep2', ['paypal_client_id' => $paypalClientId, 'id' => $id, 'total_payable' => $buyer->total_payable,], );
         }
     }
-    public function importo_liberoStep1(){
-        return Inertia::render('Sites/importo_liberoStep1');
+    public function importo_liberoStep1($page){
+        return Inertia::render('Sites/'.$page);
     }
     public function importo_libero_store_step1(Request $request){
         $email = $request->input('email');

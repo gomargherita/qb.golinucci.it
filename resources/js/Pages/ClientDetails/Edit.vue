@@ -299,13 +299,23 @@
             <option value="18">Val d'Aosta</option>
             <option value="19">Veneto</option>
           </select-input>
-          <checkbox-input
-            v-model="form.with_accident"
+          <select-input
+            v-model="form.motivo_blocco_invio"
             :error="form.errors.with_accident"
             class="pb-8 pr-6 w-full lg:w-1/2"
-            label="With accident"
-            :checked="form.with_accident"
-          />
+            label="Blocca avviso"
+          >
+          <option value="Avvisi attivi">Avvisi attivi</option>
+          <option value="Avvisi bloccati, nessun motivo specificato">Avvisi bloccati, nessun motivo specificato</option>
+          <option value="Attivata postuma">Attivata postuma</option>
+          <option value="Emissione fuori sistema">Emissione fuori sistema</option>
+          <option value="Referral">Referral</option>
+          <option value="Errato/Doppio caricamento">Errato/Doppio caricamento</option>
+          <option value="Disdetta">Disdetta</option>
+        </select-input>
+
+
+
           <checkbox-input
             v-model="form.flag_prev_2022"
             :error="form.errors.flag_prev_2022"
@@ -432,6 +442,7 @@ export default {
         postal_code: this.client_detail.postal_code,
         note: this.client_detail.note,
         with_accident: this.client_detail.with_accident,
+        motivo_blocco_invio: this.client_detail.motivo_blocco_invio,
         flag_prev_2022: this.client_detail.flag_prev_2022,
         client_detail_id: this.client_detail.client_detail_id,
         conditional_field_id: this.client_detail.conditional_field_id,

@@ -15,7 +15,7 @@ use App\Services\DatasheetToPdfService;
 use App\Services\Yousign\YousignApiService;
 use App\Models\Signature;
 use App\Notifications\ConfirmedOfflinePayment;
-
+use Illuminate\Support\Facades\Log;
 use App\Models\PaymentGateway;
 use App\Models\User;
 use App\Models\ProductStep;
@@ -46,6 +46,46 @@ use Carbon\Carbon;
 
 class CartController extends Controller
 {
+
+    public function isRenewable(Cart $cart){
+        if($cart->product_step_id < 6){
+            return false;
+        }
+
+        $product = Product::find($cart->product_id);
+        $user_id = $cart->user_id;
+
+        $check = Cart::where('cart_ref', $cart->cart_ref)->first();
+        if(empty($check->cart_ref) || $check->user_id != $user_id){
+            return false;
+        }
+
+        $cart_ref = $check->cart_ref;
+
+        $last_prev_certificate = Certificate::query()
+                    ->with('cart')
+                    ->select(['end_validity_date'])->where([
+                        // controllo su product
+                        'product_id' => $cart->product_id,
+                    ])->whereHas('cart', function ($q) use ($user_id) {
+                        $q->where('user_id', $user_id);
+                    })
+                    ->latest()->first();
+
+        $old_cart_end_date = $last_prev_certificate->end_validity_date;
+
+        $end = date_create($old_cart_end_date);
+        $today = date_create(date('d-m-Y'));
+
+        $interval = date_diff($end,$today);
+        $interval = $interval->format("%R%a");
+        if($interval < -30){
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -54,11 +94,7 @@ class CartController extends Controller
     public function index($product_type = 1)
     {
         if($product_type == 1){
-            return Inertia::render('Carts/Index', [
-                'product_type' => $product_type,
-                'filters' => Request::all('search', 'steps', 'trashed'),
-                'all_product_steps' => ProductStep::where('product_id', 1)->get(), // TODO questa cosa va rivalutata quando verranno creati nuovi prodotti
-                'carts' => Auth::user()->account->carts()
+            $carts = Auth::user()->account->carts()
                     ->where('product_id', 1)
                     ->orderByDate()
                     ->filter(Request::only('search', 'steps', 'trashed'))
@@ -73,8 +109,22 @@ class CartController extends Controller
                         'cart_ref' => $cart->cart_ref,
                         'created_at' => $cart->created_at->format('d/m/Y'),
                         'deleted_at' => $cart->deleted_at,
-                        'product_type' => $product_type
-                    ]),
+                        'product_type' => $product_type,
+                        'isRenewable' => "",
+                    ]);
+
+            $isRenewable = [];
+
+            for($i=0; $i<count($carts); $i++){
+                $isRenewable[$carts[$i]['cart_ref']] = $this->isRenewable(Cart::find($carts[$i]['id']));
+            }
+
+            return Inertia::render('Carts/Index', [
+                'product_type' => $product_type,
+                'filters' => Request::all('search', 'steps', 'trashed'),
+                'all_product_steps' => ProductStep::where('product_id', 1)->get(), // TODO questa cosa va rivalutata quando verranno creati nuovi prodotti
+                'carts' => $carts,
+                'isRenewable' => $isRenewable,
             ]);
         }
         if($product_type == 2){
@@ -113,6 +163,80 @@ class CartController extends Controller
         return $this->create($product_type, $user_id, $product_id, $step, $cart);
     }
 
+    static public function renew(Cart $cart)
+    {
+        if($cart->product_step_id < 6){
+            abort(510);
+        }
+
+        $product = Product::find($cart->product_id);
+        $user_id = $cart->user_id;
+
+        $check = Cart::where('cart_ref', $cart->cart_ref)->first();
+        if(empty($check->cart_ref) || $check->user_id != $user_id){
+            abort(404);
+        }
+
+        DB::statement("UPDATE users SET new_client=0 WHERE id=".$user_id.";");
+
+        $cart_ref = $check->cart_ref;
+
+        $last_prev_certificate = Certificate::query()
+                    ->with('cart')
+                    ->select(['end_validity_date'])->where([
+                        // controllo su product
+                        'product_id' => $cart->product_id,
+                    ])->whereHas('cart', function ($q) use ($user_id) {
+                        $q->where('user_id', $user_id);
+                    })
+                    ->latest()->first();
+
+        $old_cart_end_date = $last_prev_certificate->end_validity_date;
+
+        $end = date_create($old_cart_end_date);
+        $today = date_create(date('d-m-Y'));
+
+        $interval = date_diff($end,$today);
+        $interval = $interval->format("%R%a");
+        if($interval < -30){
+            abort(510);
+        }
+
+        $new_cart_ref = DB::select(DB::raw('SELECT new_cart_ref FROM renewals WHERE old_cart_ref = "'.$cart_ref.'";'));
+        if(!empty($new_cart_ref)){
+            return redirect()->route('carts.continue', ['product' => $product, 'cart' => $new_cart_ref[0]->new_cart_ref]);
+        }
+        
+        $newCart = Cart::create([
+            'user_id' => $user_id,
+            'product_id' => $product->id,
+            'product_offer_id' => $cart->product_offer_id,
+            'product_step_id' => 1,
+            'expired_at' => $end->modify('+90 day'),
+            'locked' => 'N',
+            'cart_ref' => uniqid()
+        ]);
+        DB::statement('INSERT INTO renewals (old_cart_ref, new_cart_ref) VALUES ("'. $cart->cart_ref.'", "'. $newCart->cart_ref.'");');
+
+        return redirect()->route('carts.continue', ['product' => $product, 'cart' => $newCart]);
+    }
+
+    public function isRenewal(Cart $cart){
+        $check = Cart::where('cart_ref', $cart->cart_ref)->first();
+        if(empty($check->cart_ref)){
+            abort(404);
+        }
+        $cart_ref = $check->cart_ref;
+
+        $new_cart_ref = DB::select(DB::raw('SELECT new_cart_ref FROM renewals WHERE new_cart_ref = "'.$cart_ref.'";'));
+        if(!empty($new_cart_ref)){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -120,6 +244,47 @@ class CartController extends Controller
      */
     public function create($product_type, $user_id = null, $product_id = null, $step = 1, $cart = null)
     {
+        if($cart != null){
+            /** Preparazione scadenze **/
+            if($this->isRenewal($cart)){
+                    $expiration_date = date_create($cart->expired_at);
+                    $now = date_create(date('d-m-Y'));
+                    $interval = date_diff($expiration_date,$now);
+                    $interval = $interval->format("%R%a");
+                    if($interval > -1){
+                        abort(419);
+                    }
+                }
+                else{
+                    // get renewal date if exists in previous cart
+                    $last_prev_certificate = Certificate::query()
+                        ->with('cart')
+                        ->select(['end_validity_date'])->where([
+                            // controllo su product
+                            'product_id' => $cart->product_id,
+                            ])->whereHas('cart', function ($q) use ($user_id) {
+                                $q->where('user_id', $user_id);
+                            })
+                        ->latest()->first();
+
+                    if($last_prev_certificate != null && $cart->product_step_id < 5){
+                        $scadenza = date_create($last_prev_certificate->end_validity_date);
+                        date_add($scadenza, date_interval_create_from_date_string('90 days'));
+                        $ora = date_create(date('d-m-Y'));
+                        $intervallo = date_diff($scadenza,$ora);
+                        $intervallo = $intervallo->format("%R%a");
+
+                        $cart->renewal_date = null;
+                        $cart->retroactivity = null;
+                        $cart->save();
+
+                        if(!($intervallo > -1) && $product_id == 1){
+                            abort(308);
+                        }
+                    }
+                }
+            }
+
         /** Selezione utente **/
         if(!isset($user_id) && !isset($product_id)){
             //dd($product_type);
@@ -170,14 +335,16 @@ class CartController extends Controller
 
             switch($step){
                 case 1:
-                    $cart = Cart::create([
-                        'user_id' => $user_id,
-                        'product_id' => $product_id,
-                        'product_step_id' => 1,
-                        'expired_at' => now()->addMonths(1),
-                        'locked' => 'N',
-                        'cart_ref' => uniqid()
-                    ]);
+                    if($cart == null){
+                        $cart = Cart::create([
+                            'user_id' => $user_id,
+                            'product_id' => $product_id,
+                            'product_step_id' => 1,
+                            'expired_at' => now()->addMonths(1),
+                            'locked' => 'N',
+                            'cart_ref' => uniqid()
+                        ]);
+                    }
                     
                     return $this->step1($product, $cart, $user_id);
                     break;
@@ -192,6 +359,9 @@ class CartController extends Controller
                     break;
                 case 5:
                     return $this->step5($product, $cart, $user_id);
+                    break;
+                case 6:
+                    return $this->step6($product, $cart, $user_id);
                     break;
             }
         }
@@ -566,6 +736,42 @@ class CartController extends Controller
         return redirect()->route("carts.edit", $cart);
     }
 
+    private function step6(Product $product, Cart $cart)
+    {
+        try {
+            $yousignClient = new YousignApiService($cart, User::find($cart->user_id));
+            $signature = Signature::where('certificate_id', $cart->certificate->id)->first();
+
+            if (empty($signature)) {
+                $yousignMemberSignerId = $yousignClient->startYousignClientAndLaunchProcedure();
+                $payment = $cart->payment;
+                $payment->cart->user->notify(new ConfirmedOfflinePayment($payment));
+                //error_log($yousignMemberSignerId);
+            } else {
+                $yousignMemberSignerId = $signature->member_signer_id;
+            }
+        } catch (\Exception $e) {
+            //error_log("wualche errore".$e);
+             $product_signature_error = 'Si è verificato un errore con la procedura di firma.';
+        }
+
+            $redirect = 'Carts/Steps/Step6';
+
+        return Inertia::render($redirect, [
+            'product' => [
+                'id' => $product->id,
+                'name' => $product->name,
+                'type' => Str::slug($product->productType->name, '-'),
+                'hex_color' => $product->hex_color,
+                'steps' => $product->productSteps->count(),
+                'yousign_url' => config('yousign.app_url'),
+                'yousign_member_signer_id' => $yousignMemberSignerId ?? null,
+                'signature_error' => $product_signature_error ?? null
+            ],
+            'cart' => $cart
+        ]);
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -723,47 +929,8 @@ class CartController extends Controller
     public function updateToStep6(Cart $cart){
         $cart->updateCartStep(6);
         $this->step6($cart->product, $cart);
-        return redirect()->route("carts.edit", $cart);
-    }
-
-    private function step6(Product $product, Cart $cart)
-    {
-        try {
-            $yousignClient = new YousignApiService($cart, User::find($cart->user_id));
-            $signature = Signature::where('certificate_id', $cart->certificate->id)->first();
-
-            if (empty($signature)) {
-                $yousignMemberSignerId = $yousignClient->startYousignClientAndLaunchProcedure();
-                $payment = $cart->payment;
-                $payment->cart->user->notify(new ConfirmedOfflinePayment($payment));
-                //error_log($yousignMemberSignerId);
-            } else {
-                $yousignMemberSignerId = $signature->member_signer_id;
-            }
-        } catch (\Exception $e) {
-            //error_log("wualche errore".$e);
-             $product_signature_error = 'Si è verificato un errore con la procedura di firma.';
-        }
-
-        /*if($product->id == 1){
-            $redirect = 'Sites/BuyProduct';
-        }
-        else{
-            $redirect = 'Sites/BuyProductBankers';
-        }
-        return Inertia::render($redirect, [
-            'product' => [
-                'id' => $product->id,
-                'name' => $product->name,
-                'type' => Str::slug($product->productType->name, '-'),
-                'hex_color' => $product->hex_color,
-                'steps' => $product->productSteps->count(),
-                'yousign_url' => config('yousign.app_url'),
-                'yousign_member_signer_id' => $yousignMemberSignerId ?? null,
-                'signature_error' => $product_signature_error ?? null
-            ],
-            'cart' => $cart
-        ]);*/
+        $product = $cart->product;
+        return redirect()->route("carts.continue", compact('product', 'cart'));
     }
 
     public function generateLloyds(Cart $cart){

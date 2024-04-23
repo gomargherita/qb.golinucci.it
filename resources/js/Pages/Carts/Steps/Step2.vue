@@ -143,6 +143,8 @@
         </div>
         <div class="my-8" v-html="product.conditions"></div>
 
+        <template
+                v-if="product.id == 2 || product.id == 3 || product.id == 4">
         <!-- validità -->
         <div>
         <p style="color:red">Lasciare vuoto se si desidera che l'inizio sia uguale alla data di pagamento.</p>
@@ -170,7 +172,7 @@
             </div>
             
         </div>
-
+      </template>
         <div>
           <BreezeValidationErrors class="mb-4" />
 
@@ -183,7 +185,7 @@
             >{{ __("Next") }}</buy-loading-button
           >
         </div>
-
+  
           
       </form>
     </div>
