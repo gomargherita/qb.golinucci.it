@@ -220,7 +220,9 @@ Route::controller(SiteController::class)->group(function () {
     Route::get('/products/{product}', 'product')->name('front.product');
     Route::get('/pagaonline/{id?}', 'importo_libero')->name('front.importoLibero');
     Route::get('/benefit/{id?}', 'benefit')->name('front.benefit');
+    Route::get('/benefit-virtualhospital/{id?}', 'benefitEVirtualhospital')->name('front.benefitVH');
 
+    
     Route::post('/importo_liberoStep2', 'importo_libero_store_step1')->name('front.importoLiberoStep2');
     Route::post('/importo_libero/pay/{id}', 'importoLiberoPay')->name('front.importoLiberoPay');
     Route::get('/importo_libero/check_payment/{id}', 'importoLiberoCheckPayment')->name('front.importoLiberoCheckPayment');

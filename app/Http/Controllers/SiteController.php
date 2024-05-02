@@ -162,6 +162,10 @@ class SiteController extends Controller
         ]);
     }
 
+    public function benefitEVirtualhospital($id = null){
+        return $this->importo_libero($id, "benefitEVirtualhospital");
+    }
+
     public function benefit($id = null){
         return $this->importo_libero($id, "benefit");
     }
