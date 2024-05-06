@@ -22,15 +22,25 @@
               pattern="\d{4}-\d{2}-\d{2}"
             />
           </div>
-          <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
+          <div class="-mb-8 -mr-6 p-8">
             <a
               @click="download({ date: this.form.date, prodotto: 'medici'})"
               type="button"
-              class="btn-gol-primary ml-auto"
+              class="btn-gol-primary ml-auto m-6"
               target="_blank"
-              >{{ __("Download") }}</a
+              >Giornaliero</a
             >
+            <a
+              @click="download({ date: this.form.date, prodotto: 'medici-mensile'})"
+              type="button"
+              class="btn-gol-primary ml-auto m-6"
+              target="_blank"
+              >Mensile</a
+            >
+            <p style="margin-bottom:15px">Per scaricare il borderaux mensile, scegliere un giorno qualsiasi del mese richiesto.<br></p>
+
           </div>
+
         </form>
       </div>
     </div>

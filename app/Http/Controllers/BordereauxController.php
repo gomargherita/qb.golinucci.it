@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Exports\BdxMedmalPaymentsExport;
+use App\Exports\BdxMedmalPaymentsExportMensile;
 use App\Exports\BdxBankersErDaily;
 use App\Exports\BdxBankersRI;
 use App\Exports\BdxBankersSA;
@@ -16,6 +17,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
 use App\Models\Certificate;
+use Illuminate\Support\Facades\Log;
 
 
 
@@ -61,6 +63,10 @@ class BordereauxController extends Controller
         $prodotto = $request['prodotto'];
         if($prodotto == 'medici'){
             return Excel::download(new BdxMedmalPaymentsExport($date), 'payments.xlsx');
+        }
+        else if($prodotto == 'medici-mensile'){
+            Log::info("henlo");
+            return Excel::download(new BdxMedmalPaymentsExportMensile($date), 'payments.xlsx');
         }
         else if($prodotto == 'bancari-ER-Daily'){
             return Excel::download(new BdxBankersErDaily($date), 'payments.xlsx');
