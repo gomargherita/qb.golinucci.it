@@ -5,6 +5,7 @@ use App\Notifications\EhealthEmail;
 
 use App\Models\Account;
 use App\Models\Product;
+use App\Models\FreeAmount;
 use App\Models\Cart;
 use App\Models\EhealthBuyer;
 use App\Models\ImportoLiberoBuyer;
@@ -170,6 +171,30 @@ class SiteController extends Controller
         return $this->importo_libero($id, "benefit");
     }
 
+    public function importo_libero_preimpostato(FreeAmount $freeamount = null, $id = null, $page = "freeamount"){
+        if($id != null){
+            $buyer = ImportoLiberoBuyer::find(intval($id));
+            if($buyer != null && $buyer->paid == true){
+                return Inertia::render('Sites/importo_libero_completo');
+            }
+        }
+
+        if(($id == null)){
+            return $this->importo_liberoStep1($page, $freeamount);
+        }
+        else{
+            //dd(EhealthBuyer::find(intval($id)));
+            $buyer = ImportoLiberoBuyer::find(intval($id));
+            if($buyer == null){
+                return $this->importo_liberoStep1($page, $freeamount);
+            }
+            //step 2
+            $paypalClientId = config('paypal.' . config('paypal.mode') . '.client_id');
+
+            return Inertia::render('Sites/importo_liberoStep2', ['paypal_client_id' => $paypalClientId, 'id' => $id, 'total_payable' => $buyer->total_payable,], );
+        }
+    }
+
     public function importo_libero($id = null, $page = 'importo_liberoStep1'){
         if($id != null){
             $buyer = ImportoLiberoBuyer::find(intval($id));
@@ -193,8 +218,8 @@ class SiteController extends Controller
             return Inertia::render('Sites/importo_liberoStep2', ['paypal_client_id' => $paypalClientId, 'id' => $id, 'total_payable' => $buyer->total_payable,], );
         }
     }
-    public function importo_liberoStep1($page){
-        return Inertia::render('Sites/'.$page);
+    public function importo_liberoStep1($page, FreeAmount $freeamount = null){
+        return Inertia::render('Sites/'.$page, ['causal' => $freeamount->causal, 'total_payable' => $freeamount->total_payable]);
     }
     public function importo_libero_store_step1(Request $request){
         $email = $request->input('email');

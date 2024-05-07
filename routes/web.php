@@ -16,6 +16,7 @@ use App\Http\Controllers\RolesController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\SiteBuyProductController;
 use App\Http\Controllers\YousignController;
+use App\Http\Controllers\ImportoLiberoController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -188,7 +189,12 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'check_role']], func
     Route::put('doprintCounters/{doprintCounter}', [DoprintCounterController::class, 'update'])
         ->name('doprintCounters.update');
 
+    Route::get('importolibero', [ImportoLiberoController::class, 'index'])->name('importolibero');
+    Route::get('importolibero/create', [ImportoLiberoController::class, 'create'])->name('importolibero.create');
+    Route::post('storeimportolibero', [ImportoLiberoController::class, 'store'])->name('importolibero.store');
+
     Route::get('bordereauxs', [BordereauxController::class, 'index'])->name('bordereauxs');
+
     Route::post('bordereauxs', [BordereauxController::class, 'download'])->name('bordereauxs.download');
 
     Route::get('private-files/{file?}', [FileController::class, 'get'])->where('file', '(.*)')->name('privateFiles');
@@ -218,7 +224,9 @@ Route::controller(SiteController::class)->group(function () {
     Route::get('/about-us', 'aboutUs')->name('front.aboutus');
     Route::get('/products', 'products')->name('front.products');
     Route::get('/products/{product}', 'product')->name('front.product');
-    Route::get('/pagaonline/{id?}', 'importo_libero')->name('front.importoLibero');
+    Route::get('/pagaonline/{id?}/', 'importo_libero')->name('front.importoLibero');
+    Route::get('/paga-online/{freeamount?}/{id?}', 'importo_libero_preimpostato')->name('front.importoLiberoPreimpostato');
+
     Route::get('/benefit/{id?}', 'benefit')->name('front.benefit');
     Route::get('/benefit-virtualhospital/{id?}', 'benefitEVirtualhospital')->name('front.benefitVH');
 
