@@ -219,7 +219,12 @@ class SiteController extends Controller
         }
     }
     public function importo_liberoStep1($page, FreeAmount $freeamount = null){
-        return Inertia::render('Sites/'.$page, ['causal' => $freeamount->causal, 'total_payable' => $freeamount->total_payable]);
+        if($freeamount == null){
+            return Inertia::render('Sites/'.$page);
+        }
+        else{
+            return Inertia::render('Sites/'.$page, ['causal' => $freeamount->causal, 'total_payable' => $freeamount->total_payable]);
+        }
     }
     public function importo_libero_store_step1(Request $request){
         $email = $request->input('email');
