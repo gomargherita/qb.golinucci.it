@@ -224,7 +224,7 @@ Route::controller(SiteController::class)->group(function () {
     Route::get('/about-us', 'aboutUs')->name('front.aboutus');
     Route::get('/products', 'products')->name('front.products');
     Route::get('/products/{product}', 'product')->name('front.product');
-    Route::get('/pagaonline/{id?}/', 'importo_libero')->name('front.importoLibero');
+    Route::get('/pagaonline/{id?}', 'importo_libero')->name('front.importoLibero');
     Route::get('/paga-online/{freeamount?}/{id?}', 'importo_libero_preimpostato')->name('front.importoLiberoPreimpostato');
 
     Route::get('/benefit/{id?}', 'benefit')->name('front.benefit');
