@@ -171,7 +171,7 @@ class SiteController extends Controller
         return $this->importo_libero($id, "benefit");
     }
 
-    public function importo_libero_preimpostato(FreeAmount $freeamount = null, $id = null, $page = "freeamount"){
+    public function importo_libero_preimpostato(FreeAmount $freeamount, $id = null, $page = "freeamount"){
         if($id != null){
             $buyer = ImportoLiberoBuyer::find(intval($id));
             if($buyer != null && $buyer->paid == true){
