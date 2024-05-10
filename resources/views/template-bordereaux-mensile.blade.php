@@ -434,17 +434,17 @@
             <td></td>
             <td></td>
             <td>EUR</td>
-            <td>{{ $payment->total_payable }}</td>
+            <td>{{ $payment->net_premium }}</td>
             <td></td>
             <td>17%</td>
-            <td>{{ 0.17*$payment->total_payable }}</td>
+            <td>{{ 0.17*$payment->net_premium }}</td>
             <td>10%</td>
             <td>{{ $payment->tax }}</td>
-            <td>{{ $payment->total_payable - (0.17*$payment->total_payable) }}</td>
+            <td>{{ $payment->net_premium - (0.17*$payment->net_premium) }}</td>
             <td>EUR</td>
             <td></td>
             <td></td>
-            <td>{{ $payment->total_payable }}</td>
+            <td>{{ $payment->net_premium }}</td>
             <td>{{ $payment->fiscal_code }}</td>
             <td>{{ $payment->address }}</td>
             <td>{{ $payment->postal_code }}</td>
@@ -579,6 +579,8 @@
 
                 @case(6)
                 L
+                @break
+
                 @case(7)
                 GM
                 @break

@@ -112,6 +112,7 @@ class BdxMedmalPaymentsExportMensile implements FromView, WithHeadingRow
                 'certificates.doprint_certificate_no',
                 'certificates.retroactivity',
                 'carts.net_plus_access_premium',
+                'carts.net_premium',
                 'carts.tax',
                 'carts.indemnity_limit',
                 'carts.admin_fee',
