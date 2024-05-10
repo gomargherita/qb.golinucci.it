@@ -285,6 +285,7 @@
     <tbody>
         @foreach($payments as $payment)
         <tr>
+            <td></td>
             <td>Golinucci SRL</td>
             <td>115647XKT</td>
             <td>B1732CPG129823</td>
