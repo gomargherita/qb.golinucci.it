@@ -398,7 +398,7 @@
                 @endif
                 @endif
             </td>
-            <td>{{ $payment->payment_no }}</td>
+            <td>{{ $payment->doprint_certificate_no }}</td>
             <td>{{ $payment->last_name }} {{ $payment->first_name }}</td>
             <td></td>
             <td>Italy</td>
