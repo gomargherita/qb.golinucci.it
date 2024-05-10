@@ -535,7 +535,6 @@
             <td></td>
             <td></td>
             <td></td>
-            <td></td>
             <td>{{ $payment->total_payable - (0.17*$payment->total_payable) }}</td>
             <td></td>
             <td></td>
