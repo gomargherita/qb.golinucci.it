@@ -386,15 +386,15 @@
             <td>
                 @if($payment->renewal_date)
                 @if((explode("/", date('d/m/Y', strtotime($payment->renewal_date)))[1] < 11) ||(explode("/", date('d/m/Y', strtotime($payment->renewal_date)))[0] <= 7 && explode("/", date('d/m/Y', strtotime($payment->renewal_date)))[1] <= 11))
-                    {{ date('d/m/Y', strtotime("-12 months", strtotime($payment->renewal_date))) }}
+                    {{ date('Y', strtotime("-12 months", strtotime($payment->renewal_date))) }}
                 @else
-                {{ date('d/m/Y', strtotime($payment->renewal_date)) }}
+                {{ date('Y', strtotime($payment->renewal_date)) }}
                 @endif
                 @elseif($payment->paid_at)
                 @if((explode("/", date('d/m/Y', strtotime($payment->paid_at)))[1] < 11) ||(explode("/", date('d/m/Y', strtotime($payment->paid_at)))[0] <= 7 && explode("/", date('d/m/Y', strtotime($payment->paid_at)))[1] <= 11))
-                    {{ date('d/m/Y', strtotime("-12 months", strtotime($payment->paid_at))) }}
+                    {{ date('Y', strtotime("-12 months", strtotime($payment->paid_at))) }}
                 @else
-                {{ date('d/m/Y', strtotime($payment->paid_at)) }}
+                {{ date('Y', strtotime($payment->paid_at)) }}
                 @endif
                 @endif
             </td>
