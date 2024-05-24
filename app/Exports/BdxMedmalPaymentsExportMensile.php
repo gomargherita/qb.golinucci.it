@@ -132,6 +132,12 @@ class BdxMedmalPaymentsExportMensile implements FromView, WithHeadingRow
 
         if (!is_null($this->date)) {
             //Log::info(date('d/m/Y', strtotime($this->date)));
+            // Ottieni l'anno e il mese dalla data specificata
+            $year = date('Y', strtotime($this->date));
+            $month = date('m', strtotime($this->date));
+
+            // Filtra i pagamenti per l'anno e il mese specificati
+            $payments_data = $payments_data->whereYear('payments.paid_at', $year)->whereMonth('payments.paid_at', $month);
             //$payments_data->where('payments.paid_at', $this->date);
         }
 
