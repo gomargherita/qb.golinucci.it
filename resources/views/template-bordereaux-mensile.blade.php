@@ -554,7 +554,7 @@
             <td>Lloyd's Brussels</td>
             <td></td>
             <td></td>
-            <td>{{ $payment->retroactivity }}</td>
+            <td>{{ date('d/m/Y', strtotime($payment->retroactivity)) }}</td>
             <td>
                 @switch($payment->tipoattivita)
                 @case(1)
