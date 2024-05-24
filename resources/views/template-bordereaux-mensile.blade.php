@@ -434,17 +434,17 @@
             <td></td>
             <td></td>
             <td>EUR</td>
-            <td>{{ $payment->net_premium }}</td>
+            <td>{{ '€ ' . number_format($payment->net_premium, 2, ',', '.') }}</td>
             <td></td>
             <td>17%</td>
-            <td>{{ 0.17*$payment->net_premium }}</td>
+            <td>{{ '€ ' . number_format((0.17*$payment->net_premium), 2, ',', '.') }}</td>
             <td>10%</td>
-            <td>{{ $payment->tax }}</td>
-            <td>{{ $payment->net_premium - (0.17*$payment->net_premium) }}</td>
+            <td>{{ '€ ' . number_format((0.17*$payment->tax), 2, ',', '.') }}</td>
+            <td>{{ '€ ' . number_format($payment->net_premium - (0.17*$payment->net_premium), 2, ',', '.') }}</td>
             <td>EUR</td>
             <td></td>
             <td></td>
-            <td>{{ $payment->net_premium }}</td>
+            <td>{{ '€ ' . number_format($payment->net_premium, 2, ',', '.') }}</td>
             <td>{{ $payment->fiscal_code }}</td>
             <td>{{ $payment->address }}</td>
             <td>{{ $payment->postal_code }}</td>
@@ -466,7 +466,7 @@
             <td></td>
             <td></td>
             <td></td>
-            <td>{{ $payment->indemnity_limit }}</td>
+            <td>{{ '€ ' . number_format($payment->indemnity_limit, 2, ',', '.') }}</td>
 
             <td></td>
             <td></td>
@@ -535,7 +535,7 @@
             <td></td>
             <td></td>
             <td></td>
-            <td>{{ $payment->total_payable - (0.17*$payment->total_payable) }}</td>
+            <td>{{ '€ ' . number_format($payment->total_payable - (0.17*$payment->total_payable), 2, ',', '.') }}</td>
             <td></td>
             <td></td>
             <td></td>
