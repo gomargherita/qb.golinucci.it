@@ -25,7 +25,7 @@ class UpdateFrontClientDetailsRequest extends FormRequest
      */
     public function rules()
     {
-        return [
+        $rules = [
             'user_id' => ['required'],
             'first_name' => ['required', 'max:25'],
             'last_name' => ['required', 'max:25'],
@@ -41,8 +41,21 @@ class UpdateFrontClientDetailsRequest extends FormRequest
             'product_client_details' => ['required', 'array'],
             'product_client_details.*.pivot.selected_field_value' => ['required'],
             'confirmation' => ['accepted'],
-            'confirmation_sinistri' => ['required']
+            'confirmation_sinistri' => ['required'],
+            'confirmation_gmedici1' => ['required'],
+            'confirmation_gmedici2' => ['required']
         ];
+
+        $productClientDetails = $this->input('product_client_details', []);
+        foreach ($productClientDetails as $index => $detail) {
+            if (isset($detail['id']) && ($detail['id'] == 13 || $detail['id'] == 14 || $detail['id'] == 12 || $detail['id'] == 11)) {
+                $rules["product_client_details.$index.pivot.selected_field_value"] = ['nullable'];
+            } else {
+                $rules["product_client_details.$index.pivot.selected_field_value"] = ['required'];
+            }
+        }
+
+        return $rules;
     }
 
 }

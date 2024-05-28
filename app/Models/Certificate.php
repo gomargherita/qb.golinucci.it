@@ -65,7 +65,7 @@ class Certificate extends Model
         $this->attributes['start_validity_date'] = $renewal_date;
 
         //se il prodotto è medici esegui sempre l'if
-        if($this->cart->product->id == 1){
+        if($this->cart->product->product_type_id == 1){
             if(!array_key_exists("end_validity_date", $this->attributes)){
                 $this->attributes['end_validity_date'] = Carbon::parse($renewal_date)->addMonths($this->productOffer->months);
             }
@@ -88,7 +88,13 @@ class Certificate extends Model
         if(empty($retroactivity)){
             // nuovo cliente
             // data di pagamento - 10 anni
-            $retroactivity = Carbon::parse($this->cart->payment->paid_at)->subYears(10);
+
+            if($this->cart->product_offer_id == 161 || $this->cart->product_offer_id == 162){
+                $retroactivity = Carbon::parse($this->cart->payment->paid_at)->subYears(2);
+            }
+            else{
+                $retroactivity = Carbon::parse($this->cart->payment->paid_at)->subYears(10);
+            }
         }
         
         $this->attributes['retroactivity'] = $retroactivity;

@@ -6,6 +6,7 @@ use App\Models\Product;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use SoapFault;
 
 class NewApplicationToPdfService
 {
@@ -25,12 +26,28 @@ class NewApplicationToPdfService
         $user = $this->cart->user;
         $clientDetails = $user->clientDetails;
         $certificate = $this->cart->certificate;
-        $authority = $clientDetails->getConditionalFieldMatchById(3, false);
-        $authority_type = $clientDetails->getConditionalFieldMatchById(2);
+
+        if($this->cart->product->id == 1){
+            $authority = $clientDetails->getConditionalFieldMatchById(3, false);
+            $authority_type = $clientDetails->getConditionalFieldMatchById(2);
+        }
+        else{
+            $authority = "nulla";
+            $authority_type = "nulla";
+        }
         $authority_type_public_flag = ($authority_type == 'Pubblico') ? true : false;
         $title = $this->getTitle($authority_type_public_flag);
-        $specialization = $clientDetails->getConditionalFieldMatchById(4, false);
-        $profession = $clientDetails->getConditionalFieldMatchById(1);
+
+        if($this->cart->product->id == 1){
+            $specialization = $clientDetails->getConditionalFieldMatchById(4, false);
+            $profession = $clientDetails->getConditionalFieldMatchById(1);
+        }
+        else if($this->cart->product->id == 5){
+            $title = "Polizza Responsabilità Civile Professionale Giovani Medici
+            (Medici Abilitati Tirocinanti E Specializzandi) di età inferiore a 38 anni";
+            $specialization = $clientDetails->getConditionalFieldMatchById(11, false);
+            $profession = $clientDetails->getConditionalFieldMatchById(10);
+        }
         $indemnity_limit = number_format(
             $this->cart->indemnity_limit,
             2,
@@ -63,6 +80,7 @@ class NewApplicationToPdfService
                 'insurance_deductible' => $insurance_deductible,
                 'data_generazione' => Carbon::now()->format('d-m-Y'),
                 'data_effetto' => $this->cart->renewal_date->format('d-m-Y'),
+                'retroactivity' => $this->cart->indemnity_limit_patrimonial,
             ];
         }
         else{
@@ -83,6 +101,7 @@ class NewApplicationToPdfService
                 'insurance_deductible' => $insurance_deductible,
                 'data_generazione' => Carbon::now()->format('d-m-Y'),
                 'data_effetto' => Carbon::now()->format('d-m-Y'),
+                'retroactivity' => $this->cart->indemnity_limit_patrimonial,
             ];
         }
         
@@ -95,10 +114,19 @@ class NewApplicationToPdfService
             'isRemoteEnabled' => true
         ]);
 
-        $pdf = PDF::loadView('template-new-application', $data);
-        $policy_response_folder = 'certificates/user_' . $this->cart->user_id . '/cart_' . $this->cart->id;
-        Storage::disk('private')->put($policy_response_folder . '/new-application.pdf', $pdf->stream());
-        return $policy_response_folder . '/new-application.pdf';
+
+        if($this->cart->product->id == 1){
+            $pdf = PDF::loadView('template-new-application', $data);
+            $policy_response_folder = 'certificates/user_' . $this->cart->user_id . '/cart_' . $this->cart->id;
+            Storage::disk('private')->put($policy_response_folder . '/new-application.pdf', $pdf->stream());
+            return $policy_response_folder . '/new-application.pdf';
+        }
+        else if($this->cart->product->id == 5){
+            $pdf = PDF::loadView('template-new-application-giovane-medico', $data);
+            $policy_response_folder = 'certificates/user_' . $this->cart->user_id . '/cart_' . $this->cart->id;
+            Storage::disk('private')->put($policy_response_folder . '/new-application.pdf', $pdf->stream());
+            return $policy_response_folder . '/new-application.pdf';
+        }
     }
 
     private function getTitle($authority_type_public_flag)

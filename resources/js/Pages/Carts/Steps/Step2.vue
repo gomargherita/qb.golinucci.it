@@ -141,7 +141,7 @@
             </tbody>
           </table>
         </div>
-        <div class="my-8" v-html="product.conditions"></div>
+        <div style="line-height: 100" class="my-8" v-html="product.conditions"></div>
 
         <template
                 v-if="product.id == 2 || product.id == 3 || product.id == 4">

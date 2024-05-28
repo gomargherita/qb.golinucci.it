@@ -39,16 +39,31 @@ class Payment extends Model
     }
 
     public function updatePaymentPaymentNo(){
-        if(empty($this->payment_no) && $this->paid == 1){
-            $productCounter = ProductCounter::where([
-                'product_id' => $this->cart->product_id,
-                'payment_gateway_id' => $this->payment_gateway_id,
-                'year' => date("Y")
-            ])->firstOrFail();
-            $productCounter->counter = $productCounter->counter + 1;
-            $productCounter->save();
-            $this->payment_no = $productCounter->prefix . $productCounter->counter;
-            $this->save();
+        if($this->cart->product_id == 5){
+            if(empty($this->payment_no) && $this->paid == 1){
+                $productCounter = ProductCounter::where([
+                    'product_id' => 1,
+                    'payment_gateway_id' => $this->payment_gateway_id,
+                    'year' => date("Y")
+                ])->firstOrFail();
+                $productCounter->counter = $productCounter->counter + 1;
+                $productCounter->save();
+                $this->payment_no = $productCounter->prefix . $productCounter->counter;
+                $this->save();
+            }
+        }
+        else{
+            if(empty($this->payment_no) && $this->paid == 1){
+                $productCounter = ProductCounter::where([
+                    'product_id' => $this->cart->product_id,
+                    'payment_gateway_id' => $this->payment_gateway_id,
+                    'year' => date("Y")
+                ])->firstOrFail();
+                $productCounter->counter = $productCounter->counter + 1;
+                $productCounter->save();
+                $this->payment_no = $productCounter->prefix . $productCounter->counter;
+                $this->save();
+            }
         }
     }
 

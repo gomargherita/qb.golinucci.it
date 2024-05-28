@@ -44,7 +44,7 @@ class BankTransferGatewayPayment extends Notification
     {
         $user = $this->payment->cart->user;
         
-        if($this->payment->cart->product_id == 1){
+        if($this->payment->cart->product_id == 1 || $this->payment->cart->product_id == 5){
             return (new MailMessage)
                 ->subject('Q&B Golinucci - Procedi al pagamento tramite Bonifico Bancario')
                 ->greeting("Gentile $user->name")

@@ -16,7 +16,7 @@
             <th v-for="table_element in JSON.parse(product.table_elements.table_elements)" class="p-4 font-light">
                 {{table_element}}            
             </th>
-            <th v-if="product.id == 1" class="p-4 font-light">Scegli</th>
+            <th v-if="product.id == 1 || product.id == 5" class="p-4 font-light">Scegli</th>
           </tr>
             </thead>
             <tbody>
@@ -29,7 +29,7 @@
               
               <!-- Prodotto MEDICI -->
               <tr
-              v-if="product.id == 1"
+              v-if="product.id == 1 || product.id == 5"
                 v-for="(offer, index) in product.offers"
                 class="odd:bg-white even:bg-slate-100 uppercase"
               >
@@ -37,10 +37,13 @@
                   class="p-4 border border-primary"
                   v-text="$filters.formatPrice(offer.indemnity_limit)"
                 ></td>
-                <td
+                <td v-if="product.id == 1"
                   class="p-4 border border-primary"
                   v-text="$filters.formatPrice(offer.indemnity_limit_patrimonial)"
                 ></td>
+                <td v-if="product.id == 5"
+                  class="p-4 border border-primary"
+                >{{ offer.indemnity_limit_patrimonial }} Anni</td>
                 <td class="p-4 border border-primary">Zero</td>
                 <td
                   class="p-4 border border-primary"
@@ -151,7 +154,7 @@
             </tbody>
           </table>
         </div>
-        <div class="my-8" v-html="product.conditions"></div>
+        <div style="line-height: 1.5" class="my-8" v-html="product.conditions"></div>
         <div>
           <BreezeValidationErrors class="mb-4" />
 

@@ -95,7 +95,7 @@ class CartController extends Controller
     {
         if($product_type == 1){
             $carts = Auth::user()->account->carts()
-                    ->where('product_id', 1)
+                    ->whereIn('product_id', [1, 5])
                     ->orderByDate()
                     ->filter(Request::only('search', 'steps', 'trashed'))
                     ->paginate(20)
@@ -555,7 +555,7 @@ class CartController extends Controller
         $cart->save();
 
         // genero e salvo il pdf new proposal se new client
-        if($product->id == 1){
+        if($product->product_type_id == 1){
             $new_proposal = new NewApplicationToPdfService($cart);
             $new_proposal->generateAndPersist();
         }
@@ -1087,8 +1087,15 @@ class CartController extends Controller
             $certificate = $cart->certificate;
             if ($certificate->doprint_current_step == 'validation') {
                 $clientDetails = ClientDetail::where('user_id', $cart->user_id)->first();
-                $profession = $clientDetails->getConditionalFieldMatchById(1);
-                $authority_type = $clientDetails->getConditionalFieldMatchById(2);
+                
+                if($cart->product->id == 1){
+                    $profession = $clientDetails->getConditionalFieldMatchById(1);
+                    $authority_type = $clientDetails->getConditionalFieldMatchById(2);
+                }
+                if($cart->product->id == 5){
+                    $profession = "GIOVANE MEDICO";
+                    $authority_type = "nulla";
+                }
 
                 $customer = [
                     'profession' => $profession,

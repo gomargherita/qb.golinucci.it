@@ -1,6 +1,6 @@
 <template>
   <div :class="$attrs.class">
-    <label v-if="label" class="form-label" :for="id">{{ __(label) }}:</label>
+    <label v-if="label" class="form-label" :for="id">{{ __(formattedLabel) }}</label>
     <select :id="id" ref="input" v-model="selected" v-bind="{ ...$attrs, class: null }" class="form-select" :class="{ error: error }">
       <slot />
     </select>
@@ -23,6 +23,14 @@ export default {
     error: String,
     label: String,
     modelValue: [String, Number, Boolean],
+  },
+  computed: {
+    formattedLabel() {
+      if (this.label && this.label.includes('?')) {
+        return this.label;
+      }
+      return this.label + ':';
+    }
   },
   emits: ['update:modelValue'],
   data() {

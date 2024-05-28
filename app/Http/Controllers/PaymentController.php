@@ -10,6 +10,7 @@ use App\Notifications\ConfirmedOfflinePayment;
 use App\Services\PaymentCertificateToPdfService;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Controllers\CartController;
+use Illuminate\Support\Facades\Log;
 
 class PaymentController extends Controller
 {
@@ -70,11 +71,10 @@ class PaymentController extends Controller
 
         try{
             if ($payment->update($validated)) {
-
                 if ($validated['paid'] && $payment->cart->product_step_id == 4) {
                     // genero e salvo il pdf con proforma fattura dell'acquisto
                     $payment->updatePaymentPaymentNo();
-                    if($cart->product_id == 1){
+                    if($cart->product_id == 1 || $cart->product_id == 5){
                         $paymentToPdf = new PaymentCertificateToPdfService($payment->cart);
                         $paymentToPdf->generateAndPersist();
                         //$payment->cart->user->notify(new ConfirmedOfflinePayment($payment));

@@ -6,6 +6,8 @@ use App\Models\DoprintCounter;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Storage;
 use SoapClient, SoapHeader, SoapVar, SoapParam, SoapFault, DOMDocument;
+use Illuminate\Support\Facades\Log;
+
 
 class LloydsDoprintService
 {
@@ -76,7 +78,12 @@ class LloydsDoprintService
 
         // Differenziato tra utente a rinnovo e utenti nuovi
         if (true) {
-            $xml_base = Storage::disk('private')->get('lloyds_new_base.xml');
+            if($cart->product->id == 1){
+                $xml_base = Storage::disk('private')->get('lloyds_new_base.xml');
+            }
+            else if($cart->product->id == 5){
+                $xml_base = Storage::disk('private')->get('lloyds_gmedici.xml');
+            }
         } else {
             $xml_base = Storage::disk('private')->get('lloyds_renew_base.xml');
         }
@@ -88,13 +95,20 @@ class LloydsDoprintService
         $contract_type = 'RC PROFESSIONALE';
         $DocumentIndex->getElementsByTagName('ContractType')->item(0)->textContent = $contract_type;
 
-        $authority_type = $customer_details['authority_type'];
-        if ($authority_type == 'Pubblico') {
-            $product_name = "COLPA GRAVE - STRUTTURA SANITARIA PUBBLICA";
-        } else {
-            $product_name = "COLPA GRAVE - STRUTTURA SANITARIA PRIVATA";
+        if($cart->product->id == 1){
+            $authority_type = $customer_details['authority_type'];
+            if ($authority_type == 'Pubblico') {
+                $product_name = "COLPA GRAVE - STRUTTURA SANITARIA PUBBLICA";
+            } else {
+                $product_name = "COLPA GRAVE - STRUTTURA SANITARIA PRIVATA";
+            }
         }
+        else if($cart->product->id == 5){
+            $product_name = "GIOVANE MEDICO";
+        }
+
         $DocumentIndex->getElementsByTagName('CommercialInsuranceProduct')->item(0)->textContent = $product_name;
+
 
         // BindingAuthorityDetails
         // VALE PER TUTTI GLI ENV
@@ -197,17 +211,25 @@ class LloydsDoprintService
         $GeneralConditionsAttachment = $CertificateAttachments->getElementsByTagName('RisksDescriptionAttachment')->item(0);
         $GeneralConditionsAttachment->getElementsByTagName('FileHash')->item(0)->textContent = $documentHashpdf;
 
-        // Add Wording
+        // Add Wording        
         $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_filepath));
         $wordingHashpdf = base64_encode(md5($wording, true));
         $ProposalFormAttachment = $CertificateAttachments->getElementsByTagName('OtherAttachment')->item(0);
         $ProposalFormAttachment->getElementsByTagName('FileHash')->item(0)->textContent = $wordingHashpdf;
 
         // add attaching clauses
-        $attachingClauses = Storage::disk('private')->get('attaching_clauses/ATTACHING_CLAUSES.pdf');
-        $attachingClauses2Hashpdf = base64_encode(md5($attachingClauses, true));
-        $ProposalFormAttachment = $CertificateAttachments->getElementsByTagName('OtherAttachment')->item(1);
-        $ProposalFormAttachment->getElementsByTagName('FileHash')->item(0)->textContent = $attachingClauses2Hashpdf;
+        if($cart->product->id == 1){
+            $attachingClauses = Storage::disk('private')->get('attaching_clauses/medici/ATTACHING_CLAUSES.pdf');
+            $attachingClauses2Hashpdf = base64_encode(md5($attachingClauses, true));
+            $ProposalFormAttachment = $CertificateAttachments->getElementsByTagName('OtherAttachment')->item(1);
+            $ProposalFormAttachment->getElementsByTagName('FileHash')->item(0)->textContent = $attachingClauses2Hashpdf;
+        }
+        else if($cart->product->id == 5){
+            $attachingClauses = Storage::disk('private')->get('attaching_clauses/gmedici/ATTACHING_CLAUSES.pdf');
+            $attachingClauses2Hashpdf = base64_encode(md5($attachingClauses, true));
+            $ProposalFormAttachment = $CertificateAttachments->getElementsByTagName('OtherAttachment')->item(1);
+            $ProposalFormAttachment->getElementsByTagName('FileHash')->item(0)->textContent = $attachingClauses2Hashpdf;
+        }
 
         $policy_response_folder = 'certificates/user_' . $cart->user_id . '/cart_' . $cart_details['cart_id'];
 
@@ -410,7 +432,12 @@ class LloydsDoprintService
         LloydsDoprintService::uploadRequest($cart, $wording);
 
         // 3. ATTACHING CLAUSES
-        $attaching_clauses = Storage::disk('private')->get('attaching_clauses/ATTACHING_CLAUSES.pdf');
+        if($cart->product->id == 1){
+            $attaching_clauses = Storage::disk('private')->get('attaching_clauses/medici/ATTACHING_CLAUSES.pdf');
+        }
+        else if($cart->product->id == 5){
+            $attaching_clauses = Storage::disk('private')->get('attaching_clauses/gmedici/ATTACHING_CLAUSES.pdf');
+        }
         LloydsDoprintService::uploadRequest($cart, $attaching_clauses);
 
         // 4. modulo di adesione SOLO PER NUOVI clienti

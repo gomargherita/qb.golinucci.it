@@ -1,7 +1,7 @@
 <template>
   <div class="mt-8">
     <div v-if="product.conditional_fields.length">
-      <div v-if="product.id == 1" class="text-center">{{ __("Filtra tra le nostre offerte di polizza") }}</div>
+      <div v-if="product.id == 1 || product.id == 5" class="text-center">{{ __("Filtra tra le nostre offerte di polizza") }}</div>
       <div class="offer-filters grid grid-cols-1 mx-auto text-center gap-4 mt-8">
         <div v-for="conditional_field in product.conditional_fields">
           <template v-if="!conditional_field.only_client_details">
@@ -35,7 +35,6 @@
           </tr>
         </thead>
         <tbody>
-
           <tr v-if="!filteredRows.length">
             <td colspan="6" class="p-4">
               {{ __("Select a combination using filters above") }}
@@ -44,8 +43,9 @@
 
           <!-- Prodotto MEDICI -->
           <tr
-          v-if="product.id == 1"
+          v-if="product.id == 1 || product.id == 5"
             v-for="(offer, index) in filteredRows"
+           
             class="odd:bg-white even:bg-slate-100 uppercase"
           >
             <td class="p-4 border border-primary">{{ index + 1 }}</td>
@@ -53,10 +53,13 @@
               class="p-4 border border-primary"
               v-text="$filters.formatPrice(offer.indemnity_limit)"
             ></td>
-            <td
-              class="p-4 border border-primary"
-              v-text="$filters.formatPrice(offer.indemnity_limit_patrimonial)"
-            ></td>
+            <td v-if="product.id == 1"
+                  class="p-4 border border-primary"
+                  v-text="$filters.formatPrice(offer.indemnity_limit_patrimonial)"
+                ></td>
+                <td v-if="product.id == 5"
+                  class="p-4 border border-primary"
+                >{{ offer.indemnity_limit_patrimonial }} Anni</td>
             <td class="p-4 border border-primary">Zero</td>
             <td
               class="p-4 border border-primary"

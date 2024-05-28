@@ -106,7 +106,7 @@ class SiteBuyProductController extends Controller
 
             $cart = $this->verifyAndGetCartOrRedirect($user, $product, $cart);
 
-            if($cart->product->id == 1){
+            if($cart->product->product_type_id == 1){
                 $next_step = $cart->product_step_id;
 
                 switch ($next_step) {
@@ -250,7 +250,7 @@ class SiteBuyProductController extends Controller
             'productOffers'
         ]);
 
-        if($product->id == 1){
+        if($product->product_type_id == 1){
             $redirect = 'Sites/BuyProduct';
         }
         else{
@@ -280,8 +280,6 @@ class SiteBuyProductController extends Controller
         $user = auth()->user();
         $cart = $this->verifyAndGetCartOrRedirect($user, $product, $cart);
         $validated = $request->validated();
-
-        
         
         DB::transaction(function () use ($user, $validated, $cart) {
             $clientDetails = ClientDetail::updateOrCreate(['user_id'   => $user->id], $validated);
@@ -294,10 +292,14 @@ class SiteBuyProductController extends Controller
 
             $clientDetails->productClientDetails()->syncWithoutDetaching($rebuildProductClientDetails);
 
-
-            if($validated['confirmation_sinistri'] == "si"){
-                $clientDetails->with_accident = true;
-                $clientDetails->save();
+            if($validated['confirmation_sinistri'] == "si" || $validated['confirmation_gmedici1'] == 'si' || $validated['confirmation_gmedici2'] == 'si'){
+                if($cart->product->id == 5){
+                    abort(480);
+                }
+                else{
+                    $clientDetails->with_accident = true;
+                    $clientDetails->save();
+                }
             }
 
             $cart->updateCartStep(2);
@@ -314,11 +316,12 @@ class SiteBuyProductController extends Controller
                 'user_id' => $user->id
             ])->latest('id')->first();
 
-        
-
         $flag_prev_2022 = $clientDetails->flag_prev_2022;
 
         if($product->product_type_id == 1){
+            if($clientDetails->with_accident == true){
+                abort(480);
+            }
             $product = $product->load([
                 'productOffers' => function ($query) use ($flag_prev_2022) {
                     $query->with(['conditionalFields', 'contract'])->where('flag_prev_2022', $flag_prev_2022);
@@ -356,13 +359,14 @@ class SiteBuyProductController extends Controller
             $clean[$productClientDetail->conditional_field_id] = $productClientDetail->selected_field_value;
         }
 
-        $offers = $product->productOffers->map(function ($rec) use ($clean) {
+        $offers = $product->productOffers->map(function ($rec) use ($clean, $product) {
             $rec2 = $rec->conditionalFields;
             $flag = true;
             foreach ($rec2 as $bhgh) {
                 $conditional_field_id = $bhgh->pivot->conditional_field_id;
                 $selected_field_value = $bhgh->pivot->selected_field_value;
-                if ($selected_field_value != $clean[$conditional_field_id]) {
+
+                if ($selected_field_value != $clean[$conditional_field_id] && $product->id != 5) {
                     $flag = false;
                 }
             }
@@ -421,7 +425,7 @@ class SiteBuyProductController extends Controller
         $cart->save();
 
         // genero e salvo il pdf new proposal se new client
-        if($product->id == 1){
+        if($product->product_type_id == 1){
             $new_proposal = new NewApplicationToPdfService($cart);
             $new_proposal->generateAndPersist();
         }
@@ -750,7 +754,7 @@ class SiteBuyProductController extends Controller
     private function step5(Product $product, Cart $cart)
     {
         
-        if($product->id == 1){
+        if($product->product_type_id == 1){
             $redirect = 'Sites/BuyProduct';
         }
         else{
@@ -896,8 +900,15 @@ class SiteBuyProductController extends Controller
             $certificate = $cart->certificate;
             if ($certificate->doprint_current_step == 'validation') {
                 $clientDetails = ClientDetail::where('user_id', $cart->user_id)->first();
-                $profession = $clientDetails->getConditionalFieldMatchById(1);
-                $authority_type = $clientDetails->getConditionalFieldMatchById(2);
+                
+                if($cart->product->id == 1){
+                    $profession = $clientDetails->getConditionalFieldMatchById(1);
+                    $authority_type = $clientDetails->getConditionalFieldMatchById(2);
+                }
+                if($cart->product->id == 5){
+                    $profession = "GIOVANE MEDICO";
+                    $authority_type = "nulla";
+                }
 
                 $customer = [
                     'profession' => $profession,
