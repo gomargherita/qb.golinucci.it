@@ -107,7 +107,7 @@ class GiovaniMedici extends Migration
             array(
                 'id' => 10,
                 'field_name' => 'qualifica_giovani_medici',
-                'field_label' => "Qualifica dell'assicurato",
+                'field_label' => "Qualifica assicurato",
                 'field_type' => 'select',
                 'field_value' => '"{\"1\":\"Medico generico (medico abilitato)\",\"2\":\"Medico in formazione specialistica\",\"3\":\"Medico in formazione specifica in medicina generale\"}"',
                 'only_client_details' => 1
