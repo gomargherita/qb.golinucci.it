@@ -28,7 +28,7 @@
             <tr>
                 <td style="padding: 10px;">2.</td>
                 <td style="padding: 10px;">PROFESSIONE:</td>
-                <td style="padding: 10px;"><b>{!! $profession_and_specializzation !!}</b></td>
+                <td style="padding: 10px;"><b>{!! $profession !!}<br>{{!! $specialization !!}}</b></td>
             </tr>
             <tr>
                 <td style="padding: 10px;">3.</td>
