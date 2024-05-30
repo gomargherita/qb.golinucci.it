@@ -277,7 +277,7 @@
               </div>
           </div>
           <br />
-          <div v-if="cart.product.id == 1" class="flex flex-wrap ">
+          <div v-if="cart.product.id == 1 || cart.product.id == 5" class="flex flex-wrap ">
 
 
             <a @click="generate_lloyds" target="_blank" class="btn-gol-primary">Genera certificato Lloyd's</a>
