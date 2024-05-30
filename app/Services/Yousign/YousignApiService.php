@@ -176,9 +176,9 @@ class YousignApiService
 
                 $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "55,464,221,494", $reason_signer, 20, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
 
-                $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "347,48,513,78", $reason_signer, 27, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
+                $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "347,48,513,78", $reason_signer, 26, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
 
-                $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "33,197,199,227", $reason_signer, 29, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
+                $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "33,197,199,227", $reason_signer, 28, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
             }
 
             $signature->procedure_id = $procedure['id'];
