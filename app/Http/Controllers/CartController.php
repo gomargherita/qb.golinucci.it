@@ -278,7 +278,7 @@ class CartController extends Controller
                         $cart->retroactivity = null;
                         $cart->save();
 
-                        if(!($intervallo > -1) && $product_id == 1){
+                        if(!($intervallo > -1) && ($product_id == 1 || $product_id == 5)){
                             abort(308);
                         }
                     }
@@ -490,13 +490,13 @@ class CartController extends Controller
             $clean[$productClientDetail->conditional_field_id] = $productClientDetail->selected_field_value;
         }
 
-        $offers = $product->productOffers->map(function ($rec) use ($clean) {
+        $offers = $product->productOffers->map(function ($rec) use ($clean, $product) {
             $rec2 = $rec->conditionalFields;
             $flag = true;
             foreach ($rec2 as $bhgh) {
                 $conditional_field_id = $bhgh->pivot->conditional_field_id;
                 $selected_field_value = $bhgh->pivot->selected_field_value;
-                if ($selected_field_value != $clean[$conditional_field_id]) {
+                if ($selected_field_value != $clean[$conditional_field_id] && $product->id != 5) {
                     $flag = false;
                 }
             }
@@ -662,7 +662,7 @@ class CartController extends Controller
 
     public function step5(Product $product, Cart $cart, $user_id)
     {
-        if($cart->product_id == 1){
+        if($cart->product_id == 1 || $cart->product_id == 5){
             return $this->generateLloyds($cart);
         }
         if($cart->custom_end_date != null){

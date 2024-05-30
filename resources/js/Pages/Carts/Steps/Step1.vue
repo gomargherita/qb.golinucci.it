@@ -233,7 +233,7 @@
       </div>
       <template v-if="product.conditional_fields.length">
         <div
-          v-for="(conditional_field, index) in product.conditional_fields"
+        v-for="(conditional_field, index) in filteredConditionalFields"
           :key="index"
         >
           <div v-if="conditional_field.field_type == 'select'">
@@ -318,6 +318,13 @@ export default {
     cart: Object,
     product: Object,
   },
+  computed:{
+    filteredConditionalFields() {
+      return this.product.conditional_fields.filter(field => {
+        return field.field_name != 'retroattivita' && field.field_name != 'massimale';
+      });
+  }
+  },
   data() {
     return {
       form: this.$inertia.form({
@@ -336,13 +343,9 @@ export default {
         product_client_details: this.$page.props.clientDetails.product_client_details,
         confirmation: false,
         confirmation_sinistri: "no",
-      }),
+        confirmation_gmedici1: "no",
+        confirmation_gmedici2: "no"}),
     };
-  },
-  computed: {
-    we(){
-      console.log(this.cart);
-    }
   },
   methods: {
     submit() {

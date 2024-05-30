@@ -15,7 +15,7 @@
             <th v-for="table_element in JSON.parse(product.table_elements.table_elements)" class="p-4 font-light">
                 {{table_element}}            
             </th>
-            <th v-if="product.id == 1" class="p-4 font-light">Scegli</th>
+            <th v-if="product.id == 1 || product.id == 5" class="p-4 font-light">Scegli</th>
           </tr>
             </thead>
             <tbody>
@@ -28,7 +28,7 @@
               
               <!-- Prodotto MEDICI -->
               <tr
-              v-if="product.id == 1"
+              v-if="product.id == 1 || product.id == 5"
                 v-for="(offer, index) in product.offers"
                 class="odd:bg-white even:bg-slate-100 uppercase"
               >
@@ -36,23 +36,34 @@
                   class="p-4 border border-primary"
                   v-text="$filters.formatPrice(offer.indemnity_limit)"
                 ></td>
-                <td
+                <td v-if="product.id == 1"
                   class="p-4 border border-primary"
                   v-text="$filters.formatPrice(offer.indemnity_limit_patrimonial)"
                 ></td>
+                <td v-if="product.id == 5"
+                  class="p-4 border border-primary"
+                >{{ offer.indemnity_limit_patrimonial }} Anni</td>
                 <td class="p-4 border border-primary">Zero</td>
                 <td
                   class="p-4 border border-primary"
                   v-text="$filters.formatPrice(parseFloat(offer.total_payable))"
                 ></td>
-                <td class="p-4 border border-primary">
+                <td class="p-4 border border-primary" style="text-align: center;  text-transform: none;">
                   <a
                     :href="offer.contract.contract_filepath"
                     target="_blank"
                     class="btn-gol"
                   >
-                    {{ __("Download") }}
-                  </a>
+                  {{ __("Condizioni") }}
+              </a>
+              <p style="margin:0"></p>
+              <a
+                :href="offer.contract.dip"
+                target="_blank"
+                class="btn-gol"
+              >
+                {{ __("DIP_doc_informativo") }}
+                                </a>
                 </td>
                 <td class="p-4 border border-primary">
                   <label
@@ -141,7 +152,7 @@
             </tbody>
           </table>
         </div>
-        <div style="line-height: 100" class="my-8" v-html="product.conditions"></div>
+        <div style="line-height: 1.5" class="my-8" v-html="product.conditions"></div>
 
         <template
                 v-if="product.id == 2 || product.id == 3 || product.id == 4">
