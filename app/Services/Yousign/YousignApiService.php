@@ -168,7 +168,7 @@ class YousignApiService
                 //$fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "105,236,203,252", $reason_signer, 24, 'text', true, Carbon::now()->format('d-m-Y'), null, null);
             }
             else if ($this->cart->product->id == 5){
-                $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "291,115,457,145", $reason_signer, 5, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
+                $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "287,237,460,265", $reason_signer, 5, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
 
                 $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "260,303,426,333", $reason_signer, 18, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
                 
@@ -176,9 +176,9 @@ class YousignApiService
 
                 $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "55,464,221,494", $reason_signer, 20, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
 
-                $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "347,48,513,78", $reason_signer, 26, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
+                $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "276,553,481,595", $reason_signer, 26, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
 
-                $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "33,197,199,227", $reason_signer, 28, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
+                $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "366,231,461,257", $reason_signer, 28, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
             }
 
             $signature->procedure_id = $procedure['id'];
