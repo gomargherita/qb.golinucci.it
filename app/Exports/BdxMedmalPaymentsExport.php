@@ -117,7 +117,7 @@ class BdxMedmalPaymentsExport implements FromView, WithHeadingRow
                 'pcd4.selected_field_value as authority',
                 'client_details.dob',
             )
-            ->where('carts.product_id', 1)
+            ->whereIn('carts.product_id', [1, 5])
             ->whereNotNull('payments.paid_at');
 
         if (!is_null($this->date)) {
