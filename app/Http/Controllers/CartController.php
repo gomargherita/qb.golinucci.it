@@ -688,6 +688,9 @@ class CartController extends Controller
             if($cart->productOffer->months == 12){
                 $endReal = Carbon::parse('01-12-2024')->endOfYear()->format('Y-m-d');
             }
+            else if(Carbon::parse($startReal)->addMonths($cart->productOffer->months) > Carbon::parse('01-12-2024')->endOfYear()->format('Y-m-d')) {
+                $endReal = Carbon::parse('01-12-2024')->endOfYear()->format('Y-m-d');
+            }
             else{
                 $endReal = Carbon::parse($startReal)->addMonths($cart->productOffer->months);
             }
