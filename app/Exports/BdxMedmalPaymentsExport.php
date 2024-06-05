@@ -88,6 +88,10 @@ class BdxMedmalPaymentsExport implements FromView, WithHeadingRow
                 $join->on('client_details.id', '=', 'pcd4.client_detail_id');
                 $join->where('pcd4.conditional_field_id', 3);
             })
+            ->leftJoin('product_client_details as pcd10', function($join) {
+                $join->on('client_details.id', '=', 'pcd10.client_detail_id');
+                $join->where('pcd10.conditional_field_id', 10);
+            })
             ->select(
                 'carts.product_id as pid',
                 'client_details.first_name',
@@ -115,6 +119,7 @@ class BdxMedmalPaymentsExport implements FromView, WithHeadingRow
                 'pcd2.selected_field_value as contactnotes',// contact notes da prendere da product_client_details
                 'pcd3.selected_field_value as authority_type',
                 'pcd4.selected_field_value as authority',
+                'pcd10.selected_field_value as authoritygmedici',
                 'client_details.dob',
             )
             ->whereIn('carts.product_id', [1, 5])

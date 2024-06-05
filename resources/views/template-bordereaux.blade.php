@@ -92,9 +92,9 @@
             </td>
             <td>
                 @if ($payment->renewal_date)
-                {{ date('d/m/Y', strtotime($payment->renewal_date)) }}
+                {{ date('d/m/Y', strtotime("+1 day", strtotime($payment->renewal_date))) }}
                 @elseif ($payment->paid_at)
-                {{ date('d/m/Y', strtotime($payment->paid_at)) }}
+                {{ date('d/m/Y', strtotime("+1 day", strtotime($payment->paid_at))) }}
                 @else
                 {{ '' }}
                 @endif
@@ -128,13 +128,33 @@
                 @break
 
                 @endswitch
+                @if ($payment->pid == 5)
+                50990086
+                @endif
             </td>
             <td></td>
             <td>Lloyd's</td>
             <td>Carpenter Colpa Grave</td>
             <td>{{ $payment->payment_no }}</td>
             <td>{{ $payment->contact_ref }}</td>
-            <td>{{ $payment->contactnotes }}</td>
+            <td>@if ($payment->pid == 5)
+                @switch($payment->authoritygmedici)
+                @case(1)
+                Medico generico (medico abilitato)
+                @break
+
+                @case(2)
+                Medico in formazione specialistica
+                @break
+
+                @case(3)
+                Medico in formazione specifica in medicina generale
+                @break
+
+                @endswitch
+                @else
+                {{ $payment->contactnotes }}</td>
+                @endif
             <td>{{ $payment->dob ? date('d/m/Y', strtotime($payment->dob)) : '' }}</td>
             <td>New business</td>
             <td>{{ $payment->version_ref }}</td>
