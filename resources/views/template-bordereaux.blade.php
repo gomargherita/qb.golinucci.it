@@ -113,7 +113,7 @@
             <td>{{ $payment->doprint_certificate_no}}</td>
             <td>{{ $payment->net_plus_access_premium }}</td>
             <td>{{ $payment->tax }}</td>
-            <td>24,5454</td>
+            <td>24.5454</td>
             <td>{{ $payment->admin_fee }}</td>
             <td>{{ $payment->total_payable }}</td>
             <td>{{ $payment->payment_no }}</td>
