@@ -65,7 +65,6 @@ class BordereauxController extends Controller
             return Excel::download(new BdxMedmalPaymentsExport($date), 'payments.xlsx');
         }
         else if($prodotto == 'medici-mensile'){
-            Log::info("henlo");
             return Excel::download(new BdxMedmalPaymentsExportMensile($date), 'payments.xlsx');
         }
         else if($prodotto == 'bancari-ER-Daily'){

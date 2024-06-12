@@ -133,8 +133,8 @@ class BdxMedmalPaymentsExportMensile implements FromView, WithHeadingRow
                 'pcd3.selected_field_value as authority_type',
                 'pcd4.selected_field_value as authority',
                 'pcd5.selected_field_value as specialization',
-                'qualificaGM',
-                'specialGM',
+                'qualificaGM.selected_field_value as qualificaGM',
+                'specialGM.selected_field_value as specialGM',
                 'client_details.dob',
             )
             ->whereIn('carts.product_id', [1, 5])

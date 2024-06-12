@@ -613,7 +613,11 @@
                 @break
 
                 @case(3)
-                Medico Specialista in Formazione
+                @if($payment->pid == 1)
+                    Medico Specialista in Formazione
+                @else
+                    Giovane Medico
+                @endif
                 @break
 
                 @case(4)
@@ -626,8 +630,6 @@
 
                 @case(6)
                 Dirigente Infermieristico
-                @default
-                Giovane Medico
                 @break
 
                 @endswitch
@@ -639,7 +641,21 @@
                 @break
 
                 @default
-                {{ $payment->qualificaGM }} + {{ $payment->specialGM }}
+                @switch($payment->qualificaGM)
+                @case(1)
+                Medico generico (medico abilitato) 
+                @break
+
+                @case(2)
+                Medico in formazione specialistica 
+                @break
+
+                @case(3)
+                Medico in formazione specifica in medicina generale 
+                @break
+                 {{ $payment->specialGM }}
+                @endswitch
+                @endswitch
             </td>
         </tr>
         @endforeach
