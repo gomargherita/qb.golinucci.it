@@ -439,7 +439,7 @@
             <td>17%</td>
             <td>{{ '€ ' . number_format((0.17*$payment->net_premium), 2, ',', '.') }}</td>
             <td>10%</td>
-            <td>{{ '€ ' . number_format((0.17*$payment->tax), 2, ',', '.') }}</td>
+            <td>{{ '€ ' . number_format(($payment->tax), 2, ',', '.') }}</td>
             <td>{{ '€ ' . number_format($payment->net_premium - (0.17*$payment->net_premium), 2, ',', '.') }}</td>
             <td>EUR</td>
             <td></td>
@@ -535,7 +535,7 @@
             <td></td>
             <td></td>
             <td></td>
-            <td>{{ '€ ' . number_format($payment->total_payable - (0.17*$payment->total_payable), 2, ',', '.') }}</td>
+            <td>{{ '€ ' . number_format($payment->net_premium - (0.17*$payment->net_premium), 2, ',', '.') }}</td>
             <td></td>
             <td></td>
             <td></td>
@@ -581,7 +581,7 @@
                 L
                 @break
 
-                @case(7)
+                @default
                 GM
                 @break
 
@@ -597,7 +597,7 @@
                 Private
                 @break
 
-                @case(3)
+                @default
                 Giovane Medico
                 @break
                 @endswitch
@@ -626,12 +626,20 @@
 
                 @case(6)
                 Dirigente Infermieristico
+                @default
+                Giovane Medico
                 @break
 
                 @endswitch
             </td>
             <td>
+                @switch($payment->pid)
+                @case(1)
                 {{ $payment->specialization }}
+                @break
+
+                @default
+                {{ $payment->qualificaGM }} + {{ $payment->specialGM }}
             </td>
         </tr>
         @endforeach

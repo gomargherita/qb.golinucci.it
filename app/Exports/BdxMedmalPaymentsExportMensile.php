@@ -93,6 +93,14 @@ class BdxMedmalPaymentsExportMensile implements FromView, WithHeadingRow
                 $join->on('client_details.id', '=', 'pcd5.client_detail_id');
                 $join->where('pcd5.conditional_field_id', 4);
             })
+            ->leftJoin('product_client_details as qualificaGM', function($join) {
+                $join->on('client_details.id', '=', 'qualificaGM.client_detail_id');
+                $join->where('qualificaGM.conditional_field_id', 10);
+            })
+            ->leftJoin('product_client_details as specialGM', function($join) {
+                $join->on('client_details.id', '=', 'specialGM.client_detail_id');
+                $join->where('specialGM.conditional_field_id', 11);
+            })
             ->select(
                 'carts.product_id as pid',
                 'client_details.first_name',
@@ -125,6 +133,8 @@ class BdxMedmalPaymentsExportMensile implements FromView, WithHeadingRow
                 'pcd3.selected_field_value as authority_type',
                 'pcd4.selected_field_value as authority',
                 'pcd5.selected_field_value as specialization',
+                'qualificaGM',
+                'specialGM',
                 'client_details.dob',
             )
             ->whereIn('carts.product_id', [1, 5])
