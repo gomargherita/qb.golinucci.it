@@ -566,7 +566,12 @@
                 @break
 
                 @case(3)
+                @if($payment->pid == 1)
                 D
+                @else
+                GM
+                @endif
+                
                 @break
 
                 @case(4)
@@ -582,13 +587,14 @@
                 @break
 
                 @default
-                GM
-                @break
+
 
                 @endswitch
             </td>
             <td>
+                @if($payment->pid == 1)
                 @switch($payment->authority_type)
+                
                 @case(1)
                 Public
                 @break
@@ -596,11 +602,11 @@
                 @case(2)
                 Private
                 @break
-
-                @default
-                Giovane Medico
-                @break
                 @endswitch
+                @else
+                Giovane Medico
+                @endif
+                
             </td>
             <td>
                 @switch($payment->tipoattivita)
