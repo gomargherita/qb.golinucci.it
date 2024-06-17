@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Console\Commands;
+use App\Models\Reminder;
+use App\Models\Cart;
 
 use App\Models\Certificate;
 use App\Notifications\RenewEmail;
@@ -8,6 +10,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Reminders;
 
 class SendRenewals extends Command
 {
@@ -67,6 +70,82 @@ class SendRenewals extends Command
                 $this->info(now() . ': renewal email sent to ' . $user->email);
                 DB::statement('INSERT INTO renewals_email (old_cart_ref) VALUES ("'. $certificate->cart->cart_ref.'");');
             }
+            else{
+                $newCart = DB::select(DB::raw('SELECT new_cart_ref FROM renewals WHERE old_cart_ref = "'.$certificate->cart->cart_ref.'";'));
+                if(!empty($newCart)){
+                    $newCart2 = Cart::where('cart_ref', $newCart[0]->new_cart_ref)->first();
+                }
+                if(empty($newCart) || $newCart2->product_step_id < 5){
+
+
+
+                $old_cart = Cart::where('cart_ref', $old_cart_ref[0]->old_cart_ref)->first();
+
+                if($old_cart->product_id == 1 || $old_cart->product_id == 5){
+
+                    //si cerca di capire se ha rinnovato già
+                    #Log::debug($old_cart_ref[0]->old_cart_ref);
+                    #Log::debug("ho appena printato l'old cart ref");
+
+                    #Log::debug($newCartFound->id);
+                    
+                    $end = Carbon::createFromTimestamp(strtotime($certificate->end_validity_date));
+                    $now = Carbon::now();
+                    
+                    switch($now->diffInDays($end, false)){
+                        case 7:
+                            $reminder = Reminder::where('cart_id', $certificate->cart->id)->first();
+                            if ($reminder == null){
+                                $reminder = Reminder::create([
+                                    'cart_id' => $certificate->cart->id,
+                                ]);
+                            }
+                            if($reminder->one_week_before == false){
+                            $user->notify(new RenewEmail($certificate));
+                            $this->info(now() . ': reminder 7 days email sent to ' . $user->email);
+                            $reminder = Reminder::where('cart_id', $certificate->cart->id)->first();
+                            $reminder->one_week_before = true;
+                            $reminder->save();
+                        }
+                            break;
+                        case -14:
+                            $reminder = Reminder::where('cart_id', $certificate->cart->id)->first();
+                            if ($reminder == null){
+                                $reminder = Reminder::create([
+                                    'cart_id' => $certificate->cart->id,
+                                ]);
+                            }
+                            if($reminder->two_weeks_after == false){
+                                $user->notify(new RenewEmail($certificate));
+                                $this->info(now() . ': reminder -14 days email sent to ' . $user->email);
+                                $reminder = Reminder::where('cart_id', $certificate->cart->id)->first();
+                                $reminder->two_weeks_after = true;
+                                $reminder->save();
+                            }
+                            break;
+                        case -30:
+                            $reminder = Reminder::where('cart_id', $certificate->cart->id)->first();
+                            if ($reminder == null){
+                                $reminder = Reminder::create([
+                                    'cart_id' => $certificate->cart->id,
+                                ]);
+                            }
+                            if($reminder->one_month_after == false){
+                                $user->notify(new RenewEmail($certificate));
+                                $this->info(now() . ': reminder -30 days email sent to ' . $user->email);
+                                $reminder = Reminder::where('cart_id', $certificate->cart->id)->first();
+                                $reminder->one_month_after = true;
+                                $reminder->save();
+                            }
+                            break;
+                    }
+                    
+                }
+
+                    
+                }
+            }
+                        
         }
         // $carts->each(function ($cart) {
             
