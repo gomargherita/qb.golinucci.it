@@ -95,7 +95,7 @@ class SendRenewals extends Command
                     $now = Carbon::now();
                     
                     switch($now->diffInDays($end, false)){
-                        case 7:
+                        case 6:
                             $reminder = Reminder::where('cart_id', $certificate->cart->id)->first();
                             if ($reminder == null){
                                 $reminder = Reminder::create([
