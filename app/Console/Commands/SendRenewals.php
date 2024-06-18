@@ -72,8 +72,10 @@ class SendRenewals extends Command
             }
             else{
                 $newCart = DB::select(DB::raw('SELECT new_cart_ref FROM renewals WHERE old_cart_ref = "'.$certificate->cart->cart_ref.'";'));
+                Log::info($newCart);
                 if(!empty($newCart)){
                     $newCart2 = Cart::where('cart_ref', $newCart[0]->new_cart_ref)->first();
+                    Log::info($newCart2);
                 }
                 if(empty($newCart) || $newCart2->product_step_id < 5){
 
