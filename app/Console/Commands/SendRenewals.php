@@ -77,7 +77,7 @@ class SendRenewals extends Command
                     $newCart2 = Cart::where('cart_ref', $newCart[0]->new_cart_ref)->first();
                     Log::info($newCart2);
                 }
-                if(empty($newCart) || $newCart2 != null || $newCart2->product_step_id < 5){
+                if(empty($newCart) || ($newCart2 != null && $newCart2->product_step_id < 5)){
 
 
 
