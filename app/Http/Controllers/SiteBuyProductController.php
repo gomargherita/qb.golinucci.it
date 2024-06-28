@@ -74,7 +74,7 @@ class SiteBuyProductController extends Controller
                     ->with('cart')
                     ->select(['end_validity_date'])->where([
                         // controllo su product
-                        'product_id' => $cart->product->id,
+                        'product_id' => $cart->product_id,
                     ])->whereHas('cart', function ($q) {
                         $q->where('user_id', auth()->user()->id);
                     })
@@ -189,7 +189,7 @@ class SiteBuyProductController extends Controller
                     ->with('cart')
                     ->select(['end_validity_date'])->where([
                         // controllo su product
-                        'product_id' => $cart->product->id,
+                        'product_id' => $cart->product_id,
                     ])->whereHas('cart', function ($q) {
                         $q->where('user_id', auth()->user()->id);
                     })

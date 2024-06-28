@@ -146,7 +146,7 @@ class Cart extends Model
                     ->with('cart')
                     ->select(['end_validity_date'])->where([
                         // controllo su product
-                        'product_id' => $cart->product->id,
+                        'product_id' => $cart->product_id,
                     ])->whereHas('cart', function ($q) use ($user_id) {
                         $q->where('user_id', $user_id);
                     })
@@ -163,7 +163,7 @@ class Cart extends Model
                     ->with('cart')
                     ->select(['retroactivity'])->where([
                         // controllo su product
-                        'product_id' => $cart->product->id,
+                        'product_id' => $cart->product_id,
                     ])->whereHas('cart', function ($q) use ($user_id) {
                         $q->where('user_id', $user_id);
                     })->latest()
