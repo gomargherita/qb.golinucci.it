@@ -232,6 +232,10 @@ Route::controller(SiteController::class)->group(function () {
 
     
     Route::post('/importo_liberoStep2', 'importo_libero_store_step1')->name('front.importoLiberoStep2');
+    Route::post('/salutesport_Step2', 'salutesport_store_step1')->name('front.salutesportStep2');
+    Route::post('/salutesport_Store2', 'salutesport_store_step2')->name('front.salutesportStore2');
+
+
     Route::post('/importo_libero/pay/{id}', 'importoLiberoPay')->name('front.importoLiberoPay');
     Route::get('/importo_libero/check_payment/{id}', 'importoLiberoCheckPayment')->name('front.importoLiberoCheckPayment');
     Route::get('/.well-known/apple-developer-merchantid-domain-association', 'applePayAssociationFile')->name('front.applePayAssociationFile');

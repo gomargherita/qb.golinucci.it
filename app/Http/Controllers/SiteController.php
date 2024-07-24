@@ -12,12 +12,15 @@ use App\Models\ImportoLiberoBuyer;
 use App\Models\EhealthCode;
 use Doctrine\DBAL\ArrayParameterType;
 use Inertia\Inertia;
+use App\Rules\ProjectDeclarationsRule;
+
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\DB;
 use App\Models\Certificate;
 use App\Models\Payment;
+use App\Models\ProductOffer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
@@ -172,6 +175,10 @@ class SiteController extends Controller
     }
 
     public function importo_libero_preimpostato(FreeAmount $freeamount, $id = null, $page = "freeamount"){
+        if(str_starts_with($freeamount->causal, "salutesport")){
+            $page = "salutesport";   
+        }
+        
         if($id != null){
             $buyer = ImportoLiberoBuyer::find(intval($id));
             if($buyer != null && $buyer->paid == true){
@@ -199,6 +206,26 @@ class SiteController extends Controller
         if($id != null){
             $buyer = ImportoLiberoBuyer::find(intval($id));
             if($buyer != null && $buyer->paid == true){
+
+                if(str_starts_with($buyer->causale, "salutesport") && $buyer->declarations ==false){
+                    return Inertia::render('Sites/salutesport_declarations', [
+                        'product' => [
+                            'id' => 1,
+                            'name' => "Sport&Salute",
+                            'type' => ' ',
+                            'pre_declarations' => "",
+                            'post_declarations' => "",
+                            'declarations' => Product::find(1)->productDeclarations,
+                            'hex_color' => "000000",
+                            'steps' => "3"
+                        ],
+                        'cart' => "",
+                        'user' => ["name" => $buyer->name, 'surname' => $buyer->surname],
+                        'buyer_id' => $id,
+                    ]);
+                }
+                //if(str_starts_with($buyer->causale, "salutesport" && $buyer->declarations == true))
+                
                 return Inertia::render('Sites/importo_libero_completo');
             }
         }
@@ -240,6 +267,53 @@ class SiteController extends Controller
                             'total_payable' => $importo]);
         
         return redirect()->route('front.importoLibero', ['id' => $buyer->id]);
+    }
+
+    public function salutesport_store_step1(Request $request){
+        $email = $request->input('email');
+        $name = $request->input('name');
+        $surname = $request->input('surname');
+        $importo = $request->input('total_payable');
+        $causale = $request->input('causale');
+        $profession = $request->input('profession');
+        $fiscalcode = $request->input('fiscalcode');
+        $phone = $request->input('phone');
+        $dob = $request->input('dob');
+        $via = $request->input('via');
+        $citta = $request->input('citta');
+        $cap = $request->input('cap');
+        $provincia = $request->input('provincia');
+
+        $buyer = ImportoLiberoBuyer::create(['name' => $name,
+                            'surname' => $surname,
+                            'email' => $email,
+                            'profession' => $profession,
+                            'fiscalcode' => $fiscalcode,
+                            'phone' => $phone,
+                            'dob' => $dob,
+                            'via' => $via,
+                            'citta' => $citta,
+                            'cap' => $cap,
+                            'provincia' => $provincia,
+                            'causale' => $causale,
+                            'total_payable' => $importo]);
+        
+        return redirect()->route('front.importoLibero', ['id' => $buyer->id, 'page' => "salutesport"]);
+    }
+
+    public function salutesport_store_step2(Request $request){
+
+        $validated = $request->validate([
+            'signature' => ['required', 'string', 'min:5'],
+            'selected_declarations' => ['required', 'array', new ProjectDeclarationsRule(Product::find(1)->productDeclarations)],
+            'selected_declarations.*' => ['integer', 'exists:product_declarations,id'],
+        ]);
+
+        $buyer = ImportoLiberoBuyer::find($request->input('buyer_id'));
+        
+        $buyer->declarations = true;
+        $buyer->save();
+        return redirect()->route('front.importoLibero', ['id' => $buyer->id, 'page' => "salutesport"]);
     }
 
     public function importoLiberoPay($id){
