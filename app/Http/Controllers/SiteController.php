@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Notifications\EhealthEmail;
+use App\Notifications\SaluteSportEmail;
 
 use App\Models\Account;
 use App\Models\Product;
@@ -25,6 +26,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Illuminate\Support\Facades\Mail;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 
@@ -213,9 +215,9 @@ class SiteController extends Controller
                             'id' => 1,
                             'name' => "Sport&Salute",
                             'type' => ' ',
-                            'pre_declarations' => "",
+                            'pre_declarations' => "Io sottoscritto/a in qualità di assicurato della polizza Infortuni, in ottemperanza del Regolamento IVASS n. 40 del 02/08/2018 (Modificato ed Integrato dal Provvedimento IVASS N.97 del 04/08/2020), prima di essere vincolato da un contratto offerto mediante tecniche di comunicazione a distanza, dichiaro:",
                             'post_declarations' => "",
-                            'declarations' => Product::find(1)->productDeclarations,
+                            'declarations' => Product::find(999)->productDeclarations,
                             'hex_color' => "000000",
                             'steps' => "3"
                         ],
@@ -305,7 +307,7 @@ class SiteController extends Controller
 
         $validated = $request->validate([
             'signature' => ['required', 'string', 'min:5'],
-            'selected_declarations' => ['required', 'array', new ProjectDeclarationsRule(Product::find(1)->productDeclarations)],
+            'selected_declarations' => ['required', 'array', new ProjectDeclarationsRule(Product::find(999)->productDeclarations)],
             'selected_declarations.*' => ['integer', 'exists:product_declarations,id'],
         ]);
 
@@ -313,6 +315,67 @@ class SiteController extends Controller
         
         $buyer->declarations = true;
         $buyer->save();
+
+        switch($buyer->causale){
+            case "salutesport1":
+                $morte_da_infortuni = "€100.000,00";
+                $invalidita_permanente_infortuni = "€100.000,00";
+                $rimborso_infortuni = "€5.000,00";
+                $franchigia1 = "5%";
+                $franchigia2 = "€50";
+                break;
+            case "salutesport2":
+                $morte_da_infortuni = "€200.000,00";
+                $invalidita_permanente_infortuni = "€200.000,00";
+                $rimborso_infortuni = "€5.000,00";
+                $franchigia1 = "5%";
+                $franchigia2 = "€50";
+                break;
+            case "salutesport3";
+                $morte_da_infortuni = "€100.000,00";
+                $invalidita_permanente_infortuni = "€100.000,00";
+                $rimborso_infortuni = "€5.000,00";
+                $franchigia1 = "5%";
+                $franchigia2 = "€50";
+                break;
+            case "salutesport4";
+                $morte_da_infortuni = "€200.000,00";
+                $invalidita_permanente_infortuni = "€200.000,00";
+                $rimborso_infortuni = "€5.000,00";
+                $franchigia1 = "5%";
+                $franchigia2 = "€50";
+                break;
+        }
+
+        $product = Product::where('id', 999)->first();
+        $declarations = $product->productDeclarations;
+        $data = [
+            'title' => 'Dichiarazioni dell\'Assicurato',
+            'pre_declarations' => $product->pre_declarations,
+            'declarations' => $declarations,
+            'post_declarations' => "",
+            'declarations_signature' => $request->input('signature'),
+        ];
+
+        PDF::setOptions([
+            // 'dpi' => 150,
+            'defaultFont' => 'sans-serif',
+            'fontHeightRatio' => 1,
+            'isPhpEnabled' => true,
+            'isRemoteEnabled' => true
+        ]);
+
+        $pdf = PDF::loadView('template-declarations', $data);
+
+        $uniq = uniqid();
+        $filePath = 'pdfs/' . $uniq . '.pdf';
+        Storage::disk('private')->put($filePath, $pdf->stream());
+
+
+        Notification::route('mail', [
+            $buyer->email => $buyer->name." ".$buyer->surname,
+        ])->notify(new SaluteSportEmail($buyer, $morte_da_infortuni, $invalidita_permanente_infortuni, $rimborso_infortuni, $franchigia1, $franchigia2, $uniq));
+
         return redirect()->route('front.importoLibero', ['id' => $buyer->id, 'page' => "salutesport"]);
     }
 

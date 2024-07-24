@@ -1,7 +1,8 @@
 <template>
   <div>
   <div class="mt-8">
-    <!--<div v-html="product.pre_declarations"></div>-->
+    <br>
+    <div style="padding:10px" v-html="product.pre_declarations"></div>
     <form @submit.prevent="submit">
       <div class="overflow-x-auto p-1 w-full">
         <div class="grid justify-items-end">
@@ -10,6 +11,7 @@
             <input type="checkbox" v-model="selectAll" />
           </label>
         </div>
+        
         <table
           class="declaration-table table-auto w-full mx-auto border-collapse border-2 border-primary shadow rounded-lg mt-8 overflow-hidden"
         >
