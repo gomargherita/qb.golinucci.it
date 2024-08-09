@@ -2,7 +2,7 @@
     <img  src="https://firma.golinucci.it/html/Golinucci_70.png" width="30%" alt="Golinucci">
 </a>
 <p>Gentile Cliente {{$name}} {{$surname}} <br>
-                grazie per aver acquistato il programma assicurativo + Sport&Salute, tramite GOLINUCCI srl.<br><br>
+                grazie per aver acquistato il programma assicurativo BENEFIT, tramite GOLINUCCI srl.<br><br>
                 
                 <h1>Riepilogo informazioni:</h1><br>
 
