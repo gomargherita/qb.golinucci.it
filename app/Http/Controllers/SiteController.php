@@ -230,7 +230,7 @@ class SiteController extends Controller
                 }
                 
                 
-                if(str_starts_with($buyer->causale, "BENEFIT" && $buyer->declarations == false)){
+                if($buyer->causale == "BENEFIT" && $buyer->declarations == false){
                     $buyer->declarations = true;
                     $buyer->save();
 
