@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 use App\Notifications\EhealthEmail;
+use App\Notifications\BenefitEmail;
+
 use App\Notifications\SaluteSportEmail;
 
 use App\Models\Account;
@@ -226,7 +228,16 @@ class SiteController extends Controller
                         'buyer_id' => $id,
                     ]);
                 }
-                //if(str_starts_with($buyer->causale, "salutesport" && $buyer->declarations == true))
+                
+                
+                if(str_starts_with($buyer->causale, "BENEFIT" && $buyer->declarations == false)){
+                    $buyer->declarations = true;
+                    $buyer->save();
+
+                    Notification::route('mail', [
+                        $buyer->email => $buyer->name." ".$buyer->surname,
+                    ])->notify(new BenefitEmail($buyer));
+                }
                 
                 return Inertia::render('Sites/importo_libero_completo');
             }
@@ -247,6 +258,7 @@ class SiteController extends Controller
             return Inertia::render('Sites/importo_liberoStep2', ['paypal_client_id' => $paypalClientId, 'id' => $id, 'total_payable' => $buyer->total_payable,], );
         }
     }
+
     public function importo_liberoStep1($page, FreeAmount $freeamount = null){
         if($freeamount == null){
             return Inertia::render('Sites/'.$page);
