@@ -9,8 +9,13 @@
                 Persona assicurata<br>
                 Nome:               {{$name}}<br>
                 Cognome:            {{$surname}}<br>
+                Codice Fiscale:     {{$fiscalcode}}<br>
+                Via:                {{$via}}<br>
+                Città:              {{$citta}}<br>
+                Cap:                {{$cap}}<br>
+                Provincia:          {{$provincia}}<br><br>
 
-                A seguire documenti polizza e informazioni per attivare il programma Benefit.
+                In allegato le informazioni per attivare il programma Benefit.<br><br>
 
                 Distinti Saluti<br>
                 Golinucci srl<br>

@@ -274,11 +274,32 @@ class SiteController extends Controller
         $importo = $request->input('total_payable');
         $causale = $request->input('causale');
 
-        $buyer = ImportoLiberoBuyer::create(['name' => $name,
+        if($causale == 'BENEFIT'){
+            $fiscalcode = $request->input('fiscalcode');
+            $via = $request->input('via');
+            $citta = $request->input('citta');
+            $cap = $request->input('cap');
+            $provincia = $request->input('provincia');
+
+            $buyer = ImportoLiberoBuyer::create(['name' => $name,
                             'surname' => $surname,
                             'email' => $email,
+                            'fiscalcode' => $fiscalcode,
+                            'via' => $via,
+                            'citta' => $citta,
+                            'cap' => $cap,
+                            'provincia' => $provincia,
                             'causale' => $causale,
-                            'total_payable' => $importo]);
+                            'total_payable' => $importo]);  
+                            
+        }
+        else{
+            $buyer = ImportoLiberoBuyer::create(['name' => $name,
+                                'surname' => $surname,
+                                'email' => $email,
+                                'causale' => $causale,
+                                'total_payable' => $importo]);
+        }
         
         return redirect()->route('front.importoLibero', ['id' => $buyer->id]);
     }

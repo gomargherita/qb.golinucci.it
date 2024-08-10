@@ -12,6 +12,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Models\RenewalsEmail;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 
 class BenefitEmail extends Notification implements ShouldQueue
@@ -22,6 +23,13 @@ class BenefitEmail extends Notification implements ShouldQueue
     protected $code;
     protected $name;
     protected $surname;
+    protected $fiscal_code;
+    protected $via;
+    protected $citta;
+    protected $cap;
+    protected $provincia;
+    
+    
 
 
     /**
@@ -35,6 +43,12 @@ class BenefitEmail extends Notification implements ShouldQueue
         $this->code = $buyer->ehealth_code;
         $this->name = $buyer->name;
         $this->surname = $buyer->surname;
+        $this->fiscal_code = $buyer->fiscal_code;
+        $this->via = $buyer->via;
+        $this->citta = $buyer->citta;
+        $this->cap = $buyer->cap;
+        $this->provincia = $buyer->provincia;
+
         
         //error_log($cart->cart->product);die;
     }
@@ -58,6 +72,9 @@ class BenefitEmail extends Notification implements ShouldQueue
      */
     public function toMail($notifiable)
     {
+        $storage_path = Storage::disk('private')->getAdapter()->getPathPrefix();
+        $file_path = $storage_path . "DEM_BENEFIT_golinucci.pdf.pdf";
+        
         $data = [
             'name' => $this->name,
             'surname' => $this->surname,
@@ -70,9 +87,16 @@ class BenefitEmail extends Notification implements ShouldQueue
                 ->view('benefit', [
                     'name' => $this->name,
                     'surname' => $this->surname,
-                    'code' => $this->code
+                    'code' => $this->code,
+                    'fiscal_code' => $this->fiscal_code,
+                    'via' => $this->via,
+                    'citta' => $this->citta,
+                    'cap' => $this->cap,
+                    'provincia' => $this->provincia,
                     ])
-                ->from([$cc => 'Golinucci SRL']);;
+                ->from([$cc => 'Golinucci SRL'])
+                ->attach($file_path);
+
         }
 
     /**

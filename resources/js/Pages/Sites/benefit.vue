@@ -45,7 +45,30 @@
 </div><div>
     <label for="email">Email:</label><br>
     <input type="email" id="email" name="email" v-model="formData.email" style="width:100%" required><br><br>
-</div><div style="display:none">
+</div>
+<div>
+<label for="fiscalcode">Codice fiscale:</label><br>
+    <input type="text" id="fiscalcode" name="fiscalcode" v-model="formData.fiscalcode" style="width:100%" required><br><br>
+</div>
+
+<div>
+<label for="via">Indirizzo (Via):</label><br>
+    <input type="text" id="via" name="via" v-model="formData.via" style="width:100%" required><br><br>
+</div>
+<div>
+<label for="citta">Indirizzo (Città):</label><br>
+    <input type="text" id="citta" name="citta" v-model="formData.citta" style="width:100%" required><br><br>
+</div>
+<div>
+<label for="cap">Indirizzo (CAP):</label><br>
+    <input type="text" id="cap" name="cap" v-model="formData.cap" style="width:100%" required><br><br>
+</div>
+<div>
+<label for="provincia">Indirizzo (Provincia):</label><br>
+    <input type="text" id="provincia" name="provincia" v-model="formData.provincia" style="width:100%" required><br><br>
+</div>
+
+<div style="display:none">
     <label for="causale">Causale:</label><br>
     <input type="text" id="causale" name="causale" v-model="formData.causale" style="width:100%" required><br><br>
 </div>
@@ -84,6 +107,11 @@ export default {
         email: "",
         name: "",
         surname: "",
+        fiscalcode: "",
+        via: "",
+        citta: "",
+        cap: "",
+        provincia: "",
         total_payable: "50.00",
         causale: "BENEFIT",
       }),
@@ -99,6 +127,11 @@ export default {
           email: this.formData.email,
           total_payable: this.formData.total_payable,
           causale: this.formData.causale,
+          fiscalcode: this.formData.fiscalcode,
+          via: this.formData.via,
+          citta: this.formData.citta,
+          cap: this.formData.cap,
+          provincia: this.formData.provincia,
         }),
         {
           preserveScroll: (page) => Object.keys(page.props.errors).length,
