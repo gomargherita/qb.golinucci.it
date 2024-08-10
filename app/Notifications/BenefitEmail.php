@@ -73,7 +73,7 @@ class BenefitEmail extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         $storage_path = Storage::disk('private')->getAdapter()->getPathPrefix();
-        $file_path = $storage_path . "DEM_BENEFIT_golinucci.pdf.pdf";
+        $file_path = $storage_path . "DEM_BENEFIT_golinucci.pdf";
         
         $data = [
             'name' => $this->name,
