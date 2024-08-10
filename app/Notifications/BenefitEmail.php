@@ -43,7 +43,7 @@ class BenefitEmail extends Notification implements ShouldQueue
         $this->code = $buyer->ehealth_code;
         $this->name = $buyer->name;
         $this->surname = $buyer->surname;
-        $this->fiscal_code = $buyer->fiscal_code;
+        $this->fiscal_code = $buyer->fiscalcode;
         $this->via = $buyer->via;
         $this->citta = $buyer->citta;
         $this->cap = $buyer->cap;
@@ -88,7 +88,7 @@ class BenefitEmail extends Notification implements ShouldQueue
                     'name' => $this->name,
                     'surname' => $this->surname,
                     'code' => $this->code,
-                    'fiscal_code' => $this->fiscal_code,
+                    'fiscal_code' => $this->fiscalcode,
                     'via' => $this->via,
                     'citta' => $this->citta,
                     'cap' => $this->cap,
