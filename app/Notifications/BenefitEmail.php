@@ -88,7 +88,7 @@ class BenefitEmail extends Notification implements ShouldQueue
                     'name' => $this->name,
                     'surname' => $this->surname,
                     'code' => $this->code,
-                    'fiscal_code' => $this->fiscalcode,
+                    'fiscalcode' => $this->fiscalcode,
                     'via' => $this->via,
                     'citta' => $this->citta,
                     'cap' => $this->cap,
