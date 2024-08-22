@@ -176,7 +176,13 @@ class LloydsDoprintService
             ",",
             "."
         );
-        $RiskDetailsLB->getElementsByTagName('LimitIndemnitySumInsured')->item(0)->textContent = '€ ' . $indemnity_limit . '=';
+
+        if($cart->product->id == 5){
+            $RiskDetailsLB->getElementsByTagName('LimitIndemnitySumInsured')->item(0)->textContent = '€ ' . $indemnity_limit . " per sinistro / € 3.000.000,00 per anno";
+        }
+        else{
+            $RiskDetailsLB->getElementsByTagName('LimitIndemnitySumInsured')->item(0)->textContent = '€ ' . $indemnity_limit;
+        }
 
         $RiskPremiumDetails = $xml->getElementsByTagName('RiskPremiumDetails')->item(0);
         $RiskPremiumDetails->getElementsByTagName('Premium')->item(0)->textContent = $cart_details['price'];

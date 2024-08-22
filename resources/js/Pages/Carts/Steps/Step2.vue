@@ -32,10 +32,15 @@
                 v-for="(offer, index) in product.offers"
                 class="odd:bg-white even:bg-slate-100 uppercase"
               >
-                <td
+                <td v-if="product.id != 5"
                   class="p-4 border border-primary"
                   v-text="$filters.formatPrice(offer.indemnity_limit)"
                 ></td>
+                <td v-if="product.id == 5"
+                  class="p-4 border border-primary"
+                  v-html="'<strong>'+$filters.formatPrice(offer.indemnity_limit) + '</strong>' + ' per sinistro <br /> <strong>3.000.000,00 €</strong> per anno'"
+                  ></td>
+                
                 <td v-if="product.id == 1"
                   class="p-4 border border-primary"
                   v-text="$filters.formatPrice(offer.indemnity_limit_patrimonial)"

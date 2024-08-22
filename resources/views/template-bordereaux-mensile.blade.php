@@ -466,7 +466,12 @@
             <td></td>
             <td></td>
             <td></td>
-            <td>{{ '€ ' . number_format($payment->indemnity_limit, 2, ',', '.') }}</td>
+            <td>
+                @if($payment->pid == 1)
+                {{ '€ ' . number_format($payment->indemnity_limit, 2, ',', '.') }}
+                @else
+                {{ '€ ' . number_format($payment->indemnity_limit, 2, ',', '.') }} / € 3.000.000,00</td>
+                @endif
 
             <td></td>
             <td></td>
@@ -556,6 +561,7 @@
             <td></td>
             <td>{{ date('d/m/Y', strtotime($payment->retroactivity)) }}</td>
             <td>
+                @if($payment->pid == 1)
                 @switch($payment->tipoattivita)
                 @case(1)
                 A
@@ -566,11 +572,7 @@
                 @break
 
                 @case(3)
-                @if($payment->pid == 1)
                 D
-                @else
-                GM
-                @endif
                 
                 @break
 
@@ -590,25 +592,30 @@
 
 
                 @endswitch
+                @endif
+
+                @if($payment->pid == 5)
+                GM
+                @endif
             </td>
             <td>
                 @if($payment->pid == 1)
                 @switch($payment->authority_type)
-                
                 @case(1)
                 Public
                 @break
-
                 @case(2)
                 Private
                 @break
                 @endswitch
-                @else
+                @endif
+
+                @if($payment->pid == 5)
                 Giovane Medico
                 @endif
-                
             </td>
             <td>
+                @if($payment->pid == 1)
                 @switch($payment->tipoattivita)
                 @case(1)
                 Dirigente Medico
@@ -619,11 +626,7 @@
                 @break
 
                 @case(3)
-                @if($payment->pid == 1)
                     Medico Specialista in Formazione
-                @else
-                    Giovane Medico
-                @endif
                 @break
 
                 @case(4)
@@ -639,6 +642,11 @@
                 @break
 
                 @endswitch
+                @endif
+
+                @if($payment->pid == 5)
+                Giovane Medico
+                @endif
             </td>
             <td>
                 @switch($payment->pid)
@@ -659,9 +667,13 @@
                 @case(3)
                 Medico in formazione specifica in medicina generale 
                 @break
-                 {{ $payment->specialGM }}
+                 
                 @endswitch
                 @endswitch
+
+                @if($payment->pid == 5)
+                {{ $payment->specialGM }}
+                @endif
             </td>
         </tr>
         @endforeach

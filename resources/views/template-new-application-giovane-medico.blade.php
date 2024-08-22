@@ -123,7 +123,7 @@
                 <h3>Condizioni di Polizza</h3>
                 <ol>
                     <li>
-                        MASSIMALE DI RISARCIMENTO: &euro; {{ $indemnity_limit }}
+                        MASSIMALE DI RISARCIMENTO: &euro; {{ $indemnity_limit }} per sinistro / &euro; 3.000.000,00 per anno
                     </li>
                     <li>
                         PERIODO DI RETROATTIVITA': {{ $retroactivity }} ANNI

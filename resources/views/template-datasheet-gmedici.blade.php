@@ -55,7 +55,7 @@
                 <td style="padding: 10px;">LIMITE DI INDENNIZZO<br>per DANNI e PERDITE PATRIMONIALI<br><b>per attività professionale sanitaria</b>:</td>
                 <td style="padding: 10px;">
                     <b>{{ $indemnity_limit }} &euro;</b> per singola richiesta di indennizzo<br>
-                    <b>{{ $indemnity_limit }} &euro;</b> complessivo per il periodo di polizza<br>
+                    <b>3.000.000,00 &euro;</b> complessivo per il periodo di polizza<br>
                 </td>
             </tr>
             <tr>
