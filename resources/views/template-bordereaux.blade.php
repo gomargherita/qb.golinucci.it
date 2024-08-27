@@ -118,16 +118,18 @@
             <td>{{ $payment->total_payable }}</td>
             <td>{{ $payment->payment_no }}</td>
             <td>
-                @switch($payment->authority_type)
-                @case(1)
-                50464394
-                @break
+                @if ($payment->pid == 1)
+                    @switch($payment->authority_type)
+                    @case(1)
+                    50464394
+                    @break
 
-                @case(2)
-                50464460
-                @break
+                    @case(2)
+                    50464460
+                    @break
 
-                @endswitch
+                    @endswitch
+                @endif
                 @if ($payment->pid == 5)
                 50990086
                 @endif
