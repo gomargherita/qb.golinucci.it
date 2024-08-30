@@ -45,6 +45,8 @@
       </div>
     </div>
 
+    <a href="/admin/importo_libero">Importo libero</a>
+
     <div class="mt-6 bg-white rounded shadow overflow-x-auto">
       <div class="bg-white rounded-md shadow overflow-hidden">
         <h1 class="mb-8 text-3xl font-bold -mb-8 -mr-6 p-8">Bancari</h1>

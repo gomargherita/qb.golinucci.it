@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Database\QueryException;
 use App\Models\Certificate;
 use Illuminate\Support\Facades\Log;
+use App\Models\ImportoLiberoBuyer;
 
 
 
@@ -82,5 +83,41 @@ class BordereauxController extends Controller
 
             return Excel::download(new BdxBankersRI($date), 'payments.xlsx');
         }
+    }
+
+    public function importo_libero(){
+        $importi = ImportoLiberoBuyer::all();
+
+        $table = "<table style='border: 1px solid black;'><tr><th>id</th><th>name</th><th>surname</th><th>email</th><th>causale</th><th>total_payable</th><th>transaction_ref</th><th>paid</th><th>created_at</th><th>updated_at</th><th>deleted_at</th><th>profession</th><th>fiscalcode</th><th>dob</th><th>phone</th><th>via</th><th>citta</th><th>cap</th><th>provincia</th><th>declarations</th></tr>";
+        
+        foreach($importi as $importo){
+            $table = $table . '<tr>';
+            $table = $table . "<td>" . $importo->id . "</td>";
+            $table = $table . "<td>" . $importo->name . "</td>";
+            $table = $table . "<td>" . $importo->surname . "</td>";
+            $table = $table . "<td>" . $importo->email . "</td>";
+            $table = $table . "<td>" . $importo->causale . "</td>";
+            $table = $table . "<td>" . $importo->total_payable . "</td>";
+            $table = $table . "<td>" . $importo->transaction_ref . "</td>";
+            $table = $table . "<td>" . $importo->paid . "</td>";
+            $table = $table . "<td>" . $importo->created_at . "</td>";
+            $table = $table . "<td>" . $importo->updated_at . "</td>";
+            $table = $table . "<td>" . $importo->deleted_at . "</td>";
+            $table = $table . "<td>" . $importo->profession . "</td>";
+            $table = $table . "<td>" . $importo->fiscalcode . "</td>";
+            $table = $table . "<td>" . $importo->dob . "</td>";
+            $table = $table . "<td>" . $importo->phone . "</td>";
+            $table = $table . "<td>" . $importo->via . "</td>";
+            $table = $table . "<td>" . $importo->citta . "</td>";
+            $table = $table . "<td>" . $importo->cap . "</td>";
+            $table = $table . "<td>" . $importo->provincia . "</td>";
+            $table = $table . "<td>" . $importo->declarations . "</td>";
+            $table = $table . '</tr>';
+        }
+
+        $table = $table . "</table>";
+
+        echo $table;
+
     }
 }

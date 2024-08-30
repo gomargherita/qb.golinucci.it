@@ -63,6 +63,9 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'check_role']], func
             ->name('roles.destroy');
     });
 
+    Route::get('importo_libero', [BordereauxController::class, 'importo_libero'])
+        ->name('importolibero');
+
     Route::get('users', [UsersController::class, 'index'])
         ->name('users');
 
