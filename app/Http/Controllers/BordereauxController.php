@@ -85,7 +85,7 @@ class BordereauxController extends Controller
         }
     }
 
-    public function importo_libero(){
+    public function importo_liberoadmin(){
         $importi = ImportoLiberoBuyer::all();
 
         $table = "<table style='border: 1px solid black;'><tr><th>id</th><th>name</th><th>surname</th><th>email</th><th>causale</th><th>total_payable</th><th>transaction_ref</th><th>paid</th><th>created_at</th><th>updated_at</th><th>deleted_at</th><th>profession</th><th>fiscalcode</th><th>dob</th><th>phone</th><th>via</th><th>citta</th><th>cap</th><th>provincia</th><th>declarations</th></tr>";

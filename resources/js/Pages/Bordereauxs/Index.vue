@@ -45,7 +45,7 @@
       </div>
     </div>
 
-    <a href="/admin/importo_libero">Importo libero</a>
+    <a href="/admin/importo_liberoadmin">Importo libero</a>
 
     <div class="mt-6 bg-white rounded shadow overflow-x-auto">
       <div class="bg-white rounded-md shadow overflow-hidden">
