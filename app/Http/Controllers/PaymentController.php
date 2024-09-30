@@ -71,7 +71,7 @@ class PaymentController extends Controller
 
         try{
             if ($payment->update($validated)) {
-                if ($validated['paid'] && $payment->cart->product_step_id == 4) {
+                if ($validated['paid']) {
                     // genero e salvo il pdf con proforma fattura dell'acquisto
                     $payment->updatePaymentPaymentNo();
                     if($cart->product_id == 1 || $cart->product_id == 5){
@@ -89,9 +89,9 @@ class PaymentController extends Controller
                 }
             }
 
-            return Redirect::back()->with('success', 'Payment updated.');
+            return Redirect::back()->with('success', 'Pagamento aggiornato.');
         } catch(\Exception $e){
-            return Redirect::back()->with('error', 'Errore: il numero di certificato è già usato da qualcun altro?');
+            return Redirect::back()->with('error', 'Errore: il numero di pagamento è già usato un altro carrello?');
         }
     }
 

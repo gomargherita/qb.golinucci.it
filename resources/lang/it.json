@@ -33,7 +33,7 @@
     "Create": "Crea",
     "Create for": "Crea per",
     "Update": "Aggiorna",
-    "Delete": "Cancella",
+    "Delete": "Elimina",
     "Forgot password": "Password dimenticata",
     "Confirm password": "Conferma password",
     "Forgot your password? Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.": "Password dimenticata? Inserisci il tuo indirizzo email e ti invieremo un link di reset della password che ti permetterà di sceglierne una nuova.",
@@ -78,5 +78,10 @@
     "No account? Register": "Non hai un account? Registrati",
     "Already registered?": "Già registrato?",
     "User data": "Dati utente",
-    "My products": "I miei prodotti"
+    "My products": "I miei prodotti",
+    "Related User": "Utente",
+    "Product Offer": "Offerta Prodotto",
+    "Related Payment": "Pagamento",
+    "Documents": "Documenti",
+    "Certificate": "Polizza"
 }

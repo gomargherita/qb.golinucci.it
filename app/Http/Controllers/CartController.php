@@ -832,7 +832,9 @@ class CartController extends Controller
             // 'can' => [
             //     'delete_cart' => $currentUser->can('carts.delete')
             // ],
-            'start_date' => $cart->certificate?->start_validity_date?->format('Y-m-d'),
+            'start_date' => $cart->renewal_date?->format('Y-m-d'),
+            'retroactivity' => $cart->retroactivity?->format('Y-m-d'),
+
             'end_date' => $cart->certificate?->end_validity_date?->format('Y-m-d'),
             
             'cart' => [
@@ -886,34 +888,22 @@ class CartController extends Controller
     public function updateDecorrenza(UpdateDecorrenzaRequest $request, Cart $cart)
     {
         //$cart->update($request->validated());
-        //echo "cio";
         //dd($request);return;
         if($cart->product->product_type_id == 1 ){
-            $certificate = Certificate::firstOrCreate(
-                ['cart_id' => $cart->id],
-                [
-                    'product_id' => $cart->product_id,
-                    'product_offer_id' => $cart->product_offer_id,
-                    'contract_id' => $cart->productOffer->contract->id,
-                    'start_validity_date' => $cart->renewal_date,
-                    'retroactivity' => $cart->retroactivity
-                ]
-            );
-
-            if($request->startDate != null){
-                $certificate->start_validity_date = $request->startDate;
+            $certificate = Certificate::where('cart_id', $cart->id)->first();
+            if($certificate != null){
+                return Redirect::back()->with('error', 'Il certificato Lloyd\'s è già stato emesso. Eliminare il certificato per poter cambiare decorrenza.');
             }
 
-            if($request->endDate != null){
-                $certificate->end_validity_date = $request->endDate;
+            if($request->startDate != null){
+                $cart->renewal_date = $request->startDate;
             }
 
             if($request->retroactivity != null){
                 $cart->retroactivity = $request->retroactivity;
-                $cart->save();
             }
+            $cart->save();
             //dd($cart);
-            $certificate->save();
             return Redirect::back()->with('success', 'Date di decorrenza aggiornate.')->with('reload', true);
         }
 

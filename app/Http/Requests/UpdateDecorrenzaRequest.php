@@ -26,7 +26,6 @@ class UpdateDecorrenzaRequest extends FormRequest
         return [
             'cart_id' => ['required'],
             'startDate' => ['required'],
-            'endDate' => ['required'],
         ];
     }
 }

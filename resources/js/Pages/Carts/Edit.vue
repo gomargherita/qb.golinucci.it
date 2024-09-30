@@ -16,8 +16,8 @@
     <div class="mt-6 bg-white rounded shadow overflow-x-auto">
       <table class="w-full whitespace-nowrap">
         <tr class="text-left font-bold">
-          <th class="pb-4 pt-6 px-6">Last Name</th>
-          <th class="pb-4 pt-6 px-6">First Name</th>
+          <th class="pb-4 pt-6 px-6">{{__("Last Name")}}</th>
+          <th class="pb-4 pt-6 px-6">{{__("First Name")}}</th>
           <th class="pb-4 pt-6 px-6" colspan="2">Email</th>
         </tr>
         <tr v-if="user" :key="user.id" class="hover:bg-gray-100 focus-within:bg-gray-100">
@@ -66,14 +66,15 @@
           <td class="px-6 py-4 border-t" colspan="4">No users found.</td>
         </tr>
       </table>
-    </div><br>
+    </div>
 
+    <h2 class="mt-12 text-2xl font-bold">Gestione</h2><br>
     <div class="bg-white rounded-md shadow overflow-hidden">
       <div class="flex flex-wrap -mb-8 -mr-6 p-8">
         <div>
           <label class="font-bold">{{ __("Product") }}</label
           ><br />
-          <div v-text="cart.product.name" class="pb-8 pr-6 w-full"></div>
+          <div v-text="cart.product.name" class="pb-2 pr-6 w-full"></div>
         </div>
         <div>
           <label class="font-bold">{{ __("Product Offer") }}</label
@@ -84,21 +85,27 @@
                 ? this.cart.product_offer?.name
                 : 'Offerta Prodotto non ancora scelta'
             "
-            class="pb-8 pr-6 w-full"
+            class="pb-2 pr-6 w-full"
           ></div>
         </div>
         <div>
-          <div class="pb-8 pr-6 w-full">
-            <a :href="cartUrl" target="_blank" class="btn-gol-primary">Cart Url</a>
-          </div>
+          <label class="font-bold">Codice univoco carrello</label
+          ><br />
+          <div
+            v-text="
+              this.cart.cart_ref
+            "
+            class="pb-2 pr-6 w-full"
+          ></div>
         </div>
+
       </div>
       <form @submit.prevent="update">
-        <div class="flex flex-wrap -mb-8 -mr-6 p-8">
+        <div class="flex flex-wrap -mb-8 -mr-6 px-8 pt-4">
           <select-input
             v-model="form.product_step_id"
             :error="form.errors.product_step_id"
-            class="pb-8 pr-6 w-full lg:w-1/2"
+            class="pb-4 pr-6 w-full lg:w-1/2 font-bold"
             label="Step"
           >
             <option
@@ -109,38 +116,74 @@
               {{ product_step.step_number }}. {{ product_step.step_name }}
             </option></select-input
           >
+
         </div>
+        <div class="flex flex-wrap -mb-8 -mr-6 px-8 pt-8 pb-11">Modificare lo step del carrello con attenzione, può causare problemi.</div>
+
         <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
-          <button
-            v-if="!cart.deleted_at"
-            class="text-red-600 hover:underline"
-            tabindex="-1"
-            type="button"
-            @click="destroy"
-          >
-            {{ __("Delete") }} {{ __("Cart") }}
-          </button>
+          <div class="pb-2 flex flex-wrap">
+        <div>
+          <label class="font-bold">Admin</label><br>
+          <div class="pb-2 pr-6 w-full py-2">
+            <a :href="cartProgression" class="btn-gol-primary">Cart URL</a>
+          </div>
+        </div>
+        <div>
+          <label class="font-bold">Cliente</label><br>
+          <div class="pb-2 pr-6 w-full py-2">
+            <a :href="cartUrl" target="_blank" class="btn-gol-primary">Cart URL</a>
+          </div>
+        </div>
+        
+      </div>
           <loading-button
             :loading="form.processing"
             class="btn-gol-primary ml-auto"
             type="submit"
-            >{{ __("Update") }} {{ __("Cart") }}</loading-button
+            >Applica step Carrello</loading-button
           >
         </div>
       </form>
     </div>
-    <h2 class="mt-12 text-2xl font-bold">{{ __("Related Payment") }}</h2>
+    <h2 class="mt-12 text-2xl font-bold">{{ __("Related Payment") }} {{this.cart.payment?.payment_no}}</h2>
 
     <div class="mt-6 bg-white rounded shadow overflow-x-auto">
       <div class="bg-white rounded-md shadow overflow-hidden">
-        <div v-if="!cart.payment" class="flex flex-wrap p-8">No payment yet.</div>
+        <div v-if="!cart.payment" class="flex flex-wrap p-8">Pagamento non ancora presente.</div>
         <form v-if="cart.payment" @submit.prevent="update_payment">
           <div class="flex flex-wrap -mb-8 -mr-6 p-8">
+            <div class="pr-6 lg:w-1/2">
+              <label class="font-bold">Importo Pagamento</label
+              ><br />
+              <div
+                v-text="
+                  this.cart.payment?.total_payable
+                    ? '€ '+this.cart.payment?.total_payable
+                    : 'Importo non ancora disponibile'
+                "
+                class="pb-2 pr-6 w-full"
+              ></div>
+            </div>
+
+            <div class="pr-6 pb-4 lg:w-1/2">
+              <label class="font-bold">Numero di pagamento assegnato</label
+              ><br />
+              <div
+                v-text="
+                  this.cart.payment?.payment_no
+                    ? this.cart.payment?.payment_no
+                    : 'Numero certificato non ancora assegnato.'
+                "
+                class="pb-2 pr-6 w-full"
+              ></div>
+            </div>
+            
+            
             <select-input
               v-model="form_payment.payment_gateway_id"
               :error="form_payment.errors.payment_gateway_id"
-              class="pb-8 pr-6 w-full lg:w-1/2"
-              label="Payment Gateway"
+              class="pb-8 pr-6 w-full lg:w-1/2 font-bold"
+              label="Metodo di Pagamento"
             >
               <option
                 v-for="payment_gateway in payment_gateways"
@@ -150,67 +193,45 @@
                 {{ payment_gateway.name }}
               </option></select-input
             >
-
             <text-input
               v-model="form_payment.transaction_ref"
               :error="form_payment.errors.transaction_ref"
-              class="pb-8 pr-6 w-full lg:w-1/2"
-              label="Transaction ref"
+              class="pb-8 pr-6 w-full lg:w-1/2 font-bold"
+              label="Riferimento Transazione"
             />
             <checkbox-input
               v-model="form_payment.paid"
               :error="form_payment.errors.paid"
-              class="pb-8 pr-6 w-full lg:w-1/2"
+              class="pb-8 pr-6 w-full lg:w-1/2 font-bold"
               label="Paid"
               :checked="form_payment.paid"
             />
             <text-input
               v-model="form_payment.paid_at"
               :error="form_payment.errors.paid_at"
-              class="pb-8 pr-6 w-full lg:w-1/2"
+              class="pb-8 pr-6 w-full lg:w-1/2 font-bold"
               label="Paid at"
               type="date"
               pattern="\d{4}-\d{2}-\d{2}"
             />
-
-            <div class="pb-8 pr-6 w-full lg:w-full">
-              <p class="mb-2">
-                <b>Importo pagamento</b>: {{ this.cart.payment?.total_payable }}<br />
-                <b>Numero certificato di pagamento assegnato:
-                  
-                  {{ this.cart.payment?.payment_no }}
-                </b>
-              <br><br>
-              <template v-if="cart.product.product_type_id == 1">
-                <text-input
+            <text-input
                   v-model="form_payment.payment_no"
                   :error="form_payment.errors.payment_no"
-                  class="pb-8 pr-6 w-full lg:w-1/2"
-                  label="Modifica numero pagamento"
-                  disabled/>
-              </template>
-              <template v-if="cart.product.product_type_id == 2">
-                <text-input
-                  v-model="form_payment.payment_no"
-                  :error="form_payment.errors.payment_no"
-                  class="pb-8 pr-6 w-full lg:w-1/2"
+                  class="pb-8 pr-6 w-full lg:w-1/2 font-bold"
                   label="Modifica numero pagamento"
                   />
-              </template>
-              </p>
+            
+
+            <div class="pb-8 pr-6 w-full lg:w-full flex flex-wrap">
+
+
+              
+                
               <p class="mb-2">
-                <b class="text-red-500">Attenzione!</b>: prima di segnare un pagamento
-                come pagato controllare che il
-                <b>metodo di pagamento sia corretto</b> perché non sarà più possibile
-                correggere a mano il numero di certificato di pagamento.<br />
-                Ricordare che con il metodo di pagamento con bonifico bancario, una volta
-                segnato il pagamento come pagato, la procedura invia al cliente una mail
-                che conferma il pagamento e fa procedere il cliente dallo step 5.<br />
-                In caso di problemi e di prenotazione di un numero di certificato
-                sbagliato è possibile ricorrere alla cancellazione del record di pagamento
-                (da usare con parsimonia, poiché serve poi anche cambiare lo step del
-                carrello per ricreare il record di pagamento SE E SOLO SE il cliente non
-                ha ancora proceduto alla generazione del certificato Lloyds).
+                <br>
+                <b class="text-red-500">Attenzione!</b><br>
+                Il pagamento tramite bonifico bancario invia una email al cliente una volta segnato come pagato.<br>
+                Se si elimina il pagamento ricordarsi il numero di certificato che viene liberato se era stato assegnato.
               </p>
             </div>
           </div>
@@ -231,92 +252,89 @@
             >
           </div>
         </form>
-        <br><br>
-        <form  @submit.prevent="update_decorrenza" >
+        
 
-          <p class="mt-6 bg-white rounded shadow overflow-x-auto px-8 py-4" v-if="cart.product.id == 1">Attenzione: modificare queste date solo se il carrello è allo step 4.</p>
-          <div class="mt-6 bg-white rounded shadow overflow-x-auto px-8 py-4">
-            <div class="flex flex-wrap ">
-              <text-input
-                v-model="form_update_decorrenza.startDate"
-                :error="form_update_decorrenza.errors.startDate"
-                class="pb-8 pr-6 w-full lg:w-1/2"
-                label="Data di inizio decorrenza"
-                type="date"
-                pattern="\d{4}-\d{2}-\d{2}"
-                :customDate=start_date
-              />
-            </div>
-            
-            <div class="flex flex-wrap ">
-              <text-input
-                v-model="form_update_decorrenza.endDate"
-                :error="form_update_decorrenza.errors.endDate"
-                class="pb-8 pr-6 w-full lg:w-1/2"
-                label="Data di fine decorrenza"
-                type="date"
-                pattern="\d{4}-\d{2}-\d{2}"
-                :customDate=end_date
-              />
-            </div>
-            <div v-if="cart.product.id == 1" class="flex flex-wrap ">
-              <text-input
-                v-model="form_update_decorrenza.retroactivity"
-                :error="form_update_decorrenza.errors.retroactivity"
-                class="pb-8 pr-6 w-full lg:w-1/2"
-                label="Retroattività"
-                type="date"
-                pattern="\d{4}-\d{2}-\d{2}"
-                :customDate=retroactivity
-              />
-            </div>
-            <div>
-              <div class="flex items-center ">
-                
-                <a @click="update_decorrenza" target="_blank" class="btn-gol-primary">Aggiorna date di decorrenza</a>
-              </div>
-          </div>
-          <br />
-          <div v-if="cart.product.id == 1 || cart.product.id == 5" class="flex flex-wrap ">
-
-
-            <a @click="generate_lloyds" target="_blank" class="btn-gol-primary">Genera certificato Lloyd's</a>
-            </div><br />
-            <p>Generare il certificato solo se il carrello è allo step 5.</p>
-          
-
-          </div>
-
-          <div v-if="cart.product.product_type_id == 2">
-              <div class="flex items-center px-8 py-4 border-t border-gray-100 ">
-                <a @click="send_email" target="_blank" class="btn-gol-primary  ml-auto">Invia email con il certificato</a>
-              </div>
-          </div>
-        <div v-if="cart.product.product_type_id == 2">
-          <div class="flex items-center px-8 py-4 border-t border-gray-100 ">
-                <a @click="certificate_update" target="_blank" class="btn-gol-primary  ml-auto">Aggiorna certificato</a>
-          </div>
-          <div v-if="cart.product.product_type_id == 2">
-          <div class="flex items-center px-8 py-4 border-t border-gray-100 ">
-                <a @click="send_first_email(2)" target="_blank" class="btn-gol-primary  ml-auto">ER - Manda email con credenziali rinnovo</a>
-          </div>
-          <div class="flex items-center px-8 py-4 border-t border-gray-100 ">
-                <a @click="send_first_email(4)" target="_blank" class="btn-gol-primary  ml-auto">RI - Manda email con credenziali rinnovo</a>
-          </div>
-          </div>
-        </div>
-
-        </form>
       </div>
     </div>
 
+    
     <h2 class="mt-12 text-2xl font-bold">{{ __("Certificate") }}</h2>
 
-    <div class="mt-6 bg-white rounded shadow overflow-x-auto">
-      <div class="bg-white rounded-md shadow overflow-hidden">
-        <div v-if="!cart.certificate" class="flex flex-wrap p-8">No certificate yet.</div>
-        <div v-if="cart.certificate" class="flex flex-wrap p-8">Certificate data</div>
+    <div class="flex flex-wrap mt-6 bg-white rounded shadow ">
+        <form  @submit.prevent="update_decorrenza" >
+<div class="flex flex-wrap -mb-8 -mr-6 p-8">
+<div class="mb-6" v-if="cart.product.id == 1 || cart.product.id == 5">È possibile modificare queste date solo se il certificato non è ancora stato emesso.</div>
+    <text-input
+      v-model="form_update_decorrenza.startDate"
+      :error="form_update_decorrenza.errors.startDate"
+      class="pb-8 pr-6 w-full lg:w-1/2 font-bold"
+      label="Data di inizio decorrenza"
+      type="date"
+      pattern="\d{4}-\d{2}-\d{2}"
+      :customDate=start_date
+    />
+  
+    <text-input v-if="cart.product.product_type_id != 1"
+      v-model="form_update_decorrenza.endDate"
+      :error="form_update_decorrenza.errors.endDate"
+      class="pb-8 pr-6 w-full lg:w-1/2 font-bold"
+      label="Data di fine decorrenza"
+      type="date"
+      pattern="\d{4}-\d{2}-\d{2}"
+      :customDate=end_date
+    />
+    
+    <text-input v-if="cart.product.id == 1 || cart.product.id == 5"
+      v-model="form_update_decorrenza.retroactivity"
+      :error="form_update_decorrenza.errors.retroactivity"
+      class="pb-8 pr-6 w-full lg:w-1/2 font-bold"
+      label="Retroattività"
+      type="date"
+      pattern="\d{4}-\d{2}-\d{2}"
+      :customDate=retroactivity
+    />
+  <div>
+    
+</div>
+<br />
+<div v-if="cart.product.id == 1 || cart.product.id == 5" class="flex flex-wrap ">
+
+
+  <div class="flex items-center border-t border-gray-100 ml-auto">
+      <a @click="generate_lloyds" target="_blank" class="btn-gol-primary  ml-auto">Genera certificato Lloyd's</a>
+  </div>
+</div>
+
+<p class="inline-block px-4 py-5">Generare il certificato solo se il carrello è allo step 5.</p>
+  
+
+
+<div v-if="cart.product.product_type_id == 2">
+    <div class="flex items-center px-8 py-4 border-t border-gray-100 ">
+      <a @click="send_email" target="_blank" class="btn-gol-primary  ml-auto">Invia email con il certificato</a>
+    </div>
+</div>
+<div v-if="cart.product.product_type_id == 2">
+<div class="flex items-center px-8 py-4 border-t border-gray-100 ">
+      <a @click="certificate_update" target="_blank" class="btn-gol-primary  ml-auto">Aggiorna certificato</a>
+</div>
+<div v-if="cart.product.product_type_id == 2">
+<div class="flex items-center px-8 py-4 border-t border-gray-100 ">
+      <a @click="send_first_email(2)" target="_blank" class="btn-gol-primary  ml-auto">ER - Manda email con credenziali rinnovo</a>
+</div>
+<div class="flex items-center px-8 py-4 border-t border-gray-100 ">
+      <a @click="send_first_email(4)" target="_blank" class="btn-gol-primary  ml-auto">RI - Manda email con credenziali rinnovo</a>
+</div>
+</div>
+</div>
       </div>
+
+</form>
+        
+    </div>
+    <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
+      
+      <a @click="update_decorrenza" target="_blank" class="flex items-center btn-gol-primary ml-auto">Aggiorna date di decorrenza</a>
     </div>
 
     <h2 class="mt-12 text-2xl font-bold">{{ __("Documents") }}</h2>
@@ -324,40 +342,55 @@
     <div class="mt-6 bg-white rounded shadow overflow-x-auto">
       <div class="bg-white rounded-md shadow overflow-hidden">
         <div v-if="!cart.documents.declarations" class="flex flex-wrap p-8">
-          No declaration yet.
+          Dichiarazioni non ancora presenti.
         </div>
         <div v-if="cart.documents.declarations" class="flex flex-wrap p-8">
           <a :href="cart.documents.declarations" target="_blank" class="btn-gol-primary"
-            >Declarations</a
+            >Dichiarazioni</a
           >
         </div>
         <div v-if="!cart.documents.payment_certificate" class="flex flex-wrap p-8">
-          No payment certificate yet.
+          Certificato di pagamento non ancora presente.
         </div>
         <div v-if="cart.documents.payment_certificate" class="flex flex-wrap p-8">
           <a
             :href="cart.documents.payment_certificate"
             target="_blank"
             class="btn-gol-primary"
-            >Payment Certificate</a
+            >Certificato di Pagamento</a
           >
         </div>
         <div v-if="!cart.documents.certificate_final" class="flex flex-wrap p-8">
-          No certificate yet.
+          Polizza non ancora presente.
         </div>
         <div v-if="cart.documents.certificate_final" class="flex flex-wrap p-8">
           <a
             :href="cart.documents.certificate_final"
             target="_blank"
             class="btn-gol-primary"
-            >Certificate</a
+            >Polizza</a
           >
         </div>
       </div>
-    </div>
+
+      
 
     
   </div>
+<br>
+  <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100" style="display:inline-block">
+
+<button
+      v-if="!cart.deleted_at"
+      class="text-red-600 hover:underline"
+      tabindex="-1"
+      type="button"
+      @click="destroy"
+    >
+      {{ __("Delete") }} {{ __("Cart") }}
+    </button>
+    </div>
+</div>
 </template>
 
 <script>
@@ -383,6 +416,7 @@ export default {
     cart: Object,
     start_date: String,
     end_date: String,
+    retroactivity: String,
     user: Object,
     payment_gateways: Array,
     can: Object,
@@ -417,6 +451,9 @@ export default {
   computed: {
     cartUrl() {
       return "/products/" + this.cart.product.id + "/buy/" + this.cart.cart_ref;
+    },
+    cartProgression() {
+      return "/admin/carts/" + this.cart.product.id + "/" + this.cart.cart_ref;
     },
   },
   methods: {
