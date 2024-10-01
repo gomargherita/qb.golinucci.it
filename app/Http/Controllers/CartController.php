@@ -828,11 +828,16 @@ class CartController extends Controller
         $certificate_folder = 'certificates/user_' . $cart->user_id . '/cart_' . $cart->id;
         $payment = Payment::where('cart_id', $cart->id)->first();
 
+    
         return Inertia::render('Carts/Edit', [
             // 'can' => [
             //     'delete_cart' => $currentUser->can('carts.delete')
             // ],
-            'start_date' => $cart->renewal_date?->format('Y-m-d'),
+            
+            'start_date' => $cart->product->product_type_id == 1 ? $cart->renewal_date?->format('Y-m-d') : "",
+            'start_date' => $cart->product->product_type_id == 2 ? $cart->certificate?->start_validity_date?->format('Y-m-d') : "",
+
+            
             'retroactivity' => $cart->retroactivity?->format('Y-m-d'),
 
             'end_date' => $cart->certificate?->end_validity_date?->format('Y-m-d'),
