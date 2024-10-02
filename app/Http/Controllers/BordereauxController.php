@@ -6,6 +6,7 @@ use App\Exports\BdxMedmalPaymentsExport;
 use App\Exports\BdxMedmalPaymentsExportMensile;
 use App\Exports\BdxBankersErDaily;
 use App\Exports\BdxBankersRI;
+use App\Exports\ImportoLibero;
 use App\Exports\BdxBankersSA;
 use App\Exports\BdxBankersErStatic;
 use App\Http\Requests\StoreBordereauxRequest;
@@ -82,6 +83,9 @@ class BordereauxController extends Controller
         else if($prodotto == 'bancari-RI'){
 
             return Excel::download(new BdxBankersRI($date), 'payments.xlsx');
+        }
+        else if($prodotto == 'importo_libero'){
+            return Excel::download(new ImportoLibero($date), 'importo_libero.xlsx');
         }
     }
 

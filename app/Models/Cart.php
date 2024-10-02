@@ -110,15 +110,19 @@ class Cart extends Model
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($query, $search) {
-            $query->where('carts.cart_ref', 'like', '%' . $search . '%')
+            $search_split = explode(" ", $search);
+
+            foreach ($search_split as $sp){
+            $query->where('carts.cart_ref', 'like', '%' . $sp . '%')
                 // ->orWhere('client_details.first_name', 'like', '%' . $search . '%')
                 // ->orWhere('client_details.last_name', 'like', '%' . $search . '%')
-                ->orWhere('users.email', 'like', '%' . $search . '%')
-                ->orWhere('users.first_name', 'like', '%' . $search . '%')
-                ->orWhere('users.last_name', 'like', '%' . $search . '%');
+                ->orWhere('users.email', 'like', '%' . $sp . '%')
+                ->orWhere('users.first_name', 'like', '%' . $sp . '%')
+                ->orWhere('users.last_name', 'like', '%' . $sp . '%');
                 // ->orWhereHas('productStep', function ($query) use ($search) {
                 //     $query->where('step_name', 'like', '%' . $search . '%');
                 // });
+            }
         })->when($filters['steps'] ?? null, function ($query, $step) {
             $query->where('carts.product_step_id', $step);
         })->when($filters['trashed'] ?? null, function ($query, $trashed) {

@@ -45,8 +45,6 @@
       </div>
     </div>
 
-    <a href="/admin/importo_liberoadmin">Importo libero</a>
-
     <div class="mt-6 bg-white rounded shadow overflow-x-auto">
       <div class="bg-white rounded-md shadow overflow-hidden">
         <h1 class="mb-8 text-3xl font-bold -mb-8 -mr-6 p-8">Bancari</h1>
@@ -91,6 +89,39 @@
               target="_blank"
               >RI</a
             >
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="mt-6 bg-white rounded shadow overflow-x-auto">
+      <div class="bg-white rounded-md shadow overflow-hidden">
+        <h1 class="mb-8 text-3xl font-bold -mb-8 -mr-6 p-8">Importo libero</h1>
+
+        <form>
+          <div class="flex flex-wrap -mb-8 -mr-6 p-8">
+            <text-input
+              v-model="form.date"
+              :error="form.errors.date"
+              class="pb-8 pr-6 w-full lg:w-1/2"
+              label="Payment date"
+              type="date"
+              pattern="\d{4}-\d{2}-\d{2}"
+            />
+            
+          </div>
+
+          <div class="-mb-8 -mr-6 p-8">
+            <a
+              @click="download({ date: this.form.date, prodotto: 'importo_libero'})"
+              type="button"
+              class="btn-gol-primary ml-auto m-6"
+              target="_blank"
+              >Scarica giorno</a
+            >
+            <a class="btn-gol-primary ml-auto m-6" type="button" target="_blank" href="/admin/importo_liberoadmin">Visualizza lista intera</a>
+
+            
           </div>
         </form>
       </div>
