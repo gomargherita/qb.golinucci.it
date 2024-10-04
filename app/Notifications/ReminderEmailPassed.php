@@ -73,7 +73,7 @@ class ReminderEmailPassed extends Notification implements ShouldQueue
                 //->bcc($cc)
                 ->subject('Q&B Golinucci - Rinnova la tua polizza')
                 ->greeting("Gentile $user->name")
-                ->line("Ricordiamo che il $renewal_date è scaduta la tua polizza di Responsabilita’ Civile Professionale.")
+                ->line("Ricordiamo che il $renewal_date è scaduta la tua polizza di Responsabilita’ Civile Professionale. Avvisiamo che dopo 30 giorni dalla scadenza non sarà più possibile mantenere la continuità di copertura.")
                 ->line("Per procedere al rinnovo ed ottenere la nuova polizza online ti basta accedere al nostro sito con le seguenti credenziali:")
                 ->line("Email: $user->email")
                 ->line("Password: $uncrypted_password")

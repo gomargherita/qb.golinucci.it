@@ -82,7 +82,7 @@ class SiteBuyProductController extends Controller
 
                 if($last_prev_certificate != null && $cart->product_step_id < 5){
                     $scadenza = date_create($last_prev_certificate->end_validity_date);
-                    date_add($scadenza, date_interval_create_from_date_string('90 days'));
+                    date_add($scadenza, date_interval_create_from_date_string('30 days'));
                     $ora = date_create(date('d-m-Y'));
                     $intervallo = date_diff($scadenza,$ora);
                     $intervallo = $intervallo->format("%R%a");
@@ -216,7 +216,7 @@ class SiteBuyProductController extends Controller
             'product_id' => $product->id,
             'product_offer_id' => $cart->product_offer_id,
             'product_step_id' => 1,
-            'expired_at' => $end->modify('+90 day'),
+            'expired_at' => $end->modify('+30 day'),
             'locked' => 'N',
             'cart_ref' => uniqid()
         ]);

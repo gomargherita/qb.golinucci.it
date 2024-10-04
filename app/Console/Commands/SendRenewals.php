@@ -111,6 +111,21 @@ class SendRenewals extends Command
                             $reminder->save();
                         }
                             break;
+                        case -7:
+                            $reminder = Reminder::where('cart_id', $certificate->cart->id)->first();
+                            if ($reminder == null){
+                                $reminder = Reminder::create([
+                                    'cart_id' => $certificate->cart->id,
+                                ]);
+                            }
+                            if($reminder->one_week_after == false){
+                            $user->notify(new ReminderEmailPassed($certificate));
+                            $this->info(now() . ': reminder -7 days email sent to ' . $user->email);
+                            $reminder = Reminder::where('cart_id', $certificate->cart->id)->first();
+                            $reminder->one_week_after = true;
+                            $reminder->save();
+                        }
+                        break;
                         case -14:
                             $reminder = Reminder::where('cart_id', $certificate->cart->id)->first();
                             if ($reminder == null){
@@ -126,7 +141,7 @@ class SendRenewals extends Command
                                 $reminder->save();
                             }
                             break;
-                        case -30:
+                        case -26:
                             $reminder = Reminder::where('cart_id', $certificate->cart->id)->first();
                             if ($reminder == null){
                                 $reminder = Reminder::create([
@@ -135,7 +150,7 @@ class SendRenewals extends Command
                             }
                             if($reminder->one_month_after == false){
                                 $user->notify(new ReminderEmailPassed($certificate));
-                                $this->info(now() . ': reminder -30 days email sent to ' . $user->email);
+                                $this->info(now() . ': reminder -26 days email sent to ' . $user->email);
                                 $reminder = Reminder::where('cart_id', $certificate->cart->id)->first();
                                 $reminder->one_month_after = true;
                                 $reminder->save();
