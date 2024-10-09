@@ -129,27 +129,67 @@
                     <li>
                         PERIODO DI RETROATTIVITA': 10 ANNI (ai quali si aggiungono gli anni di precedente copertura assicurativa trascorsi con Golinucci Srl con il massimo di 14 anni)
                     </li>
+                    @if ($authority_type_public_flag == false)
+                                <li>
+                                    LIBERA PROFESSIONE: Ha mai svolto prima del 2017 attività da libero professionista presso cliniche o in proprio?
+                                </li>
+                                <p style="text-align:right;">
+                                    NO&nbsp;
+                                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAvgAAAL4BsOPnlwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAFxSURBVEiJ3da7axVREMfxz+jFBwEhighaWQghBIs0aSxTaCorOwX/gFgFbC0NISBYC5ImZUiIklI7qysY0MJGm5TaBCwUJ0VO4Hjdu4n30Tgwxc7j9z07e/bsRmYap50ah2hETEbEI+hExJcR6b7MzCcRcQ07mImIG5Aj8Kdl1FP4WmI/8aBTreA5Pg6w8r3M3IqIObzCJfzAvczcru/gdmYaxHEH+0XnO25VueEAuF/GkdjDzZ784AAs4Xfp/4zrDTV/A3AGF1uEAytV73tcwXkstAJwFtv4gMsN4h2sVX1vcKH4Wzw7DjCFbyX2BwQTeF31bOBcya2XWDugBGd7IWX7vavqX+B01bNzYkADZBefqtrlhtE1AvqeRZnZxbzDfT1TRpdYyszH/fp6rfWw64H8wsPMXD2pOIc7otUysxsR87h69OqPFHAEQfdfxRnT9+D/AtTPYDEi7g6hNX0cYGEI8b7WweaINXfrixj3b8sB5tOks04krOwAAAAASUVORK5CYII=" />
+                                </p>
+                                <li>
+                                    Opera e/o ha mai operato negli ultimi dieci anni in rapporto contrattuale diretto con i suoi pazienti?
+                                </li>
+                                <p style="text-align:right;">
+                                    NO&nbsp;
+                                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAvgAAAL4BsOPnlwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAFxSURBVEiJ3da7axVREMfxz+jFBwEhighaWQghBIs0aSxTaCorOwX/gFgFbC0NISBYC5ImZUiIklI7qysY0MJGm5TaBCwUJ0VO4Hjdu4n30Tgwxc7j9z07e/bsRmYap50ah2hETEbEI+hExJcR6b7MzCcRcQ07mImIG5Aj8Kdl1FP4WmI/8aBTreA5Pg6w8r3M3IqIObzCJfzAvczcru/gdmYaxHEH+0XnO25VueEAuF/GkdjDzZ784AAs4Xfp/4zrDTV/A3AGF1uEAytV73tcwXkstAJwFtv4gMsN4h2sVX1vcKH4Wzw7DjCFbyX2BwQTeF31bOBcya2XWDugBGd7IWX7vavqX+B01bNzYkADZBefqtrlhtE1AvqeRZnZxbzDfT1TRpdYyszH/fp6rfWw64H8wsPMXD2pOIc7otUysxsR87h69OqPFHAEQfdfxRnT9+D/AtTPYDEi7g6hNX0cYGEI8b7WweaINXfrixj3b8sB5tOks04krOwAAAAASUVORK5CYII=" />
+                                </p>
+                            @endif
                 </ol>
             </div>
             <div style="margin:5px 0;">
                 <h3>Sinistrosità</h3>
                 <p>
-                    Io sottoscritto dichiaro di essere consapevole che, ai sensi dell’art. 8.1 b), sono escluse le Richieste di Risarcimento connesse a Fatti o Circostanze che fossero già note all’Assicurato prima della data di inizio del Periodo di Assicurazione e non notificate alla Golinucci SRL. Configurano Fatti e Circostanze note:
+                    (a) Sono state avanzate richieste di risarcimento o sono state promosse azioni volte ad accertare la responsabilità civile, penale o
+                    deontologica nei confronti del proponente negli ultimi 10 anni?
                 </p>
-                <ol>
-                    <li>La sentenza di condanna in sede civile o penale;</li>
-                    <li>La notifica di avvio di indagini preliminari/rinvio a giudizio in sede penale;</li>
-                    <li>La richiesta di risarcimento/notifica di atto di citazione in sede civile;</li>
-                    <li>La comunicazione della struttura Sanitaria {{ $authority_type_public_flag ? 'Pubblica' :'Privata' }} di appartenenza o della sua impresa di assicurazione con la quale mettono in mora l’Assicurato per danni o perdite cagionate da fatto gravemente colposo;</li>
-                    <li>La comunicazione formale con la quale la struttura Sanitaria {{ $authority_type_public_flag ? 'Pubblica' :'Privata' }} di Appartenenza o la loro impresa di assicurazione informa l’Assicurato dell’instaurazione di un giudizio da parte di un Terzo per un fatto che vede coinvolto l’Assicurato medesimo ai fini dell’azione di responsabilità amministrativa o di rivalsa per colpa grave;</li>
-                    <li>La comunicazione formale con la quale la struttura Sanitaria {{ $authority_type_public_flag ? 'Pubblica' :'Privata' }} di Appartenenza o la loro impresa di assicurazione informa l’Assicurato dell’avvio di trattative stragiudiziali con un Terzo per un fatto che vede coinvolto l'Assicurato medesimo ai fini dell’azione di responsabilità amministrativa o di rivalsa per colpa grave</li>
-                </ol>
-                <p>SE PRIMA DELLA DATA DI SOTTOSCRIZIONE DEL PRESENTE MODULOSI FOSSE A CONOSCENZA DI FATTI E CIRCOSTANZE NOTE, COME SOPRA DEFINITO, LA SEGNALAZIONE VA FATTA ALLA PRECEDENTE COMPAGNIA ASSICURATIVA</p>
-                <p><b>Inoltre il Sottoscritto dichiara di non svolgere il ruolo di Direttore di una C.R.A. (ex R.S.A.)</b></p>
                 <p style="text-align:right;">
-                    Per conferma&nbsp;
+                    NO&nbsp;
                     <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAvgAAAL4BsOPnlwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAFxSURBVEiJ3da7axVREMfxz+jFBwEhighaWQghBIs0aSxTaCorOwX/gFgFbC0NISBYC5ImZUiIklI7qysY0MJGm5TaBCwUJ0VO4Hjdu4n30Tgwxc7j9z07e/bsRmYap50ah2hETEbEI+hExJcR6b7MzCcRcQ07mImIG5Aj8Kdl1FP4WmI/8aBTreA5Pg6w8r3M3IqIObzCJfzAvczcru/gdmYaxHEH+0XnO25VueEAuF/GkdjDzZ784AAs4Xfp/4zrDTV/A3AGF1uEAytV73tcwXkstAJwFtv4gMsN4h2sVX1vcKH4Wzw7DjCFbyX2BwQTeF31bOBcya2XWDugBGd7IWX7vavqX+B01bNzYkADZBefqtrlhtE1AvqeRZnZxbzDfT1TRpdYyszH/fp6rfWw64H8wsPMXD2pOIc7otUysxsR87h69OqPFHAEQfdfxRnT9+D/AtTPYDEi7g6hNX0cYGEI8b7WweaINXfrixj3b8sB5tOks04krOwAAAAASUVORK5CYII=" />
                 </p>
+
+                <p>
+                    (b) Indicare se il proponente sia a conoscenza di azioni, omissioni o fatti dai quali possano derivare richieste di risarcimento o azioni
+                    volte all’accertamento di responsabilità civile, penale o deontologica del proponente?
+                </p>
+                <p style="text-align:right;">
+                    NO&nbsp;
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAvgAAAL4BsOPnlwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAFxSURBVEiJ3da7axVREMfxz+jFBwEhighaWQghBIs0aSxTaCorOwX/gFgFbC0NISBYC5ImZUiIklI7qysY0MJGm5TaBCwUJ0VO4Hjdu4n30Tgwxc7j9z07e/bsRmYap50ah2hETEbEI+hExJcR6b7MzCcRcQ07mImIG5Aj8Kdl1FP4WmI/8aBTreA5Pg6w8r3M3IqIObzCJfzAvczcru/gdmYaxHEH+0XnO25VueEAuF/GkdjDzZ784AAs4Xfp/4zrDTV/A3AGF1uEAytV73tcwXkstAJwFtv4gMsN4h2sVX1vcKH4Wzw7DjCFbyX2BwQTeF31bOBcya2XWDugBGd7IWX7vavqX+B01bNzYkADZBefqtrlhtE1AvqeRZnZxbzDfT1TRpdYyszH/fp6rfWw64H8wsPMXD2pOIc7otUysxsR87h69OqPFHAEQfdfxRnT9+D/AtTPYDEi7g6hNX0cYGEI8b7WweaINXfrixj3b8sB5tOks04krOwAAAAASUVORK5CYII=" />
+                </p>
+                
+                <div style="page-break-before: always;"></div>
+                    <div style="margin-top:100px;">
+                        <div style="margin:5px 0;">
+                            <p>
+                                Io sottoscritto dichiaro di essere consapevole che, ai sensi dell’art. 8.1 b), sono escluse le Richieste di Risarcimento connesse a Fatti o Circostanze che fossero già note all’Assicurato prima della data di inizio del Periodo di Assicurazione e non notificate alla Golinucci SRL. Configurano Fatti e Circostanze note:
+                            </p>
+                            <ol>
+                                <li>La sentenza di condanna in sede civile o penale;</li>
+                                <li>La notifica di avvio di indagini preliminari/rinvio a giudizio in sede penale;</li>
+                                <li>La richiesta di risarcimento/notifica di atto di citazione in sede civile;</li>
+                                <li>La comunicazione della struttura Sanitaria {{ $authority_type_public_flag ? 'Pubblica' :'Privata' }} di appartenenza o della sua impresa di assicurazione con la quale mettono in mora l’Assicurato per danni o perdite cagionate da fatto gravemente colposo;</li>
+                                <li>La comunicazione formale con la quale la struttura Sanitaria {{ $authority_type_public_flag ? 'Pubblica' :'Privata' }} di Appartenenza o la loro impresa di assicurazione informa l’Assicurato dell’instaurazione di un giudizio da parte di un Terzo per un fatto che vede coinvolto l’Assicurato medesimo ai fini dell’azione di responsabilità amministrativa o di rivalsa per colpa grave;</li>
+                                <li>La comunicazione formale con la quale la struttura Sanitaria {{ $authority_type_public_flag ? 'Pubblica' :'Privata' }} di Appartenenza o la loro impresa di assicurazione informa l’Assicurato dell’avvio di trattative stragiudiziali con un Terzo per un fatto che vede coinvolto l'Assicurato medesimo ai fini dell’azione di responsabilità amministrativa o di rivalsa per colpa grave</li>
+                            </ol>
+                            <p>SE PRIMA DELLA DATA DI SOTTOSCRIZIONE DEL PRESENTE MODULOSI FOSSE A CONOSCENZA DI FATTI E CIRCOSTANZE NOTE, COME SOPRA DEFINITO, LA SEGNALAZIONE VA FATTA ALLA PRECEDENTE COMPAGNIA ASSICURATIVA</p>
+                            <p><b>Inoltre il Sottoscritto dichiara di non svolgere il ruolo di Direttore di una C.R.A. (ex R.S.A.)</b></p>
+
+                            <p style="text-align:right;">
+                                Per conferma&nbsp;
+                                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAvgAAAL4BsOPnlwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAFxSURBVEiJ3da7axVREMfxz+jFBwEhighaWQghBIs0aSxTaCorOwX/gFgFbC0NISBYC5ImZUiIklI7qysY0MJGm5TaBCwUJ0VO4Hjdu4n30Tgwxc7j9z07e/bsRmYap50ah2hETEbEI+hExJcR6b7MzCcRcQ07mImIG5Aj8Kdl1FP4WmI/8aBTreA5Pg6w8r3M3IqIObzCJfzAvczcru/gdmYaxHEH+0XnO25VueEAuF/GkdjDzZ784AAs4Xfp/4zrDTV/A3AGF1uEAytV73tcwXkstAJwFtv4gMsN4h2sVX1vcKH4Wzw7DjCFbyX2BwQTeF31bOBcya2XWDugBGd7IWX7vavqX+B01bNzYkADZBefqtrlhtE1AvqeRZnZxbzDfT1TRpdYyszH/fp6rfWw64H8wsPMXD2pOIc7otUysxsR87h69OqPFHAEQfdfxRnT9+D/AtTPYDEi7g6hNX0cYGEI8b7WweaINXfrixj3b8sB5tOks04krOwAAAAASUVORK5CYII=" />
+                            </p>
+                        </div>
+                </div>
             </div>
         </div>
         <div style="page-break-before: always;"></div>
@@ -166,7 +206,8 @@
                     <li>di non aver sottaciuto alcun elemento rilevante per la valutazione del rischio</li>
                 </ol>
                 <p style="text-align:right;">
-                    Firma: <span style="font-size:16px;font-style:italic;">{{ $fullname }}</span><br>
+                    <br>
+                    Data: <span style="font-size:16px;font-style:italic;">{{ $data_modulo_proposta }}</span><br>
                 </p>
             </div>
             <div style="margin:5px 0;">
@@ -183,7 +224,8 @@
                     <b>ART 1.1.</b>: Forma dell’Assicurazione (Claims Made) — Retroattività; <b>ARTICOLO 8</b>: Esclusioni (in particolare quelle dell’assicurazione claims made — 8.1); <b>ARTICOLO 14</b>: Modalità della Proroga Automatica — Rescindibilità Annuale; <b>ARTICOLO 15</b>: Coesistenza di altre assicurazioni; <b>ARTICOLO 16</b>: Denuncia dei sinistri (esclusione dei sinistri denunciati dopo la cessazione del Periodo di Assicurazione); <b>ARTICOLO 17</b>: Recesso in caso di sinistro; <b>ARTICOLO 20</b>: Clausola Broker; <b>ARTICOLO 24</b>: Dichiarazione dell’assicurato
                 </p>
                 <p style="text-align:right;">
-                    Firma: <span style="font-size:16px;font-style:italic;">{{ $fullname }}</span><br>
+                    <br><br><br>
+                    Data: <span style="font-size:16px;font-style:italic;">{{ $data_modulo_proposta }}</span><br>
                 </p>
             </div>
             <div style="margin:5px 0;">
@@ -191,7 +233,8 @@
                     II sottoscritto dichiara di aver ricevuto e preso visione delle condizioni di polizza.
                 </p>
                 <p style="text-align:right;">
-                    Firma: <span style="font-size:16px;font-style:italic;">{{ $fullname }}</span><br>
+                    <br><br>
+                    Data: <span style="font-size:16px;font-style:italic;">{{ $data_modulo_proposta }}</span><br>
                 </p>
             </div>
             <br>

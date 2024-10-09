@@ -167,7 +167,7 @@ class LloydsDoprintService
         $CertificateDateTimeDetails = $xml->getElementsByTagName('CertificateDateTimeDetails')->item(0);
         $CertificateDateTimeDetails->getElementsByTagName('InceptionDate')->item(0)->textContent = $start_date;
         $CertificateDateTimeDetails->getElementsByTagName('ExpiryDate')->item(0)->textContent = $end_date;
-        $CertificateDateTimeDetails->getElementsByTagName('ProposalDate')->item(0)->textContent = $start_date;
+        $CertificateDateTimeDetails->getElementsByTagName('ProposalDate')->item(0)->textContent = $certificate->cart->giorno_completamento_step_1;
 
         $RiskDetailsLB = $xml->getElementsByTagName('RiskDetailsLB')->item(0);
         $indemnity_limit = number_format(

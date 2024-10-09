@@ -240,7 +240,8 @@ class Cart extends Model
                 'indemnity_limit_patrimonial',
                 'declarations_signature',
                 'expired_at',
-                'locked'
+                'locked',
+                'giorno_completamento_step_1'
             ]);
     }
 }

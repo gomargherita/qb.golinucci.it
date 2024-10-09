@@ -43,7 +43,10 @@ class UpdateFrontClientDetailsRequest extends FormRequest
             'confirmation' => ['accepted'],
             'confirmation_sinistri' => ['required'],
             'confirmation_gmedici1' => ['required'],
-            'confirmation_gmedici2' => ['required']
+            'confirmation_gmedici2' => ['required'],
+            'confirmation_gmedici3' => ['required'],
+            'confirmation_gmedici4' => ['required'],
+            'confirmation_gmedici5' => ['required']
         ];
 
         $productClientDetails = $this->input('product_client_details', []);

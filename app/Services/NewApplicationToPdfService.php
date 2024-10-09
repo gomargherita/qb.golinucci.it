@@ -62,9 +62,17 @@ class NewApplicationToPdfService
         );
         $insurance_deductible = '0'; // franchigia
         //= Product::where('id', $this->cart->product_id)->first();
+
+        $stringaData = str_replace("-", "/", $this->cart->giorno_completamento_step_1);  // Formato: DD/MM/YYYY
+        //dd($stringaData);
+        $dataCarbon = Carbon::createFromFormat('Y/m/d', $stringaData)->format('d/m/Y');
+
+        echo $dataCarbon;  // Output: 2024-10-09 00:00:00
+
         if(isset($this->cart->renewal_date)){
             $data = [
                 'authority_type_public_flag' => $authority_type_public_flag,
+                'data_modulo_proposta' => $dataCarbon,
                 'title' => $title,
                 'fullname' => $clientDetails->last_name . ' ' . $clientDetails->first_name,
                 'fiscal_code' => $clientDetails->fiscal_code,
@@ -86,6 +94,7 @@ class NewApplicationToPdfService
         else{
             $data = [
                 'authority_type_public_flag' => $authority_type_public_flag,
+                'data_modulo_proposta' => $dataCarbon,
                 'title' => $title,
                 'fullname' => $clientDetails->last_name . ' ' . $clientDetails->first_name,
                 'fiscal_code' => $clientDetails->fiscal_code,

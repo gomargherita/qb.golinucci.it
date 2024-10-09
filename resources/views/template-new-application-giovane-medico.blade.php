@@ -128,6 +128,13 @@
                     <li>
                         PERIODO DI RETROATTIVITA': {{ $retroactivity }} ANNI
                     </li>
+                    <li>
+                        SOCIETÀ SPORTIVE - indicare se il proponente presta servizio per Società sportive agonistiche e di élite
+                    </li>
+                    <p style="text-align:right;">
+                        NO&nbsp;
+                        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAvgAAAL4BsOPnlwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAFxSURBVEiJ3da7axVREMfxz+jFBwEhighaWQghBIs0aSxTaCorOwX/gFgFbC0NISBYC5ImZUiIklI7qysY0MJGm5TaBCwUJ0VO4Hjdu4n30Tgwxc7j9z07e/bsRmYap50ah2hETEbEI+hExJcR6b7MzCcRcQ07mImIG5Aj8Kdl1FP4WmI/8aBTreA5Pg6w8r3M3IqIObzCJfzAvczcru/gdmYaxHEH+0XnO25VueEAuF/GkdjDzZ784AAs4Xfp/4zrDTV/A3AGF1uEAytV73tcwXkstAJwFtv4gMsN4h2sVX1vcKH4Wzw7DjCFbyX2BwQTeF31bOBcya2XWDugBGd7IWX7vavqX+B01bNzYkADZBefqtrlhtE1AvqeRZnZxbzDfT1TRpdYyszH/fp6rfWw64H8wsPMXD2pOIc7otUysxsR87h69OqPFHAEQfdfxRnT9+D/AtTPYDEi7g6hNX0cYGEI8b7WweaINXfrixj3b8sB5tOks04krOwAAAAASUVORK5CYII=" />
+                    </p>
                 </ol>
             </div>
             <div style="margin:5px 0;">
@@ -148,7 +155,7 @@
                 <p style="text-align:right;">
                     NO&nbsp;
                     <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAAvgAAAL4BsOPnlwAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAFxSURBVEiJ3da7axVREMfxz+jFBwEhighaWQghBIs0aSxTaCorOwX/gFgFbC0NISBYC5ImZUiIklI7qysY0MJGm5TaBCwUJ0VO4Hjdu4n30Tgwxc7j9z07e/bsRmYap50ah2hETEbEI+hExJcR6b7MzCcRcQ07mImIG5Aj8Kdl1FP4WmI/8aBTreA5Pg6w8r3M3IqIObzCJfzAvczcru/gdmYaxHEH+0XnO25VueEAuF/GkdjDzZ784AAs4Xfp/4zrDTV/A3AGF1uEAytV73tcwXkstAJwFtv4gMsN4h2sVX1vcKH4Wzw7DjCFbyX2BwQTeF31bOBcya2XWDugBGd7IWX7vavqX+B01bNzYkADZBefqtrlhtE1AvqeRZnZxbzDfT1TRpdYyszH/fp6rfWw64H8wsPMXD2pOIc7otUysxsR87h69OqPFHAEQfdfxRnT9+D/AtTPYDEi7g6hNX0cYGEI8b7WweaINXfrixj3b8sB5tOks04krOwAAAAASUVORK5CYII=" />
-                </p>
+                </p>                
             </div>
         </div>
         <div style="page-break-before: always;"></div>
@@ -165,7 +172,8 @@
                     <li>di non aver sottaciuto alcun elemento rilevante per la valutazione del rischio</li>
                 </ol>
                 <p style="text-align:right;">
-                    Firma: <span style="font-size:16px;font-style:italic;">{{ $fullname }}</span><br>
+                    <br>
+                    Data: <span style="font-size:16px;font-style:italic;">{{ $data_modulo_proposta }}</span><br>
                 </p>
             </div>
             <div style="margin:5px 0;">
@@ -189,7 +197,8 @@
                     Facoltà di recesso in caso di sinistro; <b>ARTICOLO 22</b>: Clausola Broker; <b>ARTICOLO 24</b>: Atti invasivi
                 </p>
                 <p style="text-align:right;">
-                    Firma: <span style="font-size:16px;font-style:italic;">{{ $fullname }}</span><br>
+                    <br><br><br>
+                    Data: <span style="font-size:16px;font-style:italic;">{{ $data_modulo_proposta }}</span><br>
                 </p>
             </div>
             <div style="margin:5px 0;">
@@ -197,7 +206,8 @@
                     II sottoscritto dichiara di aver ricevuto e preso visione delle condizioni di polizza.
                 </p>
                 <p style="text-align:right;">
-                    Firma: <span style="font-size:16px;font-style:italic;">{{ $fullname }}</span><br>
+                    <br><br>
+                    Data: <span style="font-size:16px;font-style:italic;">{{ $data_modulo_proposta }}</span><br>
                 </p>
             </div>
             <br>

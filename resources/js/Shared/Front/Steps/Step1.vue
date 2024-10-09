@@ -245,6 +245,7 @@
               :error="form.errors.product_client_details"
               v-model="form.product_client_details[index].pivot.selected_field_value"
               @update:modelValue="handleUpdate(index, $event, product.id)"
+              
             >
               <option
                 v-for="(option_value, option_key) in JSON.parse(
@@ -300,7 +301,7 @@
             class="mr-4 p-3"
             type="checkbox"
           />
-          <span v-if="(product.id != 4 && product.id != 5) || cart.renewal_date != null" class="text-lg text-red-500">{{
+          <span v-if="(product.id != 4 && product.id != 5 && product.id != 1) || cart.renewal_date != null" class="text-lg text-red-500">{{
             __("I confirm the correctness of the above data")
           }}</span>
           <span v-else class="text-lg text-red-500">
@@ -324,11 +325,14 @@
         </label>
 
 
-        <div class="md:col-span-2" v-if="product.id == 5">
+        <div class="md:col-span-2" style="display:none" id="gm1">
             <p class="my-4 font-bold">Sinistrosità</p>
           </div>
 
-        <label v-if="product.id == 5" class="flex items-center mt-6 select-none" for="confirmation-gmedici1">
+
+          
+
+        <label style="display:none" id="gm2" class="flex items-center mt-6 select-none" for="confirmation-gmedici1">
           
 
           <SelectInput
@@ -346,7 +350,7 @@
         </SelectInput>
         </label>
 
-        <label v-if="product.id == 5" class="flex items-center mt-6 select-none" for="confirmation-gmedici2">
+        <label style="display:none" id="gm3" class="flex items-center mt-6 select-none" for="confirmation-gmedici2">
           <SelectInput
           id="confirmation_gmedici2"
           v-model="form.confirmation_gmedici2"
@@ -362,6 +366,61 @@
         </SelectInput>
         </label>
 
+        
+        <div class="md:col-span-2" style="display:none" id="gm4">
+            <p class="my-4 font-bold">Condizioni di polizza</p>
+          </div>
+        <label style="display:none" id="gm5" class="flex items-center mt-6 select-none" for="confirmation-gmedici3">
+          
+
+          <SelectInput
+          id="confirmation_gmedici3"
+          v-model="form.confirmation_gmedici3"
+          :error="form.errors.confirmation"
+          class="mt-1 block w-full"
+          label="(c). Società sportive - indicare se il proponente presta servizio per Società sportive agonistiche e di élite"
+        >
+        <option :value="null" />
+
+          <option value="si">Sì*</option>
+          <option value="no">No</option>
+          
+        </SelectInput>
+        </label>
+        <div style="display:none" id="gm6">*Quotazione soggetta ad autorizzazione</div>
+
+
+        <label style="display:none" id="gm7" class="flex items-center mt-6 select-none" for="confirmation-gmedici4">
+          <SelectInput
+          id="confirmation_gmedici4"
+          v-model="form.confirmation_gmedici4"
+          :error="form.errors.confirmation"
+          class="mt-1 block w-full"
+          label="(d). LIBERA PROFESSIONE: Ha mai svolto prima del 2017 attività da libero professionista presso cliniche o in proprio?"
+        >
+        <option :value="null" />
+
+          <option value="si">Sì</option>
+          <option value="no">No</option>
+          
+        </SelectInput>
+        </label>
+
+        <label style="display:none" id="gm8" class="flex items-center mt-6 select-none" for="confirmation-gmedici5">
+          <SelectInput
+          id="confirmation_gmedici5"
+          v-model="form.confirmation_gmedici5"
+          :error="form.errors.confirmation"
+          class="mt-1 block w-full"
+          label="(e). Opera e/o ha mai operato negli ultimi dieci anni in rapporto contrattuale diretto con i suoi pazienti? "
+        >
+        <option :value="null" />
+
+          <option value="si">Sì</option>
+          <option value="no">No</option>
+          
+        </SelectInput>
+        </label>
       </div>
     </div>
     <div>
@@ -407,6 +466,18 @@ export default {
       });
   }
 },
+mounted(){
+  if(this.product.id == 5){
+        document.getElementById('gm1').style.display = 'inline';
+        document.getElementById('gm2').style.display = 'inline';
+        document.getElementById('gm3').style.display = 'inline';
+        document.getElementById('gm4').style.display = 'inline';
+        document.getElementById('gm5').style.display = 'inline';
+        document.getElementById('gm6').style.display = 'inline';
+
+      }
+      this.triggerUpdateOnLoad();
+},
   data() {
     
     return {
@@ -426,12 +497,24 @@ export default {
         product_client_details: this.$page.props.clientDetails.product_client_details,
         confirmation: false,
         confirmation_sinistri: (this.product.id == 4 && this.cart.renewal_date == null) ? null : "no",
-        confirmation_gmedici1: (this.product.id == 5) ? null : "no",
-        confirmation_gmedici2: (this.product.id == 5) ? null : "no",
+        confirmation_gmedici1: (this.product.id == 5 || this.product.id == 1) ? null : "no",
+        confirmation_gmedici2: (this.product.id == 5 || this.product.id == 1) ? null : "no",
+        confirmation_gmedici3: (this.product.id == 5) ? null : "no",
+        confirmation_gmedici4: (this.product.id == 1) ? null : "no",
+        confirmation_gmedici5: (this.product.id == 1) ? null : "no",
       }),
     };
   },
   methods: {
+    triggerUpdateOnLoad() {
+      // Itera su tutti gli elementi del form per chiamare handleUpdate
+      this.form.product_client_details.forEach((detail, index) => {
+        const event = detail.pivot.selected_field_value;
+        const productId = this.product.id;
+
+        this.handleUpdate(index, event, productId);
+      });
+    },
     submit() {
       this.form.post(
         this.route("front.product.store_step1", {
@@ -444,23 +527,50 @@ export default {
       );
     },
     handleUpdate(index, value, productId){
-      if(index != 0)
-      return;
+      if(index == 1){
+        if(productId == 1 && index == 1 && value == 1){
+          document.getElementById('gm1').style.display = 'inline';
+          document.getElementById('gm2').style.display = 'inline';
+          document.getElementById('gm3').style.display = 'inline';
+          document.getElementById('gm4').style.display = 'none';
+          //document.getElementById('gm5').style.display = 'inline';
+          //document.getElementById('gm6').style.display = 'inline';
+          document.getElementById('gm7').style.display = 'none';
+          document.getElementById('gm8').style.display = 'none';
+          this.form.confirmation_gmedici4 = 'no';
+          this.form.confirmation_gmedici5 = 'no';
 
-      if(productId == 1 && index == 0 && value == 3){
-        if(document.getElementById('IVAsi').checked){
-          this.pIVA('si')
+
         }
-        else if(document.getElementById('IVAno').checked){
-          this.pIVA('no');
+        if(productId == 1 && index == 1 && value == 2){
+          document.getElementById('gm1').style.display = 'inline';
+          document.getElementById('gm2').style.display = 'inline';
+          document.getElementById('gm3').style.display = 'inline';
+          document.getElementById('gm4').style.display = 'inline';
+          //document.getElementById('gm5').style.display = 'inline';
+          //document.getElementById('gm6').style.display = 'inline';
+          document.getElementById('gm7').style.display = 'inline';
+          document.getElementById('gm8').style.display = 'inline';   
+          this.form.confirmation_gmedici4 = null;
+          this.form.confirmation_gmedici5 = null;       
         }
-        document.getElementById('forsegmedico').style.display = 'inline';
-    }
-    else{
-      document.getElementById('forsegmedico').style.display = 'none';
-      document.getElementById('giovanemedico').style.display = 'none';
-      document.getElementById('continua').style.display = 'none';
-    }
+      }
+      if(index == 0){
+        if(productId == 1 && index == 0 && value == 3){
+          if(document.getElementById('IVAsi').checked){
+            this.pIVA('si')
+          }
+          else if(document.getElementById('IVAno').checked){
+            this.pIVA('no');
+          }
+          document.getElementById('forsegmedico').style.display = 'inline';
+          }
+          else{
+            document.getElementById('forsegmedico').style.display = 'none';
+            document.getElementById('giovanemedico').style.display = 'none';
+            document.getElementById('continua').style.display = 'none';
+          }
+          }
     },
     pIVA(presente){
       if(presente == 'si'){
