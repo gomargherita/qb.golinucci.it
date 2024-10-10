@@ -439,6 +439,12 @@ class CartController extends Controller
 
             $clientDetails->productClientDetails()->syncWithoutDetaching($rebuildProductClientDetails);
 
+            if($validated['confirmation_sinistri'] == "si" || $validated['confirmation_gmedici1'] == 'si' || $validated['confirmation_gmedici2'] == 'si' || $validated['confirmation_gmedici3'] == 'si' || $validated['confirmation_gmedici4'] == 'si' || $validated['confirmation_gmedici5'] == 'si'){
+                if($cart->product->id == 5 || $cart->product->id == 1){
+                    abort(480);
+                }
+            }
+
             $cart->giorno_completamento_step_1 = now();
             $cart->save();
             $cart->updateCartStep(2);
