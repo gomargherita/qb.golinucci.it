@@ -438,6 +438,9 @@ class CartController extends Controller
 
 
             $clientDetails->productClientDetails()->syncWithoutDetaching($rebuildProductClientDetails);
+
+            $cart->giorno_completamento_step_1 = now();
+            $cart->save();
             $cart->updateCartStep(2);
         });
 
