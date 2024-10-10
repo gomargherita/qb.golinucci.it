@@ -64,10 +64,9 @@ class NewApplicationToPdfService
         //= Product::where('id', $this->cart->product_id)->first();
 
         $stringaData = str_replace("-", "/", $this->cart->giorno_completamento_step_1);  // Formato: DD/MM/YYYY
-        //dd($stringaData);
+        $stringaData = explode(" ", $stringaData)[0];
+        
         $dataCarbon = Carbon::createFromFormat('Y/m/d', $stringaData)->format('d/m/Y');
-
-        echo $dataCarbon;  // Output: 2024-10-09 00:00:00
 
         if(isset($this->cart->renewal_date)){
             $data = [

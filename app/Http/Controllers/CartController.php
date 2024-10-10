@@ -1269,4 +1269,13 @@ class CartController extends Controller
 
         return $cart;
     }
+
+    public function generateProposal(Cart $cart){
+        $cart->giorno_completamento_step_1 = now();
+        $cart->save();
+
+        $new_proposal = new NewApplicationToPdfService($cart);
+        $new_proposal->generateAndPersist();
+        return Redirect::back()->with('success', 'Modulo creato.');
+    }
 }

@@ -298,7 +298,10 @@
 </div>
 <br />
 <div v-if="cart.product.id == 1 || cart.product.id == 5" class="flex flex-wrap ">
-
+  
+  <div class="flex items-center border-t border-gray-100 ml-auto mr-10">
+      <a @click="generate_proposal" target="_blank" class="btn-gol-primary  ml-auto">Ricrea modulo di proposta</a>
+  </div>
 
   <div class="flex items-center border-t border-gray-100 ml-auto">
       <a @click="generate_lloyds" target="_blank" class="btn-gol-primary  ml-auto">Genera certificato Lloyd's</a>
@@ -492,6 +495,9 @@ export default {
     },
     generate_lloyds(){
       this.form_generate_lloyds.get(`/admin/carts/${this.cart.id}/generatelloyds`);
+    },
+    generate_proposal(){
+      this.$inertia.get(`/admin/carts/${this.cart.id}/generateproposal`);
     },
     updateDates(){
       this.form_update_decorrenza.startDate = this.start_date;
