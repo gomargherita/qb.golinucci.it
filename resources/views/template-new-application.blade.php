@@ -151,7 +151,7 @@
                 <h3>Sinistrosità</h3>
                 <p>
                     (a) Sono state avanzate richieste di risarcimento o sono state promosse azioni volte ad accertare la responsabilità civile, penale o
-                    deontologica nei confronti del proponente negli ultimi 10 anni (salvo quanto precedentemente denunciato a Golinucci Srl)?
+                    deontologica nei confronti del proponente negli ultimi 10 anni (salvo quanto precedentemente denunciato all'Assicuratore)?
                 </p>
                 <p style="text-align:right;">
                     NO&nbsp;

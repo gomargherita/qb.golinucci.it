@@ -340,7 +340,7 @@
           v-model="form.confirmation_gmedici1"
           :error="form.errors.confirmation"
           class="mt-1 block w-full"
-          label="(a). Sono state avanzate richieste di risarcimento o sono state promosse azioni volte ad accertare la responsabilità civile, penale o deontologica nei confronti del proponente negli ultimi 10 anni (salvo quanto precedentemente denunciato a Golinucci Srl)?"
+          label="(a). Sono state avanzate richieste di risarcimento o sono state promosse azioni volte ad accertare la responsabilità civile, penale o deontologica nei confronti del proponente negli ultimi 10 anni (salvo quanto precedentemente denunciato all'Assicuratore)?"
         >
         <option :value="null" />
 
