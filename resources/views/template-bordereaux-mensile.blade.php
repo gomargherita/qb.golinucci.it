@@ -290,95 +290,26 @@
             <td>115647XKT</td>
             <td>B1732CPG129823</td>
             <td></td>
-            <td></td>
             <td>
-                @if ($payment->renewal_date)
-                
-                @switch(date('m', strtotime($payment->renewal_date)))
-                @case ('01')
-                January{{ date('y', strtotime($payment->renewal_date)) }}
-                @break
-                @case ('02')
-                February{{ date('y', strtotime($payment->renewal_date)) }}
-                @break
-                @case ('03')
-                March{{ date('y', strtotime($payment->renewal_date)) }}
-                @break
-                @case ('04')
-                April{{ date('y', strtotime($payment->renewal_date)) }}
-                @break
-                @case ('05')
-                May{{ date('y', strtotime($payment->renewal_date)) }}
-                @break
-                @case ('06')
-                June{{ date('y', strtotime($payment->renewal_date)) }}
-                @break
-                @case ('07')
-                July{{ date('y', strtotime($payment->renewal_date)) }}
-                @break
-                @case ('08')
-                August{{ date('y', strtotime($payment->renewal_date)) }}
-                @break
-                @case ('09')
-                September{{ date('y', strtotime($payment->renewal_date)) }}
-                @break
-                @case ('10')
-                October{{ date('y', strtotime($payment->renewal_date)) }}
-                @break
-                @case ('11')
-                November{{ date('y', strtotime($payment->renewal_date)) }}
-                @break
-                @case ('12')
-                December{{ date('y', strtotime($payment->renewal_date)) }}
-                @break
-                @endswitch
-
-                @elseif ($payment->paid_at)
-
-                @switch(date('m', strtotime($payment->paid_at)))
-                @case ('01')
-                January{{ date('y', strtotime($payment->paid_at)) }}
-                @break
-                @case ('02')
-                February{{ date('y', strtotime($payment->paid_at)) }}
-                @break
-                @case ('03')
-                March{{ date('y', strtotime($payment->paid_at)) }}
-                @break
-                @case ('04')
-                April{{ date('y', strtotime($payment->paid_at)) }}
-                @break
-                @case ('05')
-                May{{ date('y', strtotime($payment->paid_at)) }}
-                @break
-                @case ('06')
-                June{{ date('y', strtotime($payment->paid_at)) }}
-                @break
-                @case ('07')
-                July{{ date('y', strtotime($payment->paid_at)) }}
-                @break
-                @case ('08')
-                August{{ date('y', strtotime($payment->paid_at)) }}
-                @break
-                @case ('09')
-                September{{ date('y', strtotime($payment->paid_at)) }}
-                @break
-                @case ('10')
-                October{{ date('y', strtotime($payment->paid_at)) }}
-                @break
-                @case ('11')
-                November{{ date('y', strtotime($payment->paid_at)) }}
-                @break
-                @case ('12')
-                December{{ date('y', strtotime($payment->paid_at)) }}
-                @break
-                @endswitch
-
-                @else
-                {{ '' }}
+                @if ($payment->paid_at)
+                    {{ date("01/m/Y", strtotime($payment->paid_at)) }}
                 @endif
             </td>
-            <td></td>
+            <td>
+                @if ($payment->paid_at)
+                    {{ date("t/m/Y", strtotime($payment->paid_at)) }}
+                @endif
+            </td>
+            <td>
+                @switch($payment->authority_type)
+                @case(1)
+                A
+                @break
+                @case(2)
+                B
+                @break
+                @endswitch
+            </td>
             <td></td>
             <td></td>
             <td>Direct</td>
