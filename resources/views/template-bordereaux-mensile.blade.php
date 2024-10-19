@@ -360,7 +360,7 @@
                 @endif
             </td>
             <td>Italy</td>
-            <td></td>
+            <td>{{ $payment->postal_code }}</td>
             <td>Original Premium</td>
             <td></td>
             <td></td>
@@ -369,7 +369,7 @@
             <td></td>
             <td>17%</td>
             <td>{{ '€ ' . number_format((0.17*$payment->net_premium), 2, ',', '.') }}</td>
-            <td>10%</td>
+            <td>{{ $payment->accessory}}</td>
             <td>{{ '€ ' . number_format(($payment->tax), 2, ',', '.') }}</td>
             <td>{{ '€ ' . number_format($payment->net_premium - (0.17*$payment->net_premium), 2, ',', '.') }}</td>
             <td>EUR</td>
@@ -381,7 +381,7 @@
             <td>{{ $payment->postal_code }}</td>
             <td>{{ $payment->city }}</td>
             <td>{{ $payment->province }}</td>
-            <td></td>
+            <td>{{ $payment->postal_code }}</td>
             <td></td>
             <td>
                 @if($payment->motivo_blocco_invio == "Referral")
@@ -477,18 +477,18 @@
             <td></td>
             <td></td>
             <td></td>
+            <td>Retail</td>
             <td></td>
             <td></td>
             <td></td>
-            <td></td>
-            <td></td>
+            <td>{{ date('d/m/Y', strtotime($payment->created_at)) }}</td>
             <td></td>
             <td></td>
             <td></td>
             <td>1</td>
             <td>Annual</td>
             <td>Lloyd's Brussels</td>
-            <td></td>
+            <td>HUMAN HEALTH AND SOCIAL WORK ACTIVITIES</td>
             <td></td>
             <td>{{ date('d/m/Y', strtotime($payment->retroactivity)) }}</td>
             <td>
