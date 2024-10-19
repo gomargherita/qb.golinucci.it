@@ -311,7 +311,7 @@
                 @endswitch
             </td>
             <td></td>
-            <td></td>
+            <td>GQ</td>
             <td>Direct</td>
             <td>B1732</td>
             <td>
