@@ -41,12 +41,14 @@ class NewApplicationToPdfService
         if($this->cart->product->id == 1){
             $specialization = $clientDetails->getConditionalFieldMatchById(4, false);
             $profession = $clientDetails->getConditionalFieldMatchById(1);
+            $piva = null;
         }
         else if($this->cart->product->id == 5){
             $title = "Polizza Responsabilità Civile Professionale Giovani Medici
             (Medici Abilitati Tirocinanti E Specializzandi) di età inferiore a 38 anni";
             $specialization = $clientDetails->getConditionalFieldMatchById(11, false);
             $profession = $clientDetails->getConditionalFieldMatchById(10);
+            $piva = $clientDetails->getConditionalFieldMatchById(12);
         }
         $indemnity_limit = number_format(
             $this->cart->indemnity_limit,
@@ -71,6 +73,7 @@ class NewApplicationToPdfService
         if(isset($this->cart->renewal_date)){
             $data = [
                 'authority_type_public_flag' => $authority_type_public_flag,
+                'piva' => $piva,
                 'data_modulo_proposta' => $dataCarbon,
                 'title' => $title,
                 'fullname' => $clientDetails->last_name . ' ' . $clientDetails->first_name,
@@ -93,6 +96,7 @@ class NewApplicationToPdfService
         else{
             $data = [
                 'authority_type_public_flag' => $authority_type_public_flag,
+                'piva' => $piva,
                 'data_modulo_proposta' => $dataCarbon,
                 'title' => $title,
                 'fullname' => $clientDetails->last_name . ' ' . $clientDetails->first_name,

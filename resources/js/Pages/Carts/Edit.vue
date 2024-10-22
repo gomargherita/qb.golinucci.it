@@ -259,7 +259,11 @@
 
     
     <h2 class="mt-12 text-2xl font-bold">{{ __("Certificate") }}</h2>
+    <div v-if="cart.product.id == 1 || cart.product.id == 5" class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
+      <a @click="generate_lloyds" target="_blank" class="btn-gol-primary  mr-auto">Genera certificato Lloyd's</a>
+      <p class="inline-block px-4 py-5">Generare il certificato solo se il carrello è allo step 5.</p>
 
+    </div>
     <div class="flex flex-wrap mt-6 bg-white rounded shadow ">
         <form  @submit.prevent="update_decorrenza" >
 <div class="flex flex-wrap -mb-8 -mr-6 p-8">
@@ -299,16 +303,13 @@
 <br />
 <div v-if="cart.product.id == 1 || cart.product.id == 5" class="flex flex-wrap ">
   
-  <div class="flex items-center border-t border-gray-100 ml-auto mr-10">
+  <!--<div class="flex items-center border-t border-gray-100 ml-auto mr-10">
       <a @click="generate_proposal" target="_blank" class="btn-gol-primary  ml-auto">Ricrea modulo di proposta</a>
-  </div>
+  </div>-->
 
-  <div class="flex items-center border-t border-gray-100 ml-auto">
-      <a @click="generate_lloyds" target="_blank" class="btn-gol-primary  ml-auto">Genera certificato Lloyd's</a>
-  </div>
+
 </div>
 
-<p class="inline-block px-4 py-5">Generare il certificato solo se il carrello è allo step 5.</p>
   
 
 
@@ -336,9 +337,10 @@
         
     </div>
     <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100">
-      
       <a @click="update_decorrenza" target="_blank" class="flex items-center btn-gol-primary ml-auto">Aggiorna date di decorrenza</a>
     </div>
+
+    
 
     <h2 class="mt-12 text-2xl font-bold">{{ __("Documents") }}</h2>
 
