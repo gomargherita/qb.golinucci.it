@@ -94,10 +94,29 @@ class CartController extends Controller
     public function index($product_type = 1)
     {
         if($product_type == 1){
+            $request = Request::only('search', 'steps', 'trashed');
+
+            if(isset($request['search'])){
+                $searchQuery = $request['search'];
+            }
+            else{
+                $searchQuery = " ";
+            }
+            $searchTerms = explode(' ', $searchQuery);
+
             $carts = Auth::user()->account->carts()
+                ->where(function ($query) use ($searchTerms) {
+                    foreach ($searchTerms as $term) {
+                        $query->where(function ($subQuery) use ($term) {
+                            $subQuery->where('users.first_name', 'LIKE', "%{$term}%")
+                                    ->orWhere('users.last_name', 'LIKE', "%{$term}%")
+                                    ->orWhere('users.email', 'LIKE', "%{$term}%");
+                        });
+                    }
+                })
                     ->whereIn('product_id', [1, 5])
                     ->orderByDate()
-                    ->filter(Request::only('search', 'steps', 'trashed'))
+                    ->filter($request)
                     ->paginate(20)
                     ->withQueryString()
                     ->through(fn ($cart) => [
