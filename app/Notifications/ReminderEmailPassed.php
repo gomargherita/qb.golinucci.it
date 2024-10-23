@@ -11,6 +11,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Models\RenewalsEmail;
 use Illuminate\Support\Facades\DB;
+use App\Models\Reminder;
 
 
 
@@ -20,6 +21,7 @@ class ReminderEmailPassed extends Notification implements ShouldQueue
 
     protected $cart;
     protected $end_validity_date;
+    protected $reminder;
 
     /**
      * Create a new notification instance.
@@ -30,6 +32,8 @@ class ReminderEmailPassed extends Notification implements ShouldQueue
     {
         $this->cart = $cart->cart;
         $this->end_validity_date = $cart->end_validity_date;
+        $this->reminder = Reminder::where('cart_id', $cart->cart->id)->first();
+
 
         //error_log($cart->cart->product);die;
     }
@@ -61,8 +65,15 @@ class ReminderEmailPassed extends Notification implements ShouldQueue
                 $cc = "bancari@golinucci.it";
             }
             $user = $this->cart->user;
-            $uncrypted_password = Str::random(10);
-            $user->password = $uncrypted_password;
+            if($this->reminder->pw == null){
+                $uncrypted_password = Str::random(10);
+                $user->password = $uncrypted_password;
+                $this->reminder->pw = $uncrypted_password;
+                $this->reminder->save();
+            }
+            else{
+                $uncrypted_password = $this->reminder->pw;
+            }
             $user->email_verified_at = now();
             $user->save();
             $url = route('front.product.renew', [$this->cart->product_id, $this->cart->cart_ref]);
