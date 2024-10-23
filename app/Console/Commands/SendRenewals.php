@@ -68,6 +68,12 @@ class SendRenewals extends Command
                 //error_log($user);die;
                 Log::debug($user, ['command']);
                 Log::debug($certificate, ['command cart']);//error_log($certificate);die;
+                $reminder = Reminder::where('cart_id', $certificate->cart->id)->first();
+                            if ($reminder == null){
+                                $reminder = Reminder::create([
+                                    'cart_id' => $certificate->cart->id,
+                                ]);
+                            }
                 $user->notify(new RenewEmail($certificate));
                 $this->info(now() . ': renewal email sent to ' . $user->email);
                 DB::statement('INSERT INTO renewals_email (old_cart_ref) VALUES ("'. $certificate->cart->cart_ref.'");');

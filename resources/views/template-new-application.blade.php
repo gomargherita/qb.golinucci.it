@@ -115,6 +115,7 @@
                             <td><b>{{ $piva }}</b></td>
                         </tr>
                     }
+                    @endif
                     <tr>
                         <td>Cellulare</td>
                         <td><b>{{ $phone }}</b></td>

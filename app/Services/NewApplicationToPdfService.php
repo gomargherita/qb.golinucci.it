@@ -48,7 +48,7 @@ class NewApplicationToPdfService
             (Medici Abilitati Tirocinanti E Specializzandi) di età inferiore a 38 anni";
             $specialization = $clientDetails->getConditionalFieldMatchById(11, false);
             $profession = $clientDetails->getConditionalFieldMatchById(10);
-            $piva = $clientDetails->getConditionalFieldMatchById(12);
+            $piva = $clientDetails->getConditionalFieldMatchById(12, false);
         }
         $indemnity_limit = number_format(
             $this->cart->indemnity_limit,

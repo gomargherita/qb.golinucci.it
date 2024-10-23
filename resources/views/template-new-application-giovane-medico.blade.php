@@ -105,6 +105,13 @@
                         <td>Specializzazione</td>
                         <td><b>{{ $specialization }}</b></td>
                     </tr>
+                    @if ($piva != null){
+                        <tr>
+                            <td>P.IVA</td>
+                            <td><b>{{ $piva }}</b></td>
+                        </tr>
+                    }
+                    @endif
                     <tr>
                         <td>Cellulare</td>
                         <td><b>{{ $phone }}</b></td>
