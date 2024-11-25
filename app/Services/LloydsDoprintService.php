@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use SoapClient, SoapHeader, SoapVar, SoapParam, SoapFault, DOMDocument;
 use Illuminate\Support\Facades\Log;
 use App\Models\Certificate;
+use App\Models\ClientDetail;
 
 
 
@@ -501,7 +502,15 @@ class LloydsDoprintService
             $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_old));
         }
         else{
-            $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_filepath));
+            $clientDetails = ClientDetail::where('user_id', $cart->user_id)->latest('id')->first();
+
+            $flag_prev_2022 = $clientDetails->flag_prev_2022;
+            if($flag_prev_2022 == 1){
+                $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_prev_2022));
+            }
+            else{
+                $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_filepath));
+            }
         }
 
         LloydsDoprintService::uploadRequest($cart, $wording);

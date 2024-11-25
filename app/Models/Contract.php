@@ -20,6 +20,8 @@ class Contract extends Model
                 'dip',
                 'dip_aggiuntivo',
                 'contract_prop',
+                'contract_old',
+                'contract_prev_2022'
             ]);
     }
 }
