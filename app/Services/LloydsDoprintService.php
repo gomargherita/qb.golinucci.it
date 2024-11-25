@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Storage;
 use SoapClient, SoapHeader, SoapVar, SoapParam, SoapFault, DOMDocument;
 use Illuminate\Support\Facades\Log;
+use App\Models\Certificate;
+
 
 
 class LloydsDoprintService
@@ -113,27 +115,27 @@ class LloydsDoprintService
         // BindingAuthorityDetails
         // VALE PER TUTTI GLI ENV
         // VERIFICARE CHE IN SANDBOX ESISTA UN BINDER CON GLI STESSI DATI DI PROD
-        if($certificate->start_validity_date->format('Y-m-d') <= "2023-11-07"){
+        if($certificate->start_validity_date->format('Y-m-d') <= "2024-11-07"){
             $BindingAuthorityDetails = $xml->getElementsByTagName('BindingAuthorityDetails')->item(0);
-            $BindingAuthorityDetails->getElementsByTagName('BARefDate')->item(0)->textContent = '2022-11-03';
-            $BindingAuthorityDetails->getElementsByTagName('BARefNo')->item(0)->textContent = '15';
-            $BindingAuthorityDetails->getElementsByTagName('BABrokersRef')->item(0)->textContent = 'CPG129822';
+            $BindingAuthorityDetails->getElementsByTagName('BARefDate')->item(0)->textContent = '2023-10-13';
+            $BindingAuthorityDetails->getElementsByTagName('BARefNo')->item(0)->textContent = '24';
+            $BindingAuthorityDetails->getElementsByTagName('BABrokersRef')->item(0)->textContent = 'CPG129823';
             $BindingAuthorityDetails->getElementsByTagName('BAPseudonym')->item(0)->textContent = 'GMB';
             $BindingAuthorityDetails->getElementsByTagName('BANumber')->item(0)->textContent = '1732';
             $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin1')->item(0)->textContent = '115647';
             $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin2')->item(0)->textContent = 'XKT';
-            $BindingAuthorityDetails->getElementsByTagName('BAUniqueMarketReference')->item(0)->textContent = 'B1732CPG129822';
+            $BindingAuthorityDetails->getElementsByTagName('BAUniqueMarketReference')->item(0)->textContent = 'B1732CPG129823';
         }
         else{
         $BindingAuthorityDetails = $xml->getElementsByTagName('BindingAuthorityDetails')->item(0);
-        $BindingAuthorityDetails->getElementsByTagName('BARefDate')->item(0)->textContent = '2023-10-13';
-        $BindingAuthorityDetails->getElementsByTagName('BARefNo')->item(0)->textContent = '24';
-        $BindingAuthorityDetails->getElementsByTagName('BABrokersRef')->item(0)->textContent = 'CPG129823';
+        $BindingAuthorityDetails->getElementsByTagName('BARefDate')->item(0)->textContent = '2024-11-19';
+        $BindingAuthorityDetails->getElementsByTagName('BARefNo')->item(0)->textContent = '27';
+        $BindingAuthorityDetails->getElementsByTagName('BABrokersRef')->item(0)->textContent = 'CPG129824';
         $BindingAuthorityDetails->getElementsByTagName('BAPseudonym')->item(0)->textContent = 'GMB';
         $BindingAuthorityDetails->getElementsByTagName('BANumber')->item(0)->textContent = '1732';
         $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin1')->item(0)->textContent = '115647';
         $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin2')->item(0)->textContent = 'XKT';
-        $BindingAuthorityDetails->getElementsByTagName('BAUniqueMarketReference')->item(0)->textContent = 'B1732CPG129823';
+        $BindingAuthorityDetails->getElementsByTagName('BAUniqueMarketReference')->item(0)->textContent = 'B1732CPG129824';
         }
 
         // Certificate Number
@@ -217,24 +219,62 @@ class LloydsDoprintService
         $GeneralConditionsAttachment = $CertificateAttachments->getElementsByTagName('RisksDescriptionAttachment')->item(0);
         $GeneralConditionsAttachment->getElementsByTagName('FileHash')->item(0)->textContent = $documentHashpdf;
 
-        // Add Wording        
-        $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_filepath));
+        // Add Wording   
+        $last_prev_certificate = Certificate::query()
+                    ->with('cart')
+                    ->select(['end_validity_date'])->where([
+                        // controllo su product
+                        'product_id' => $cart->product_id,
+                    ])->whereHas('cart', function ($q) {
+                        $q->where('user_id', auth()->user()->id);
+                    })
+                    ->latest()->first();
+
+            if($last_prev_certificate != null){
+                $old_cart_end_date = $last_prev_certificate->end_validity_date;
+            }
+            else{
+                $old_cart_end_date = "08-11-2024";
+            }
+
+            $end = date_create($old_cart_end_date);
+            $deadline = date_create("08-11-2024");
+
+            $interval = date_diff($end,$deadline);
+            $interval = $interval->format("%R%a");     
+        if($interval > 0 && $cart->productOffer->contract->contract_old != null){
+            $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_old));
+        }
+        else{
+            $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_filepath));
+        }
         $wordingHashpdf = base64_encode(md5($wording, true));
         $ProposalFormAttachment = $CertificateAttachments->getElementsByTagName('OtherAttachment')->item(0);
         $ProposalFormAttachment->getElementsByTagName('FileHash')->item(0)->textContent = $wordingHashpdf;
 
         // add attaching clauses
-        if($cart->product->id == 1){
-            $attachingClauses = Storage::disk('private')->get('attaching_clauses/medici/ATTACHING_CLAUSES.pdf');
-            $attachingClauses2Hashpdf = base64_encode(md5($attachingClauses, true));
-            $ProposalFormAttachment = $CertificateAttachments->getElementsByTagName('OtherAttachment')->item(1);
-            $ProposalFormAttachment->getElementsByTagName('FileHash')->item(0)->textContent = $attachingClauses2Hashpdf;
+        
+
+            //interval > 0 significa che hai l'offerta vecchia
+        if($interval > 0){
+            if($cart->product->id == 1){
+                $attachingClauses = Storage::disk('private')->get('attaching_clauses/medici/ATTACHING_CLAUSES.pdf');
+                $attachingClauses2Hashpdf = base64_encode(md5($attachingClauses, true));
+                $ProposalFormAttachment = $CertificateAttachments->getElementsByTagName('OtherAttachment')->item(1);
+                $ProposalFormAttachment->getElementsByTagName('FileHash')->item(0)->textContent = $attachingClauses2Hashpdf;
+            }
+            else if($cart->product->id == 5){
+                $attachingClauses = Storage::disk('private')->get('attaching_clauses/gmedici/ATTACHING_CLAUSES.pdf');
+                $attachingClauses2Hashpdf = base64_encode(md5($attachingClauses, true));
+                $ProposalFormAttachment = $CertificateAttachments->getElementsByTagName('OtherAttachment')->item(1);
+                $ProposalFormAttachment->getElementsByTagName('FileHash')->item(0)->textContent = $attachingClauses2Hashpdf;
+            }
         }
-        else if($cart->product->id == 5){
-            $attachingClauses = Storage::disk('private')->get('attaching_clauses/gmedici/ATTACHING_CLAUSES.pdf');
-            $attachingClauses2Hashpdf = base64_encode(md5($attachingClauses, true));
-            $ProposalFormAttachment = $CertificateAttachments->getElementsByTagName('OtherAttachment')->item(1);
-            $ProposalFormAttachment->getElementsByTagName('FileHash')->item(0)->textContent = $attachingClauses2Hashpdf;
+        else{
+            $attachingClauses = Storage::disk('private')->get('attaching_clauses/AGGIORNATO_ATTACHING_CLAUSES_2024.pdf');
+                $attachingClauses2Hashpdf = base64_encode(md5($attachingClauses, true));
+                $ProposalFormAttachment = $CertificateAttachments->getElementsByTagName('OtherAttachment')->item(1);
+                $ProposalFormAttachment->getElementsByTagName('FileHash')->item(0)->textContent = $attachingClauses2Hashpdf;
         }
 
         $policy_response_folder = 'certificates/user_' . $cart->user_id . '/cart_' . $cart_details['cart_id'];
@@ -433,16 +473,52 @@ class LloydsDoprintService
         // privato con flag_prev_2022 WORDING BINDER NL 2021_SECTION B_PREV2022.pdf
         // pubblico senza flag_prev_2022 file WORDING BINDER NL 2021_SECTION_A.pdf
         // privato senza flag_prev_2022 WORDING BINDER NL 2021_SECTION B.pdf
-        $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_filepath));
+
+        $last_prev_certificate = Certificate::query()
+        ->with('cart')
+        ->select(['end_validity_date'])->where([
+            // controllo su product
+            'product_id' => $cart->product_id,
+        ])->whereHas('cart', function ($q) {
+            $q->where('user_id', auth()->user()->id);
+        })
+        ->latest()->first();
+
+        if($last_prev_certificate != null){
+            $old_cart_end_date = $last_prev_certificate->end_validity_date;
+        }
+        else{
+            $old_cart_end_date = "08-11-2024";
+        }
+
+        $end = date_create($old_cart_end_date);
+        $deadline = date_create("08-11-2024");
+
+        $interval = date_diff($end,$deadline);
+        $interval = $interval->format("%R%a");
+
+        if($interval > 0 && $cart->productOffer->contract->contract_old != null){
+            $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_old));
+        }
+        else{
+            $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_filepath));
+        }
 
         LloydsDoprintService::uploadRequest($cart, $wording);
 
         // 3. ATTACHING CLAUSES
-        if($cart->product->id == 1){
-            $attaching_clauses = Storage::disk('private')->get('attaching_clauses/medici/ATTACHING_CLAUSES.pdf');
+       
+            //interval > 0 significa che hai l'offerta vecchia
+        if($interval > 0){
+            if($cart->product->id == 1){
+                $attaching_clauses = Storage::disk('private')->get('attaching_clauses/medici/ATTACHING_CLAUSES.pdf');
+            }
+            else if($cart->product->id == 5){
+                $attaching_clauses = Storage::disk('private')->get('attaching_clauses/gmedici/ATTACHING_CLAUSES.pdf');
+            }
         }
-        else if($cart->product->id == 5){
-            $attaching_clauses = Storage::disk('private')->get('attaching_clauses/gmedici/ATTACHING_CLAUSES.pdf');
+        else{
+            $attaching_clauses = Storage::disk('private')->get('attaching_clauses/AGGIORNATO_ATTACHING_CLAUSES_2024.pdf');
         }
         LloydsDoprintService::uploadRequest($cart, $attaching_clauses);
 

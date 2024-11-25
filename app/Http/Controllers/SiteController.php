@@ -151,7 +151,7 @@ class SiteController extends Controller
         $product = $product->load([
             'productOffers' => function ($query) {
                 $flag_prev_2022 = 0;
-                $query->with(['conditionalFields', 'contract'])->where('flag_prev_2022', $flag_prev_2022);
+                $query->with(['conditionalFields', 'contract'])->where('flag_prev_2022', $flag_prev_2022)->whereNull('old');
             }
         ]);
 

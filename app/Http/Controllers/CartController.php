@@ -484,11 +484,59 @@ class CartController extends Controller
         $flag_prev_2022 = $clientDetails->flag_prev_2022;
 
         if($product->product_type_id == 1){
+            $last_prev_certificate = Certificate::query()
+                    ->with('cart')
+                    ->select(['end_validity_date'])->where([
+                        // controllo su product
+                        'product_id' => $cart->product_id,
+                    ])->whereHas('cart', function ($q) {
+                        $q->where('user_id', auth()->user()->id);
+                    })
+                    ->latest()->first();
+
+            if($last_prev_certificate != null){
+                $old_cart_end_date = $last_prev_certificate->end_validity_date;
+            }
+            else{
+                $old_cart_end_date = "08-11-2024";
+            }
+
+            $end = date_create($old_cart_end_date);
+            $deadline = date_create("08-11-2024");
+
+            $interval = date_diff($end,$deadline);
+            $interval = $interval->format("%R%a");
+
+            //interval > 0 significa che hai l'offerta vecchia
+            if($interval > 0){
+
+                if($flag_prev_2022 == 1){
+                    $product = $product->load([
+                        'productOffers' => function ($query) use ($flag_prev_2022) {
+                            $query->with(['conditionalFields', 'contract'])->where('flag_prev_2022', $flag_prev_2022);
+                        }
+                    ]);
+                }
+                else{
             $product = $product->load([
                 'productOffers' => function ($query) use ($flag_prev_2022) {
-                    $query->with(['conditionalFields', 'contract'])->where('flag_prev_2022', $flag_prev_2022);
+                    $query->with(['conditionalFields', 'contract'])->where('flag_prev_2022', $flag_prev_2022)->whereNotNull('old');
                 }
             ]);
+        }
+            for($i=0; $i<count($product->productOffers); $i++){
+                $product->productOffers[$i]->hide = 0;
+            }
+            //dd($product->productOffers);
+        }
+        else{
+            $product = $product->load([
+                'productOffers' => function ($query) use ($flag_prev_2022) {
+                    $query->with(['conditionalFields', 'contract'])->where('flag_prev_2022', $flag_prev_2022)->whereNull('old');
+                }
+            ]);
+        }
+
         }
         else{
             $product = $product->load([

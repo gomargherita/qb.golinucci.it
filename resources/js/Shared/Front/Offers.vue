@@ -44,10 +44,12 @@
           <!-- Prodotto MEDICI -->
           <tr
           v-if="product.id == 1 || product.id == 5"
+          
             v-for="(offer, index) in filteredRows"
-           
+            
             class="odd:bg-white even:bg-slate-100 uppercase"
           >
+          <template v-if="offer.hide == 0">
             <td class="p-4 border border-primary">{{ index + 1 }}</td>
             <td v-if="product.id != 5"
               class="p-4 border border-primary"
@@ -95,6 +97,7 @@
                 {{ __("DIP_AGGIUNTIVO") }}
               </a>
             </td>
+          </template>
           </tr>
 
           <!-- Prodotto BANCARI -->

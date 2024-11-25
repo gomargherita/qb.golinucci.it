@@ -33,6 +33,7 @@
                 v-for="(offer, index) in product.offers"
                 class="odd:bg-white even:bg-slate-100 uppercase"
               >
+              <template v-if="offer.hide == 0">
                 <td v-if="product.id != 5"
                   class="p-4 border border-primary"
                   v-text="$filters.formatPrice(offer.indemnity_limit)"
@@ -86,6 +87,7 @@
                     />
                   </label>
                 </td>
+              </template>
               </tr>
 
 
