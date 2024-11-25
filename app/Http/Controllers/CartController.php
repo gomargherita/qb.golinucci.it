@@ -84,6 +84,9 @@ class CartController extends Controller
 
         $interval = date_diff($end,$today);
         $interval = $interval->format("%R%a");
+        if($last_prev_certificate == null){
+            $interval = 0;
+        }
         if($interval < -30){
             return false;
         }
