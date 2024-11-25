@@ -226,6 +226,8 @@ class YousignApiService
                     //$fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "61,560,166,586", $reason_signer, 22, 'text', true, Carbon::now()->format('d-m-Y'), null, null);
     
                     $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "362,230,467,256", $reason_signer, 26, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
+                    $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "49,393,148,433", $reason_signer, 19, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
+
                     //$fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "105,236,203,252", $reason_signer, 24, 'text', true, Carbon::now()->format('d-m-Y'), null, null);
                     break;
                 case "/storage/contracts/AGGIORNATO_WORDING_BINDER_NL_2024_SECTION_B_1.000.000.pdf":
@@ -244,6 +246,8 @@ class YousignApiService
                     //$fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "61,560,166,586", $reason_signer, 22, 'text', true, Carbon::now()->format('d-m-Y'), null, null);
     
                     $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "362,230,467,256", $reason_signer, 26, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
+                    $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "49,393,148,433", $reason_signer, 19, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
+
                     //$fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "105,236,203,252", $reason_signer, 24, 'text', true, Carbon::now()->format('d-m-Y'), null, null);
                         break;
                 case "/storage/contracts/AGGIORNATO_WORDING_BINDER_NL_2024_SECTION_A_500.000.pdf":
@@ -262,6 +266,8 @@ class YousignApiService
                     //$fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "61,560,166,586", $reason_signer, 22, 'text', true, Carbon::now()->format('d-m-Y'), null, null);
     
                     $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "362,230,467,256", $reason_signer, 26, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
+                    $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "49,393,148,433", $reason_signer, 19, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
+
                     //$fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "105,236,203,252", $reason_signer, 24, 'text', true, Carbon::now()->format('d-m-Y'), null, null);
                         break;
                 case "/storage/contracts/AGGIORNATO_WORDING_BINDER_NL_2024_SECTION_B_500.000.pdf":
@@ -280,6 +286,8 @@ class YousignApiService
                     //$fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "61,560,166,586", $reason_signer, 22, 'text', true, Carbon::now()->format('d-m-Y'), null, null);
     
                     $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "362,230,467,256", $reason_signer, 26, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
+                    $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "49,393,148,433", $reason_signer, 19, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
+
                     //$fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "105,236,203,252", $reason_signer, 24, 'text', true, Carbon::now()->format('d-m-Y'), null, null);
                         break;
                 case "/storage/contracts/WORDING_GIOVANE_MEDICO_2024.pdf":
