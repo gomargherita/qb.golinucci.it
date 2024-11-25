@@ -72,7 +72,12 @@ class CartController extends Controller
                     })
                     ->latest()->first();
 
-        $old_cart_end_date = $last_prev_certificate->end_validity_date;
+        if($last_prev_certificate != null){
+            $old_cart_end_date = $last_prev_certificate->end_validity_date;
+        }
+        else{
+            $old_cart_end_date = date('d-m-Y');
+        }
 
         $end = date_create($old_cart_end_date);
         $today = date_create(date('d-m-Y'));
