@@ -502,7 +502,7 @@ class CartController extends Controller
             }
 
             $end = date_create($old_cart_end_date);
-            dd($end);
+            dd($last_prev_certificate);
             $deadline = date_create("08-11-2024");
 
             $interval = date_diff($end,$deadline);
