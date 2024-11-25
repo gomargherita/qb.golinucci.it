@@ -530,6 +530,7 @@ class CartController extends Controller
             //dd($product->productOffers);
         }
         else{
+            $flag_prev_2022 = 0;
             $product = $product->load([
                 'productOffers' => function ($query) use ($flag_prev_2022) {
                     $query->with(['conditionalFields', 'contract'])->where('flag_prev_2022', $flag_prev_2022)->whereNull('old');
