@@ -489,8 +489,8 @@ class CartController extends Controller
                     ->select(['end_validity_date'])->where([
                         // controllo su product
                         'product_id' => $cart->product_id,
-                    ])->whereHas('cart', function ($q) {
-                        $q->where('user_id', auth()->user()->id);
+                    ])->whereHas('cart', function ($q) use ($user_id) {
+                        $q->where('user_id', $user_id);
                     })
                     ->latest()->first();
 
@@ -502,7 +502,7 @@ class CartController extends Controller
             }
 
             $end = date_create($old_cart_end_date);
-            dd($last_prev_certificate);
+            //dd($last_prev_certificate);
             $deadline = date_create("08-11-2024");
 
             $interval = date_diff($end,$deadline);

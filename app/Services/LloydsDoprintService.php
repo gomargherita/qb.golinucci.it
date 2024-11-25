@@ -225,8 +225,8 @@ class LloydsDoprintService
                     ->select(['end_validity_date'])->where([
                         // controllo su product
                         'product_id' => $cart->product_id,
-                    ])->whereHas('cart', function ($q) {
-                        $q->where('user_id', auth()->user()->id);
+                    ])->whereHas('cart', function ($q) use ($cart) {
+                        $q->where('user_id', $cart->user_id);
                     })
                     ->latest()->first();
 
@@ -475,14 +475,14 @@ class LloydsDoprintService
         // privato senza flag_prev_2022 WORDING BINDER NL 2021_SECTION B.pdf
 
         $last_prev_certificate = Certificate::query()
-        ->with('cart')
-        ->select(['end_validity_date'])->where([
-            // controllo su product
-            'product_id' => $cart->product_id,
-        ])->whereHas('cart', function ($q) {
-            $q->where('user_id', auth()->user()->id);
-        })
-        ->latest()->first();
+            ->with('cart')
+            ->select(['end_validity_date'])->where([
+                // controllo su product
+                'product_id' => $cart->product_id,
+            ])->whereHas('cart', function ($q) use ($cart) {
+                $q->where('user_id', $cart->user_id);
+            })
+            ->latest()->first();
 
         if($last_prev_certificate != null){
             $old_cart_end_date = $last_prev_certificate->end_validity_date;
