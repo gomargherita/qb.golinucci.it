@@ -76,7 +76,7 @@ class CartController extends Controller
             $old_cart_end_date = $last_prev_certificate->end_validity_date;
         }
         else{
-            $old_cart_end_date = date('d-m-Y');
+            return false;
         }
 
         $end = date_create($old_cart_end_date);
@@ -84,9 +84,7 @@ class CartController extends Controller
 
         $interval = date_diff($end,$today);
         $interval = $interval->format("%R%a");
-        if($last_prev_certificate == null){
-            $interval = 0;
-        }
+
         if($interval < -30){
             return false;
         }
