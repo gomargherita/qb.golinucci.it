@@ -50,7 +50,7 @@ class FixOffers2 extends Migration
         DB::statement("UPDATE product_offers SET contract_id = 12 WHERE id = 198");
         DB::statement("UPDATE product_offers SET contract_id = 12 WHERE id = 199");
         DB::statement("UPDATE product_offers SET contract_id = 12 WHERE id = 200");
-        DB::statement("UPDATE contracts SET contract_filepath = '/storage/contracts/AGGIORNATO_WORDING_GIOVANE_MEDICO_2024.pdf' WHERE id = 8")
+        DB::statement("UPDATE contracts SET contract_filepath = '/storage/contracts/AGGIORNATO_WORDING_GIOVANE_MEDICO_2024.pdf' WHERE id = 8");
     }
 
     /**
