@@ -347,6 +347,8 @@ class SiteBuyProductController extends Controller
             $interval = date_diff($end,$deadline);
             $interval = $interval->format("%R%a");
 
+
+
             //interval > 0 significa che hai l'offerta vecchia
             if($interval > 0){
                 
@@ -471,7 +473,17 @@ class SiteBuyProductController extends Controller
         $cart->net_plus_access_premium = $productOffer->net_plus_access_premium;
         $cart->indemnity_limit = $productOffer->indemnity_limit;
         $cart->indemnity_limit_patrimonial = $productOffer->indemnity_limit_patrimonial;
+        $clientDetails = ClientDetail::query($product)
+            ->where([
+                'user_id' => $user->id
+            ])->latest('id')->first();
 
+        
+        $flag_prev_2022 = $clientDetails->flag_prev_2022;
+        if($flag_prev_2022 == 1){
+            $cart->indemnity_limit_patrimonial = 1000000;
+            $cart->save();
+        }
         $cart->product_offer_id = $request->product_offer_id_selected;
         $cart->save();
 

@@ -116,6 +116,7 @@ class LloydsDoprintService
         // BindingAuthorityDetails
         // VALE PER TUTTI GLI ENV
         // VERIFICARE CHE IN SANDBOX ESISTA UN BINDER CON GLI STESSI DATI DI PROD
+        //if(true){
         if($certificate->start_validity_date->format('Y-m-d') <= "2024-11-07"){
             $BindingAuthorityDetails = $xml->getElementsByTagName('BindingAuthorityDetails')->item(0);
             $BindingAuthorityDetails->getElementsByTagName('BARefDate')->item(0)->textContent = '2023-10-13';
@@ -247,7 +248,20 @@ class LloydsDoprintService
             $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_old));
         }
         else{
-            $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_filepath));
+            $clientDetails = ClientDetail::where('user_id', $cart->user_id)->first();
+            //Log::debug($clientDetails);
+            $flag_prev_2022 = $clientDetails->flag_prev_2022;
+            //Log::debug($flag_prev_2022);
+            if($flag_prev_2022 == 1){
+                //Log::debug("corretto");
+                //$impossible = 5/0;
+
+                $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_prev_2022));
+            }
+            else{
+                //$impossible = 5/0;
+                $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_filepath));
+            }
         }
         $wordingHashpdf = base64_encode(md5($wording, true));
         $ProposalFormAttachment = $CertificateAttachments->getElementsByTagName('OtherAttachment')->item(0);
@@ -502,13 +516,21 @@ class LloydsDoprintService
             $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_old));
         }
         else{
-            $clientDetails = ClientDetail::where('user_id', $cart->user_id)->latest('id')->first();
+            //$clientDetails = ClientDetail::where('user_id', $cart->user_id)->latest('id')->first();
 
+            $clientDetails = ClientDetail::where('user_id', $cart->user_id)->first();
+            //Log::debug($clientDetails);
             $flag_prev_2022 = $clientDetails->flag_prev_2022;
+            //Log::debug($flag_prev_2022);
+
             if($flag_prev_2022 == 1){
+                //Log::debug("corretto");
+                //$impossible = 5/0;
+
                 $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_prev_2022));
             }
             else{
+                //$impossible = 5/0;
                 $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_filepath));
             }
         }
