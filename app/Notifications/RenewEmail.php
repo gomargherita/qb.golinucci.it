@@ -83,7 +83,7 @@ class RenewEmail extends Notification implements ShouldQueue
 
             if($this->cart->product_id == 1){
                 return (new MailMessage)
-                //->bcc($cc)
+                ->bcc($cc)
                 ->subject('Q&B Golinucci - Rinnova la tua polizza')
                 ->greeting("Gentile $user->name")
                 ->line("Ricordiamo che il $renewal_date scadrà la tua polizza di Responsabilita’ Civile Professionale.")
@@ -100,7 +100,7 @@ class RenewEmail extends Notification implements ShouldQueue
             }
             else{
             return (new MailMessage)
-                //->bcc($cc)
+                ->bcc($cc)
                 ->subject('Q&B Golinucci - Rinnova la tua polizza')
                 ->greeting("Gentile $user->name")
                 ->line("Ricordiamo che il $renewal_date scadrà la tua polizza di Responsabilita’ Civile Professionale.")
