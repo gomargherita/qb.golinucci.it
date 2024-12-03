@@ -235,7 +235,7 @@ class CartController extends Controller
         $newCart = Cart::create([
             'user_id' => $user_id,
             'product_id' => $product->id,
-            'product_offer_id' => $cart->product_offer_id,
+            'product_offer_id' => $product->product_type_id == 1 ? null : $cart->product_offer_id,
             'product_step_id' => 1,
             'expired_at' => $end->modify('+30 day'),
             'locked' => 'N',
