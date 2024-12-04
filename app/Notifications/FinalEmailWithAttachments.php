@@ -64,7 +64,7 @@ class FinalEmailWithAttachments extends Notification
         else if($this->cart->product->product_type_id == 2){
             switch($this->cart->product->id){
                 case 2:
-                    $wording = Storage::disk('public')->getAdapter()->getPathPrefix()."/contracts/CONVENZIONE-2024.pdf";
+                    $wording = Storage::disk('public')->getAdapter()->getPathPrefix()."/contracts/SCHEDA_DI_ADESIONE_REGIONALE_2025.pdf";
                     
                     break;
                 case 3:
