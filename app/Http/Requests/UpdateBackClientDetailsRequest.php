@@ -35,7 +35,7 @@ class UpdateBackClientDetailsRequest extends FormRequest
             'phone' => ['nullable', 'max:30'],
             'address' => ['nullable', 'max:150'],
             'city' => ['nullable', 'max:50'],
-            'province' => ['nullable', 'max:2'],
+            'province' => ['nullable', 'max:3'],
             'country' => ['nullable', 'max:2'],
             'postal_code' => ['nullable', 'max:5'],
             'product_client_details' => ['nullable', 'array'],

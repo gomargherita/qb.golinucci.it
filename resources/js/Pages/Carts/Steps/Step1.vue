@@ -180,6 +180,7 @@
           <option value="RN">RIMINI</option>
           <option value="RM">ROMA</option>
           <option value="RO">ROVIGO</option>
+          <option value="RSM">SAN MARINO</option>
           <option value="SA">SALERNO</option>
           <option value="SS">SASSARI</option>
           <option value="SV">SAVONA</option>
