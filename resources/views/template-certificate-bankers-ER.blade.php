@@ -70,18 +70,18 @@ ul
  margin-right:4.8pt'>
  <tr style='height:14.0pt'>
   <td nowrap colspan=13 valign=bottom style='
-  border-top:solid windowtext 1.0pt;border-left:solid windowtext 1.0pt;
-  border-bottom:none;border-right:solid black 1.0pt;background:#990000;
+  border-top:solid black 1.0pt;border-left:solid black 1.0pt;
+  border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;background:#990000;
   padding:0cm 3.5pt 0cm 3.5pt;height:14.0pt'>
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><b><span style='font-size:14.0pt;font-family:"Arial",sans-serif;
   color:white'>CERTIFICATO DI CONFERMA ADESIONE</span></b></p>
   </td>
-  <td style='height:14.0pt;border:none' height=19></td>
+  <td style='height:14.0pt;border:solid black 1.0pt' height=19></td>
  </tr>
  <tr style='height:14.0pt'>
   <td nowrap colspan=13 valign=bottom style='
-  border-top:none;border-left:solid windowtext 1.0pt;border-bottom:none;
+  border-top:solid black 1.0pt;border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;
   border-right:solid black 1.0pt;background:#990000;padding:0cm 3.5pt 0cm 3.5pt;
   height:14.0pt'>
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
@@ -91,7 +91,7 @@ ul
   line-height:normal'><b><span style='font-size:14.0pt;font-family:"Arial",sans-serif;
   color:white'>{{ $cert_no }}</span></b></p>
   </td>
-  <td style='height:14.0pt;border:none' height=19></td>
+  <td style='height:14.0pt;border:solid black 1.0pt' height=19></td>
  </tr>
  <tr style='height:27.2pt'>
   <td colspan=13 rowspan=2 style='padding:0cm 3.5pt 0cm 3.5pt;
@@ -101,270 +101,270 @@ ul
   del premio, si comunica di aver ottenuto copertura assicurativa sulla base
   delle seguenti condizioni sotto riportate:</span></p>
   </td>
-  <td style='height:27.2pt;border:none' height=36></td>
+  <td style='height:27.2pt;border:solid black 1.0pt' height=36></td>
  </tr>
  <tr style='height:22.5pt'>
-  <td style='height:22.5pt;border:none' height=30></td>
+  <td style='height:22.5pt;border:solid black 1.0pt' height=30></td>
  </tr>
  <tr style='height:14.7pt'>
   <td nowrap colspan=13 valign=bottom style='
-  border:solid windowtext 1.0pt;border-right:solid black 1.0pt;background:#990000;
+  border:solid black 1.0pt;border-right:solid black 1.0pt;background:#990000;
   padding:0cm 3.5pt 0cm 3.5pt;height:14.7pt'>
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><b><span style='font-size:12.0pt;font-family:"Arial",sans-serif;
   color:white'>ESTREMI DEL CERTIFICATO</span></b></p>
   </td>
-  <td style='height:14.7pt;border:none' height=20></td>
+  <td style='height:14.7pt;border:solid black 1.0pt' height=20></td>
  </tr>
  <tr style='height:15.4pt'>
-  <td nowrap colspan=4 style='border-top:none;
-  border-left:solid windowtext 1.0pt;border-bottom:none;border-right:solid windowtext 1.0pt;
+  <td nowrap colspan=4 style='border-top:solid black 1.0pt;
+  border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:15.4pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
   style='font-family:"Arial",sans-serif'>ASSICURATO</span></p>
   </td>
-  <td nowrap colspan=8 style='border:none;border-right:
-  solid windowtext 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:15.4pt'>
+  <td nowrap colspan=8 style='border:solid black 1.0pt;border-right:
+  solid black 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:15.4pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
   style='font-family:"Arial",sans-serif'>INDIRIZZO</span></p>
   </td>
-  <td nowrap style='border:none;border-right:solid windowtext 1.0pt;
+  <td nowrap style='border:solid black 1.0pt;border-right:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:15.4pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
   style='font-family:"Arial",sans-serif'>&nbsp;TELEFONO</span></p>
   </td>
-  <td style='height:15.4pt;border:none' height=21></td>
+  <td style='height:15.4pt;border:solid black 1.0pt' height=21></td>
  </tr>
  <tr style='height:19.05pt'>
-  <td nowrap colspan=4 style='border:solid windowtext 1.0pt;
-  border-top:none;padding:0cm 3.5pt 0cm 3.5pt;height:19.05pt'>
+  <td nowrap colspan=4 style='border:solid black 1.0pt;
+  border-top:solid black 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:19.05pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><b>{{ $name }}</b><b><span
   style='font-size:10.0pt;font-family:"Arial",sans-serif;color:red'> </span></b><b>{{ $surname }}</b></p>
   </td>
-  <td nowrap colspan=8 style='border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  <td nowrap colspan=8 style='border-top:solid black 1.0pt;
+  border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:19.05pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><b>{{ $address }}</b></p>
   </td>
-  <td nowrap style='border-top:none;border-left:none;
-  border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  <td nowrap style='border-top:solid black 1.0pt;border-left:solid black 1.0pt;
+  border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:19.05pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><b><span
   style='font-size:10.0pt;font-family:"Arial",sans-serif'>{{ $telephone }}</span></b></p>
   </td>
-  <td style='height:19.05pt;border:none' height=25></td>
+  <td style='height:19.05pt;border:solid black 1.0pt' height=25></td>
  </tr>
  <tr style='height:16.75pt'>
-  <td nowrap colspan=5 rowspan=2 style='border:solid windowtext 1.0pt;
-  border-top:none;padding:0cm 3.5pt 0cm 3.5pt;height:16.75pt'>
+  <td nowrap colspan=5 rowspan=2 style='border:solid black 1.0pt;
+  border-top:solid black 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:16.75pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
   style='font-family:"Arial",sans-serif'>CODICE FISCALE/ PARTITA IVA</span></p>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><b>{{ $taxcode }}</b></p>
   </td>
-  <td nowrap colspan=3 style='border:none;padding:0cm 3.5pt 0cm 3.5pt;
+  <td nowrap colspan=3 style='border:solid black 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;
   height:16.75pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
   style='font-family:"Arial",sans-serif'>PROVINCIA</span></p>
   </td>
-  <td nowrap colspan=2 style='border:none;border-left:
-  solid windowtext 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:16.75pt'>
+  <td nowrap colspan=2 style='border:solid black 1.0pt;border-left:
+  solid black 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:16.75pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
   style='font-family:"Arial",sans-serif'>CAP</span></p>
   </td>
-  <td nowrap colspan=3 style='border-top:none;
-  border-left:solid windowtext 1.0pt;border-bottom:none;border-right:solid black 1.0pt;
+  <td nowrap colspan=3 style='border-top:solid black 1.0pt;
+  border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:16.75pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
   style='font-family:"Arial",sans-serif'>CITTA'</span></p>
   </td>
-  <td style='height:16.75pt;border:none' height=22></td>
+  <td style='height:16.75pt;border:solid black 1.0pt' height=22></td>
  </tr>
  <tr style='height:20.95pt'>
-  <td nowrap colspan=3 style='border:none;border-bottom:
-  solid windowtext 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:20.95pt'>
+  <td nowrap colspan=3 style='border:solid black 1.0pt;border-bottom:
+  solid black 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:20.95pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><b>{{ $county }}</b></p>
   </td>
-  <td nowrap colspan=2 style='border-top:none;
-  border-left:solid windowtext 1.0pt;border-bottom:solid windowtext 1.0pt;
-  border-right:none;padding:0cm 3.5pt 0cm 3.5pt;height:20.95pt'>
+  <td nowrap colspan=2 style='border-top:solid black 1.0pt;
+  border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;
+  border-right:solid black 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:20.95pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><b>{{ $post_code }}</b></p>
   </td>
-  <td nowrap colspan=3 style='border-top:none;
-  border-left:solid windowtext 1.0pt;border-bottom:solid windowtext 1.0pt;
+  <td nowrap colspan=3 style='border-top:solid black 1.0pt;
+  border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;
   border-right:solid black 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:20.95pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><b>{{ $city }}</b></p>
   </td>
-  <td style='height:20.95pt;border:none' height=28></td>
+  <td style='height:20.95pt;border:solid black 1.0pt' height=28></td>
  </tr>
  <tr style='height:18.05pt'>
-  <td nowrap colspan=5 style='border:none;border-left:
-  solid windowtext 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:18.05pt'>
+  <td nowrap colspan=5 style='border:solid black 1.0pt;border-left:
+  solid black 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:18.05pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
   style='font-family:"Arial",sans-serif'>ABI</span></p>
   </td>
-  <td colspan=5 style='border:none;border-left:solid windowtext 1.0pt;
+  <td colspan=5 style='border:solid black 1.0pt;border-left:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:18.05pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
   style='font-family:"Arial",sans-serif'>GRUPPO TERRITORIALE</span></p>
   </td>
-  <td colspan=3 style='border-top:none;border-left:
-  solid windowtext 1.0pt;border-bottom:none;border-right:solid windowtext 1.0pt;
+  <td colspan=3 style='border-top:solid black 1.0pt;border-left:
+  solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:18.05pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
   style='font-family:"Arial",sans-serif'>E-MAIL</span></p>
   </td>
-  <td style='height:18.05pt;border:none' height=24></td>
+  <td style='height:18.05pt;border:solid black 1.0pt' height=24></td>
  </tr>
  <tr style='height:14.55pt'>
-  <td nowrap colspan=5 style='border-top:none;
-  border-left:solid windowtext 1.0pt;border-bottom:solid windowtext 1.0pt;
-  border-right:none;padding:0cm 3.5pt 0cm 3.5pt;height:14.55pt'>
+  <td nowrap colspan=5 style='border-top:solid black 1.0pt;
+  border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;
+  border-right:solid black 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:14.55pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><b><span
   style='font-size:10.0pt;font-family:"Arial",sans-serif'>{{ $abi }}</span></b></p>
   </td>
-  <td colspan=5 style='border-top:none;border-left:
-  solid windowtext 1.0pt;border-bottom:solid windowtext 1.0pt;border-right:
-  none;padding:0cm 3.5pt 0cm 3.5pt;height:14.55pt'>
+  <td colspan=5 style='border-top:solid black 1.0pt;border-left:
+  solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:
+  solid black 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:14.55pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><b><span
   style='font-size:10.0pt;font-family:"Arial",sans-serif'>{{ $first }}</span></b></p>
   </td>
-  <td colspan=3 style='border:solid windowtext 1.0pt;
-  border-top:none;padding:0cm 3.5pt 0cm 3.5pt;height:14.55pt'>
+  <td colspan=3 style='border:solid black 1.0pt;
+  border-top:solid black 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:14.55pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><b>{{ $email }}</b></p>
   </td>
-  <td style='height:14.55pt;border:none' height=19></td>
+  <td style='height:14.55pt;border:solid black 1.0pt' height=19></td>
  </tr>
  <tr style='height:16.4pt'>
-  <td nowrap colspan=5 style='border:none;border-left:
-  solid windowtext 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:16.4pt'>
+  <td nowrap colspan=5 style='border:solid black 1.0pt;border-left:
+  solid black 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:16.4pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><b><span
   style='font-size:10.0pt;font-family:"Arial",sans-serif'>&nbsp;</span></b></p>
   </td>
-  <td colspan=5 style='border:none;border-left:solid windowtext 1.0pt;
+  <td colspan=5 style='border:solid black 1.0pt;border-left:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:16.4pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
   style='font-family:"Arial",sans-serif'>Dalle ore 24 del</span></p>
   </td>
-  <td colspan=3 style='border:none;border-left:solid windowtext 1.0pt;
+  <td colspan=3 style='border:solid black 1.0pt;border-left:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:16.4pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
   style='font-family:"Arial",sans-serif'>Alle ore 24 del</span></p>
   </td>
-  <td style='height:16.4pt;border:none' height=22></td>
+  <td style='height:16.4pt;border:solid black 1.0pt' height=22></td>
  </tr>
  <tr style='height:21.45pt'>
-  <td nowrap colspan=5 style='border:none;border-left:
-  solid windowtext 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:21.45pt'>
+  <td nowrap colspan=5 style='border:solid black 1.0pt;border-left:
+  solid black 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:21.45pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
   style='font-family:"Arial",sans-serif'>VALIDITA' COPERTURA</span></p>
   </td>
-  <td colspan=5 style='border:none;border-left:solid windowtext 1.0pt;
+  <td colspan=5 style='border:solid black 1.0pt;border-left:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:21.45pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><b>{{ $start_date }}</b></p>
   </td>
-  <td colspan=3 style='border:none;border-left:solid windowtext 1.0pt;
+  <td colspan=3 style='border:solid black 1.0pt;border-left:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:21.45pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><b>{{ $end_date }}</b></p>
   </td>
-  <td style='height:21.45pt;border:none' height=29></td>
+  <td style='height:21.45pt;border:solid black 1.0pt' height=29></td>
  </tr>
  <tr style='height:16.35pt'>
   <td nowrap colspan=13 valign=bottom style='
-  border:solid windowtext 1.0pt;border-right:solid black 1.0pt;background:#990000;
+  border:solid black 1.0pt;border-right:solid black 1.0pt;background:#990000;
   padding:0cm 3.5pt 0cm 3.5pt;height:16.35pt'>
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><b><span style='font-size:12.0pt;font-family:"Arial",sans-serif;
   color:white'>GARANZIE PRESTATE</span></b></p>
   </td>
-  <td style='height:16.35pt;border:none' height=22></td>
+  <td style='height:16.35pt;border:solid black 1.0pt' height=22></td>
  </tr>
  <tr style='height:3.5pt'>
   <td nowrap colspan=13 valign=bottom style='
-  border-top:none;border-left:solid windowtext 1.0pt;border-bottom:solid windowtext 1.0pt;
+  border-top:solid black 1.0pt;border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;
   border-right:solid black 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:3.5pt'>
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><b><span style='font-size:5.0pt;font-family:"Arial",sans-serif;
   color:white'>&nbsp;</span></b></p>
   </td>
-  <td style='height:3.5pt;border:none' height=5></td>
+  <td style='height:3.5pt;border:solid black 1.0pt' height=5></td>
  </tr>
  <tr style='height:14.7pt'>
   <td nowrap colspan=13 valign=bottom style='
-  border-top:none;border-left:solid windowtext 1.0pt;border-bottom:solid windowtext 1.0pt;
+  border-top:solid black 1.0pt;border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;
   border-right:solid black 1.0pt;background:#E73C07;padding:0cm 3.5pt 0cm 3.5pt;
   height:14.7pt'>
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><b><span style='font-size:10.0pt;font-family:"Arial",sans-serif;
   color:white'>PRESTAZIONI COME DA COMBINAZIONE {{ $combination }}</span></b></p>
   </td>
-  <td style='height:14.7pt;border:none' height=20></td>
+  <td style='height:14.7pt;border:solid black 1.0pt' height=20></td>
  </tr>
  <tr style='height:14.7pt'>
-  <td nowrap valign=bottom style='border-top:none;
-  border-left:solid windowtext 1.0pt;border-bottom:solid windowtext 1.0pt;
+  <td nowrap valign=bottom style='border-top:solid black 1.0pt;
+  border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;
   border-right:solid black 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:14.7pt'>
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><b><span style='font-size:10.0pt;font-family:"Arial",sans-serif'>N.
   POLIZZA</span></b></p>
   </td>
-  <td colspan=6 valign=bottom style='border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid black 1.0pt;
+  <td colspan=6 valign=bottom style='border-top:solid black 1.0pt;
+  border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:14.7pt'>
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><b><span style='font-size:10.0pt;font-family:"Arial",sans-serif'>{{ $sku }}</span></b></p>
   </td>
-  <td valign=bottom style='border-top:none;border-left:
-  none;border-bottom:solid windowtext 1.0pt;border-right:solid black 1.0pt;
+  <td valign=bottom style='border-top:solid black 1.0pt;border-left:
+  solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:14.7pt'>
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><b><span style='font-size:10.0pt;font-family:"Arial",sans-serif'>&nbsp;</span></b></p>
   </td>
-  <td colspan=5 valign=bottom style='border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid black 1.0pt;
+  <td colspan=5 valign=bottom style='border-top:solid black 1.0pt;
+  border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:14.7pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><b><span
   style='font-size:10.0pt;font-family:"Arial",sans-serif'>&nbsp;</span></b></p>
   </td>
-  <td style='height:14.7pt;border:none' height=20></td>
+  <td style='height:14.7pt;border:solid black 1.0pt' height=20></td>
  </tr>
  <tr style='height:14.7pt'>
   <td nowrap colspan=3 valign=bottom style='
-  border-top:none;border-left:solid windowtext 1.0pt;border-bottom:solid windowtext 1.0pt;
+  border-top:solid black 1.0pt;border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;
   border-right:solid black 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:14.7pt'>
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><span style='font-family:"Arial",sans-serif'>GARANZIE
   ASSICURATE</span></p>
   </td>
-  <td colspan=5 valign=bottom style='border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid black 1.0pt;
+  <td colspan=5 valign=bottom style='border-top:solid black 1.0pt;
+  border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:14.7pt'>
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><span style='font-family:"Arial",sans-serif'>MASSIMALE</span></p>
   </td>
-  <td colspan=5 valign=bottom style='border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid black 1.0pt;
+  <td colspan=5 valign=bottom style='border-top:solid black 1.0pt;
+  border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:14.7pt'>
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><span style='font-family:"Arial",sans-serif'>FRANCHIGIA*</span></p>
   </td>
-  <td style='height:14.7pt;border:none' height=20></td>
+  <td style='height:14.7pt;border:solid black 1.0pt' height=20></td>
  </tr>
  <tr style='height:14.7pt'>
   <td nowrap colspan=3 valign=bottom style='
-  border-top:none;border-left:solid windowtext 1.0pt;border-bottom:solid windowtext 1.0pt;
+  border-top:solid black 1.0pt;border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;
   border-right:solid black 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:14.7pt'>
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><span style='font-size:10.0pt;font-family:"Arial",sans-serif'>AMMANCHI
   DI CASSA</span></p>
   </td>
-  <td colspan=5 style='border-top:none;border-left:
-  none;border-bottom:solid windowtext 1.0pt;border-right:solid black 1.0pt;
+  <td colspan=5 style='border-top:solid black 1.0pt;border-left:
+  solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:14.7pt'>
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><b><span style='font-size:10.0pt;font-family:"Arial",sans-serif'>{{ $cassa }}</span></b></p>
   </td>
-  <td colspan=5 valign=bottom style='border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid black 1.0pt;
+  <td colspan=5 valign=bottom style='border-top:solid black 1.0pt;
+  border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:14.7pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><b><span
   style='font-size:10.0pt;font-family:"Arial",sans-serif'>Primo Sinistro:</span></b><span
@@ -376,24 +376,24 @@ ul
   style='font-size:10.0pt;font-family:"Arial",sans-serif'>Terzo Sinistro:</span></b><span
   style='font-size:10.0pt;font-family:"Arial",sans-serif'> € 155 fissa</span></p>
   </td>
-  <td style='height:14.7pt;border:none' height=20></td>
+  <td style='height:14.7pt;border:solid black 1.0pt' height=20></td>
  </tr>
  <tr style='height:14.7pt'>
   <td nowrap colspan=3 valign=bottom style='
-  border-top:none;border-left:solid windowtext 1.0pt;border-bottom:solid windowtext 1.0pt;
+  border-top:solid black 1.0pt;border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;
   border-right:solid black 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:14.7pt'>
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><span style='font-size:10.0pt;font-family:"Arial",sans-serif'>R.C.
   PATRIMONIALE</span></p>
   </td>
-  <td colspan=5 style='border-top:none;border-left:
-  none;border-bottom:solid windowtext 1.0pt;border-right:solid black 1.0pt;
+  <td colspan=5 style='border-top:solid black 1.0pt;border-left:
+  solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:14.7pt'>
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><b><span style='font-size:10.0pt;font-family:"Arial",sans-serif'>{{ $rc }}</span></b></p>
   </td>
-  <td colspan=5 valign=bottom style='border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid black 1.0pt;
+  <td colspan=5 valign=bottom style='border-top:solid black 1.0pt;
+  border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:14.7pt'>
   <p class=MsoNormal style='margin-bottom:0cm'><b><span style='font-size:10.0pt;
   line-height:107%;font-family:"Arial",sans-serif'>Primo Sinistro:</span></b><span
@@ -418,47 +418,47 @@ ul
   </span></span><span style='font-size:10.0pt;font-family:"Arial",sans-serif'>10%
   con un minimo di € 100 e un massimo di € 3.000.</span></p>
   </td>
-  <td style='height:14.7pt;border:none' height=20></td>
+  <td style='height:14.7pt;border:solid black 1.0pt' height=20></td>
  </tr>
  <tr style='height:14.7pt'>
   <td nowrap colspan=3 valign=bottom style='
-  border-top:none;border-left:solid windowtext 1.0pt;border-bottom:solid windowtext 1.0pt;
+  border-top:solid black 1.0pt;border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;
   border-right:solid black 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:14.7pt'>
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><span style='font-size:10.0pt;font-family:"Arial",sans-serif'>SPESE
   LEGALI</span></p>
   </td>
-  <td colspan=5 style='border-top:none;border-left:
-  none;border-bottom:solid windowtext 1.0pt;border-right:solid black 1.0pt;
+  <td colspan=5 style='border-top:solid black 1.0pt;border-left:
+  solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:14.7pt'>
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><b><span style='font-size:10.0pt;font-family:"Arial",sans-serif'>{{ $legal }}</span></b></p>
   </td>
-  <td colspan=5 valign=bottom style='border-top:none;
-  border-left:none;border-bottom:solid windowtext 1.0pt;border-right:solid black 1.0pt;
+  <td colspan=5 valign=bottom style='border-top:solid black 1.0pt;
+  border-left:solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:14.7pt'>
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><b><span style='font-size:10.0pt;font-family:"Arial",sans-serif;
   color:red'>&nbsp;</span></b></p>
   </td>
-  <td style='height:14.7pt;border:none' height=20></td>
+  <td style='height:14.7pt;border:solid black 1.0pt' height=20></td>
  </tr>
  <tr style='height:18.35pt'>
-  <td colspan=13 valign=bottom style='border:solid windowtext 1.0pt;
-  border-top:none;padding:0cm 3.5pt 0cm 3.5pt;height:18.35pt'>
+  <td colspan=13 valign=bottom style='border:solid black 1.0pt;
+  border-top:solid black 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:18.35pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal;text-autospace:
-  none'><span style='font-size:10.0pt;font-family:"Arial",sans-serif'>*: quota
+  solid black 1.0pt'><span style='font-size:10.0pt;font-family:"Arial",sans-serif'>*: quota
   del danno che resta a carico dell'Assicurato</span></p>
   </td>
-  <td style='height:18.35pt;border:none' height=24></td>
+  <td style='height:18.35pt;border:solid black 1.0pt' height=24></td>
  </tr>
  <tr style='height:13.55pt'>
-  <td colspan=13 style='border:none;padding:0cm 3.5pt 0cm 3.5pt;
+  <td colspan=13 style='border:solid black 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;
   height:13.55pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
   style='font-size:10.0pt;color:black'>&nbsp;</span></p>
   </td>
-  <td style='height:13.55pt;border:none' height=18></td>
+  <td style='height:13.55pt;border:solid black 1.0pt' height=18></td>
  </tr>
  <tr style='height:13.55pt'>
   <td colspan=13 valign=bottom style='background:#CC3300;
@@ -467,7 +467,7 @@ ul
   line-height:normal'><b><span style='font-size:10.0pt;font-family:"Arial",sans-serif;
   color:white'>CARTA SERVIZI: <i>Salute e Benessere sempre con TE</i></span></b></p>
   </td>
-  <td style='height:13.55pt;border:none' height=18></td>
+  <td style='height:13.55pt;border:solid black 1.0pt' height=18></td>
  </tr>
  <tr style='height:13.55pt'>
   <td colspan=13 valign=bottom style='padding:0cm 3.5pt 0cm 3.5pt;
@@ -488,7 +488,7 @@ ul
   automaticamente il codice di attivazione basta andare sul sito <span
   style='color:#002060'>www.golinucci.it/card</span></span></i></b></p>
   </td>
-  <td style='height:13.55pt;border:none' height=18></td>
+  <td style='height:13.55pt;border:solid black 1.0pt' height=18></td>
  </tr>
  <tr style='height:13.55pt'>
   <td colspan=13 valign=bottom style='padding:0cm 3.5pt 0cm 3.5pt;
@@ -497,57 +497,57 @@ ul
   margin-bottom:0cm;margin-left:52.95pt;text-align:center;line-height:normal'><i><span
   style='font-size:10.0pt'>&nbsp;</span></i></p>
   </td>
-  <td style='height:13.55pt;border:none' height=18></td>
+  <td style='height:13.55pt;border:solid black 1.0pt' height=18></td>
  </tr>
  <tr style='height:13.55pt'>
-  <td colspan=13 valign=bottom style='border:none;
-  border-bottom:solid windowtext 1.0pt;background:#CC3300;padding:0cm 3.5pt 0cm 3.5pt;
+  <td colspan=13 valign=bottom style='border:solid black 1.0pt;
+  border-bottom:solid black 1.0pt;background:#CC3300;padding:0cm 3.5pt 0cm 3.5pt;
   height:13.55pt'>
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><b><span style='font-size:10.0pt;font-family:"Arial",sans-serif;
   color:white'>IMPORTO TOTALE</span></b></p>
   </td>
-  <td style='height:13.55pt;border:none' height=18></td>
+  <td style='height:13.55pt;border:solid black 1.0pt' height=18></td>
  </tr>
  <tr style='height:28.3pt'>
-  <td colspan=2 style='border-top:none;border-left:
-  solid windowtext 1.0pt;border-bottom:solid windowtext 1.0pt;border-right:
-  none;padding:0cm 3.5pt 0cm 3.5pt;height:28.3pt'>
+  <td colspan=2 style='border-top:solid black 1.0pt;border-left:
+  solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:
+  solid black 1.0pt;padding:0cm 3.5pt 0cm 3.5pt;height:28.3pt'>
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><span style='font-size:10.0pt;color:black'>Pagato il</span></p>
   </td>
-  <td colspan=4 style='border-top:none;border-left:
-  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  <td colspan=4 style='border-top:solid black 1.0pt;border-left:
+  solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:28.3pt'>
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><span style='font-size:10.0pt;color:black'>{{ $payment_date }}</span></p>
   </td>
-  <td colspan=5 style='border:none;border-bottom:solid windowtext 1.0pt;
+  <td colspan=5 style='border:solid black 1.0pt;border-bottom:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:28.3pt'>
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><b><span style='font-size:10.0pt;font-family:"Arial",sans-serif'>IMPORTO</span></b></p>
   </td>
-  <td colspan=2 style='border-top:none;border-left:
-  none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
+  <td colspan=2 style='border-top:solid black 1.0pt;border-left:
+  solid black 1.0pt;border-bottom:solid black 1.0pt;border-right:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:28.3pt'>
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><b><span style='font-size:10.0pt;font-family:"Arial",sans-serif'>{{ $total_payable }}<span
   style='color:red'></span>€*</span></b></p>
   </td>
-  <td style='height:28.3pt;border:none' height=38></td>
+  <td style='height:28.3pt;border:solid black 1.0pt' height=38></td>
  </tr>
  <tr style='height:13.55pt'>
-  <td colspan=2 valign=bottom style='border:none;
+  <td colspan=2 valign=bottom style='border:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:13.55pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
   style='font-size:10.0pt;color:black'>&nbsp;</span></p>
   </td>
-  <td colspan=4 valign=bottom style='border:none;
+  <td colspan=4 valign=bottom style='border:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:13.55pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><span
   style='font-size:10.0pt;color:black'>&nbsp;</span></p>
   </td>
-  <td colspan=7 valign=bottom style='border:none;
+  <td colspan=7 valign=bottom style='border:solid black 1.0pt;
   padding:0cm 3.5pt 0cm 3.5pt;height:13.55pt'>
   <p class=MsoNormal style='margin-bottom:0cm;line-height:normal'><i><span
   style='font-size:8.0pt;font-family:"Arial",sans-serif'>*</span></i><i><span
@@ -555,7 +555,7 @@ ul
   complessivo dei servizi di assistenza e di gestione della copertura</span></i><i><span
   style='font-size:8.0pt;font-family:"Arial",sans-serif'> </span></i></p>
   </td>
-  <td style='height:13.55pt;border:none' height=18></td>
+  <td style='height:13.55pt;border:solid black 1.0pt' height=18></td>
  </tr>
  <tr style='height:13.55pt'>
   <td colspan=13 valign=bottom style='padding:0cm 3.5pt 0cm 3.5pt;
@@ -563,7 +563,7 @@ ul
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><i><span style='font-size:8.0pt;font-family:"Arial",sans-serif'>&nbsp;</span></i></p>
   </td>
-  <td style='height:13.55pt;border:none' height=18></td>
+  <td style='height:13.55pt;border:solid black 1.0pt' height=18></td>
  </tr>
  <tr style='height:13.55pt'>
   <td colspan=13 valign=bottom style='padding:0cm 3.5pt 0cm 3.5pt;
@@ -576,7 +576,7 @@ ul
   style='font-size:10.0pt;color:black; left:0px;margin-left:204px;margin-top:4px;height:25px'>
         Golinucci S.r.l.</span></p>
   </td>
-  <td style='height:13.55pt;border:none' height=18></td>
+  <td style='height:13.55pt;border:solid black 1.0pt' height=18></td>
  </tr>
  <tr style='height:13.55pt'>
   <td colspan=13 valign=bottom style='padding:0cm 3.5pt 0cm 3.5pt;
@@ -584,7 +584,7 @@ ul
   <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
   line-height:normal'><i><span style='font-size:8.0pt;font-family:"Arial",sans-serif'>&nbsp;</span></i></p>
   </td>
-  <td style='height:13.55pt;border:none' height=18></td>
+  <td style='height:13.55pt;border:solid black 1.0pt' height=18></td>
  </tr>
 
 </table>
