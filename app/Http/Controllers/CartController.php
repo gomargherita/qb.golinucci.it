@@ -153,27 +153,60 @@ class CartController extends Controller
             ]);
         }
         if($product_type == 2){
+            $request = Request::only('search', 'steps', 'trashed');
+
+            if(isset($request['search'])){
+                $searchQuery = $request['search'];
+            }
+            else{
+                $searchQuery = " ";
+            }
+            $searchTerms = explode(' ', $searchQuery);
+
+            $carts = Auth::user()->account->carts()
+            ->leftJoin('payments', 'payments.cart_id', '=', 'carts.id')
+                ->where(function ($query) use ($searchTerms) {
+                    foreach ($searchTerms as $term) {
+                        $query->where(function ($subQuery) use ($term) {
+                            $subQuery->where('users.first_name', 'LIKE', "%{$term}%")
+                                    ->orWhere('users.last_name', 'LIKE', "%{$term}%")
+                                    ->orWhere('users.email', 'LIKE', "%{$term}%")
+                                    ->orWhere('payments.payment_no', 'LIKE', "%{$term}%");
+
+                        });
+                    }
+                })/*->toSql();
+                dd($carts);
+                die;*/
+                ->whereIn('product_id', [2, 3, 4])
+                ->orderByDate()
+                //->filter($request)
+                ->paginate(20)
+                ->withQueryString()
+                ->through(fn ($cart) => [
+                    'id' => $cart->id,
+                    'user' => $cart->user->only('id', 'email', 'first_name', 'last_name'),
+                    'product_name' => $cart->product->name,
+                    'step' => $cart->productStep ? $cart->productStep->step_number . '. ' . $cart->productStep->step_name : null,
+                    'product_offer' => $cart->productOffer ? $cart->productOffer->id . '. ' . $cart->productOffer->name : null,
+                    'cart_ref' => $cart->cart_ref,
+                    'created_at' => $cart->created_at->format('d/m/Y'),
+                    'deleted_at' => $cart->deleted_at,
+                    'product_type' => $product_type,
+                    'isRenewable' => "",
+                ]);
+                $isRenewable = [];
+
+            for($i=0; $i<count($carts); $i++){
+                $isRenewable[$carts[$i]['cart_ref']] = $this->isRenewable(Cart::find($carts[$i]['id']));
+            }
+
             return Inertia::render('Carts/Index', [
                 'product_type' => $product_type,
                 'filters' => Request::all('search', 'steps', 'trashed'),
                 'all_product_steps' => ProductStep::where('product_id', 2)->get(), // TODO questa cosa va rivalutata quando verranno creati nuovi prodotti
-                'carts' => Auth::user()->account->carts()
-                    ->orderByDate()
-                    ->whereIn('product_id', [2,3,4])
-                    ->filter(Request::only('search', 'steps', 'trashed'))
-                    ->paginate(20)
-                    ->withQueryString()
-                    ->through(fn ($cart) => [
-                        'id' => $cart->id,
-                        'user' => $cart->user->only('id', 'email', 'first_name', 'last_name'),
-                        'product_name' => $cart->product->name,
-                        'step' => $cart->productStep ? (($cart->productStep->step_number == 5) ? $cart->productStep->step_number . '. ' . 'Completato' : $cart->productStep->step_number . '. ' . $cart->productStep->step_name) : null,
-                        'product_offer' => $cart->productOffer ? $cart->productOffer->id . '. ' . $cart->productOffer->name : null,
-                        'cart_ref' => $cart->cart_ref,
-                        'created_at' => $cart->created_at->format('d/m/Y'),
-                        'deleted_at' => $cart->deleted_at,
-                        'product_type' => $product_type
-                    ]),
+                'carts' => $carts,
+                'isRenewable' => $isRenewable,
             ]);
         }
     }
