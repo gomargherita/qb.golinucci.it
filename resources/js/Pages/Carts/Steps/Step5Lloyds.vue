@@ -54,6 +54,7 @@ import BuyLoadingButton from "@/Shared/BuyLoadingButton";
 import LoadingButton from "@/Shared/LoadingButton";
 
 import axios from "axios";
+import { Inertia } from "@inertiajs/inertia";
 
 export default {
   components: {

@@ -44,6 +44,7 @@
 import HTwo from "@/Shared/Front/HTwo";
 import BuyLoadingButton from "@/Shared/BuyLoadingButton";
 import axios from "axios";
+import { Inertia } from "@inertiajs/inertia";
 
 export default {
   components: {

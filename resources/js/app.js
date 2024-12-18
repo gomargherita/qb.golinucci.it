@@ -1,5 +1,6 @@
 import { createApp, h } from 'vue';
-import { createInertiaApp, Link, Head } from '@inertiajs/vue3';
+import { createInertiaApp, Link, Head } from '@inertiajs/inertia-vue3';
+import { InertiaProgress } from '@inertiajs/progress';
 import FrontLayout from "@/Shared/Layouts/FrontLayout";
 import Icon from "@/Shared/Icon";
 
@@ -14,12 +15,8 @@ createInertiaApp({
 
         return page;
     },
-    progress: {
-        color: '#4B5563',
-        showSpinner: true,
-    },
-    setup({ el, App, props, plugin }) {
-        const appp = createApp({ render: () => h(App, props) })
+    setup({ el, app, props, plugin }) {
+        const appp = createApp({ render: () => h(app, props) })
             .use(plugin)
             // make Link a global component
             .component('Head', Head)
@@ -43,4 +40,9 @@ createInertiaApp({
 
         return appp.mount(el);
     },
+});
+
+InertiaProgress.init({
+    color: '#4B5563',
+    showSpinner: true,
 });

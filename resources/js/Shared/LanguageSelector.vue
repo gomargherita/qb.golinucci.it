@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { usePage } from "@inertiajs/vue3";
+import { usePage } from "@inertiajs/inertia-vue3";
 
 export default {
   computed: {
