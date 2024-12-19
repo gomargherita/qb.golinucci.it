@@ -51,10 +51,15 @@ class SendRenewals extends Command
         // da importare un cron tipo 30  2  1-30  jun  *  php artisan mail:first_send...
         $this->info('#########################' . now() . ': START SCHEDULE');
         $num_of_days = 30;
+        $num_of_days_past = 60;
+
         $target_date = Carbon::now()->addDays($num_of_days)->format('Y-m-d');
+        $target_date_past = Carbon::now()->subDays($num_of_days_past)->format('Y-m-d');
 
         $carts_query = Certificate::with(['cart', 'cart.user', 'cart.user.clientDetails', 'cart.product'])
             ->whereDate('end_validity_date', '<=', $target_date)
+            ->whereDate('end_validity_date', '>=', $target_date_past) // Non più vecchi di 60 giorni
+
             ->whereHas('cart.user.clientDetails', function ($q) {
                 $q->where('with_accident', 0);
             });
