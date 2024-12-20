@@ -938,7 +938,7 @@ class CartController extends Controller
                     ->latest()->first();
 
             //dd($last_prev_certificate);
-            if ($last_prev_certificate = null){
+            if ($last_prev_certificate == null){
                 return Redirect::back()->with('error', 'Email NON inviata. Il cliente potrebbe non avere certificati vecchi da rinnovare.');
             }
             $cart->renewal_date = $last_prev_certificate->end_validity_date;
