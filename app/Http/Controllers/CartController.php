@@ -924,14 +924,26 @@ class CartController extends Controller
     }
 
     public function sendFirstEmail(Cart $cart, $product_id){
-        //if($cart->renewal_date == null || $cart->product_id == null){
-            $cart->renewal_date = '2023-12-31';
+        $user_id = User::find($cart->user_id);
+        $user_id = $user_id->id;
+
+            $last_prev_certificate = Certificate::query()
+                    ->with('cart')
+                    ->select(['end_validity_date'])->where([
+                        // controllo su product
+                        'product_id' => $product_id,
+                    ])->whereHas('cart', function ($q) use ($user_id) {
+                        $q->where('user_id', $user_id);
+                    })
+                    ->latest()->first();
+
+            //dd($last_prev_certificate);
+            if ($last_prev_certificate = null){
+                return Redirect::back()->with('error', 'Email NON inviata. Il cliente potrebbe non avere certificati vecchi da rinnovare.');
+            }
+            $cart->renewal_date = $last_prev_certificate->end_validity_date;
             $cart->product_id = intval($product_id);
             $cart->save();
-
-            //dd($cart);
-            //return $this->sendFirstEmail($cart, $product_id);
-        //}
 
         try{
             $cart->user->notify(new FirstEmailWithCredentials($cart));
@@ -941,7 +953,6 @@ class CartController extends Controller
             return Redirect::back()->with('error', 'Email NON inviata.');
         }
     }
-
 
     /**
      * Show the form for editing the specified resource.
