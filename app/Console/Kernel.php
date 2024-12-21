@@ -15,11 +15,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('mail:first_send')
+        /*$schedule->command('mail:first_send')
             ->dailyAt('08:00') // scatta alle 8 del mattino
             //->everyTenMinutes() // utile per test
             ->appendOutputTo('send_first_email.log')
-            ->emailOutputOnFailure(config('mail-extra.mail_on_failure'));
+            ->emailOutputOnFailure(config('mail-extra.mail_on_failure'));*/
 
             $schedule->command('mail:renew')
             ->dailyAt('08:00') // scatta alle 8 del mattino

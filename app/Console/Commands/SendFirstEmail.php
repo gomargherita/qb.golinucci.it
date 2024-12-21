@@ -41,6 +41,8 @@ class SendFirstEmail extends Command
      */
     public function handle()
     {
+        
+        /*
         // grab all carts with renewal_date < 25 days
         // da importare un cron tipo 30  2  1-30  jun  *  php artisan mail:first_send...
         $this->info('#########################' . now() . ': START SCHEDULE');
@@ -75,5 +77,6 @@ class SendFirstEmail extends Command
             
         // });
         $this->info('#########################' . now() . ': END SCHEDULE');
+        */
     }
 }
