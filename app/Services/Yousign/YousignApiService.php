@@ -312,6 +312,7 @@ class YousignApiService
 
         // start the signature process
         $response = $client->launchProcedure($procedure_id);
+        $response = json_decode($response, true);
         $signature->signature_link = $response['signers'][0]['signature_link'];
         $signature->save();
         
