@@ -15,7 +15,7 @@ class Yousignv3 extends Migration
      */
     public function up()
     {
-        DB::statement("ALTER TABLE signatures ADD signature_link varchar(255) DEFAULT null");
+        DB::statement("ALTER TABLE signatures ADD signature_link varchar(2000) DEFAULT null");
     }
 
     /**
