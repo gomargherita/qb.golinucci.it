@@ -55,15 +55,13 @@ export default {
 </script>
 
 <style scoped>
-.yousign-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+#iframe-container {
+  width: 800px;
+  height: 800px;
 }
-#yousign-iframe {
+
+#iframe-container iframe {
   width: 100%;
-  height: 600px;
-  border: none;
+  height: 100%;
 }
 </style>
