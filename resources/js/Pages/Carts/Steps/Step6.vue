@@ -13,9 +13,7 @@
     <div v-if="product.signature_error">
       {{ product.signature_error }}
     </div>
-    <div v-if="product.yousign_member_signer_id" class="my-8 min-h-screen w-full">
-      <div id="yousign-iframe"></div>
-    </div>
+    <div id="iframe-container"></div>
   </div>
 </template>
 
@@ -40,44 +38,17 @@ export default {
     },
   },
   mounted() {
-    this.loadYousignIframe();
-  },
-  methods: {
-    loadYousignIframe() {
-      if (!window.YousignIframe) {
-        const script = document.createElement('script');
-        script.src = 'https://cdn.yousign.tech/iframe-sdk-1.6.0.min.js';
-        script.integrity = 'sha384-/7MD1voOOzWVz7FmgeMwmmd1DO85Mo0PkkxdYd9j2wDGzGDGRG/phgnL0c9Xyy52';
-        script.crossOrigin = 'anonymous';
-        script.onload = () => this.initIframe();
-        document.body.appendChild(script);
-      } else {
-        this.initIframe();
-      }
-    },
-    initIframe() {
-      this.yousignIframe = new window.YousignIframe({
-        selector: '#yousign-iframe',
-        signatureRequestId: this.product.yousign_member_signer_id,
-        language: 'en',
-        height: '600px',
-        width: '100%'
-      });
-    }
+    let yousign = document.createElement('script')
+    yousign.setAttribute('src', 'https://cdn.yousign.tech/iframe-sdk-1.6.0.min.js');
+    yousign.setAttribute('integrity', 'sha384-/7MD1voOOzWVz7FmgeMwmmd1DO85Mo0PkkxdYd9j2wDGzGDGRG/phgnL0c9Xyy52');
+    yousign.setAttribute('crossorigin', 'anonymous');
+    document.head.appendChild(yousign);
+
+    let yousigniframe = new Yousign({
+    signatureLink: this.product.yousign_member_signer_id,
+    iframeContainerId: 'iframe-container',
+    isSandbox: true, //To set if you use the sandbox environment
+    });
   }
 };
 </script>
-
-<style scoped>
-.yousign-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-#yousign-iframe {
-  width: 100%;
-  height: 600px;
-  border: none;
-}
-</style>
