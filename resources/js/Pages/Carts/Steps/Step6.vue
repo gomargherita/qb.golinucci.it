@@ -45,7 +45,7 @@ export default {
     document.head.appendChild(yousign);
 
     yousign.onload = function() {new Yousign({
-    signatureLink: this.product.yousign_member_signer_id,
+    signatureLink: product.yousign_member_signer_id,
     iframeContainerId: 'iframe-container',
     isSandbox: true, //To set if you use the sandbox environment
     });
