@@ -1,4 +1,5 @@
 <template>
+  <script src="https://cdn.yousign.tech/iframe-sdk-1.6.0.min.js" integrity="sha384-/7MD1voOOzWVz7FmgeMwmmd1DO85Mo0PkkxdYd9j2wDGzGDGRG/phgnL0c9Xyy52" crossorigin="anonymous"></script>
   <Head :title="__('Firma Documento')" />
   <HTwo :title="__('Firma Documento')" />
   <div class="mt-8">
