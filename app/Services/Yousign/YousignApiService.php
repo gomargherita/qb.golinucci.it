@@ -312,10 +312,10 @@ class YousignApiService
 
         // start the signature process
         $response = $client->launchProcedure($procedure_id);
-        $signature->signature_link = $response['signature_link'];
+        $signature->signature_link = $response[0]['signature_link'];
         $signature->save();
         
-        return $response['signature_link'];
+        return $response[0]['signature_link'];
         
     }
         
