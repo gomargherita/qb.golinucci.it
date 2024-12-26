@@ -6,6 +6,8 @@ use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 use GuzzleHttp\Psr7;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
+
 
 
 class YousignApiLaravel
@@ -200,7 +202,7 @@ class YousignApiLaravel
         'timezone'=> "Europe/Paris",
         'custom_experience_id'=> $custom_experience_id,
         //'workspace_id'=> $this->workspaceID,
-        'external_id'=> 96);
+        'external_id'=> '96');
             $conf = array();
 
             if($webhook == true){
@@ -238,6 +240,7 @@ class YousignApiLaravel
             'Authorization: Bearer '.$this->getapiKey()
             ),
             ));
+            //dd($curl); 
             $response = curl_exec($curl);
             $err = curl_error($curl);
 
@@ -247,7 +250,7 @@ class YousignApiLaravel
             return "cURL Error #:" . $err;
             } else {
             $rtab = json_decode($response,true);
-            //print_r($response);
+            
             $procedure_id = $rtab['id'];
             return $procedure_id;
             }
@@ -335,7 +338,7 @@ class YousignApiLaravel
                                     'page' => (int)$page,
                                     'x'=> (int)$fieldPosition[0],
                                     'y'=> 842 - (int)$fieldPosition[3],
-                                    'reason' => 'Data firma: ' . Carbon::now()->format('d-m-Y')]];
+                                    'reason' => 'Data-'. Carbon::now()->format('d-m-Y')]];
         
         $param = json_encode($parameter,true);
         $curl = curl_init();
@@ -357,6 +360,7 @@ class YousignApiLaravel
         ));
 
         $response = curl_exec($curl);
+        //dd($response);
         curl_close($curl);
         
         //---------------------------------------------------------------------------------------------------------------
@@ -399,7 +403,7 @@ class YousignApiLaravel
             } else {
                 $rtab = json_decode($response2,true);
                 //$this->idfile = $rtab['id'];
-                return $response2;
+                return $rtab['id'];
             }
         }
         catch (\Exception $e){
@@ -542,10 +546,13 @@ class YousignApiLaravel
                                'height'=> (int)$fieldPosition[3] - (int)$fieldPosition[1],
                                'width'=> $fieldPosition[2] - $fieldPosition[0]);
                                //print_r($v3coordinates);die;
-        unset($parameter["position"]);
+        //unset($parameter["position"]);
+
+        $parameter['type'] = "signature";
+        $parameter['page'] = $page;
         $parameter['x'] = $v3coordinates['x'];
         $parameter['y'] = $v3coordinates['y'];
-        $parameter['height'] = $v3coordinates['height'];
+        $parameter['height'] = 37;
         $parameter['width'] = $v3coordinates['width'];
         $parameter['signer_id'] = $memberId;
         $param = json_encode($parameter,true);
@@ -596,14 +603,33 @@ class YousignApiLaravel
 
     public function launchProcedure($procedureId)
     {
-        $method = 'PUT';
+        $curl = curl_init();
 
-        $parameter = array(
-            'start' => true
-        );
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $this->apiBaseUrl."signature_requests/".$procedureId."/activate",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            //           CURLOPT_POSTFIELDS =>"{\n   \"start\": true\n}",
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: Bearer '.$this->getapiKey()
+            ),
+        ));
 
-        // remove slash because the id is /procedure/id-XXXXXXXX
-        return $this->apiRequest($procedureId, $method, $parameter, true);
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($err) {
+            return "cURL Error #:" . $err;
+        } else {
+            return $response;
+        }
     }
 
     /**
