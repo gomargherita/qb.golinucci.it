@@ -1,3 +1,15 @@
+<style scoped>
+#iframe-container {
+  width: 800px;
+  height: 800px;
+}
+
+#iframe-container iframe {
+  width: 100%;
+  height: 100%;
+}
+</style>
+
 <template>
   <Head :title="__('Firma Documento')" />
   <HTwo :title="__('Firma Documento')" />
@@ -13,7 +25,7 @@
     <div v-if="product.signature_error">
       {{ product.signature_error }}
     </div>
-    <div width="800px" height="800px" id="iframe-container"></div>
+    <div id="iframe-container"></div>
   </div>
 </template>
 
@@ -53,15 +65,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-#iframe-container {
-  width: 800px;
-  height: 800px;
-}
-
-#iframe-container iframe {
-  width: 100%;
-  height: 100%;
-}
-</style>
