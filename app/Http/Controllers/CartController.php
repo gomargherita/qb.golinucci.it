@@ -868,7 +868,7 @@ class CartController extends Controller
 
     private function step6(Product $product, Cart $cart)
     {
-        try {
+        //try {
             $yousignClient = new YousignApiService($cart, User::find($cart->user_id));
             $signature = Signature::where('certificate_id', $cart->certificate->id)->first();
 
@@ -880,10 +880,10 @@ class CartController extends Controller
             } else {
                 $yousignMemberSignerId = $signature->member_signer_id;
             }
-        } catch (\Exception $e) {
+        /*} catch (\Exception $e) {
             //error_log("wualche errore".$e);
              $product_signature_error = 'Si è verificato un errore con la procedura di firma.';
-        }
+        }*/
 
             $redirect = 'Carts/Steps/Step6';
 
