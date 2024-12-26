@@ -35,8 +35,6 @@ export default {
   computed: {
     procedureId() {
       return (
-        this.product.yousign_url +
-        "procedure/sign?members=" +
         this.product.yousign_member_signer_id
       );
     },

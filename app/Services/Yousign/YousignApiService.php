@@ -311,9 +311,11 @@ class YousignApiService
         $signature->save();
 
         // start the signature process
-        dd($client->launchProcedure($procedure_id));
+        $response = $client->launchProcedure($procedure_id);
+        $signature->signature_link = $response['signature_link'];
+        $signature->save();
         
-        return $fileObject_signer['member']['id'];
+        return $response['signature_link'];
         
     }
         

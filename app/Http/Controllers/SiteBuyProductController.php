@@ -1145,7 +1145,7 @@ class SiteBuyProductController extends Controller
                 'hex_color' => $product->hex_color,
                 'steps' => $product->productSteps->count(),
                 'yousign_url' => config('yousign.app_url'),
-                'yousign_member_signer_id' => $yousignMemberSignerId ?? null,
+                'yousign_member_signer_id' => $signature->signature_link ?? null,
                 'signature_error' => $product_signature_error ?? null
             ],
             'cart' => $cart
