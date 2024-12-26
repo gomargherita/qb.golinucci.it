@@ -44,11 +44,26 @@ export default {
     yousign.setAttribute('crossorigin', 'anonymous');
     document.head.appendChild(yousign);
 
-    let yousigniframe = new Yousign({
+    yousign.onload = function() {new Yousign({
     signatureLink: this.product.yousign_member_signer_id,
     iframeContainerId: 'iframe-container',
     isSandbox: true, //To set if you use the sandbox environment
     });
   }
+  }
 };
 </script>
+
+<style scoped>
+.yousign-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+#yousign-iframe {
+  width: 100%;
+  height: 600px;
+  border: none;
+}
+</style>
