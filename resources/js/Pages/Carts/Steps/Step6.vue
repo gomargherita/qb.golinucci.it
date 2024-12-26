@@ -13,7 +13,7 @@
     <div v-if="product.signature_error">
       {{ product.signature_error }}
     </div>
-    <div id="iframe-container"></div>
+    <div width="800px" height="800px" id="iframe-container"></div>
   </div>
 </template>
 
