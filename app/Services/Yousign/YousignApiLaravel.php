@@ -5,6 +5,8 @@ namespace App\Services\Yousign;
 use Illuminate\Http\Client\RequestException;
 use Illuminate\Support\Facades\Http;
 use GuzzleHttp\Psr7;
+use Carbon\Carbon;
+
 
 class YousignApiLaravel
 {
@@ -12,6 +14,8 @@ class YousignApiLaravel
     protected $baseUrl;
     protected $baseUrlWithoutSlash;
     protected $apikey;
+    protected $apiBaseUrl;
+    protected $procedure_id;
 
     public function __construct()
     {
@@ -186,13 +190,67 @@ class YousignApiLaravel
      * @return mixed
      */
 
-    public function createProcedure()
+    public function createProcedure($name, $expiration_date, $webhook = false,$webhookMethod = '',$webhookUrl = '',$webhookHeader = '')
     {
-        $method = 'POST';
-        $path = 'procedures';
+        $custom_experience_id = '6aac0841-701a-4407-a0ea-ac59e0c03e25';
+        $parameters = array('name'=> $name,
+        'expiration_date' => $expiration_date,
+        'delivery_mode'=> "none",
+        'ordered_signers'=> false,
+        'timezone'=> "Europe/Paris",
+        'custom_experience_id'=> $custom_experience_id,
+        //'workspace_id'=> $this->workspaceID,
+        'external_id'=> 96);
+            $conf = array();
 
-        $this->_procedure['config']['webhook'] = $this->_webhook;
-        return $this->apiRequest($path, $method, $this->_procedure);
+            if($webhook == true){
+            $conf["webhook"] = array(
+            "procedure.finished" => array(
+            array(
+                "url" => $webhookUrl,
+                "method" => $webhookMethod,
+                "headers" => array(
+                    "X-Custom-Header" => $webhookHeader
+                )
+            )
+            )
+            );
+            // $parameters['config'] = $conf; // There is no config in v3
+            }
+
+
+            $curl = curl_init();
+
+            $params = json_encode($parameters,true);
+
+            curl_setopt_array($curl, array(
+            CURLOPT_URL => $this->apiBaseUrl."signature_requests",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => $params,
+            CURLOPT_HTTPHEADER => array(
+            'Content-Type: application/json',
+            'Authorization: Bearer '.$this->getapiKey()
+            ),
+            ));
+            $response = curl_exec($curl);
+            $err = curl_error($curl);
+
+            curl_close($curl);
+
+            if ($err) {
+            return "cURL Error #:" . $err;
+            } else {
+            $rtab = json_decode($response,true);
+            //print_r($response);
+            $procedure_id = $rtab['id'];
+            return $procedure_id;
+            }
     }
 
     /**
@@ -216,43 +274,137 @@ class YousignApiLaravel
      * @return mixed
      */
 
-    public function addFile($name, $content, $procedureId = null, $isAttachment = false)
+    public function addFile($name, $filepath, $procedureId = null, $isAttachment = false)
     {
-        $method = 'POST';
-        $path = 'files';
+        
+        $fileType = "application/pdf";
 
-        $data = file_get_contents($content);
-        $b64Doc = base64_encode($data);
-
+       
+        
+        $curlFile = new \CURLFILE($filepath, $fileType, $name);
         $parameters = array(
-            'name' => $name,
-            'content' => $b64Doc,
-            'procedure' => $procedureId,
-            'type' => $isAttachment ? 'attachment' : 'signable'
-        );
-        return $this->apiRequest($path, $method, $parameters);
+            'file'=> $curlFile);
+            //'nature' => 'signable_document');
+
+        $curl = curl_init();
+        //        $params = json_encode($parameters,true);
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $this->apiBaseUrl."electronic_seal_documents",//.$this->idAdvProc."/documents",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => $parameters,
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: Bearer '.$this->getapiKey()
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+
+
+        curl_close($curl);
+
+        if ($err) {
+            return "cURL Error #:" . $err;
+        } else {
+            $rtab = json_decode($response,true);
+            //$this->idfile = $rtab['id'];
+
+            //print_r($response);
+            return $response;
+        }
     }
 
-    public function addServerStamp($fileId, $fieldName, $mention, $mention2, $signature_file)
+    public function addServerStamp($page, $position, $idfile, $procedure_id)
     {
-        $method = 'POST';
-        $path = 'server_stamps';
-        $parameter = array(
-            "file" => $fileId,
-            'config' => [
-                'webhook' => $this->_webhook
-            ],
-            "fileObjects" => [
-                [
-                    'fieldName' => $fieldName,
-                    'mention' => $mention,
-                    'mention2' => $mention2
-                ]
-            ],
-            "signImage" => $signature_file,
-        );
+        $fieldPosition = explode(",", $position);
 
-        return $this->apiRequest($path, $method, $parameter);
+        $parameter = array();
+
+        $parameter['document_id'] = $idfile;
+        $parameter['image_id'] = '4a7c59e9-97eb-4ff9-ac87-69d102f18c0a';
+        $parameter['fields']= [['type'=> "seal",
+                                    'height'=> (int)$fieldPosition[3] - (int)$fieldPosition[1],
+                                    'width'=> (int)$fieldPosition[2] - (int)$fieldPosition[0],
+                                    'page' => (int)$page,
+                                    'x'=> (int)$fieldPosition[0],
+                                    'y'=> 842 - (int)$fieldPosition[3],
+                                    'reason' => 'Data firma: ' . Carbon::now()->format('d-m-Y')]];
+        
+        $param = json_encode($parameter,true);
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+        CURLOPT_URL => $this->apiBaseUrl.'electronic_seals',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS =>$param,
+        CURLOPT_HTTPHEADER => array(
+            'Content-Type: application/json',
+            "Authorization: Bearer ".$this->getapiKey()
+        ),
+        ));
+
+        $response = curl_exec($curl);
+        curl_close($curl);
+        
+        //---------------------------------------------------------------------------------------------------------------
+
+        sleep(10);
+
+        try{
+            $curl = curl_init();
+            $parameters = array(
+                "electronic_seal_document_id" => $idfile,
+                "name" => "applications",
+                "nature" => "signable_document",
+                //"insert_after_id" => "null",
+            );
+            curl_setopt_array($curl, array(
+            CURLOPT_URL => $this->apiBaseUrl."signature_requests/".$procedure_id."/documents",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS =>json_encode($parameters, true),
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                'Authorization: Bearer '.$this->getapiKey()
+            ),
+            ));
+            
+            $response2 = curl_exec($curl);
+            //print_r($response2);
+            //   die;
+            $err = curl_error($curl);
+
+            curl_close($curl);
+
+            if ($err) {
+                echo "cURL Error #:" . $err;
+            } else {
+                $rtab = json_decode($response2,true);
+                //$this->idfile = $rtab['id'];
+                return $response2;
+            }
+        }
+        catch (\Exception $e){
+            return false;
+        }
     }
 
     /**
@@ -267,27 +419,63 @@ class YousignApiLaravel
      * @return mixed
      */
 
-    public function addMember($firstname, $lastname, $email, $phone, $procedureId = null, $type = "signer", $position = null)
+    public function addMember($firstname, $lastname, $email, $phone, $procedureId = null)
     {
-        $method = 'POST';
-        $path = 'members';
-
         $member = array(
-            "firstname" => $firstname,
-            "lastname" => $lastname,
-            "email" => $email,
-            "phone" => $phone,
-            "procedure" => $procedureId,
-            "type" => $type,
-            "operationLevel" => "custom",
-            "operationModeSmsConfig" => $this->_operationModeSmsConfig,
-        );
+            "info"=>[
+                "locale"=> "it",
+                "first_name" => $firstname,
+                "last_name" => $lastname,
+                "email" => $email,
+                "phone_number" => $phone,
+                //                "procedure" => $this->idAdvProc);
+            ],
+            "signature_level"=> "electronic_signature",
+            "signature_authentication_mode"=> "otp_sms");
 
-        if (!is_null($position)) {
-            $member["position"] = $position;
+        $curl = curl_init();
+
+        $param = json_encode($member,true);
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $this->apiBaseUrl."signature_requests/".$procedureId."/signers",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS =>$param,
+            CURLOPT_HTTPHEADER => array(
+                "Content-Type: application/json",
+                'Authorization: Bearer '.$this->getapiKey()
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($err) {
+            return "cURL Error #:" . $err;
+        } else {
+            $rtab = json_decode($response,true);
+            if(array_key_exists('violations',$rtab)){
+                throw new \Exception($response);
+
+            }
+            $member = $rtab['id'];
+            //print $response;
+            $responseArray = array('id'=>$rtab['id'], 'info'=> array(
+                'first_name'=> $rtab['info']['first_name'],
+                'last_name'=> $rtab['info']['last_name'],
+                'phone_number'=> $rtab['info']['phone_number'],
+                'email'=> $rtab['info']['email']));
+            //            return $rtab['id'];
+            return $member;
         }
-
-        return $this->apiRequest($path, $method, $member);
     }
 
     /**
@@ -324,6 +512,10 @@ class YousignApiLaravel
         return $this->apiRequest($path, $method, $parameter);
     }
 
+    public function setProcedureId($procedure_id){
+        $this->procedure_id = $procedure_id;
+    }
+
     /**
      * @params fileId string
      * @params memberId string
@@ -342,23 +534,59 @@ class YousignApiLaravel
 
     public function addFileObjectViaPosition($fileId, $memberId, $position, $reason, $page, $type = 'signature', $contentRequired = true, $content = null, $mention = null, $mention2 = null)
     {
-        $method = 'POST';
-        $path = 'file_objects';
+        //conversione delle coordinate alla v3
+        $fieldPosition = explode(",", $position);
 
-        $parameter = array(
-            //"type" => $type, non funziona
-            "file" => $fileId,
-            "member" => $memberId,
-            "position" => $position,
-            "page" => $page,
-            "mention" => $mention,
-            "mention2" => $mention2,
-            "reason" => $reason,
-            "content" => $content,
-            "contentRequired" => $contentRequired,
-        );
+        $v3coordinates = array('x'=> (int)$fieldPosition[0],
+                               'y'=> 842 - (int)$fieldPosition[3],
+                               'height'=> (int)$fieldPosition[3] - (int)$fieldPosition[1],
+                               'width'=> $fieldPosition[2] - $fieldPosition[0]);
+                               //print_r($v3coordinates);die;
+        unset($parameter["position"]);
+        $parameter['x'] = $v3coordinates['x'];
+        $parameter['y'] = $v3coordinates['y'];
+        $parameter['height'] = $v3coordinates['height'];
+        $parameter['width'] = $v3coordinates['width'];
+        $parameter['signer_id'] = $memberId;
+        $param = json_encode($parameter,true);
 
-        return $this->apiRequest($path, $method, $parameter);
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $this->apiBaseUrl."signature_requests/".$this->procedure_id."/"."documents"."/".$fileId."/fields",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => false,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => $param,
+            CURLOPT_HTTPHEADER => array(
+                "Authorization: Bearer ".$this->getapiKey(),
+                "Content-Type: application/json"
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        //print_r($response);
+        //die;
+        $err = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($err) {
+            echo "cURL Error #:" . $err;
+        } else {
+            $rtab = json_decode($response,true);
+            //$this->fileobject = $rtab['id'];
+
+            //print "informazioni SUL FILE BJJEE------------------------";
+            //print_r($response);
+            //die;
+            return $response;
+        }
+
     }
 
     /**
