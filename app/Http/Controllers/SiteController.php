@@ -5,6 +5,8 @@ use App\Notifications\EhealthEmail;
 use App\Notifications\BenefitEmail;
 
 use App\Notifications\SaluteSportEmail;
+use App\Notifications\ImportoLiberoEmail;
+
 
 use App\Models\Account;
 use App\Models\Product;
@@ -185,6 +187,15 @@ class SiteController extends Controller
         
         if($id != null){
             $buyer = ImportoLiberoBuyer::find(intval($id));
+            if($buyer->declarations == false){
+                //messe a true per far capire al sistema che è finito anche se non serve realmente che siano true
+                $buyer->declarations = true;
+                $buyer->save();
+
+                Notification::route('mail', [
+                    $buyer->email => $buyer->name." ".$buyer->surname,
+                ])->notify(new ImportoLiberoEmail($buyer));
+            }
             if($buyer != null && $buyer->paid == true){
                 return Inertia::render('Sites/importo_libero_completo');
             }
@@ -237,6 +248,15 @@ class SiteController extends Controller
                     Notification::route('mail', [
                         $buyer->email => $buyer->name." ".$buyer->surname,
                     ])->notify(new BenefitEmail($buyer));
+                }
+                else if($buyer->declarations == false){
+                    //messe a true per far capire al sistema che è finito anche se non serve realmente che siano true
+                    $buyer->declarations = true;
+                    $buyer->save();
+
+                    Notification::route('mail', [
+                        $buyer->email => $buyer->name." ".$buyer->surname,
+                    ])->notify(new ImportoLiberoEmail($buyer));
                 }
                 
                 return Inertia::render('Sites/importo_libero_completo');
