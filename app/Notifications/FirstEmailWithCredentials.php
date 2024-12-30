@@ -61,7 +61,7 @@ class FirstEmailWithCredentials extends Notification implements ShouldQueue
             $user->password = $uncrypted_password;
             $user->email_verified_at = now();
             $user->save();
-            $url = route('front.product.buy', [$cart->product->id, $cart->cart_ref]);
+            $url = route('front.product.renew', [$cart->product->id, $cart->cart_ref]);
             $renewal_date = $cart->renewal_date->format('d/m/Y');
 
             if($this->cart->product_id == 1){
