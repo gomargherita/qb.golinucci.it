@@ -65,7 +65,7 @@ class BankTransferGatewayPayment extends Notification
                 ->line('Bonifico Bancario su c/c intestato a Golinucci srl IBAN IT31 Z062 3023 9000 0003 0575 079 presso Crédit agricole Cariparma')
                 ->line('Importo: ' . $this->payment->total_payable . '€')
                 ->line('Causale: ' . $user->name . ' RC Professionale')
-                ->line('Il giorno lavorativo successivo a quello di data valuta del pagamento invieremo via e-email un link e ulteriori informazioni per firmare la polizza da remoto.')
+                ->line('In seguito riceverà via e-mail il certificato di polizza.')
                 ->salutation('Grazie per aver scelto i prodotti Golinucci!')->from(['bancari@golinucci.it' => 'Q&B Golinucci']);
         }
         else if($this->payment->cart->product_id == 4 || $this->payment->cart->product_id == 3){
@@ -77,7 +77,7 @@ class BankTransferGatewayPayment extends Notification
                 ->line('Bonifico Bancario su c/c intestato a Golinucci srl IBAN IT63 J032 7323 9000 0020 0102 910 presso BCC Credito Cooperativo romagnolo')
                 ->line('Importo: ' . $this->payment->total_payable . '€')
                 ->line('Causale: ' . $user->name . ' RC Professionale')
-                ->line('Il giorno lavorativo successivo a quello di data valuta del pagamento invieremo via e-email un link e ulteriori informazioni per firmare la polizza da remoto.')
+                ->line('In seguito riceverà via e-mail il certificato di polizza.')
                 ->salutation('Grazie per aver scelto i prodotti Golinucci!')->from(['bancari@golinucci.it' => 'Q&B Golinucci']);
         }
 
