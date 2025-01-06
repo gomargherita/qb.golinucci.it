@@ -2,15 +2,20 @@
     <img  src="https://firma.golinucci.it/html/Golinucci_70.png" width="30%" alt="Golinucci">
 </a>
 <p>Gentile Cliente {{$name}} {{$surname}} <br>
-                grazie per aver acquistato il prodotto tramite GOLINUCCI srl.<br><br>
+                grazie per aver acquistato il prodotto, tramite GOLINUCCI srl.<br><br>
                 
                 <h1>Riepilogo informazioni:</h1><br>
 
                 Persona assicurata<br>
                 Nome:               {{$name}}<br>
                 Cognome:            {{$surname}}<br>
+                Causale:            {{$causale}}<br>
+<br><br>                
+                Costo complessivo pagato: €{{$total_payable}}
+<br><br>
+                A seguire la documentazione di sua spettanza.
 
-                A seguire, i documenti di polizza.<br><br>
+                <br><br>
 
                 Distinti Saluti<br>
                 Golinucci srl<br>

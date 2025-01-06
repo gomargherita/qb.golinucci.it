@@ -15,22 +15,15 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 
+
 class ImportoLiberoEmail extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public $id;
-    protected $code;
     protected $name;
     protected $surname;
-    protected $fiscalcode;
-    protected $via;
-    protected $citta;
-    protected $cap;
-    protected $provincia;
-    
-    
-
+    protected $total_payable;
+    protected $causale;
 
     /**
      * Create a new notification instance.
@@ -39,18 +32,11 @@ class ImportoLiberoEmail extends Notification implements ShouldQueue
      */
     public function __construct($buyer)
     {
-        $this->id = $buyer->id;
-        $this->code = $buyer->ehealth_code;
+        
         $this->name = $buyer->name;
         $this->surname = $buyer->surname;
-        $this->fiscalcode = $buyer->fiscalcode;
-        $this->via = $buyer->via;
-        $this->citta = $buyer->citta;
-        $this->cap = $buyer->cap;
-        $this->provincia = $buyer->provincia;
-
-        
-        //error_log($cart->cart->product);die;
+        $this->total_payable = $buyer->total_payable;
+        $this->causale = $buyer->causale;
     }
 
     /**
@@ -71,18 +57,24 @@ class ImportoLiberoEmail extends Notification implements ShouldQueue
      * @return \Illuminate\Notifications\Messages\MailMessage
      */
     public function toMail($notifiable)
-    {        
-        
+    {
+        $data = [
+            'name' => $this->name,
+            'surname' => $this->surname,
+        ];
             $cc = "info@golinucci.it";
             return (new MailMessage)
-                ->bcc($cc)
-                ->subject('Sottoscrizione programma assicurativo')
+                ->bcc("paolo@golinucci.it")
+                ->subject('Conferma acquisto')
                 ->view('importolibero', [
                     'name' => $this->name,
                     'surname' => $this->surname,
+                    'total_payable' => $this->total_payable,
+                    'causale' => $this->causale,
+
                     ])
                 ->from([$cc => 'Golinucci SRL']);
-        }
+    }
 
     /**
      * Get the array representation of the notification.

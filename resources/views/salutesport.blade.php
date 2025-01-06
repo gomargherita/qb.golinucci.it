@@ -29,7 +29,7 @@
                 Costo complessivo pagato: €{{$total_payable}}
                 Effetto copertura: ore 24 data emissione polizza, il primo giorno lavorativo dopo il pagamento online.
 
-                A seguire documenti polizza e informazioni per attivare il programma Benefit.
+                A seguire la documentazione di sua spettanza e informazioni per attivare il programma Benefit.
 
                 Distinti Saluti<br>
                 Golinucci srl<br>

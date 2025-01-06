@@ -29,7 +29,9 @@
   <section id="main-content" class="container mx-auto p-2" >
     
   
-  <p>Per procedere al pagamento, compilare i campi. <br></p>
+  <!-- <p>Per procedere al pagamento, compilare i campi. <br></p><br> -->
+
+  <p>Per procedere al pagamento, compilare i campi.</p>
 
   <form @submit.prevent="submit">
     <div class="grid grid-cols-1 md:grid-cols-2 md:gap-4">
@@ -45,10 +47,49 @@
 </div><div>
     <label for="email">Email:</label><br>
     <input type="email" id="email" name="email" v-model="formData.email" style="width:100%" required><br><br>
-</div><div style="display:none">
+</div>
+<div>
+<label for="profession">Professione:</label><br>
+    <input type="text" id="profession" name="profession" v-model="formData.profession" style="width:100%" required><br><br>
+</div><div>
+  <label for="dob">Data di nascita:</label><br>
+    <input type="date" id="dob" name="dob" v-model="formData.dob" style="width:100%" required><br><br>
+</div>
+<div>
+<label for="fiscalcode">Codice fiscale:</label><br>
+    <input type="text" id="fiscalcode" name="fiscalcode" v-model="formData.fiscalcode" style="width:100%" required><br><br>
+</div>
+<div>
+<label for="phone">Numero di telefono:</label><br>
+    <input type="text" id="phone" name="phone" v-model="formData.phone" style="width:100%" required><br><br>
+</div>
+
+<div>
+<label for="via">Indirizzo (Via):</label><br>
+    <input type="text" id="via" name="via" v-model="formData.via" style="width:100%" required><br><br>
+</div>
+<div>
+<label for="citta">Indirizzo (Città):</label><br>
+    <input type="text" id="citta" name="citta" v-model="formData.citta" style="width:100%" required><br><br>
+</div>
+<div>
+<label for="cap">Indirizzo (CAP):</label><br>
+    <input type="text" id="cap" name="cap" v-model="formData.cap" style="width:100%" required><br><br>
+</div>
+<div>
+<label for="provincia">Indirizzo (Provincia):</label><br>
+    <input type="text" id="provincia" name="provincia" v-model="formData.provincia" style="width:100%" required><br><br>
+</div>
+
+
+
+
+
+<div style="display:none">
     <label for="causale">Causale:</label><br>
     <input type="text" id="causale" name="causale" v-model="formData.causale" style="width:100%" required><br><br>
 </div>
+<br>
 <br>
       <buy-loading-button
 
@@ -88,6 +129,14 @@ export default {
         email: "",
         name: "",
         surname: "",
+        profession: "",
+        fiscalcode: "",
+        phone: "",
+        dob: "",
+        via: "",
+        citta: "",
+        cap: "",
+        provincia: "",
         total_payable: this.total_payable,
         causale: this.causal,
       }),
@@ -97,12 +146,20 @@ export default {
 
   submit(){
     this.formData.post(
-        this.route("front.importoLiberoStep2", {
+        this.route("front.salutesportStep2", {
           name: this.formData.name,
           surname: this.formData.surname,
           email: this.formData.email,
           total_payable: this.formData.total_payable,
           causale: this.formData.causale,
+          profession: this.formData.profession,
+          fiscalcode: this.formData.fiscalcode,
+          phone: this.formData.phone,
+          dob: this.formData.dob,
+          via: this.formData.via,
+          citta: this.formData.citta,
+          cap: this.formData.cap,
+          provincia: this.formData.provincia,
         }),
         {
           preserveScroll: (page) => Object.keys(page.props.errors).length,

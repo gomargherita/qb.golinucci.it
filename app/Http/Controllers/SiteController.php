@@ -6,6 +6,7 @@ use App\Notifications\BenefitEmail;
 
 use App\Notifications\SaluteSportEmail;
 use App\Notifications\ImportoLiberoEmail;
+use App\Notifications\ImportoLiberoConditionsEmail;
 
 
 use App\Models\Account;
@@ -222,11 +223,12 @@ class SiteController extends Controller
             $buyer = ImportoLiberoBuyer::find(intval($id));
             if($buyer != null && $buyer->paid == true){
 
-                if(str_starts_with($buyer->causale, "salutesport") && $buyer->declarations ==false){
-                    return Inertia::render('Sites/salutesport_declarations', [
+                $causali = FreeAmount::pluck('causal')->toArray();
+                if(in_array($buyer->causale, $causali) && $buyer->declarations == false){
+                    return Inertia::render('Sites/importolibero_declarations', [
                         'product' => [
                             'id' => 1,
-                            'name' => "Sport&Salute",
+                            'name' => "Prodotto assicurativo",
                             'type' => ' ',
                             'pre_declarations' => "Io sottoscritto/a in qualità di assicurato della polizza Infortuni, in ottemperanza del Regolamento IVASS n. 40 del 02/08/2018 (Modificato ed Integrato dal Provvedimento IVASS N.97 del 04/08/2020), prima di essere vincolato da un contratto offerto mediante tecniche di comunicazione a distanza, dichiaro:",
                             'post_declarations' => "",
@@ -425,10 +427,16 @@ class SiteController extends Controller
         Storage::disk('private')->put($filePath, $pdf->stream());
 
 
-        Notification::route('mail', [
-            $buyer->email => $buyer->name." ".$buyer->surname,
-        ])->notify(new SaluteSportEmail($buyer, $morte_da_infortuni, $invalidita_permanente_infortuni, $rimborso_infortuni, $franchigia1, $franchigia2, $uniq));
-
+        if(isset($morte_da_infortuni)){
+            Notification::route('mail', [
+                $buyer->email => $buyer->name." ".$buyer->surname,
+            ])->notify(new SaluteSportEmail($buyer, $morte_da_infortuni, $invalidita_permanente_infortuni, $rimborso_infortuni, $franchigia1, $franchigia2, $uniq));
+        }
+        else{
+            Notification::route('mail', [
+                $buyer->email => $buyer->name." ".$buyer->surname,
+            ])->notify(new ImportoLiberoConditionsEmail($buyer, $uniq));
+        }
         return redirect()->route('front.importoLibero', ['id' => $buyer->id, 'page' => "salutesport"]);
     }
 
