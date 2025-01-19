@@ -345,13 +345,32 @@ class CartController extends Controller
 
         /** Selezione utente **/
         if(!isset($user_id) && !isset($product_id)){
+            $request = Request::only('search', 'steps', 'trashed');
+
+            if(isset($request['search'])){
+                $searchQuery = $request['search'];
+            }
+            else{
+                $searchQuery = " ";
+            }
+            $searchTerms = explode(' ', $searchQuery);
+
             //dd($product_type);
         return Inertia::render('Carts/Create', [
             'filters' => Request::all('search', 'role', 'trashed'),
             'product_type' => $product_type,
             'users' => Auth::user()->account->users()
                 ->orderByName()
-                ->filter(Request::only('search', 'role', 'trashed'))
+                ->where(function ($query) use ($searchTerms) {
+                    foreach ($searchTerms as $term) {
+                        $query->where(function ($subQuery) use ($term) {
+                            $subQuery->where('users.first_name', 'LIKE', "%{$term}%")
+                                    ->orWhere('users.last_name', 'LIKE', "%{$term}%")
+                                    ->orWhere('users.email', 'LIKE', "%{$term}%");
+
+                        });
+                    }
+                })
                 ->paginate(10)
                 ->withQueryString()
                 ->through(fn ($user) => [
