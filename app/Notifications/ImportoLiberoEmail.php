@@ -24,7 +24,7 @@ class ImportoLiberoEmail extends Notification implements ShouldQueue
     protected $surname;
     protected $total_payable;
     protected $causale;
-errore
+
     /**
      * Create a new notification instance.
      *

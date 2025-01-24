@@ -193,9 +193,9 @@ class SiteController extends Controller
                 $buyer->declarations = true;
                 $buyer->save();
 
-                Notification::route('mail', [
+                /*Notification::route('mail', [
                     $buyer->email => $buyer->name." ".$buyer->surname,
-                ])->notify(new ImportoLiberoEmail($buyer));
+                ])->notify(new ImportoLiberoEmail($buyer));*/
             }
             if($buyer != null && $buyer->paid == true){
                 return Inertia::render('Sites/importo_libero_completo');
@@ -256,9 +256,9 @@ class SiteController extends Controller
                     $buyer->declarations = true;
                     $buyer->save();
 
-                    Notification::route('mail', [
+                    /*Notification::route('mail', [
                         $buyer->email => $buyer->name." ".$buyer->surname,
-                    ])->notify(new ImportoLiberoEmail($buyer));
+                    ])->notify(new ImportoLiberoEmail($buyer));*/
                 }
                 
                 return Inertia::render('Sites/importo_libero_completo');
@@ -450,7 +450,7 @@ class SiteController extends Controller
 
 
         $order = $this->create_order_paypal($buyer->total_payable, $id);
-      
+      Log::info($order);
         Log::info($buyer);
         $buyer->transaction_ref = $order['id'];
         $buyer->save();
@@ -600,7 +600,7 @@ Log::info($response);
         // Store Token so we can retrieve after PayPal sends them back to us
         //$payment->transaction_ref = $order['id'];
         //$payment->save();
-        $paypal_redirect_url = $order['links'][1]['href'];
+        //$paypal_redirect_url = $order['links'][1]['href'];
 
         return $order;
     }
