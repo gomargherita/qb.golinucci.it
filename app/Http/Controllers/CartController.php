@@ -568,7 +568,7 @@ class CartController extends Controller
 
 
             //interval > 0 significa che hai l'offerta vecchia
-            if($interval > 0){
+            /*if($interval > 0){
                 if($flag_prev_2022 == 1){
                     $product = $product->load([
                         'productOffers' => function ($query) use ($flag_prev_2022) {
@@ -587,15 +587,15 @@ class CartController extends Controller
                 $product->productOffers[$i]->hide = 0;
             }
             //dd($product->productOffers);
-        }
-        else{
+        }*/
+        //else{
             $flag_prev_2022 = 0;
             $product = $product->load([
                 'productOffers' => function ($query) use ($flag_prev_2022) {
                     $query->with(['conditionalFields', 'contract'])->where('flag_prev_2022', $flag_prev_2022)->whereNull('old');
                 }
             ]);
-        }
+        //}
 
         }
         else{

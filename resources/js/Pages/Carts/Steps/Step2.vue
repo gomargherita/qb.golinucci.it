@@ -26,8 +26,8 @@
               </tr>
               
               
-              <!-- Prodotto MEDICI -->
-              <tr
+               <!-- Prodotto MEDICI -->
+               <tr
               v-if="product.id == 1 || product.id == 5"
                 v-for="(offer, index) in product.offers"
                 class="odd:bg-white even:bg-slate-100 uppercase"
@@ -41,8 +41,12 @@
                   class="p-4 border border-primary"
                   v-html="'<strong>'+$filters.formatPrice(offer.indemnity_limit) + '</strong>' + ' per sinistro <br /> <strong>3.000.000,00 €</strong> per anno'"
                   ></td>
-                
-                <td v-if="product.id == 1"
+                <td v-if="product.id == 1 && clientDetails.flag_prev_2022 == 1"
+                  
+                  class="p-4 border border-primary"
+                  v-text="('1.000.000,00€')"
+                ></td>
+                <td v-if="product.id == 1 && clientDetails.flag_prev_2022 == 0"
                   class="p-4 border border-primary"
                   v-text="$filters.formatPrice(offer.indemnity_limit_patrimonial)"
                 ></td>
@@ -56,11 +60,12 @@
                 ></td>
                 <td class="p-4 border border-primary" style="text-align: center;  text-transform: none;">
                   <a
-                    :href="offer.contract.contract_filepath"
-                    target="_blank"
-                    class="btn-gol"
-                  >
-                  {{ __("Condizioni") }}
+
+                :href="offer.contract.contract_filepath"
+                target="_blank"
+                class="btn-gol"
+              >
+                {{ __("Condizioni") }}
               </a>
               <p style="margin:0"></p>
               <a
@@ -69,7 +74,7 @@
                 class="btn-gol"
               >
                 {{ __("DIP_doc_informativo") }}
-                                </a>
+              </a>
                 </td>
                 <td class="p-4 border border-primary">
                   <label
@@ -88,7 +93,6 @@
                 </td>
               </template>
               </tr>
-
 
 
               <!-- Prodotto BANCARI -->
@@ -234,6 +238,7 @@ export default {
   props: {
     cart: Object,
     product: Object,
+    clientDetails: Object,
   },
   data() {
     return {
