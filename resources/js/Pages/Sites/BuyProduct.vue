@@ -10,7 +10,7 @@
   <HOne :title="product.name" />
 
   <section id="main-content" class="container mx-auto p-2">
-    <BuyProduct :product="product" :cart="cart" :paypal_client_id="paypal_client_id"> </BuyProduct>
+    <BuyProduct :product="product" :cart="cart" :paypal_client_id="paypal_client_id" :clientDetails="clientDetails"> </BuyProduct>
   </section>
 </template>
 
@@ -26,7 +26,8 @@ export default {
   props: {
     cart: Object,
     product: Object,
-    paypal_client_id: String
+    paypal_client_id: String,
+    clientDetails: Object
   },
 };
 </script>
