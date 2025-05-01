@@ -309,9 +309,9 @@ class CartController extends Controller
                     $now = date_create(date('d-m-Y'));
                     $interval = date_diff($expiration_date,$now);
                     $interval = $interval->format("%R%a");
-                    if($interval > -1){
-                        abort(419);
-                    }
+                    //if($interval > -1){
+                    //    abort(419);
+                    //}
                 }
                 else{
                     // get renewal date if exists in previous cart
