@@ -1446,7 +1446,6 @@ class CartController extends Controller
     public function regen_certificate(Cart $cart){
         $user_id = $cart->user_id;
         $old_certificate = Certificate::where('cart_id', $cart->id)->first();
-dd($old_certificate);
         if ($old_certificate != null){
             $old_signature = Signature::where('certificate_id', $old_certificate->id)->first();
         }
