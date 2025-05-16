@@ -207,6 +207,8 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'check_role']], func
 
     Route::put('carts/{cart}/certificateupdate', [CartController::class, 'certificateUpdate'])
     ->name('carts.certificateupdate');
+
+    Route::put('carts/{cart}/regen_certificate', [CartController::class, 'regen_certificate'])->name("cart.regen_certificate");
 });
 
 // Images

@@ -1119,14 +1119,23 @@ class SiteBuyProductController extends Controller
     private function step6(Product $product, Cart $cart)
     {
         try {
+            $iterazioni = 0;
             $yousignClient = new YousignApiService($cart);
             $signature = Signature::where('certificate_id', $cart->certificate->id)->first();
 
             if (empty($signature)) {
                 $yousignMemberSignerId = $yousignClient->startYousignClientAndLaunchProcedure();
-            } else {
-                $yousignMemberSignerId = $signature->member_signer_id;
+            } else if ($signature->status == 'init'){
+                while($signature->status == 'init' && $iterazioni < 3){
+                    $signature->delete();
+                    $yousignMemberSignerId = $yousignClient->startYousignClientAndLaunchProcedure();
+                    $signature = Signature::where('certificate_id', $cart->certificate->id)->first();
+                    $iterazioni = $iterazioni + 1;
+                }
             }
+            
+            $yousignMemberSignerId = $signature->member_signer_id;
+            
         } catch (\Exception $e) {
             $product_signature_error = 'Si è verificato un errore con la procedura di firma.';
         }

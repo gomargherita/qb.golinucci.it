@@ -376,12 +376,24 @@
             >Polizza</a
           >
         </div>
+
       </div>
 
       
 
     
   </div>
+  <h2 class="mt-12 text-2xl font-bold" style="color: #ff3333">ZONA PERICOLOSA</h2>
+  <div class="mt-6 bg-white rounded shadow overflow-x-auto">
+    <div class="bg-white rounded-md shadow overflow-hidden">
+      <div class="flex items-center px-8 py-4 border-t border-gray-100 ">
+        <div class="mb-6" style="color: #ff3333;"><strong>ATTENZIONE: Rigenerare il certificato solo DOPO aver aggiornato tutte le informazioni del carrello (decorrenza, retroattività, anagrafica del cliente)</strong></div>
+
+        <a @click="regen_certificate()" target="_blank" class="btn-gol-primary ">RIGENERA CERTIFICATO</a>
+      </div>
+    </div>
+  </div>
+
 <br>
   <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100" style="display:inline-block">
 
@@ -504,6 +516,11 @@ export default {
     updateDates(){
       this.form_update_decorrenza.startDate = this.start_date;
       this.form_update_decorrenza.endDate = this.end_date;
+    },
+    regen_certificate(){
+      if (confirm("ATTENZIONE: Prima di rigenerare il certificato, assicurarsi che sia stato eliminato da DOPRINT. Procedere?")) {
+        this.$inertia.put(`/admin/carts/${this.cart.id}/regen_certificate`)
+      }
     }
   },
   mounted() {

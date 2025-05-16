@@ -888,17 +888,24 @@ class CartController extends Controller
     private function step6(Product $product, Cart $cart)
     {
         try {
+            $iterazioni = 0;
             $yousignClient = new YousignApiService($cart, User::find($cart->user_id));
             $signature = Signature::where('certificate_id', $cart->certificate->id)->first();
 
-            if (empty($signature)) {
+        if (empty($signature)) {
+            $yousignMemberSignerId = $yousignClient->startYousignClientAndLaunchProcedure();
+        } else if ($signature->status == 'init'){
+            while($signature->status == 'init' && $iterazioni < 3){
+                $signature->delete();
                 $yousignMemberSignerId = $yousignClient->startYousignClientAndLaunchProcedure();
-                $payment = $cart->payment;
-                $payment->cart->user->notify(new ConfirmedOfflinePayment($payment));
-                //error_log($yousignMemberSignerId);
-            } else {
-                $yousignMemberSignerId = $signature->member_signer_id;
+                $signature = Signature::where('certificate_id', $cart->certificate->id)->first();
+                $iterazioni = $iterazioni + 1;
             }
+        }
+        $payment = $cart->payment;
+        $payment->cart->user->notify(new ConfirmedOfflinePayment($payment));
+        $yousignMemberSignerId = $signature->member_signer_id;
+
         } catch (\Exception $e) {
             //error_log("wualche errore".$e);
              $product_signature_error = 'Si è verificato un errore con la procedura di firma.';
@@ -1420,5 +1427,51 @@ class CartController extends Controller
         $new_proposal = new NewApplicationToPdfService($cart);
         $new_proposal->generateAndPersist();
         return Redirect::back()->with('success', 'Modulo creato.');
+    }
+
+
+    /**
+     *   V Ricordare all’admin che deve prima eliminare la vecchia polizza da Doprint
+     *   - Elimina il certificato vecchio (on CASCADE, ricorda che attualmente è RESTRICT)
+     *   V Ricorda di eliminare anche i file sul file system, collegati al certificato!!! (Tipo certificate_final.pdf e gli altri)
+     *   Delegato dal redirect - Crea un certificato nuovo vuoto
+     *   Delegato dal redirect - Collega il carrello con il nuovo certificato
+     *   TODO - Procedi alla rigenerazione del certificato completo con i nuovi dati dal carrello (gestire bene quando non vengono forniti dati (esempio: ricordare che il sistema in automatico prende il rinnovo dal carrello vecchio se non sono fornite informazioni)) Farei in modo che sia proibito rigenerare un certificato senza avergli dato delle date esplicite
+     *   TODO - Genera anche la firma di Yousign
+     *   TODO - Avvisa l’admin che è tutto pronto
+     *
+     * @param Cart $cart Il carrello di cui rigenerare il certificato.
+     * @return RedirectResponse fa il redirect per generare il nuovo certificato
+     */
+    public function regen_certificate(Cart $cart){
+        $user_id = $cart->user_id;
+        $old_certificate = Certificate::where('cart_id', $cart->id)->first();
+dd($old_certificate);
+        if ($old_certificate != null){
+            $old_signature = Signature::where('certificate_id', $old_certificate->id)->first();
+        }
+        else{
+            $old_signature = null;
+        }
+
+        //eliminazione dal file system
+        $certificate_folder = 'certificates/user_' . $user_id . '/cart_' . $cart->id . "/";
+
+        Storage::disk('private')->delete($certificate_folder . "certificate.pdf");
+        Storage::disk('private')->delete($certificate_folder . "new-application.pdf");
+        Storage::disk('private')->delete($certificate_folder . "policy_response.xml");
+        Storage::disk('private')->delete($certificate_folder . "scheda.pdf");
+        Storage::disk('private')->delete($certificate_folder . "certificate-yousign.pdf");
+        
+        if ($old_signature != null){
+            $old_signature->delete();
+        }
+        if ($old_certificate != null){
+            $old_certificate->delete();
+        }
+
+        $cart->product_step_id = 5;
+        $cart->save();
+        return redirect()->route('carts.generatelloyds', ['cart' => $cart]);
     }
 }
