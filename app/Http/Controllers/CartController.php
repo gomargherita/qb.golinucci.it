@@ -336,9 +336,9 @@ class CartController extends Controller
                         $cart->retroactivity = null;
                         $cart->save();
 
-                        if(!($intervallo > -60) && ($product_id == 1 || $product_id == 5)){
-                            abort(308);
-                        }
+                        //if(!($intervallo > -60) && ($product_id == 1 || $product_id == 5)){
+                        //    abort(308);
+                        //}
                     }
                 }
             }
