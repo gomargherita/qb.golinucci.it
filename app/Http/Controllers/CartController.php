@@ -1457,7 +1457,7 @@ class CartController extends Controller
         $certificate_folder = 'certificates/user_' . $user_id . '/cart_' . $cart->id . "/";
 
         Storage::disk('private')->delete($certificate_folder . "certificate.pdf");
-        Storage::disk('private')->delete($certificate_folder . "new-application.pdf");
+        //Storage::disk('private')->delete($certificate_folder . "new-application.pdf");
         Storage::disk('private')->delete($certificate_folder . "policy_response.xml");
         Storage::disk('private')->delete($certificate_folder . "scheda.pdf");
         Storage::disk('private')->delete($certificate_folder . "certificate-yousign.pdf");
