@@ -382,7 +382,7 @@
       
 
     
-  </div><!-- 
+  </div>
   <h2 class="mt-12 text-2xl font-bold" style="color: #ff3333">ZONA PERICOLOSA</h2>
   <div class="mt-6 bg-white rounded shadow overflow-x-auto">
     <div class="bg-white rounded-md shadow overflow-hidden">
@@ -392,7 +392,7 @@
         <a @click="regen_certificate()" target="_blank" class="btn-gol-primary ">RIGENERA CERTIFICATO</a>
       </div>
     </div>
-  </div> -->
+  </div>
 
 <br>
   <div class="flex items-center px-8 py-4 bg-gray-50 border-t border-gray-100" style="display:inline-block">

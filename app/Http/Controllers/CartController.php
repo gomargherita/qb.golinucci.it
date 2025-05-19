@@ -1049,9 +1049,9 @@ class CartController extends Controller
         //dd($request);return;
         if($cart->product->product_type_id == 1 ){
             $certificate = Certificate::where('cart_id', $cart->id)->first();
-            if($certificate != null){
-                return Redirect::back()->with('error', 'Il certificato Lloyd\'s è già stato emesso. Eliminare il certificato per poter cambiare decorrenza.');
-            }
+            //if($certificate != null){
+            //    return Redirect::back()->with('error', 'Il certificato Lloyd\'s è già stato emesso. Eliminare il certificato per poter cambiare decorrenza.');
+            //}
 
             if($request->startDate != null){
                 $cart->renewal_date = $request->startDate;
