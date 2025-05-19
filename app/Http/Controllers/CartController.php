@@ -1461,6 +1461,8 @@ class CartController extends Controller
         Storage::disk('private')->delete($certificate_folder . "policy_response.xml");
         Storage::disk('private')->delete($certificate_folder . "scheda.pdf");
         Storage::disk('private')->delete($certificate_folder . "certificate-yousign.pdf");
+        Storage::disk('private')->delete($certificate_folder . "certificate-final.pdf");
+        
         
         if ($old_signature != null){
             $old_signature->delete();
