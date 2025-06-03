@@ -590,11 +590,40 @@ class CartController extends Controller
         }*/
         //else{
             $flag_prev_2022 = 0;
-            $product = $product->load([
+            $full_cert = Certificate::query()
+                    ->with('cart')
+                    ->where([
+                        // controllo su product
+                        'product_id' => $cart->product_id,
+                    ])->whereHas('cart', function ($q) use ($user_id) {
+                        $q->where('user_id', $user_id);
+                    })
+                    ->latest()->first();
+
+
+                //facendo in modo che l'utente non possa scegliere una retro diversa
+            if($product->id == 5 && $full_cert != null && $full_cert->cart->indemnity_limit_patrimonial == 2){
+                $product = $product->load([
                 'productOffers' => function ($query) use ($flag_prev_2022) {
-                    $query->with(['conditionalFields', 'contract'])->where('flag_prev_2022', $flag_prev_2022)->whereNull('old');
+                    $query->with(['conditionalFields', 'contract'])->where('flag_prev_2022', $flag_prev_2022)->whereNull('old')->where('indemnity_limit_patrimonial', 2);
                 }
-            ]);
+                ]);
+            }
+            else if($product->id == 5 && $full_cert != null && $full_cert->cart->indemnity_limit_patrimonial == 10){
+                $product = $product->load([
+                'productOffers' => function ($query) use ($flag_prev_2022) {
+                    $query->with(['conditionalFields', 'contract'])->where('flag_prev_2022', $flag_prev_2022)->whereNull('old')->where('indemnity_limit_patrimonial', 10);
+                }
+                ]);
+            }
+            else{
+                $product = $product->load([
+                    'productOffers' => function ($query) use ($flag_prev_2022) {
+                        $query->with(['conditionalFields', 'contract'])->where('flag_prev_2022', $flag_prev_2022)->whereNull('old');
+                    }
+                ]);
+            }
+
         //}
 
         }
