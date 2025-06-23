@@ -69,9 +69,8 @@ class BdxMedmalPaymentsExport implements FromView, WithHeadingRow
         $payments_data = DB::table('payments')
             ->join('carts', 'payments.cart_id', '=', 'carts.id')
             ->join('products', 'carts.product_id', '=', 'products.id')
-            ->leftJoin('certificates', 'carts.id', '=', 'certificates.cart_id', function($join) {
-                $join->where('certificates.deleted_at', null);
-            })
+            ->leftJoin('certificates', 'carts.id', '=', 'certificates.cart_id')
+                ->whereNull('certificates.deleted_at')
             ->join('users', 'carts.user_id', '=', 'users.id')
             ->join('client_details', 'users.id', '=', 'client_details.user_id')
             ->leftJoin('product_client_details as pcd1', function($join) {
