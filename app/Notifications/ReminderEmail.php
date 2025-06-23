@@ -58,7 +58,7 @@ class ReminderEmail extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         try {
-            if($this->cart->product_id == 1){
+            if($this->cart->product_id == 1  || $this->cart->product_id == 5){
                 $cc = "sanitari@golinucci.it";
             }
             else{

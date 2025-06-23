@@ -45,7 +45,7 @@ class ConfirmedOfflinePayment extends Notification
         $user = $this->payment->cart->user;
         $url = route('front.product.buy', [$this->payment->cart->product->id, $this->payment->cart->cart_ref]);
 
-        if($this->payment->cart->product->id == 1){
+        if($this->payment->cart->product->id == 1 || $this->payment->cart->product->id == 5){
             return (new MailMessage)
                 ->subject('Q&B Golinucci - Conferma pagamento tramite bonifico bancario')
                 ->greeting("Gentile $user->name")
