@@ -223,6 +223,7 @@ export default {
                 document.getElementById("paypal-button-container").style.display = "inline";
                 document.getElementById("bonifico").style.display = "inline";
                   document.getElementById("pagamento-in-corso").innerHTML = "Pagamento NON riuscito. Riprovare.";
+                  location.reload();
                 }
               },
               onError: function (error) {
@@ -301,6 +302,7 @@ export default {
                 document.getElementById("paypal-button-container").style.display = "inline";
                 document.getElementById("bonifico").style.display = "inline";
                   document.getElementById("pagamento-in-corso").innerHTML = "Pagamento NON riuscito. Riprovare.";
+                  location.reload();
                 }
               },
               onError: function (error) {
@@ -310,6 +312,7 @@ export default {
 
                 // Do something with the error from the SDK
                 document.getElementById("pagamento-in-corso").innerHTML = "Pagamento NON riuscito. Riprovare.";
+                location.reload();
 
                 //resultMessage("Ci scusiamo, la transazione non può essere completata.<br><br>${error}",);
               },
