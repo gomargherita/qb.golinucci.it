@@ -386,6 +386,7 @@ class SiteBuyProductController extends Controller
 
                 //facendo in modo che l'utente non possa scegliere una retro diversa
             if($product->id == 5 && $full_cert != null && $full_cert->cart->indemnity_limit_patrimonial == 2){
+                abort(509);
                 $product = $product->load([
                 'productOffers' => function ($query) use ($flag_prev_2022) {
                     $query->with(['conditionalFields', 'contract'])->where('flag_prev_2022', $flag_prev_2022)->whereNull('old')->where('indemnity_limit_patrimonial', 2);
