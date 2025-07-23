@@ -979,8 +979,19 @@ class CartController extends Controller
     }
 
     public function sendFirstEmail(Cart $cart, $product_id){
+        $user_id = $cart->user_id;
+        $last_prev_certificate = Certificate::query()
+                    ->with('cart')
+                    ->select(['end_validity_date'])->where([
+                        // controllo su product
+                        'product_id' => $cart->product_id,
+                    ])->whereHas('cart', function ($q) use ($user_id) {
+                        $q->where('user_id', $user_id);
+                    })
+                    ->latest()->first();
+        $renewal = (explode(" ", ((string)$last_prev_certificate['end_validity_date']))[0]);
         //if($cart->renewal_date == null || $cart->product_id == null){
-            //$cart->renewal_date = '2024-12-31';
+            $cart->renewal_date = $renewal;
             $cart->product_id = intval($product_id);
             $cart->save();
 
