@@ -979,14 +979,14 @@ class CartController extends Controller
     }
 
     public function sendFirstEmail(Cart $cart, $product_id){
-        //if($cart->renewal_date == null || $cart->product_id == null){
-            $cart->renewal_date = '2024-12-31';
+        if($cart->renewal_date == null || $cart->product_id == null){
+            $cart->renewal_date = '2025-12-31';
             $cart->product_id = intval($product_id);
             $cart->save();
 
             //dd($cart);
             //return $this->sendFirstEmail($cart, $product_id);
-        //}
+        }
 
         try{
             $cart->user->notify(new FirstEmailWithCredentials($cart));
