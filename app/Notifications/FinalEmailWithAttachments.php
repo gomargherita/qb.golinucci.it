@@ -76,7 +76,7 @@ class FinalEmailWithAttachments extends Notification
 
             return (new MailMessage)
                 ->mailer('pec')
-                ->bcc('bancari@golinucci.it')
+                ->cc('bancari@golinucci.it')
                 ->subject('Q&B Golinucci - Polizza e documenti')
                 ->greeting("Gentile $user->name")
                 ->line('Può trovare in allegato la sua polizza e tutta la documentazione correlata al prodotto che ha acquistato.')
@@ -91,7 +91,7 @@ class FinalEmailWithAttachments extends Notification
                 Broker di Assicurazioni Iscrizione RUI n. B000070946 del 19/03/2007 intermediario soggetto al controllo dell'Ivass")
                 ->salutation('Grazie per aver scelto i prodotti Golinucci!')
                 ->attach($file_path . '/certificate-final.pdf')
-                ->attach($wording)->from(['bancari@golinucci.it' => 'Q&B Golinucci']);
+                ->attach($wording)->from(['bancari@pec.golinucci.it' => 'Q&B Golinucci']);
         }
     }
 
