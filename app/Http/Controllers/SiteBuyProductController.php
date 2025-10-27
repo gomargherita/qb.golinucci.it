@@ -34,6 +34,7 @@ use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Throwable;
 use App\Notifications\FinalEmailWithAttachments;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
 
 
 class SiteBuyProductController extends Controller
@@ -818,7 +819,7 @@ class SiteBuyProductController extends Controller
                 ->log("Completed certificate $certificate->id generation;");
 
             //$cart->user->notify(new FinalEmailWithAttachments($cart));
-            Mail::mailer('pec')->to($cart->user->email)->send(new FinalEmailWithAttachments($cart));
+            Notification::mailer('pec')->sendNow($cart->user, new FinalEmailWithAttachments($cart));
 
         }
         //fine bancari
