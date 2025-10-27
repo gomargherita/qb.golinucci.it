@@ -45,6 +45,21 @@ return [
             'auth_mode' => null,
         ],
 
+        'pec' => [
+            'transport' => 'smtp',
+            'host' => 'smtps.pec.aruba.it',
+            'port' => 465,
+            'encryption' => 'ssl',
+            'username' => 'bancari@pec.golinucci.it',
+            'password' => env('PW_PEC'),
+            'from' => [
+                'address' => 'bancari@pec.golinucci.it',
+                'name' => 'Golinucci SRL',
+            ],
+            'timeout' => null,
+            'auth_mode' => null,
+        ],
+
         'ses' => [
             'transport' => 'ses',
         ],

@@ -33,7 +33,7 @@ class BdxBankersErStatic implements FromView, WithHeadingRow
             ->join('users', 'carts.user_id', '=', 'users.id')
             ->join('client_details', 'users.id', '=', 'client_details.user_id')
             ->join('product_offers', 'carts.product_offer_id', '=', 'product_offers.id')
-            ->leftJoin('bordereaux_er_static', 'bordereaux_er_static.product_offer_id', "=", "carts.product_offer_id")
+            ->leftJoin('bordereaux_er_info', 'bordereaux_er_info.product_offer_id', "=", "carts.product_offer_id")
             
             ->leftJoin('product_client_details as pcd5', function($join) {
                 $join->on('client_details.id', '=', 'pcd5.client_detail_id');
@@ -76,13 +76,14 @@ class BdxBankersErStatic implements FromView, WithHeadingRow
                 // 'certificates.end_validity_date',
                 //END DATE
                 'certificates.end_validity_date',
-                'bordereaux_er_static.I',
-                'bordereaux_er_static.J',
-                'bordereaux_er_static.K',
-                'bordereaux_er_static.L',
-                'bordereaux_er_static.M',
-                'bordereaux_er_static.N',
-                'bordereaux_er_static.P',
+                'bordereaux_er_info.italiana_cassa',
+                'bordereaux_er_info.italiana_patrimoniale',
+                'bordereaux_er_info.chubb_patrimoniale',
+                'bordereaux_er_info.sara_patrimoniale',
+                'bordereaux_er_info.total_premium',
+                'bordereaux_er_info.fee',
+                'bordereaux_er_info.massimale_cassieri',
+                'bordereaux_er_info.massimale_patrimoniale'
             )
             ->where('carts.product_id', 2)
             ->whereNotNull('payments.paid_at');

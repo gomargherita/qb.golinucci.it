@@ -54,8 +54,6 @@ class FinalEmailWithAttachments extends Notification
                 ->subject('Q&B Golinucci - Polizza e documenti')
                 ->greeting("Gentile $user->name")
                 ->line('Può trovare in allegato la sua polizza e tutta la documentazione correlata al prodotto che ha acquistato.')
-                ->line('Avendo Aderito alla Polizza le è riservata la "CARTA SERVIZI BENESSERE E PREVENZIONE" (https://www.golinucci.it/medsan), la quale permette l’accesso ai network convenzionati con Blue Assistance che garantiscono tre linee di servizi utili e vantaggiosi (DENTISTI - FISIOTERAPISTI - DIAGNOSTICI) per offrire all’assicurato e al suo nucleo familiare le migliori cure per la salute ed il benessere in tempi brevi, con la massima efficienza e a prezzi contenuti.')
-                ->line('Per Ottenere il Codice di attivazione della CARTA SERVIZI basta andare sul sito: https://www.golinucci.it/card.')
                 ->salutation('Grazie per aver scelto i prodotti Golinucci!')
                 ->attach($file_path . '/certificate-final.pdf')
                 ->attach($file_path . '/declarations.pdf')
@@ -85,10 +83,6 @@ class FinalEmailWithAttachments extends Notification
                 ->line('Al verificarsi di un sinistro si metta in contatto con la Golinucci Srl entro 10 gg lavorativi dall’ammanco di cassa tramite una mail a sinistribancari@golinucci.it.')
                 ->line('Vorremmo inoltre sottolineare che se ci fosse un cambiamento di circostanze o venisse a conoscenza di eventuali modifiche rilevanti che possono influenzare questa sua copertura assicurativa , deve avvisare immediatamente Golinucci srl.')
                 ->line('Possiamo cogliere questa occasione per ringraziare per la fiducia accordataci e se possiamo essere di ulteriore aiuto o assistenza su altre questioni assicurative, non esiti a contattarci.')
-                ->line('Avendo Aderito alla Polizza le è riservata la "CARTA SERVIZI BENESSERE E PREVENZIONE" (https://www.golinucci.it/medsan), la quale permette l’accesso ai network convenzionati con Blue Assistance che garantiscono tre linee di servizi utili e vantaggiosi (DENTISTI - FISIOTERAPISTI - DIAGNOSTICI) per offrire all’assicurato e al suo nucleo familiare le migliori cure per la salute ed il benessere in tempi brevi, con la massima efficienza e a prezzi contenuti.')
-                ->line('CARTA SERVIZI: Salute e Benessere sempre con TE. (https://www.golinucci.it/medsan)')
-                ->line('Servizio online di accesso ai network convenzionati con Blue Assistance che ti garantiscono tre linee di servizi utili e vantaggiosi (DENTISTI - FISIOTERAPISTI - DIAGNOSTICI) per offrire a te ed al tuo nucleo familiare le migliori cure per la salute ed il benessere in tempi brevi, con la massima efficienza e a prezzi contenuti.')
-               ->line('Per Ottenere il Codice di attivazione della CARTA SERVIZI: Salute e Benessere basta andare sul sito www.golinucci.it/card"')
 
                 ->line("Golinucci Srl Viale Bovio 194 - 47521- Cesena
                 Tel: 054722351 Fax: 054725382

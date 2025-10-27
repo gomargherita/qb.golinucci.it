@@ -85,35 +85,35 @@
             </td>
 
             
-            <td>{{ $payment->Q }}</td>
-            <td>{{ $payment->R }}</td>
-            <td>{{ $payment->S}}</td>
-            <td>{{ $payment->T }}</td>
-            <td>{{ $payment->U }}</td>
-            <td>{{ $payment->V }}</td>
-            <td>{{ $payment->W }}</td>
-            <td>{{ $payment->X }}</td>
-            <td>{{ $payment->Y }}</td>
-            <td>{{ $payment->Z }}</td>
-            <td>{{ $payment->AA }}</td>
-            <td>{{ $payment->AB }}</td>
+            <td>{{ $payment->massimale_patrimoniale }}</td>
+            <td>{{ $payment->massimale_spese_legali }}</td>
+            <td>{{ $payment->combinazione}}</td>
+            <td>{{ $payment->massimale_cassieri }}</td>
+            <td>{{ $payment->massimale_patrimoniale }}</td>
+            <td>{{ $payment->massimale_spese_legali }}</td>
+            <td>{{ $payment->rc_eccesso }}</td>
+            <td>{{ $payment->spese_legali_eccesso }}</td>
+            <td>{{ "2025/076340933" }}</td>
+            <td>{{ "2025/076340933" }}</td>
+            <td>{{ "ITFINC086553" }}</td>
+            <td>{{ "32539JX" }}</td>
             <td>{{ $payment->payment_no }}</td>
-            <td>{{ $payment->AD }}</td>
-            <td>{{ $payment->AE }}</td>
-            <td>{{ $payment->AF }}</td>
-            <td>{{ $payment->AG }}</td>
-            <td>{{ $payment->AH }}</td>
-            <td>{{ $payment->AI }}</td>
-            <td>{{ $payment->AJ }}</td>
-            <td>{{ $payment->AK }}</td>
-            <td>{{ $payment->AL }}</td>
-            <td>{{ $payment->AM }}</td>
-            <td>{{ $payment->AN }}</td>
-            <td>{{ $payment->AO }}</td>
-            <td>{{ $payment->AP }}</td>
+            <td>{{ $payment->netto_italiana_cassa }}</td>
+            <td>{{ $payment->imposta_cassieri }}</td>
+            <td>{{ "30" }}</td>
+            <td>{{ $payment->netto_italiana_patrimoniale }}</td>
+            <td>{{ $payment->imposta_patrimoniale }}</td>
+            <td>{{ "30" }}</td>
+            <td>{{ $payment->netto_chubb_patrimoniale }}</td>
+            <td>{{ $payment->imposta_chubb_patrimoniale }}</td>
+            <td>{{ "30" }}</td>
+            <td>{{ $payment->netto_sara_patrimoniale }}</td>
+            <td>{{ $payment->imposta_sara_patrimoniale }}</td>
+            <td>{{ "20" }}</td>
+            <td>{{ $payment->fee }}</td>
             <td>{{ $payment->payment_no }}</td>
-            <td>{{ $payment->AR }}</td>
-            <td>{{ $payment->AS }}</td>
+            <td>{{ $payment->total_cost }}</td>
+            <td>{{ "27556400" }}</td>
             <td></td>
         </tr>
         @endforeach

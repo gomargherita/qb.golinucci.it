@@ -12,7 +12,7 @@
             <th>Combinazione</th>
             <th>Coverage From</th>
             <th>To</th>
-            <th>Casa Uniqa</th>
+            <th>Cassa Uniqa</th>
             <th>Uniqa RC</th>
             <th>Chubb RC</th>
             <th>sara rc</th>
@@ -38,6 +38,8 @@
             <th>BANK CODE</th>
             <th>BANK NAME</th>
             <th>UNION PROVINCE</th>
+            <th>MASSIMALE CASSIERE</th>
+            <th>MASSIMALE PATRIMONIALE</th>
         </tr>
     </thead>
     <tbody>
@@ -61,14 +63,14 @@
             <td>
                 {{ date('d/m/Y', strtotime($payment->end_validity_date)) }}
             </td>
-            <td>{{ $payment->I }}</td>
-            <td>{{ $payment->J }}</td>
-            <td>{{ $payment->K }}</td>
-            <td>{{ $payment->L }}</td>
-            <td>{{ $payment->M }}</td>
-            <td>{{ $payment->N }}</td>
+            <td>{{ $payment->italiana_cassa }}</td>
+            <td>{{ $payment->italiana_patrimoniale }}</td>
+            <td>{{ $payment->chubb_patrimoniale }}</td>
+            <td>{{ $payment->sara_patrimoniale }}</td>
+            <td>{{ $payment->total_premium }}</td>
+            <td>{{ $payment->fee }}</td>
             <td>{{ $payment->payment_no }}</td>
-            <td>{{ $payment->P }}</td>
+            <td>0</td>
 
             <td></td>
             <td></td>
@@ -102,6 +104,9 @@
             <td>{{ $payment->abi }}</td>
             <td>{{ $payment->bank }}</td>
             <td>{{ $payment->first_appartenenza }}</td>
+            <td>{{ $payment->massimale_cassieri }}</td>
+            <td>{{ $payment->massimale_patrimoniale }}</td>
+            
             <td></td>
         </tr>
         @endforeach

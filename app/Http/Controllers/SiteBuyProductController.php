@@ -33,6 +33,7 @@ use Illuminate\Support\Str;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Throwable;
 use App\Notifications\FinalEmailWithAttachments;
+use Illuminate\Support\Facades\Mail;
 
 
 class SiteBuyProductController extends Controller
@@ -537,6 +538,10 @@ class SiteBuyProductController extends Controller
         else{
             $redirect = 'Sites/BuyProductBankers';
         }
+
+        $poid = $cart->product_offer_id;
+        $mup = ProductOffer::find($poid)->MUP;
+
         return Inertia::render($redirect, [
             'product' => [
                 'id' => $product->id,
@@ -546,7 +551,8 @@ class SiteBuyProductController extends Controller
                 'post_declarations' => $product->post_declarations,
                 'declarations' => $product->productDeclarations,
                 'hex_color' => $product->hex_color,
-                'steps' => $product->productSteps->count()
+                'steps' => $product->productSteps->count(),
+                'mup' => $mup,
             ],
             'cart' => $cart
         ]);
@@ -811,7 +817,9 @@ class SiteBuyProductController extends Controller
                 ->event('certificate_generation')
                 ->log("Completed certificate $certificate->id generation;");
 
-            $cart->user->notify(new FinalEmailWithAttachments($cart));
+            //$cart->user->notify(new FinalEmailWithAttachments($cart));
+            Mail::mailer('pec')->to($cart->user->email)->send(new FinalEmailWithAttachments($cart));
+
         }
         //fine bancari
             $cart->updateCartStep(5);

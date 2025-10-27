@@ -46,6 +46,14 @@
         </table>
       </div>
       <div class="my-4" v-html="product.post_declarations"></div>
+      Link per visionare il MUP:
+      <a
+                    :href="product.mup"
+                    target="_blank"
+                    class="btn-gol"
+                  >
+                    {{ __("MUP") }}
+                     </a>
       <div class="my-8 grid justify-items-end">
         <TextInput
             v-model="form.signature"

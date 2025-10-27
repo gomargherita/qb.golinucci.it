@@ -57,6 +57,7 @@ class ProductOffer extends Model
                 'flag_prev_2022',
                 'months',
                 'active',
+                'MUP',
             ]);
     }
 }

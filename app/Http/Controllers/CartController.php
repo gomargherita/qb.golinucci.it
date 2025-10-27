@@ -38,6 +38,10 @@ use App\Models\Certificate;
 use App\Notifications\FirstEmailWithCredentials;
 use Throwable;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Notification;
+
+
 
 
 
@@ -970,7 +974,10 @@ class CartController extends Controller
 
     public function sendEmail(Cart $cart){
         try{
-            $cart->user->notify(new FinalEmailWithAttachments($cart));
+            //$cart->user->notify(new FinalEmailWithAttachments($cart));
+            Notification::mailer('pec')->sendNow($cart->user, new FinalEmailWithAttachments($cart));
+
+            //Mail::mailer('pec')->to($cart->user->email)->send(new FinalEmailWithAttachments($cart));
             return Redirect::back()->with('success', 'Email inviata.');
         }
         catch(Throwable $e){

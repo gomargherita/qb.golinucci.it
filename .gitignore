@@ -25,3 +25,6 @@ _ide_helper.php
 .phpstorm.meta.php
 storage/.DS_Store
 .DS_Store
+/public
+/tests/Browser/console
+/.phpunit.cache
