@@ -818,8 +818,8 @@ class SiteBuyProductController extends Controller
                 ->event('certificate_generation')
                 ->log("Completed certificate $certificate->id generation;");
 
-            //$cart->user->notify(new FinalEmailWithAttachments($cart));
-            Notification::mailer('pec')->sendNow($cart->user, new FinalEmailWithAttachments($cart));
+            $cart->user->notify(new FinalEmailWithAttachments($cart));
+            //Notification::mailer('pec')->sendNow($cart->user, new FinalEmailWithAttachments($cart));
 
         }
         //fine bancari

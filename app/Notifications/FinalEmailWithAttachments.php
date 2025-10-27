@@ -75,6 +75,7 @@ class FinalEmailWithAttachments extends Notification
 
 
             return (new MailMessage)
+                ->mailer('pec')
                 ->bcc('bancari@golinucci.it')
                 ->subject('Q&B Golinucci - Polizza e documenti')
                 ->greeting("Gentile $user->name")
