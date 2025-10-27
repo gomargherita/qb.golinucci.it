@@ -35,6 +35,7 @@
     </div>
     <div style="margin:20px 0;text-align:right;width: 100%;">
         Sottoscritto online da <span>{{ $declarations_signature }}</span>
+        In data <span> {{ $date }} </span>
     </div>
 </body>
 

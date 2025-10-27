@@ -6,6 +6,8 @@ use App\Models\Cart;
 use App\Models\Product;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Carbon;
+
 
 class DeclarationsToPdfService
 {
@@ -29,7 +31,8 @@ class DeclarationsToPdfService
             'pre_declarations' => $product->pre_declarations,
             'declarations' => $declarations,
             'post_declarations' => $product->post_declarations,
-            'declarations_signature' => $this->cart->declarations_signature
+            'declarations_signature' => $this->cart->declarations_signature,
+            'date' => Carbon::now(),
         ];
 
         PDF::setOptions([

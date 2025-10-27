@@ -461,45 +461,6 @@ ul
   <td style='height:13.55pt;border:solid black 1.0pt' height=18></td>
  </tr>
  <tr style='height:13.55pt'>
-  <td colspan=13 valign=bottom style='background:#CC3300;
-  padding:0cm 3.5pt 0cm 3.5pt;height:13.55pt'>
-  <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
-  line-height:normal'><b><span style='font-size:10.0pt;font-family:"Arial",sans-serif;
-  color:white'>CARTA SERVIZI: <i>Salute e Benessere sempre con TE</i></span></b></p>
-  </td>
-  <td style='height:13.55pt;border:solid black 1.0pt' height=18></td>
- </tr>
- <tr style='height:13.55pt'>
-  <td colspan=13 valign=bottom style='padding:0cm 3.5pt 0cm 3.5pt;
-  height:13.55pt'>
-  <p class=MsoNormal align=center style='margin-top:0cm;margin-right:0cm;
-  margin-bottom:0cm;margin-left:52.95pt;text-align:center;line-height:normal'><span
-  style='position:absolute;z-index:251685888;left:0px;margin-left:14px;
-  margin-top:8px;height:39px'><img height=39
-  src="data:image/jpg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAoHBwkHBgoJCAkLCwoMDxkQDw4ODx4WFxIZJCAmJSMgIyIoLTkwKCo2KyIjMkQyNjs9QEBAJjBGS0U+Sjk/QD3/2wBDAQsLCw8NDx0QEB09KSMpPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT3/wAARCAAnACYDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD1+6uo7OAyynCjoO5PpXO3WuXU7Hy28lOwXr+dGuXTT3zR5+SL5QPfvVye0sNJ0pry5i8xkQEgnqfQfjXVFQpRUpq7ZwTlUrzcKbskZK390rZFzLn/AHq07HX3Vgl5hlP/AC0A5H1rHs/E9vLfJDeaXBFC5C7l6qT68Vr67p8FnY/aII9pVwGGeMH/ACKI1aVX3bClh6+H97mOgVgygggg9CKKx/Dl559q0JOfL5U+xornnHkk4s7KVRVIKSMW+BW/uN3JEh/nWzrEbapou208t5DtdULAFsdqra/ZGOf7Ug+R+G9jWdbfYw++5Ubx0dugror2nRUrN27HHh5SoYhx0V31GS6DcSoqwkSSOQGDLtCDuSfatvxHKkOiGLcCzsqjHfHP9KgmuLRoiJZoih6jcDXOXbW5uD9lVhH/ALXc+1cWXxcpapr8juzPFSlHVp/mbPhDd9uuP7ojGfrmitXw7pzWNiXlG2aY7mHoOwororSUptoxw0HCmkzWdFkQq6hlIwQe9Yt14cVmJtpAoP8AA/I/OiiphUlD4WaVKUKi95GWfCd2ZPleFV9STx+la+meG7exdZZm8+YcgkYVfoKKKqVeclZszhhacHdI2aKKKyOg/9k="></span><span style='font-size:
-  10.0pt;font-family:"Arial",sans-serif'>&nbsp;</span><i><span
-  style='font-size:10.0pt'>Servizio online di accesso ai network convenzionati
-  con Blue Assistance che ti garantisce tre linee di servizi utili e
-  vantaggiosi (DENTISTI - FISIOTERAPISTI - DIAGNOSTICA) per offrire a te ed al
-  tuo nucleo familiare le migliori cure per la salute ed il benessere in tempi
-  brevi, con la massima efficienza e a prezzi contenuti.</span></i></p>
-  <p class=MsoNormal align=center style='margin-bottom:0cm;text-align:center;
-  line-height:normal'><b><i><span style='font-size:12.0pt'>Per ottenere
-  automaticamente il codice di attivazione basta andare sul sito <span
-  style='color:#002060'>www.golinucci.it/card</span></span></i></b></p>
-  </td>
-  <td style='height:13.55pt;border:solid black 1.0pt' height=18></td>
- </tr>
- <tr style='height:13.55pt'>
-  <td colspan=13 valign=bottom style='padding:0cm 3.5pt 0cm 3.5pt;
-  height:13.55pt'>
-  <p class=MsoNormal align=center style='margin-top:0cm;margin-right:0cm;
-  margin-bottom:0cm;margin-left:52.95pt;text-align:center;line-height:normal'><i><span
-  style='font-size:10.0pt'>&nbsp;</span></i></p>
-  </td>
-  <td style='height:13.55pt;border:solid black 1.0pt' height=18></td>
- </tr>
- <tr style='height:13.55pt'>
   <td colspan=13 valign=bottom style='border:solid black 1.0pt;
   border-bottom:solid black 1.0pt;background:#CC3300;padding:0cm 3.5pt 0cm 3.5pt;
   height:13.55pt'>

@@ -7,6 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Storage;
+use App\Models\ProductOffer;
 
 class FinalEmailWithAttachments extends Notification
 {
@@ -62,8 +63,12 @@ class FinalEmailWithAttachments extends Notification
         else if($this->cart->product->product_type_id == 2){
             switch($this->cart->product->id){
                 case 2:
-                    $wording = Storage::disk('public')->getAdapter()->getPathPrefix()."/contracts/SCHEDA_DI_ADESIONE_REGIONALE_2026.pdf";
-                    
+                    $poid = $this->cart->product_offer_id;
+                    $offer = ProductOffer::find($poid);
+                    $mup = $offer->MUP;
+                    $mup = str_replace("/storage", "", $mup);
+                    $wording = Storage::disk('public')->getAdapter()->getPathPrefix()."/contracts/cga-convenzione-bancari-firster-2026.pdf";
+                    $mup = Storage::disk('public')->getAdapter()->getPathPrefix().$mup;
                     break;
                 case 3:
                     $wording = Storage::disk('public')->getAdapter()->getPathPrefix()."/contracts/italia-sardegna.pdf";
@@ -91,6 +96,9 @@ class FinalEmailWithAttachments extends Notification
                 Broker di Assicurazioni Iscrizione RUI n. B000070946 del 19/03/2007 intermediario soggetto al controllo dell'Ivass")
                 ->salutation('Grazie per aver scelto i prodotti Golinucci!')
                 ->attach($file_path . '/certificate-final.pdf')
+                ->attach($file_path . '/declarations.pdf')
+                ->attach(Storage::disk('public')->getAdapter()->getPathPrefix()."/contracts/RC-Rischi-diversi_DIP_e_DIPAGG.pdf")
+                ->attach($mup)
                 ->attach($wording)->from(['bancari@pec.golinucci.it' => 'Q&B Golinucci']);
         }
     }

@@ -19,14 +19,8 @@
             <th>Total Premium</th>
             <th>Fee</th>
             <th>Invoice No</th>
-            <th>Arag LE</th>
-            <th>Uniqa PA Motor</th>
-            <th>Uniqa PA Family</th>
-            <th>DAS LE</th>
-            <th>AIG Travel</th>
             <th>Total Cost</th>
             <th>Payment Method</th>
-            <th>Codice Fiscale</th>
             <th>ADDRESS</th>
             <th>POST CODE</th>
             <th>CITY</th>
@@ -70,12 +64,7 @@
             <td>{{ $payment->total_premium }}</td>
             <td>{{ $payment->fee }}</td>
             <td>{{ $payment->payment_no }}</td>
-            <td>0</td>
-
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
+            
             <td>{{ $payment->total_payable }}</td>
             <td>
                 @if ($payment->payment_gateway_id == 1)
@@ -86,7 +75,6 @@
                 Office Payment
                 @endif
             </td>
-            <td>{{ $payment->fiscal_code }}</td>
             <td>{{ $payment->address }}</td>
             <td>
                 {{ $payment->postal_code }}
