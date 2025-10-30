@@ -67,8 +67,31 @@ class FinalEmailWithAttachments extends Notification
                     $offer = ProductOffer::find($poid);
                     $mup = $offer->MUP;
                     $mup = str_replace("/storage", "", $mup);
-                    $wording = Storage::disk('public')->getAdapter()->getPathPrefix()."/contracts/cga-convenzione-bancari-firster-2026.pdf";
+                    $wording = Storage::disk('public')->getAdapter()->getPathPrefix()."/contracts/CGA-RC-BANCARI-CONVENZIONE-2026-FCER-GOLINUCCI.pdf";
                     $mup = Storage::disk('public')->getAdapter()->getPathPrefix().$mup;
+
+                    return (new MailMessage)
+                        ->mailer('pec')
+                        ->cc('bancari@golinucci.it')
+                        ->subject('Q&B Golinucci - Polizza e documenti')
+                        ->greeting("Gentile $user->name")
+                        ->line('Può trovare in allegato la sua polizza e tutta la documentazione correlata al prodotto che ha acquistato.')
+                        ->line('Le ricordiamo ai sensi di legge  che sull’acquisto effettuato è previsto un periodo di ripensamento (Periodo di Recesso ) di 14 giorni dal momento d’acquisto. Qualora dovesse decidere che, per un qualsiasi motivo, questa assicurazione non soddisfa le sue esigenze, ha 14 giorni per procedere alla cancellazione ed ottenere un rimborso totale, segnalando il suo diritto di recesso tramite email al nostro indirizzo bancari@golinucci.it.')
+                        ->line('Al verificarsi di un sinistro si metta in contatto con la Golinucci Srl entro 10 gg lavorativi dall’ammanco di cassa tramite una mail a sinistribancari@golinucci.it.')
+                        ->line('Vorremmo inoltre sottolineare che se ci fosse un cambiamento di circostanze o venisse a conoscenza di eventuali modifiche rilevanti che possono influenzare questa sua copertura assicurativa , deve avvisare immediatamente Golinucci srl.')
+                        ->line('Possiamo cogliere questa occasione per ringraziare per la fiducia accordataci e se possiamo essere di ulteriore aiuto o assistenza su altre questioni assicurative, non esiti a contattarci.')
+
+                        ->line("Golinucci Srl Viale Bovio 194 - 47521- Cesena
+                        Tel: 054722351 Fax: 054725382
+                        E-mail: bancari@golinucci.it
+                        Broker di Assicurazioni Iscrizione RUI n. B000070946 del 19/03/2007 intermediario soggetto al controllo dell'Ivass")
+                        ->salutation('Grazie per aver scelto i prodotti Golinucci!')
+                        ->attach($file_path . '/certificate-final.pdf')
+                        ->attach($file_path . '/declarations.pdf')
+                        ->attach(Storage::disk('public')->getAdapter()->getPathPrefix()."/contracts/RC-Rischi-diversi_DIP_e_DIPAGG.pdf")
+                        ->attach($mup)
+                        ->attach($wording)->from(['bancari@pec.golinucci.it' => 'Q&B Golinucci']);
+
                     break;
                 case 3:
                     $wording = Storage::disk('public')->getAdapter()->getPathPrefix()."/contracts/italia-sardegna.pdf";
@@ -80,8 +103,7 @@ class FinalEmailWithAttachments extends Notification
 
 
             return (new MailMessage)
-                ->mailer('pec')
-                ->cc('bancari@golinucci.it')
+                ->bcc('bancari@golinucci.it')
                 ->subject('Q&B Golinucci - Polizza e documenti')
                 ->greeting("Gentile $user->name")
                 ->line('Può trovare in allegato la sua polizza e tutta la documentazione correlata al prodotto che ha acquistato.')
@@ -96,10 +118,7 @@ class FinalEmailWithAttachments extends Notification
                 Broker di Assicurazioni Iscrizione RUI n. B000070946 del 19/03/2007 intermediario soggetto al controllo dell'Ivass")
                 ->salutation('Grazie per aver scelto i prodotti Golinucci!')
                 ->attach($file_path . '/certificate-final.pdf')
-                ->attach($file_path . '/declarations.pdf')
-                ->attach(Storage::disk('public')->getAdapter()->getPathPrefix()."/contracts/RC-Rischi-diversi_DIP_e_DIPAGG.pdf")
-                ->attach($mup)
-                ->attach($wording)->from(['bancari@pec.golinucci.it' => 'Q&B Golinucci']);
+                ->attach($wording)->from(['bancari@golinucci.it' => 'Q&B Golinucci']);
         }
     }
 
