@@ -96,7 +96,7 @@
             <td>{{ "2025/076340933" }}</td>
             <td>{{ "2025/076340933" }}</td>
             <td>{{ "ITFINC086553" }}</td>
-            <td>{{ "32539JX" }}</td>
+            <td>{{ "32635LG" }}</td>
             <td>{{ $payment->payment_no }}</td>
             <td>{{ $payment->netto_italiana_cassa }}</td>
             <td>{{ $payment->imposta_cassieri }}</td>
