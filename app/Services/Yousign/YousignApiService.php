@@ -141,7 +141,7 @@ class YousignApiService
                 case "/storage/contracts/WORDING_BINDER_NL_2025_SECTION_A_€_500.000.pdf":
                     $position = "378,553,511,600";
                     $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], $position, $reason_signer, 17, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
-
+                    $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "30,400,129,440", $reason_signer, 20, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
                     $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "312,232,438,262", $reason_signer, 5, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
                     //$fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "61,235,166,261", $reason_signer, 5, 'text', true, Carbon::now()->format('d-m-Y'), null, null);
                     //$fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "60,113,165,139", $reason_signer, 5, 'text', true, Carbon::now()->format('d-m-Y'), null, null);
@@ -159,7 +159,7 @@ class YousignApiService
                 case "/storage/contracts/WORDING_BINDER_NL_2025_SECTION_B_€_500.000.pdf":
                     $position = "378,553,511,600";
                     $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], $position, $reason_signer, 17, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
-
+                    $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "30,400,129,440", $reason_signer, 20, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
                     $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "312,232,438,262", $reason_signer, 5, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
                     //$fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "61,235,166,261", $reason_signer, 5, 'text', true, Carbon::now()->format('d-m-Y'), null, null);
                     //$fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "60,113,165,139", $reason_signer, 5, 'text', true, Carbon::now()->format('d-m-Y'), null, null);
@@ -177,7 +177,7 @@ class YousignApiService
                 case "/storage/contracts/WORDING_BINDER_NL_2025_SECTION_A_€_1.000.000.pdf":
                     $position = "378,553,511,600";
                     $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], $position, $reason_signer, 17, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
-
+                    $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "30,400,129,440", $reason_signer, 20, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
                     $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "312,232,438,262", $reason_signer, 5, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
                     //$fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "61,235,166,261", $reason_signer, 5, 'text', true, Carbon::now()->format('d-m-Y'), null, null);
                     //$fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "60,113,165,139", $reason_signer, 5, 'text', true, Carbon::now()->format('d-m-Y'), null, null);
@@ -195,7 +195,7 @@ class YousignApiService
                 case "/storage/contracts/WORDING_BINDER_NL_2025_SECTION_B_€_1.000.000.pdf":
                     $position = "378,553,511,600";
                     $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], $position, $reason_signer, 17, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
-
+                    $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "30,400,129,440", $reason_signer, 20, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
                     $fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "312,232,438,262", $reason_signer, 5, 'signature', true, null, null, 'Data firma: ' . Carbon::now()->format('d-m-Y'));
                     //$fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "61,235,166,261", $reason_signer, 5, 'text', true, Carbon::now()->format('d-m-Y'), null, null);
                     //$fileObject_signer = $client->addFileObjectViaPosition($file['id'], $member_signer['id'], "60,113,165,139", $reason_signer, 5, 'text', true, Carbon::now()->format('d-m-Y'), null, null);
