@@ -21,7 +21,8 @@ class Contract extends Model
                 'dip_aggiuntivo',
                 'contract_prop',
                 'contract_old',
-                'contract_prev_2022'
+                'contract_prev_2022',
+                'old_prev_2022'
             ]);
     }
 }

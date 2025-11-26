@@ -117,27 +117,27 @@ class LloydsDoprintService
         // VALE PER TUTTI GLI ENV
         // VERIFICARE CHE IN SANDBOX ESISTA UN BINDER CON GLI STESSI DATI DI PROD
         //if(true){
-        if($certificate->start_validity_date->format('Y-m-d') <= "2024-11-07"){
+        if($certificate->start_validity_date->format('Y-m-d') <= "2025-11-07"){
             $BindingAuthorityDetails = $xml->getElementsByTagName('BindingAuthorityDetails')->item(0);
-            $BindingAuthorityDetails->getElementsByTagName('BARefDate')->item(0)->textContent = '2023-10-13';
-            $BindingAuthorityDetails->getElementsByTagName('BARefNo')->item(0)->textContent = '24';
-            $BindingAuthorityDetails->getElementsByTagName('BABrokersRef')->item(0)->textContent = 'CPG129823';
+            $BindingAuthorityDetails->getElementsByTagName('BARefDate')->item(0)->textContent = '2024-11-19';
+            $BindingAuthorityDetails->getElementsByTagName('BARefNo')->item(0)->textContent = '27';
+            $BindingAuthorityDetails->getElementsByTagName('BABrokersRef')->item(0)->textContent = 'CPG129824';
             $BindingAuthorityDetails->getElementsByTagName('BAPseudonym')->item(0)->textContent = 'GMB';
             $BindingAuthorityDetails->getElementsByTagName('BANumber')->item(0)->textContent = '1732';
             $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin1')->item(0)->textContent = '115647';
             $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin2')->item(0)->textContent = 'XKT';
-            $BindingAuthorityDetails->getElementsByTagName('BAUniqueMarketReference')->item(0)->textContent = 'B1732CPG129823';
+            $BindingAuthorityDetails->getElementsByTagName('BAUniqueMarketReference')->item(0)->textContent = 'B1732CPG129824';
         }
         else{
-        $BindingAuthorityDetails = $xml->getElementsByTagName('BindingAuthorityDetails')->item(0);
-        $BindingAuthorityDetails->getElementsByTagName('BARefDate')->item(0)->textContent = '2024-11-19';
-        $BindingAuthorityDetails->getElementsByTagName('BARefNo')->item(0)->textContent = '27';
-        $BindingAuthorityDetails->getElementsByTagName('BABrokersRef')->item(0)->textContent = 'CPG129824';
-        $BindingAuthorityDetails->getElementsByTagName('BAPseudonym')->item(0)->textContent = 'GMB';
-        $BindingAuthorityDetails->getElementsByTagName('BANumber')->item(0)->textContent = '1732';
-        $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin1')->item(0)->textContent = '115647';
-        $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin2')->item(0)->textContent = 'XKT';
-        $BindingAuthorityDetails->getElementsByTagName('BAUniqueMarketReference')->item(0)->textContent = 'B1732CPG129824';
+            $BindingAuthorityDetails = $xml->getElementsByTagName('BindingAuthorityDetails')->item(0);
+            $BindingAuthorityDetails->getElementsByTagName('BARefDate')->item(0)->textContent = '2025-11-18';
+            $BindingAuthorityDetails->getElementsByTagName('BARefNo')->item(0)->textContent = '6';
+            $BindingAuthorityDetails->getElementsByTagName('BABrokersRef')->item(0)->textContent = 'CPG129825';
+            $BindingAuthorityDetails->getElementsByTagName('BAPseudonym')->item(0)->textContent = 'GMB';
+            $BindingAuthorityDetails->getElementsByTagName('BANumber')->item(0)->textContent = '1732';
+            $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin1')->item(0)->textContent = '115647';
+            $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin2')->item(0)->textContent = 'XKT';
+            $BindingAuthorityDetails->getElementsByTagName('BAUniqueMarketReference')->item(0)->textContent = 'B1732CPG129825';
         }
 
         // Certificate Number
@@ -236,16 +236,25 @@ class LloydsDoprintService
                 $old_cart_end_date = $last_prev_certificate->end_validity_date;
             }
             else{
-                $old_cart_end_date = "08-11-2024";
+                $old_cart_end_date = "08-11-2025";
             }
 
             $end = date_create($old_cart_end_date);
-            $deadline = date_create("08-11-2024");
+            $deadline = date_create("08-11-2025");
 
             $interval = date_diff($end,$deadline);
             $interval = $interval->format("%R%a");     
-        if($interval > 0 && $cart->productOffer->contract->contract_old != null){
-            $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_old));
+        if($interval > 0){
+            $clientDetails = ClientDetail::where('user_id', $cart->user_id)->first();
+            //Log::debug($clientDetails);
+            $flag_prev_2022 = $clientDetails->flag_prev_2022;
+
+            if($flag_prev_2022 == 1){
+                $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->old_prev_2022));
+            }
+            else{
+                $wording = Storage::disk('public')->get(str_replace("/storage/", '', $cart->productOffer->contract->contract_old));
+            }
         }
         else{
             $clientDetails = ClientDetail::where('user_id', $cart->user_id)->first();
@@ -503,11 +512,11 @@ class LloydsDoprintService
             $old_cart_end_date = $last_prev_certificate->end_validity_date;
         }
         else{
-            $old_cart_end_date = "08-11-2024";
+            $old_cart_end_date = "08-11-2025";
         }
 
         $end = date_create($old_cart_end_date);
-        $deadline = date_create("08-11-2024");
+        $deadline = date_create("08-11-2025");
 
         $interval = date_diff($end,$deadline);
         $interval = $interval->format("%R%a");

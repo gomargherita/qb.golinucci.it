@@ -340,11 +340,11 @@ class SiteBuyProductController extends Controller
                 $old_cart_end_date = $last_prev_certificate->end_validity_date;
             }
             else{
-                $old_cart_end_date = "08-11-2024";
+                $old_cart_end_date = "08-11-2025";
             }
 
             $end = date_create($old_cart_end_date);
-            $deadline = date_create("08-11-2024");
+            $deadline = date_create("08-11-2025");
 
             $interval = date_diff($end,$deadline);
             $interval = $interval->format("%R%a");
