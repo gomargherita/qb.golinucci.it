@@ -114,12 +114,6 @@
             </p>
         </div>
         <div>
-            <p style="font-style: italic;">
-                Avendo Aderito alla Polizza le è riservata la "<b>CARTA SERVIZI BENESSERE E PREVENZIONE</b>", la quale permette l’accesso ai network convenzionati con Blue Assistance che garantiscono tre linee di servizi utili e vantaggiosi (DENTISTI - FISIOTERAPISTI - DIAGNOSTICI) per offrire all’assicurato e al suo nucleo familiare le migliori cure per la salute ed il benessere in tempi brevi, con la massima efficienza e a prezzi contenuti.<br><br>
-                <b>Per Ottenere il Codice di attivazione della CARTA SERVIZI</b> basta andare sul sito: <a href="https://www.golinucci.it/card">www.golinucci.it/card</a>.
-            </p>
-        </div>
-        <div>
 
         </div>
     </main>
