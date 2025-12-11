@@ -90,7 +90,7 @@ class FinalEmailWithAttachmentsNotPec extends Notification
                         ->attach($file_path . '/declarations.pdf')
                         ->attach(Storage::disk('public')->getAdapter()->getPathPrefix()."/contracts/RC-Rischi-diversi_DIP_e_DIPAGG.pdf")
                         ->attach($mup)
-                        ->attach($wording)->from(['bancari@pec.golinucci.it' => 'Q&B Golinucci']);
+                        ->attach($wording)->from(['bancari@golinucci.it' => 'Q&B Golinucci']);
 
                     break;
                 case 3:
