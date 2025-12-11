@@ -34,6 +34,7 @@ use App\Rules\ProjectDeclarationsRule;
 use App\Services\DeclarationsToPdfService;
 use App\Services\PaymentBankersToPdfService;
 use App\Notifications\FinalEmailWithAttachments;
+use App\Notifications\FinalEmailWithAttachmentsNotPec;
 use App\Models\Certificate;
 use App\Notifications\FirstEmailWithCredentials;
 use Throwable;
@@ -975,6 +976,7 @@ class CartController extends Controller
     public function sendEmail(Cart $cart){
         try{
             $cart->user->notify(new FinalEmailWithAttachments($cart));
+            $cart->user->notify(new FinalEmailWithAttachmentsNotPec($cart));
             //Notification::mailer('pec')->sendNow($cart->user, new FinalEmailWithAttachments($cart));
 
             //Mail::mailer('pec')->to($cart->user->email)->send(new FinalEmailWithAttachments($cart));

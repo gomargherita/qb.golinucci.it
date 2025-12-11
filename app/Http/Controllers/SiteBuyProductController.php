@@ -33,6 +33,7 @@ use Illuminate\Support\Str;
 use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Throwable;
 use App\Notifications\FinalEmailWithAttachments;
+use App\Notifications\FinalEmailWithAttachmentsNotPec;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 
@@ -819,6 +820,7 @@ class SiteBuyProductController extends Controller
                 ->log("Completed certificate $certificate->id generation;");
 
             $cart->user->notify(new FinalEmailWithAttachments($cart));
+            $cart->user->notify(new FinalEmailWithAttachmentsNotPec($cart));
             //Notification::mailer('pec')->sendNow($cart->user, new FinalEmailWithAttachments($cart));
 
         }
