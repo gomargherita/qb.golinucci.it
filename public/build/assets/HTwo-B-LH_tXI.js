@@ -1,0 +1,1 @@
+import{_ as e,c as r,o as a,b as s,t as n}from"./app-BB73UW3i.js";const c={props:{title:String}},i={class:"mx-auto py-8"},l={class:""};function _(p,t,o,d,f,m){return a(),r("div",i,[s("h2",l,n(o.title),1),t[0]||(t[0]=s("hr",{class:"gol-hr"},null,-1))])}const h=e(c,[["render",_]]);export{h as H};

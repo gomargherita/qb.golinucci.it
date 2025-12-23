@@ -1,0 +1,24 @@
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+import vue from '@vitejs/plugin-vue'; // << importante
+
+
+export default defineConfig({
+    server: {
+        host: true, // listen on all interfaces (IPv4 & IPv6)
+        cors: true,
+        port: 5173,
+        hmr: {
+            host: 'localhost',  // il browser si collega qui!
+            protocol: 'ws',
+        },
+    },
+    plugins: [
+        laravel({
+            input: ['resources/css/app.css', 'resources/js/app.js'],
+            refresh: true,
+        }),
+        vue(),
+    ],
+    publicDir: 'public',
+});

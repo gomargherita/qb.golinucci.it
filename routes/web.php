@@ -272,7 +272,7 @@ Route::group(['middleware' => ['auth']], function () {
 });
 
 Route::get('/yousign/member_finished', [YousignController::class, 'yousign_member_finished'])->name('front.yousign.member_finished');
-Route::get('/yousign/procedure_finished', [YousignController::class, 'yousign_procedure_finished'])->name('front.yousign.procedure_finished');
+Route::post('/yousign/procedure_finished', [YousignController::class, 'yousign_procedure_finished'])->name('front.yousign.procedure_finished');
 Route::get('/yousign/procedure_refused', [YousignController::class, 'yousign_procedure_refused'])->name('front.yousign.procedure_refused');
 Route::get('/yousign/procedure_error', [YousignController::class, 'yousign_procedure_error'])->name('front.yousign.procedure_error');
 Route::get('/yousign/procedure_expired', [YousignController::class, 'yousign_procedure_expired'])->name('front.yousign.procedure_expired');

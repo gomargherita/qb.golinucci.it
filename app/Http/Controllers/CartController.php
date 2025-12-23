@@ -874,6 +874,7 @@ class CartController extends Controller
 
             if (empty($signature)) {
                 $yousignMemberSignerId = $yousignClient->startYousignClientAndLaunchProcedure();
+                $signature = Signature::where('certificate_id', $cart->certificate->id)->first();
                 $payment = $cart->payment;
                 $payment->cart->user->notify(new ConfirmedOfflinePayment($payment));
                 //error_log($yousignMemberSignerId);

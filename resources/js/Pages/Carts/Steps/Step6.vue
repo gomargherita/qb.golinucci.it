@@ -1,12 +1,12 @@
 <style scoped>
 #iframe-container {
-  width: 800px;
-  height: 800px;
+  width: 1000px;
+  height: 1000px;
 }
 
-#iframe-container iframe {
-  width: 100%;
-  height: 100%;
+#iframe-container :deep(iframe) {
+  width: 1000px !important;
+  height: 1000px !important;
 }
 </style>
 
@@ -32,6 +32,7 @@
 <script>
 import HTwo from "@/Shared/Front/HTwo";
 import Layout from "@/Shared/Layouts/Layout";
+import axios from "axios";
 
 export default {
   components: {
@@ -56,10 +57,36 @@ export default {
     yousign.setAttribute('crossorigin', 'anonymous');
     document.head.appendChild(yousign);
 
-    yousign.onload = () => {new Yousign({
+    yousign.onload = () => {
+      
+    const yousignInstance = new Yousign({
     signatureLink: this.product.yousign_member_signer_id,
     iframeContainerId: 'iframe-container',
     isSandbox: true, //To set if you use the sandbox environment
+    });
+
+    yousignInstance.onSignatureDone(async (data)=> {
+    //You can download the document with all signatures in it
+    console.log("Signature Done - The signature request is completed");
+    
+    const path = window.location.pathname;
+    const segments = path.split('/');
+    // L'ultimo segmento (il codice lungo)
+    const cart_ref_extracted = segments.pop() || segments.pop();
+    const response = await axios.post('/yousign/procedure_finished', {
+            signature_request_id: data.signature_request_id,
+            cart_ref: cart_ref_extracted
+        },
+      {
+    headers: {
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    });
+        console.log("ho inviato ajax");
+        
+        console.log("Risposta server:", response.data);
+        // Esempio: reindirizza a una pagina di ringraziamento
+        // this.$router.push({ name: 'thank-you' });
     });
   }
   }

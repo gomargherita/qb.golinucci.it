@@ -194,7 +194,7 @@ class YousignApiLaravel
 
     public function createProcedure($name, $expiration_date, $webhook = false,$webhookMethod = '',$webhookUrl = '',$webhookHeader = '')
     {
-        $custom_experience_id = '6aac0841-701a-4407-a0ea-ac59e0c03e25';
+        $custom_experience_id = env('YOUSIGN_CUSTOM_EXPERIENCE');
         $parameters = array('name'=> $name,
         'expiration_date' => $expiration_date,
         'delivery_mode'=> "none",
@@ -250,7 +250,7 @@ class YousignApiLaravel
             return "cURL Error #:" . $err;
             } else {
             $rtab = json_decode($response,true);
-            
+            //print($response);
             $procedure_id = $rtab['id'];
             return $procedure_id;
             }
@@ -331,7 +331,7 @@ class YousignApiLaravel
         $parameter = array();
 
         $parameter['document_id'] = $idfile;
-        $parameter['image_id'] = '4a7c59e9-97eb-4ff9-ac87-69d102f18c0a';
+        $parameter['image_id'] = '4c30a731-13f7-4573-add4-6bb6377b5249';
         $parameter['fields']= [['type'=> "seal",
                                     'height'=> (int)$fieldPosition[3] - (int)$fieldPosition[1],
                                     'width'=> (int)$fieldPosition[2] - (int)$fieldPosition[0],
@@ -403,6 +403,7 @@ class YousignApiLaravel
             } else {
                 $rtab = json_decode($response2,true);
                 //$this->idfile = $rtab['id'];
+                //print($response);
                 return $rtab['id'];
             }
         }
@@ -648,12 +649,13 @@ class YousignApiLaravel
      *  getFileSigned
      */
 
-    public function fileSigned($fileId, $binaryMode = true)
+    public function fileSigned($fileId, $signature_request_id, $binaryMode = true)
     {
         $method = 'GET';
 
         if ($binaryMode) {
-            $path =  $fileId . "/download?alt=media";
+            $path = "/"."signature_requests/" . $signature_request_id . "/" . "documents/" . $fileId . "/download";
+            Log::debug($path);
         } else {
             $path =  $fileId . "/download";
         }
