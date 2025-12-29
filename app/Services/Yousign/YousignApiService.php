@@ -77,7 +77,7 @@ class YousignApiService
         $response = $client->addFile('certificate-yousign.pdf', $certificate_pdf, $procedure_id);
         $rtab = json_decode($response,true);
         //dd(json_decode($response,true));
-        $file = $rtab;
+        $file = $rtab['id'];
 
         $file = $client->addServerStamp(5, "333,113,415,141", $file, $procedure_id);
 
