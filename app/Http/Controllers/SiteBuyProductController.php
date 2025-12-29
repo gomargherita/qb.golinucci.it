@@ -1167,17 +1167,10 @@ class SiteBuyProductController extends Controller
 
             if (empty($signature)) {
                 $yousignMemberSignerId = $yousignClient->startYousignClientAndLaunchProcedure();
-            } else if ($signature->status == 'init'){
-                while($signature->status == 'init' && $iterazioni < 3){
-                    $signature->delete();
-                    $yousignMemberSignerId = $yousignClient->startYousignClientAndLaunchProcedure();
-                    $signature = Signature::where('certificate_id', $cart->certificate->id)->first();
-                    $iterazioni = $iterazioni + 1;
-                }
+                $signature = Signature::where('certificate_id', $cart->certificate->id)->first();
+            } else {
+                $yousignMemberSignerId = $signature->member_signer_id;
             }
-            
-            $yousignMemberSignerId = $signature->member_signer_id;
-            
         } catch (\Exception $e) {
             $product_signature_error = 'Si è verificato un errore con la procedura di firma.';
         }
@@ -1196,7 +1189,7 @@ class SiteBuyProductController extends Controller
                 'hex_color' => $product->hex_color,
                 'steps' => $product->productSteps->count(),
                 'yousign_url' => config('yousign.app_url'),
-                'yousign_member_signer_id' => $yousignMemberSignerId ?? null,
+                'yousign_member_signer_id' => $signature->signature_link ?? null,
                 'signature_error' => $product_signature_error ?? null
             ],
             'cart' => $cart

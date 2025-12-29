@@ -7,6 +7,8 @@ use App\Notifications\FinalEmailWithAttachments;
 use App\Services\Yousign\YousignApiLaravel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+
 
 class YousignController extends Controller
 {
@@ -38,10 +40,13 @@ class YousignController extends Controller
     // procedure.finished
     public function yousign_procedure_finished(Request $request)
     {
-        if (!empty($request->header('x-cart-header'))) {
-            $cart_header = $request->header('x-cart-header');
+        
+        $signatureRequestId = $request->input('signature_request_id');
+        $cart_header = $request->input('cart_ref');
+
             $cart = Cart::where('cart_ref', $cart_header)->first();
-            if ($cart && $cart->signature->status == 'server_stamp_ok') {
+            
+            if ($cart->signature->procedure_id == $signatureRequestId) {
                 $signature = $cart->signature;
                 $signature->status = 'procedure_finished';
                 $signature->save();
@@ -49,14 +54,11 @@ class YousignController extends Controller
                     ->on($signature)
                     ->event('signature_procedure_finished')
                     ->log("Yousign procedure finished for cart $cart->cart_ref - certificate {$cart->payment->payment_no};");
-                $request_content = json_decode($request->getContent(), true);
                 
-                $files = $request_content['procedure']['files'];
-                $file_id = $files[0]['id'];
-
                 $certificate_folder = 'certificates/user_' . $cart->user->id . '/cart_' . $cart->id;
                 $client = new YousignApiLaravel();
-                $fileMemberSigned = $client->fileSigned($file_id);
+                $file_id = $cart->signature->file_id;
+                $fileMemberSigned = $client->fileSigned($file_id, $signatureRequestId);
                 Storage::disk('private')->put($certificate_folder . '/certificate-final.pdf', $fileMemberSigned);
                 $cart->updateCartStep(7);
                 $cart->user->notify(new FinalEmailWithAttachments($cart));
@@ -64,7 +66,7 @@ class YousignController extends Controller
                     ->on($signature)
                     ->event('signature_file_stored_finished')
                     ->log("Cart $cart->cart_ref - certificate {$cart->payment->payment_no} persisted on storage, final email sent;");
-            }
+            
         }
     }
 

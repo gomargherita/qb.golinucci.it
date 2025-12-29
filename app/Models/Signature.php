@@ -18,6 +18,7 @@ class Signature extends Model
         'procedure_id',
         'member_signer_id',
         'status',
+        'signature_link',
     ];
 
     public function certificate(): BelongsTo

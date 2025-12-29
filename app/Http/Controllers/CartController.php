@@ -926,20 +926,15 @@ class CartController extends Controller
             $yousignClient = new YousignApiService($cart, User::find($cart->user_id));
             $signature = Signature::where('certificate_id', $cart->certificate->id)->first();
 
-        if (empty($signature)) {
-            $yousignMemberSignerId = $yousignClient->startYousignClientAndLaunchProcedure();
-        } else if ($signature->status == 'init'){
-            while($signature->status == 'init' && $iterazioni < 3){
-                $signature->delete();
+            if (empty($signature)) {
                 $yousignMemberSignerId = $yousignClient->startYousignClientAndLaunchProcedure();
                 $signature = Signature::where('certificate_id', $cart->certificate->id)->first();
-                $iterazioni = $iterazioni + 1;
+                $payment = $cart->payment;
+                $payment->cart->user->notify(new ConfirmedOfflinePayment($payment));
+                //error_log($yousignMemberSignerId);
+            } else {
+                $yousignMemberSignerId = $signature->member_signer_id;
             }
-        }
-        $payment = $cart->payment;
-        $payment->cart->user->notify(new ConfirmedOfflinePayment($payment));
-        $yousignMemberSignerId = $signature->member_signer_id;
-
         } catch (\Exception $e) {
             //error_log("wualche errore".$e);
              $product_signature_error = 'Si è verificato un errore con la procedura di firma.';
@@ -955,7 +950,7 @@ class CartController extends Controller
                 'hex_color' => $product->hex_color,
                 'steps' => $product->productSteps->count(),
                 'yousign_url' => config('yousign.app_url'),
-                'yousign_member_signer_id' => $yousignMemberSignerId ?? null,
+                'yousign_member_signer_id' => $signature->signature_link ?? null,
                 'signature_error' => $product_signature_error ?? null
             ],
             'cart' => $cart
@@ -1008,6 +1003,10 @@ class CartController extends Controller
             //return $this->sendFirstEmail($cart, $product_id);
         //}
 
+            //dd($cart);
+            //return $this->sendFirstEmail($cart, $product_id);
+        //}
+
         try{
             $cart->user->notify(new FirstEmailWithCredentials($cart));
             return Redirect::back()->with('success', 'Email per RINNOVO inviata.');
@@ -1016,6 +1015,7 @@ class CartController extends Controller
             return Redirect::back()->with('error', 'Email NON inviata.');
         }
     }
+
 
 
     /**
