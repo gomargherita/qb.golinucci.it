@@ -1124,6 +1124,7 @@ class SiteBuyProductController extends Controller
 
             if (empty($signature)) {
                 $yousignMemberSignerId = $yousignClient->startYousignClientAndLaunchProcedure();
+                $signature = Signature::where('certificate_id', $cart->certificate->id)->first();
             } else {
                 $yousignMemberSignerId = $signature->member_signer_id;
             }

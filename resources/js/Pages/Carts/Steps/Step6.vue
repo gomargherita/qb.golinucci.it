@@ -82,11 +82,6 @@ export default {
         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
         }
     });
-        console.log("ho inviato ajax");
-        
-        console.log("Risposta server:", response.data);
-        // Esempio: reindirizza a una pagina di ringraziamento
-        // this.$router.push({ name: 'thank-you' });
     });
   }
   }
