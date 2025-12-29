@@ -331,7 +331,7 @@ class YousignApiLaravel
         $parameter = array();
 
         $parameter['document_id'] = $idfile;
-        $parameter['image_id'] = '4c30a731-13f7-4573-add4-6bb6377b5249';
+        $parameter['image_id'] = 'e1690970-20d8-4efb-b5d1-e14e34809373';
         $parameter['fields']= [['type'=> "seal",
                                     'height'=> (int)$fieldPosition[3] - (int)$fieldPosition[1],
                                     'width'=> (int)$fieldPosition[2] - (int)$fieldPosition[0],
