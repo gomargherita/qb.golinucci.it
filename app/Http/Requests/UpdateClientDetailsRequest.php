@@ -18,14 +18,17 @@ class UpdateClientDetailsRequest extends FormRequest
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
+    protected function prepareForValidation()
+    {
+        // Legacy typo from BO payload (KAN-13)
+        if ($this->has('varsion_ref') && !$this->has('version_ref')) {
+            $this->merge(['version_ref' => $this->input('varsion_ref')]);
+        }
+    }
+
     public function rules()
     {
-        if(auth()->user()->owner == 1){
+        if (auth()->user()->owner == 1) {
             return [
                 'first_name' => ['required', 'max:25'],
                 'last_name' => ['required', 'max:25'],
@@ -38,32 +41,31 @@ class UpdateClientDetailsRequest extends FormRequest
                 'province' => ['nullable', 'max:2'],
                 'country' => ['nullable', 'max:2'],
                 'postal_code' => ['nullable', 'max:5'],
-                'contact_ref' => ['nullable', 'max:25'],
-                'varsion_ref' => ['nullable', 'max:25'],
+                'contact_ref' => ['nullable', 'string', 'max:25'],
+                'version_ref' => ['nullable', 'string', 'max:25'],
                 'note' => ['nullable'],
                 'with_accident' => ['boolean'],
                 'flag_prev_2022' => ['boolean'],
             ];
         }
-        else{
-            return [
-                'first_name' => ['required', 'max:25'],
-                'last_name' => ['required', 'max:25'],
-                'fiscal_code' => ['required', 'max:16'],
-                'gender' => ['required', 'in:M,F', 'max:1'],
-                'dob' => ['nullable', 'date'],
-                'phone' => ['required', 'max:30', 'phone:IT,mobile'],
-                'address' => ['required', 'max:150'],
-                'city' => ['required', 'max:50'],
-                'province' => ['required', 'max:2'],
-                'country' => ['required', 'max:2'],
-                'postal_code' => ['required', 'max:5'],
-                'contact_ref' => ['nullable', 'max:25'],
-                'varsion_ref' => ['nullable', 'max:25'],
-                'note' => ['nullable'],
-                'with_accident' => ['boolean'],
-                'flag_prev_2022' => ['boolean'],
-            ];
-        }
+
+        return [
+            'first_name' => ['required', 'max:25'],
+            'last_name' => ['required', 'max:25'],
+            'fiscal_code' => ['required', 'max:16'],
+            'gender' => ['required', 'in:M,F', 'max:1'],
+            'dob' => ['nullable', 'date'],
+            'phone' => ['required', 'max:30', 'phone:IT,mobile'],
+            'address' => ['required', 'max:150'],
+            'city' => ['required', 'max:50'],
+            'province' => ['required', 'max:2'],
+            'country' => ['required', 'max:2'],
+            'postal_code' => ['required', 'max:5'],
+            'contact_ref' => ['nullable', 'string', 'max:25'],
+            'version_ref' => ['nullable', 'string', 'max:25'],
+            'note' => ['nullable'],
+            'with_accident' => ['boolean'],
+            'flag_prev_2022' => ['boolean'],
+        ];
     }
 }

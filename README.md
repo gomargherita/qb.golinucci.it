@@ -1,76 +1,98 @@
-# Golinucci QB
+# QB (Golinucci)
 
-Golinucci QB App. Powered by Laravel.
+Gestionale assicurativo **QB** — Laravel 8 + Vue 3 / Inertia.  
+Produzione: `https://qb.golinucci.it`
 
-## Installation
+Documentazione tecnica più ampia: cartella [`docs/`](docs/README.md).
 
-Required PHP modules:
+## Stack
 
-0. php >= 8.0
-1. ext-curl
-2. ext-dom
-3. ext-exif
-4. ext-fileinfo
-5. ext-filter
-6. ext-gd
-7. ext-iconv
-8. ext-json
-9. ext-libxml
-10. ext-mbstring
-11. ext-openssl
-12. ext-pcre
-13. ext-phar
-14. ext-simplexml
-15. ext-tokenizer
-16. ext-xml
-17. ext-xmlreader
-18. ext-xmlwriter
-19. ext-zip
-20. ext-zlib
-21. lib-pcre
+| Layer | Tecnologia |
+|-------|------------|
+| Backend | PHP 8.1 (prod) / Laravel 8.83 |
+| Frontend | Vue 3, Inertia.js, Tailwind, Laravel Mix |
+| Database | MySQL 8 (DigitalOcean Managed in prod) |
+| Code | Laravel `database` + Supervisor (prod) |
+| Cache / session | `file` (prod attuale) |
+| Pagamenti | PayPal (`srmklive/paypal`); Stripe in programma |
+| Documenti | Lloyd’s DoPrint (SOAP) |
+| Firma | Yousign API v3 |
+| Email | Postmark |
 
-To perform a fresh start, do the following:
+## Prerequisiti locali
 
-1. `php artisan db:wipe`
-2. `php artisan migrate`
-3. `php artisan db:seed`
-4. `php artisan med:importer --file=database-giugno-settembre.csv`
-5. `php artisan med:importer --file=database-ottobre-giugno.csv`
-6. `php artisan user:update --id=1` to reset the Super Admin password for **admin@example.com**
+- PHP **8.1** (come in produzione). Con PHP 8.2/8.3 il `composer.lock` attuale può rifiutare pacchetti (es. `inertia-laravel` limita a `~8.0|~8.1`)
+- Estensioni PHP: `curl`, `dom`, `exif`, `gd`, `mbstring`, `openssl`, `pdo_mysql`, `tokenizer`, `xml`, `zip`, `soap` (DoPrint)
+- Composer 2.x (se non è in PATH: `php composer.phar …` — lo script non va committato)
+- Node.js **18+** e npm
+- MySQL 8 (locale o staging in sola lettura)
 
-## Check scheduled with cron
+## Avvio rapido
 
-- php artisan schedule:list
-- sudo grep cron /var/log/syslog
-- nano storage/logs/laravel.log
+```bash
+# 1. Dipendenze PHP
+composer install
 
-## Ogni volta che si cambia qualcosa nel .env in prod
+# 2. Ambiente
+cp .env.example .env
+php artisan key:generate
 
-[https://beyondco.de/blog/laravel-caches-and-all-ways-to-clear-them]
+# 3. Configura DB e integrazioni in .env (vedi sotto)
 
-- php artisan cache:clear
-- php artisan config:clear // Remove the configuration cache file
-- php artisan config:cache // Create a cache file for faster configuration loading. This is for configuration cache. This command will clear the configuration cache before it creates
-- php artisan route:clear
+# 4. Migrazioni (solo se hai un DB dedicato di sviluppo — NON su prod)
+php artisan migrate
 
-- php artisan optimize
+# 5. Frontend
+npm install
+npm run dev
+# oppure build una tantum:
+npm run production
 
-## Check supervisor
+# 6. Server applicativo
+php artisan serve
+```
 
-- sudo supervisorctl status
-- [https://laravel.com/docs/8.x/queues#starting-supervisor]
-- vim /etc/supervisor/conf.d/laravel-worker.conf
-- sudo supervisorctl reread
-- sudo supervisorctl update
+Apri `APP_URL` (default `http://localhost:8000`).
 
-## Crontab
+Per le code in locale (come in prod usa `database`):
+
+```bash
+php artisan queue:work
+```
+
+## Cosa manca / da richiedere (non è nel repo)
+
+| Cosa | Perché |
+|------|--------|
+| File `.env` reale | Escluso dal Git (segreto). Parti da `.env.example` |
+| Credenziali DB staging/prod | Vittorio / Bitmark |
+| PayPal, DoPrint, Yousign, Postmark | Account Golinucci — accessi tecnici da richiedere |
+| Disk `private` con XML/template Lloyd’s e PDF | Su server in `storage/app/private` — non nel tarball completo |
+| `APP_KEY` | Generata in locale con `key:generate`; in staging/prod non sovrascrivere |
+
+## Note importanti
+
+- **Non** eseguire `db:wipe` / seed di prod o staging condiviso.
+- In root possono esserci file “one-shot” tipo tinker lasciati dallo storico: sono in `.gitignore`, non committarli.
+- Deploy e pipeline: disegno in [`docs/07-deploy.md`](docs/07-deploy.md) — Jira **KAN-28** (relates KAN-16 / KAN-26).
+- Ops legacy (cron, supervisor, cache in prod): vedi note in fondo o `docs/`.
+
+## Comandi utili (produzione / staging)
+
+Dopo modifiche a `.env` sul server:
+
+```bash
+php artisan config:clear
+php artisan cache:clear
+php artisan config:cache
+php artisan route:clear
+php artisan optimize
+```
+
+Scheduler (crontab `www-data`):
 
 ```text
-lista cron
-# * * * * * cd /var/www/stagingqb.golinucci.it && php artisan schedule:run >> /dev/null 2>&1
-# * * * * * cd /var/www/qb.golinucci.it && php artisan schedule:run >> /dev/null 2>&1
-- sudo crontab -u www-data -l
-
-modifica cron
-- sudo crontab -u www-data -e
+* * * * * cd /var/www/qb.golinucci.it && php artisan schedule:run >> /dev/null 2>&1
 ```
+
+Code: Supervisor → `laravel-worker` (vedi documentazione Laravel 8 queues).

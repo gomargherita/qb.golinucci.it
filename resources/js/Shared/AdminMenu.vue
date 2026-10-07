@@ -111,6 +111,28 @@
       </Link>
     </div>
     <div class="mb-4">
+      <Link class="group flex items-center py-3" :href="route('emailTemplates')">
+        <icon
+          name="office"
+          class="mr-2 w-4 h-4"
+          :class="
+            isUrl(false, 'admin/email-templates')
+              ? 'fill-primary'
+              : 'fill-gray-900 group-hover:fill-primary'
+          "
+        />
+        <div
+          :class="
+            isUrl(false, 'admin/email-templates')
+              ? 'text-primary'
+              : 'text-gray-900 group-hover:text-primary'
+          "
+        >
+          Email templates
+        </div>
+      </Link>
+    </div>
+    <div class="mb-4">
       <Link class="group flex items-center py-3" :href="route('carts', 1)">
         <icon
           name="cart"

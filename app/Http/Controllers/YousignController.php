@@ -2,159 +2,142 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Cart;
-use App\Notifications\FinalEmailWithAttachments;
-use App\Services\Yousign\YousignApiLaravel;
+use App\Services\Yousign\YousignProcedureCompletionService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
-
 
 class YousignController extends Controller
 {
-
-    // member.finished
-    /** 
-     * problema notifica contemporanea a procedure.finished
-     * da yousign Stefano Negrini suggerisce:
-     * - quando avete un solo firmatario, settare il webhook a livello di member e procedura è ridondante, non serve (a voi di scegliere se utilizzare solo uno o l'altro)
-     * - quando avete più firmatari potete ma non siete obbligati ad utilizzarli entrambi (e.g. con procedura ne riceverete solo uno al completamento del tutto - con firmatari paralleli, o potete considerare la procedura completa quando tutti i webhook member sono stati effettuatidi usare direttamente 
-     */
-    // public function yousign_member_finished(Request $request)
-    // {
-    //     if (!empty($request->header('x-cart-header'))) {
-    //         $cart_header = $request->header('x-cart-header');
-    //         $cart = Cart::where('cart_ref', $cart_header)->first();
-    //         if ($cart && $cart->signature->status == 'server_stamp_ok') {
-    //             $signature = $cart->signature;
-    //             $signature->status = 'member_ok';
-    //             $signature->save();
-    //             activity()
-    //                 ->on($signature)
-    //                 ->event('signature_member_finished')
-    //                 ->log("Yousign member sign finished for cart $cart->cart_ref - certificate {$cart->payment->payment_no};");
-    //         }
-    //     }
-    // }
-
-    // procedure.finished
-    public function yousign_procedure_finished(Request $request)
+    // procedure.finished / signature_request.done
+    public function yousign_procedure_finished(Request $request, YousignProcedureCompletionService $completion)
     {
-        
-        $signatureRequestId = $request->input('signature_request_id');
-        $cart_header = $request->input('cart_ref');
+        $signatureRequestId = $this->extractSignatureRequestId($request);
+        $cartRef = $this->extractCartRef($request);
 
-            $cart = Cart::where('cart_ref', $cart_header)->first();
-            
-            if ($cart->signature->procedure_id == $signatureRequestId) {
-                $signature = $cart->signature;
-                $signature->status = 'procedure_finished';
-                $signature->save();
-                activity()
-                    ->on($signature)
-                    ->event('signature_procedure_finished')
-                    ->log("Yousign procedure finished for cart $cart->cart_ref - certificate {$cart->payment->payment_no};");
-                
-                $certificate_folder = 'certificates/user_' . $cart->user->id . '/cart_' . $cart->id;
-                $client = new YousignApiLaravel();
-                $file_id = $cart->signature->file_id;
-                $fileMemberSigned = $client->fileSigned($file_id, $signatureRequestId);
-                Storage::disk('private')->put($certificate_folder . '/certificate-final.pdf', $fileMemberSigned);
-                $cart->updateCartStep(7);
-                $cart->user->notify(new FinalEmailWithAttachments($cart));
-                activity()
-                    ->on($signature)
-                    ->event('signature_file_stored_finished')
-                    ->log("Cart $cart->cart_ref - certificate {$cart->payment->payment_no} persisted on storage, final email sent;");
-            
+        $cart = $completion->findCart($cartRef, $signatureRequestId);
+        if (!$cart) {
+            Log::warning('yousign.webhook.cart_not_found', [
+                'cart_ref' => $cartRef,
+                'signature_request_id' => $signatureRequestId,
+                'payload_keys' => array_keys($request->all()),
+            ]);
+
+            return response()->json(['ok' => false, 'reason' => 'cart_not_found'], 404);
         }
+
+        $result = $completion->complete($cart, $signatureRequestId);
+
+        Log::info('yousign.webhook.procedure_finished', $result);
+
+        return response()->json($result, $result['ok'] ? 200 : 422);
     }
 
     // procedure.error
     public function yousign_procedure_error(Request $request)
     {
-        if (!empty($request->header('x-cart-header'))) {
-            $cart_header = $request->header('x-cart-header');
-            $cart = Cart::where('cart_ref', $cart_header)->first();
-            $signature = $cart->signature;
-            $signature->status = 'procedure_error';
-            $signature->save();
-            activity()
-                ->on($signature)
-                ->event('signature_procedure_error')
-                ->log("Yousign procedure error for cart $cart->cart_ref - certificate {$cart->payment->payment_no};");
-        }
+        return $this->markSignatureFromCartHeader($request, 'procedure_error', 'signature_procedure_error', null);
     }
 
     // procedure.expired
     public function yousign_procedure_expired(Request $request)
     {
-        if (!empty($request->header('x-cart-header'))) {
-            $cart_header = $request->header('x-cart-header');
-            $cart = Cart::where('cart_ref', $cart_header)->first();
-            if ($cart && $cart->signature->status == 'server_stamp_ok') {
-                $signature = $cart->signature;
-                $signature->status = 'procedure_expired';
-                $signature->save();
-                activity()
-                    ->on($signature)
-                    ->event('signature_procedure_expired')
-                    ->log("Yousign procedure expired for cart $cart->cart_ref - certificate {$cart->payment->payment_no};");
-            }
-        }
+        return $this->markSignatureFromCartHeader($request, 'procedure_expired', 'signature_procedure_expired', 'server_stamp_ok');
     }
 
     // procedure.refused
     public function yousign_procedure_refused(Request $request)
     {
-        if (!empty($request->header('x-cart-header'))) {
-            $cart_header = $request->header('x-cart-header');
-            $cart = Cart::where('cart_ref', $cart_header)->first();
-            if ($cart && $cart->signature->status == 'server_stamp_ok') {
-                $signature = $cart->signature;
-                $signature->status = 'procedure_refused';
-                $signature->save();
-                activity()
-                    ->on($signature)
-                    ->event('signature_member_refused')
-                    ->log("Yousign procedure refused for cart $cart->cart_ref - certificate {$cart->payment->payment_no};");
-            }
-        }
+        return $this->markSignatureFromCartHeader($request, 'procedure_refused', 'signature_member_refused', 'server_stamp_ok');
     }
 
     // server_stamp.finished
     public function yousign_server_stamps_finished(Request $request)
     {
-        if (!empty($request->header('x-cart-header'))) {
-            $cart_header = $request->header('x-cart-header');
-            $cart = Cart::where('cart_ref', $cart_header)->first();
-            if ($cart && $cart->signature->status == 'init') {
-                $signature = $cart->signature;
-                $signature->status = 'server_stamp_ok';
-                $signature->save();
-                activity()
-                    ->on($signature)
-                    ->event('signature_stamp_ok')
-                    ->log("Yousign server stamp generation ok for cart $cart->cart_ref - certificate {$cart->payment->payment_no};");
-            }
-        }
+        return $this->markSignatureFromCartHeader($request, 'server_stamp_ok', 'signature_stamp_ok', 'init');
     }
 
     // server_stamp.error
     public function yousign_server_stamps_error(Request $request)
     {
-        if (!empty($request->header('x-cart-header'))) {
-            $cart_header = $request->header('x-cart-header');
-            $cart = Cart::where('cart_ref', $cart_header)->first();
-            if ($cart && $cart->signature->status == 'init') {
-                $signature = $cart->signature;
-                $signature->status = 'server_stamp_error';
-                $signature->save();
-                activity()
-                    ->on($signature)
-                    ->event('signature_stamp_error')
-                    ->log("Yousign server stamp generation error for cart $cart->cart_ref - certificate {$cart->payment->payment_no};");
+        return $this->markSignatureFromCartHeader($request, 'server_stamp_error', 'signature_stamp_error', 'init');
+    }
+
+    // member.finished — kept as no-op endpoint for dashboard compatibility
+    public function yousign_member_finished(Request $request)
+    {
+        Log::info('yousign.webhook.member_finished_ignored', [
+            'cart_ref' => $this->extractCartRef($request),
+        ]);
+
+        return response()->json(['ok' => true, 'reason' => 'ignored_use_procedure_finished']);
+    }
+
+    private function markSignatureFromCartHeader(Request $request, string $newStatus, string $event, ?string $requiredStatus)
+    {
+        $cartRef = $this->extractCartRef($request);
+        if (!$cartRef) {
+            return response()->json(['ok' => false, 'reason' => 'missing_cart_ref'], 422);
+        }
+
+        $cart = \App\Models\Cart::where('cart_ref', $cartRef)->first();
+        if (!$cart || !$cart->signature) {
+            return response()->json(['ok' => false, 'reason' => 'cart_or_signature_missing'], 404);
+        }
+
+        $signature = $cart->signature;
+        if ($requiredStatus !== null && $signature->status !== $requiredStatus) {
+            return response()->json([
+                'ok' => true,
+                'reason' => 'status_not_applicable',
+                'current' => $signature->status,
+            ]);
+        }
+
+        $signature->status = $newStatus;
+        $signature->save();
+        activity()
+            ->on($signature)
+            ->event($event)
+            ->log("Yousign {$newStatus} for cart {$cart->cart_ref}");
+
+        return response()->json(['ok' => true, 'reason' => $newStatus, 'cart_ref' => $cart->cart_ref]);
+    }
+
+    private function extractSignatureRequestId(Request $request): ?string
+    {
+        $candidates = [
+            $request->input('signature_request_id'),
+            $request->input('procedure_id'),
+            data_get($request->all(), 'data.signature_request.id'),
+            data_get($request->all(), 'signature_request.id'),
+            data_get($request->all(), 'data.id'),
+        ];
+
+        foreach ($candidates as $value) {
+            if (is_string($value) && $value !== '') {
+                return $value;
             }
         }
+
+        return null;
+    }
+
+    private function extractCartRef(Request $request): ?string
+    {
+        $candidates = [
+            $request->input('cart_ref'),
+            $request->header('x-cart-header'),
+            $request->header('X-Custom-Header'),
+            $request->header('X-Cart-Ref'),
+            data_get($request->all(), 'data.signature_request.external_id'),
+        ];
+
+        foreach ($candidates as $value) {
+            if (is_string($value) && $value !== '') {
+                return $value;
+            }
+        }
+
+        return null;
     }
 }

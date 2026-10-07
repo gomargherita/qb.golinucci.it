@@ -12,6 +12,10 @@ class VerifyCsrfToken extends Middleware
      * @var array<int, string>
      */
     protected $except = [
-        //
+        // Yousign server-to-server webhooks (KAN-5). Auth via VerifyYousignWebhook when secret set.
+        'yousign/*',
+        // PayPal server-to-server webhooks (KAN-6).
+        'paypal/webhook',
     ];
 }
+

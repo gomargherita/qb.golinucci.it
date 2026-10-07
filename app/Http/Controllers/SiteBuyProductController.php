@@ -24,13 +24,14 @@ use App\Services\DeclarationsToPdfService;
 use App\Services\NewApplicationToPdfService;
 use App\Services\PaymentCertificateToPdfService;
 use App\Services\PaymentBankersToPdfService;
+use App\Services\Payments\PaypalCaptureService;
+use App\Services\Renewals\RenewalCartService;
 use App\Services\Yousign\YousignApiService;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
-use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Throwable;
 use App\Notifications\FinalEmailWithAttachments;
 use App\Notifications\FinalEmailWithAttachmentsNotPec;
@@ -40,71 +41,42 @@ use Illuminate\Support\Facades\Notification;
 
 class SiteBuyProductController extends Controller
 {
-    public function isRenewal(Cart $cart){
-        $check = Cart::where('cart_ref', $cart->cart_ref)->first();
-        if(empty($check->cart_ref)){
-            abort(404);
-        }
-        $cart_ref = $check->cart_ref;
-
-        $new_cart_ref = DB::select(DB::raw('SELECT new_cart_ref FROM renewals WHERE new_cart_ref = "'.$cart_ref.'";'));
-        if(!empty($new_cart_ref)){
-            return true;
-        }
-        else{
-            return false;
-        }
+    public function isRenewal(Cart $cart)
+    {
+        return app(RenewalCartService::class)->isRenewalCart($cart);
     }
 
     public function buy(Product $product, Cart $cart = null)
     {
         $user = auth()->user();
+        $renewals = app(RenewalCartService::class);
 
-        //DB::statement("UPDATE users SET new_client=1 WHERE id=".$user->id.";");
         if (!empty($cart)) {
-            if($this->isRenewal($cart)){
-                $expiration_date = date_create($cart->expired_at);
-                $now = date_create(date('d-m-Y'));
-                $interval = date_diff($expiration_date,$now);
-                $interval = $interval->format("%R%a");
-                if($interval > -1){
-                    abort(419);
-                }
-            }
-            else{
-                // get renewal date if exists in previous cart
-                $last_prev_certificate = Certificate::query()
-                    ->with('cart')
-                    ->select(['end_validity_date'])->where([
-                        // controllo su product
-                        'product_id' => $cart->product_id,
-                    ])->whereHas('cart', function ($q) {
-                        $q->where('user_id', auth()->user()->id);
-                    })
-                    ->latest()->first();
+            if ($renewals->isRenewalCart($cart)) {
+                $renewals->ensureContinuityDates($cart, $user, $product);
 
-                if($last_prev_certificate != null && $cart->product_step_id < 5){
-                    $scadenza = date_create($last_prev_certificate->end_validity_date);
-                    date_add($scadenza, date_interval_create_from_date_string('30 days'));
-                    $ora = date_create(date('d-m-Y'));
-                    $intervallo = date_diff($scadenza,$ora);
-                    $intervallo = $intervallo->format("%R%a");
-
-                    $cart->renewal_date = null;
-                    $cart->retroactivity = null;
-                    $cart->save();
-
-                    if(!($intervallo > -1) && $product->id == 1){
-                        abort(308);
+                if (!empty($cart->expired_at)) {
+                    $expiration_date = date_create($cart->expired_at);
+                    $now = date_create(date('d-m-Y'));
+                    $interval = date_diff($expiration_date, $now);
+                    $interval = $interval->format("%R%a");
+                    if ($interval > -1) {
+                        abort(419);
                     }
                 }
-
-                //if ($last_prev_certificate) {
-                    ////$cart->renewal_date = Carbon::parse($last_prev_certificate->end_validity_date)->toDateString();
-                    //$cart->renewal_date = null;
-                    //$cart->retroactivity = null;
-                    //$cart->save();
-                //}
+            } else {
+                // If this "new" cart sits on a previous policy still in renewal window,
+                // force the ordered renewal path instead of wiping dates / orphaning.
+                $certificate = $renewals->latestCertificateFor($user, $product);
+                if ($certificate && $cart->product_step_id < 5 && $renewals->isInRenewalWindow($certificate)) {
+                    $source = $renewals->sourceCartForCertificate($certificate);
+                    if ($source && $source->cart_ref !== $cart->cart_ref) {
+                        return redirect()->route('front.product.renew', [
+                            'product' => $product,
+                            'cart' => $source,
+                        ]);
+                    }
+                }
             }
 
             $cart = $this->verifyAndGetCartOrRedirect($user, $product, $cart);
@@ -157,73 +129,44 @@ class SiteBuyProductController extends Controller
                         break;
                 }
             }
-        } else {
-            // se cart assente o locked, genero un cart ref e creo il carrello
-            $cart = Cart::create([
-                'user_id' => $user->id,
-                'product_id' => $product->id,
-                'product_step_id' => 1,
-                'expired_at' => now()->addMonths(1),
-                'locked' => 'N',
-                'cart_ref' => uniqid()
-            ]);
 
-            return redirect()->route('front.product.buy', ['product' => $product, 'cart' => $cart]);
-        }
-    }
-
-    static public function renew(Product $product, Cart $cart, $user_id=null)
-    {
-        if($user_id == null){
-            $user_id = auth()->user();
-            $user_id = $user_id->id;
-        }
-
-        $check = Cart::where('cart_ref', $cart->cart_ref)->first();
-        if(empty($check->cart_ref) || $check->user_id != $user_id){
             abort(404);
         }
 
-        DB::statement("UPDATE users SET new_client=0 WHERE id=".$user_id.";");
-
-        $cart_ref = $check->cart_ref;
-
-        $last_prev_certificate = Certificate::query()
-                    ->with('cart')
-                    ->select(['end_validity_date'])->where([
-                        // controllo su product
-                        'product_id' => $cart->product_id,
-                    ])->whereHas('cart', function ($q) {
-                        $q->where('user_id', auth()->user()->id);
-                    })
-                    ->latest()->first();
-
-        $old_cart_end_date = $last_prev_certificate->end_validity_date;
-
-        $end = date_create($old_cart_end_date);
-        $today = date_create(date('d-m-Y'));
-
-        $interval = date_diff($end,$today);
-        $interval = $interval->format("%R%a");
-        if($interval < -30){
-            abort(403);
+        // No cart_ref: resume draft, or enter renewal, or create first purchase — never fork blindly.
+        $entry = $renewals->resolveBuyEntry($user, $product);
+        if ($entry['action'] === 'resume') {
+            return redirect()->route('front.product.buy', [
+                'product' => $product,
+                'cart' => $entry['cart'],
+            ]);
+        }
+        if ($entry['action'] === 'renew') {
+            return redirect()->route('front.product.renew', [
+                'product' => $product,
+                'cart' => $entry['cart'],
+            ]);
         }
 
-        $new_cart_ref = DB::select(DB::raw('SELECT new_cart_ref FROM renewals WHERE old_cart_ref = "'.$cart_ref.'";'));
-        if(!empty($new_cart_ref)){
-            return redirect()->route('front.product.buy', ['product' => $product, 'cart' => $new_cart_ref[0]->new_cart_ref]);
-        }
-        
-        $newCart = Cart::create([
-            'user_id' => $user_id,
+        $cart = Cart::create([
+            'user_id' => $user->id,
             'product_id' => $product->id,
-            'product_offer_id' => $product->product_type_id == 1 ? null : $cart->product_offer_id,
             'product_step_id' => 1,
-            'expired_at' => $end->modify('+30 day'),
+            'expired_at' => now()->addMonths(1),
             'locked' => 'N',
-            'cart_ref' => uniqid()
+            'cart_ref' => uniqid(),
         ]);
-        DB::statement('INSERT INTO renewals (old_cart_ref, new_cart_ref) VALUES ("'. $cart->cart_ref.'", "'. $newCart->cart_ref.'");');
+
+        return redirect()->route('front.product.buy', ['product' => $product, 'cart' => $cart]);
+    }
+
+    static public function renew(Product $product, Cart $cart, $user_id = null)
+    {
+        if ($user_id == null) {
+            $user_id = auth()->user()->id;
+        }
+
+        $newCart = app(RenewalCartService::class)->startOrResumeFromSourceCart($product, $cart, (int) $user_id);
 
         return redirect()->route('front.product.buy', ['product' => $product, 'cart' => $newCart]);
     }
@@ -664,64 +607,16 @@ class SiteBuyProductController extends Controller
             $payment->save();
         
         if ($gateway == 'paypal') {
-            // paypal
+            $order = app(PaypalCaptureService::class)->createOrReuseOrder($cart, $product, $payment);
 
-            $order = $this->create_order_paypal($cart, $product, $payment);
-            //exec("explorer.exe");
             return response()->json([
                 'order' => $order,
                 'payment_id' => $payment->id,
-            ],200);
-            //return redirect()->route('front.paypal_redirect', ['url' => $url]);
-        } else {
-            // bbm
-            auth()->user()->notify(new BankTransferGatewayPayment($payment));
-            return redirect()->route('front.product.buy', compact('product', 'cart', 'payment'));
+            ], 200);
         }
-    }
 
-    private function create_order_paypal(Cart $cart, Product $product, Payment $payment = null)
-    {
-        $provider = new PayPalClient;
-
-        $provider->setApiCredentials(config('paypal'));
-        $token = $provider->getAccessToken();
-        $provider->setAccessToken($token);
-
-        // Prepare Order
-        $order = $provider->createOrder([
-            'intent' => 'CAPTURE',
-            'purchase_units' => [[
-                'reference_id' => 'transaction_id_' . $payment->id,
-                'amount' => [
-                    'currency_code' => 'EUR',
-                    'value' => $cart->total_payable
-                ]
-            ]]
-            /*,
-            'application_context' => [
-                'cancel_url' => route('front.product.store_step4_paypal_cancel', [
-                    'product' => $product,
-                    'cart' => $cart,
-                    'payment_id' => $payment->id
-                ]),
-                'return_url' => route('front.product.store_step4_paypal_return', [
-                    'product' => $product,
-                    'cart' => $cart,
-                    'payment_id' => $payment->id
-                ])
-            ]*/
-        ]);
-
-        //sleep(10);
-        
-
-        // Store Token so we can retrieve after PayPal sends them back to us
-        $payment->transaction_ref = $order['id'];
-        $payment->save();
-        $paypal_redirect_url = $order['links'][1]['href'];
-
-        return $order;
+        auth()->user()->notify(new BankTransferGatewayPayment($payment));
+        return redirect()->route('front.product.buy', compact('product', 'cart', 'payment'));
     }
     /**
      * Questo metodo mi serve per gestire la redirect esterna verso paypal per il pagamento
@@ -737,107 +632,30 @@ class SiteBuyProductController extends Controller
         abort(404);
     }
 
-    public function store_step4_paypal_return(Product $product, Cart $cart, String $payment_id)
+    public function store_step4_paypal_return(Product $product, Cart $cart, String $payment_id, Request $request, PaypalCaptureService $capture)
     {
-        
-        $p = Payment::find($payment_id);
-        
-        $provider = new PayPalClient;
-        $provider->setApiCredentials(config('paypal'));
-        
-        $provider->getAccessToken();
-        $response = $provider->capturePaymentOrder($p->transaction_ref);
+        $orderId = (string) $request->query('order_id', '');
+        $payment = $capture->resolvePayment($cart, $payment_id, $orderId !== '' ? $orderId : null);
 
-        $payment_id = $p->id;
-        Log::info($response);
-        
-        if(isset($response['purchase_units'][0]['payments']['captures'][0]['status']) && $response['purchase_units'][0]['payments']['captures'][0]['status'] == 'COMPLETED'){
-            $payment = Payment::query()->where(['cart_id' => $cart->id])->findOrFail($payment_id);
-            $payment->updatePaymentStatus();
-            $payment->updatePaymentPaymentNo();
-            // genero e salvo il pdf con proforma fattura dell'acquisto
-            
-            if($product->product_type_id == 1){
-                $paymentToPdf = new PaymentCertificateToPdfService($cart);
-                $paymentToPdf->generateAndPersist();
-            }
-            //BANCARI
-            //bancari
-        if($product->product_type_id == 2){
-            
-            if(Carbon::now()->lt("31-12-2025")){
-                $startReal = Carbon::parse('31-12-2025')->format('Y-m-d');
-            }
-            else{
-                $startReal = $cart->payment->paid_at->format('Y-m-d');
-            }
-            if($cart->productOffer->months == 12){
-                $endReal = Carbon::parse('01-12-2026')->endOfYear()->format('Y-m-d');
-            }
-            else if(Carbon::parse($startReal)->addMonths($cart->productOffer->months) > Carbon::parse('01-12-2026')->endOfYear()->format('Y-m-d')) {
-                $endReal = Carbon::parse('01-12-2026')->endOfYear()->format('Y-m-d');
-            }
-            else{
-                $endReal = Carbon::parse($startReal)->addMonths($cart->productOffer->months);
-            }
+        if (!$payment) {
+            Log::warning('paypal.return.payment_not_found', [
+                'cart_ref' => $cart->cart_ref,
+                'payment_id' => $payment_id,
+                'order_id' => $orderId,
+            ]);
 
-            if(!isset($endReal)){
-                $certificate = Certificate::firstOrCreate(
-                    ['cart_id' => $cart->id],
-                    [
-                        'product_id' => $cart->product_id,
-                        'product_offer_id' => $cart->product_offer_id,
-                        'contract_id' => $cart->productOffer->contract->id,
-                        'start_validity_date' => $startReal,
-                        //'retroactivity' => $cart->retroactivity
-                    ]
-                );
-            }
-            else{
-                $certificate = Certificate::firstOrCreate(
-                    ['cart_id' => $cart->id],
-                    [
-                        'product_id' => $cart->product_id,
-                        'product_offer_id' => $cart->product_offer_id,
-                        'contract_id' => $cart->productOffer->contract->id,
-                        'start_validity_date' => $startReal,
-                        'end_validity_date' => $endReal,
-                        //'retroactivity' => $cart->retroactivity
-                    ]
-                );
-            }
-            $certificate->save();
-            $declarationToPdf = new PaymentBankersToPdfService($cart);
-            $declarationToPdf->generateAndPersist();
-
-            
-
-
-            activity()
-                ->causedBy(auth()->user())
-                ->on($certificate)
-                ->event('certificate_generation')
-                ->log("Completed certificate $certificate->id generation;");
-
-            $cart->user->notify(new FinalEmailWithAttachments($cart));
-            $cart->user->notify(new FinalEmailWithAttachmentsNotPec($cart));
-            //Notification::mailer('pec')->sendNow($cart->user, new FinalEmailWithAttachments($cart));
-
-        }
-        //fine bancari
-            $cart->updateCartStep(5);
-
-
-            
-            return response()->json([
-                'info_paypal' => 'SUCCESS'
-            ], 200);
-        }
-        else{
             return response()->json([
                 'info_paypal' => 'FAILED',
-            ], 200);
+                'reason' => 'payment_not_found',
+            ], 404);
         }
+
+        $result = $capture->captureAndComplete($cart, $payment, $product, 'browser');
+
+        return response()->json([
+            'info_paypal' => $result['info_paypal'],
+            'reason' => $result['reason'],
+        ], $result['ok'] ? 200 : 200);
     }
 
     /**

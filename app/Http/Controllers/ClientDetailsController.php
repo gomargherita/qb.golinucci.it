@@ -108,7 +108,7 @@ class ClientDetailsController extends Controller
                 'country' => $client_detail->country,
                 'postal_code' => $client_detail->postal_code,
                 'contact_ref' => $client_detail->contact_ref,
-                'varsion_ref' => $client_detail->version_ref,
+                'version_ref' => $client_detail->version_ref,
                 'note' => $client_detail->note,
                 'with_accident' => $client_detail->with_accident,
                 'motivo_blocco_invio' => $motivo_blocco,
@@ -137,20 +137,18 @@ class ClientDetailsController extends Controller
             $client_detail->province = $request->input('province');
             $client_detail->country = $request->input('country');
             $client_detail->postal_code = $request->input('postal_code');
+            $client_detail->contact_ref = $request->input('contact_ref');
+            $client_detail->version_ref = $request->input('version_ref');
             $client_detail->note = $request->input('note');
-            //$client_detail->with_accident = $request->input('with_accident');
-            if($request->input('motivo_blocco_invio') == "Avvisi attivi"){
+            if ($request->input('motivo_blocco_invio') == "Avvisi attivi") {
                 $client_detail->with_accident = 0;
-            }
-            else{
+            } else {
                 $client_detail->with_accident = 1;
             }
             $client_detail->motivo_blocco_invio = $request->input('motivo_blocco_invio');
             $client_detail->flag_prev_2022 = $request->input('flag_prev_2022');
             $client_detail->save();
-            //$client_detail->update($request->all());
-        }
-        else{
+        } else {
             $client_detail->update($request->validated());
         }
             //dd($request);

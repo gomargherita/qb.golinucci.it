@@ -19,18 +19,26 @@ class Payment extends Model
         'paid',
         'total_payable',
         'transaction_ref',
+        'paypal_status',
+        'last_capture_at',
         'paid_at'
     ];
 
     protected $casts = [
         'paid' => 'boolean',
-        'paid_at' => 'date'
+        'paid_at' => 'date',
+        'last_capture_at' => 'datetime',
     ];
 
 
     public function cart(): BelongsTo
     {
         return $this->belongsTo(Cart::class);
+    }
+
+    public function events(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(PaymentEvent::class);
     }
 
     public function paymentGateway(): BelongsTo

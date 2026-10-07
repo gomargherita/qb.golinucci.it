@@ -200,6 +200,18 @@
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Postal code"
           />
+          <text-input
+            v-model="form.contact_ref"
+            :error="form.errors.contact_ref"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="Contact ref"
+          />
+          <text-input
+            v-model="form.version_ref"
+            :error="form.errors.version_ref"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="Version ref"
+          />
           <textarea-input
             v-model="form.note"
             :error="form.errors.note"
@@ -271,6 +283,8 @@ export default {
         province: null,
         country: null,
         postal_code: null,
+        contact_ref: null,
+        version_ref: null,
         note: null,
         with_accident: false,
         flag_prev_2022: false,

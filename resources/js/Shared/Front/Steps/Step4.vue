@@ -200,20 +200,16 @@ export default {
               // Finalize the transaction after payer approval
               onApprove: async (data) => {
                 const csrfToken = document.head.querySelector('meta[name="csrf-token"]').content;
-                const response = await fetch("/products/"+product.id+"/store_step4_paypal/"+cart.cart_ref+"/"+ String(payment_id), {
+                const orderQuery = data.orderID ? ("?order_id=" + encodeURIComponent(data.orderID)) : "";
+                const response = await fetch("/products/"+product.id+"/store_step4_paypal/"+cart.cart_ref+"/"+ String(payment_id) + orderQuery, {
                   method: "GET",
-                  // Use the "body" parameter to optionally pass additional order information
-                  // such as product ID or amount
                   headers: {
                   'Content-Type': 'application/json',
-                  'X-CSRF-TOKEN': csrfToken, // Include the CSRF token in the headers
+                  'X-CSRF-TOKEN': csrfToken,
                 },
                 })
-                
-                //console.log("prova");
-                //console.log(orderData);
+
                 const orderData = await response.json();
-                //console.log("prova");
                 if(orderData.info_paypal == "SUCCESS"){
                   document.getElementById("pagamento-in-corso").innerHTML = "Pagamento riuscito.";
                   location.reload();
@@ -277,23 +273,18 @@ export default {
                   //.then((order) => console.log(order));
               },
               onApprove: async (data) => {
-                
-
                 const csrfToken = document.head.querySelector('meta[name="csrf-token"]').content;
-                const response = await fetch("/products/"+product.id+"/store_step4_paypal/"+cart.cart_ref+"/"+ String(payment_id), {
+                const orderQuery = data.orderID ? ("?order_id=" + encodeURIComponent(data.orderID)) : "";
+                const response = await fetch("/products/"+product.id+"/store_step4_paypal/"+cart.cart_ref+"/"+ String(payment_id) + orderQuery, {
                   method: "GET",
-                  // Use the "body" parameter to optionally pass additional order information
-                  // such as product ID or amount
                   headers: {
                   'Content-Type': 'application/json',
-                  'X-CSRF-TOKEN': csrfToken, // Include the CSRF token in the headers
+                  'X-CSRF-TOKEN': csrfToken,
                 },
                 })
-                
+
                 const orderData = await response.json();
-                //console.log("prova");
                 if(orderData.info_paypal == "SUCCESS"){
-                  
                   document.getElementById("pagamento-in-corso").innerHTML = "Pagamento riuscito.";
                   location.reload();
                 }
@@ -309,12 +300,8 @@ export default {
                 document.getElementById("card-field-submit-button").style.display = "inline";
                 document.getElementById("paypal-button-container").style.display = "inline";
                 document.getElementById("bonifico").style.display = "inline";
-
-                // Do something with the error from the SDK
                 document.getElementById("pagamento-in-corso").innerHTML = "Pagamento NON riuscito. Riprovare.";
                 location.reload();
-
-                //resultMessage("Ci scusiamo, la transazione non può essere completata.<br><br>${error}",);
               },
             });
             

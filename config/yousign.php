@@ -7,5 +7,8 @@ return [
     'staging' => [
         'email' => env('YOUSIGN_STAGING_EMAIL', ''),
         'phone' => env('YOUSIGN_STAGING_CELLPHONE', ''),
-    ]
+    ],
+    // Optional shared secret checked by VerifyYousignWebhook (header X-Yousign-Webhook-Secret).
+    'webhook_secret' => env('YOUSIGN_WEBHOOK_SECRET', ''),
 ];
+

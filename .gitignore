@@ -1,30 +1,103 @@
-/node_modules
-/public/hot
-/public/storage
-/storage/*.key
+# Dependencies
 /vendor
+/node_modules
+/composer.phar
+composer-setup.php
+
+# Environment & secrets
 .env
+.env.*
+!.env.example
 .env.backup
 .env.prod
-.phpunit.result.cache
-docker-compose.override.yml
-Homestead.json
-Homestead.yaml
-npm-debug.log
-yarn-error.log
+.env.local
+.env.staging
+
+# Deploy local secrets (keep *.env.example)
+/deploy/env/*.env
+!/deploy/env/*.env.example
+
+# SSH keys / passphrases (never commit)
+docs/riccardo_staging.dat
+docs/.passphare
+docs/**/*.pem
+docs/**/*_staging
+**/.ssh/
+
+# Laravel
+/storage/*.key
+/storage/pail
+/public/hot
+/public/storage
+/public/css/app.css
+/public/js/*
+!/public/js/.gitkeep
+/public/mix-manifest.json
+/public/build
+
+# Logs
+*.log
+/storage/logs/*
+!/storage/logs/.gitignore
+renew_email.log
+send_first_email.log
+
+# Framework cache (keep directory structure via nested .gitignore)
+/storage/framework/cache/data/*
+!/storage/framework/cache/data/.gitignore
+/storage/framework/sessions/*
+!/storage/framework/sessions/.gitignore
+/storage/framework/views/*
+!/storage/framework/views/.gitignore
+/bootstrap/cache/*.php
+!/bootstrap/cache/.gitignore
+
+# Private uploaded / generated documents (never commit)
+/storage/app/private/*
+!/storage/app/private/.gitignore
+/storage/app/public/*
+!/storage/app/public/.gitignore
+
+# IDE / OS / tooling
 /.idea
 /.vscode
-public/css/app.css
-public/js/*.*
-public/img/*.*
-public/images/*.*
-public/mix-manifest.json
-send_first_email.log
-_ide_helper_models.php
-_ide_helper.php
-.phpstorm.meta.php
-storage/.DS_Store
+/.cursor
 .DS_Store
-/public
-/tests/Browser/console
+Thumbs.db
+*.swp
+*~
+
+# PHPUnit / coverage
+.phpunit.result.cache
+.phpunit.cache
 /.phpunit.cache
+/coverage
+clover.xml
+
+# Homestead / Docker local overrides
+Homestead.json
+Homestead.yaml
+docker-compose.override.yml
+
+# Generated helpers
+_ide_helper.php
+_ide_helper_models.php
+.phpstorm.meta.php
+
+# Misc local junk (tinker one-liners accidentally left in root)
+/Cart__*
+/Certificate__*
+/DB__*
+/er-*
+/')
+
+# npm
+npm-debug.log*
+yarn-error.log*
+yarn-debug.log*
+.pnpm-debug.log*
+
+# Mixed frontend artifacts
+/public/img/*.*
+/public/images/*.*
+vite.config.ts-LOCAL

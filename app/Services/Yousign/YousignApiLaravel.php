@@ -663,6 +663,25 @@ class YousignApiLaravel
         return $this->apiRequest($path, $method, [], true, true);
     }
 
+    /**
+     * Yousign API v3 — fetch signature request status for reconciliation.
+     *
+     * @return array|null
+     */
+    public function getSignatureRequest($signatureRequestId)
+    {
+        try {
+            return $this->apiRequest('signature_requests/' . $signatureRequestId, 'get');
+        } catch (\Throwable $e) {
+            Log::warning('yousign.getSignatureRequest.failed', [
+                'procedure_id' => $signatureRequestId,
+                'message' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+    }
+
     public function getFile($filedId)
     {
         $method = 'GET';
@@ -671,3 +690,4 @@ class YousignApiLaravel
         return $this->apiRequest($path, $method, [], true);
     }
 }
+

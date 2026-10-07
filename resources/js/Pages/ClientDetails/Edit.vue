@@ -204,6 +204,18 @@
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Postal code"
           />
+          <text-input
+            v-model="form.contact_ref"
+            :error="form.errors.contact_ref"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="Contact ref"
+          />
+          <text-input
+            v-model="form.version_ref"
+            :error="form.errors.version_ref"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="Version ref"
+          />
           <textarea-input
             v-model="form.note"
             :error="form.errors.note"
@@ -440,6 +452,8 @@ export default {
         province: this.client_detail.province,
         country: this.client_detail.country,
         postal_code: this.client_detail.postal_code,
+        contact_ref: this.client_detail.contact_ref,
+        version_ref: this.client_detail.version_ref,
         note: this.client_detail.note,
         with_accident: this.client_detail.with_accident,
         motivo_blocco_invio: this.client_detail.motivo_blocco_invio,

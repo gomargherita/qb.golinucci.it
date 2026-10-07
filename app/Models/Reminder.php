@@ -27,6 +27,20 @@ class Reminder extends Model
         'updated_at',
         'deleted_at',
         'one_week_after',
-        'pw'
+        'access_token_hash',
+        'access_token_expires_at',
+    ];
+
+    /**
+     * @deprecated KAN-4 — plaintext passwords wiped; column kept nullable for one release.
+     * Do not put 'pw' back in $fillable.
+     */
+    protected $hidden = [
+        'pw',
+        'access_token_hash',
+    ];
+
+    protected $casts = [
+        'access_token_expires_at' => 'datetime',
     ];
 }
