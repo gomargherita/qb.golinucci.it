@@ -99,7 +99,7 @@ Pacchetto SwiftMailer Postmark. Testi e timing delle notifiche sono **nel codice
 Principali notifiche:
 
 - `RenewEmail`, `ReminderEmail`, `ReminderEmailPassed` (cron rinnovi)
-- `FinalEmailWithAttachments` / `…NotPec`
+- `FinalEmailWithAttachments` (una mail). `FinalEmailWithAttachmentsNotPec` solo prodotto 2, copia della PEC (KAN-37).
 - `FirstEmailWithCredentials`
 - `BankTransferGatewayPayment`, `PaypalGatewayPaymentCancel`
 - Importo libero, eHealth, Benefit, SaluteSport

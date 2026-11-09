@@ -8,6 +8,7 @@ use App\Models\Certificate;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Notifications\FinalEmailWithAttachments;
+use App\Notifications\FinalEmailWithAttachmentsNotPec;
 use App\Services\LloydsDoprintPipelineService;
 use App\Services\PaymentBankersToPdfService;
 use App\Services\PaymentCertificateToPdfService;
@@ -134,9 +135,24 @@ class CompletePaidCartService
 
         (new PaymentBankersToPdfService($cart))->generateAndPersist();
 
-        if ($cart->user) {
-            // KAN-37: both classes go to the same users.email — the NotPec twin is a duplicate.
-            $cart->user->notify(new FinalEmailWithAttachments($cart));
+        $this->sendFinalDocuments($cart);
+    }
+
+    /**
+     * One documents mail per inbox.
+     * Product 2 is the PEC channel plus a normal-mail copy that says so.
+     * Products 3 and 4 have no PEC twin: a second notify was the identical duplicate (KAN-37).
+     */
+    public function sendFinalDocuments(Cart $cart): void
+    {
+        if (!$cart->user) {
+            return;
+        }
+
+        $cart->user->notify(new FinalEmailWithAttachments($cart));
+
+        if ((int) $cart->product_id === 2) {
+            $cart->user->notify(new FinalEmailWithAttachmentsNotPec($cart));
         }
     }
 }

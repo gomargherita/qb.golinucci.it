@@ -57,7 +57,7 @@ Fallback hardcoded se template assente / inattivo.
 
 Se il body è ancora testo semplice, il pulsante «Rinnova la tua polizza» lo aggiunge il codice. Dopo il salvataggio Unlayer va messo un pulsante con Merge Tag `{{url}}`.
 
-`FinalEmailWithAttachmentsNotPec` riusa `final_documents_medici` / `final_documents_bancari`. Allegati e canale PEC restano nel codice.
+`FinalEmailWithAttachmentsNotPec` parte solo per il prodotto 2 (ER): copia ordinaria della PEC, testo proprio, non il template `final_documents_bancari`. I prodotti 3 e 4 non la inviano (KAN-37). Allegati e canale PEC restano nel codice.
 
 ## Prossimi
 

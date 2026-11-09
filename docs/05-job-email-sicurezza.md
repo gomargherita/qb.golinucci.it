@@ -51,7 +51,7 @@ Vedi [03-integrazioni.md](03-integrazioni.md).
 
 **Coda post-pagamento (KAN-10):** `CompletePaidCartJob` (`tries=5`, timeout 180, unique `complete-paid-cart-{cartId}`). Staging Redis 23/10 OK. Produzione ancora `database`.
 
-**KAN-37:** sui Bancari partono due email identiche «Polizza e documenti» (PEC + non PEC). Confermato smoke 26BKN-2. Non è un doppio job Redis.
+**KAN-37:** prodotti Bancari 3 e 4 mandano una sola mail «Polizza e documenti». Il prodotto 2 (ER) resta PEC più una copia ordinaria con oggetto e testo diversi («copia della PEC»). Non era un doppio job Redis.
 
 ### 3. Logging
 
