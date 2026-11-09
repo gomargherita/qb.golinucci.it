@@ -60,7 +60,7 @@ Orchestrazione principalmente in `CartController` (metodi generazione Lloyds / s
 **Service:** `YousignApiService` + client HTTP `YousignApiLaravel`  
 **Config:** `YOUSIGN_KEY`, `YOUSIGN_API_URL` (default `https://api.yousign.app/v3/`), URL app, email/telefono staging.
 
-**Solleciti firma (KAN-31):** l’API v3 accetta `reminder_settings` (ogni 1/2/7/14 giorni, 1–10 volte), come la console. Oggi QB crea la request con `delivery_mode=none` e usa solo `signature_link` in pagina: Yousign **non** manda email, quindi i reminder automatici non partono. Con `YOUSIGN_REMINDERS=true` (`.env`) QB passa `delivery_mode=email` + reminder (default ogni 2 giorni × 5). Webhook invariati. Staging: impostare env e fare uno smoke su una firma di test.
+**Solleciti firma (KAN-31):** l’API v3 accetta `reminder_settings` (ogni 1/2/7/14 giorni, 1–10 volte), come la console. Oggi QB crea la request con `delivery_mode=none` e usa solo `signature_link` in pagina: Yousign **non** manda email, quindi i reminder automatici non partono. Con `YOUSIGN_REMINDERS=true` (`.env`) QB passa `delivery_mode=email` + `reminder_settings` (`interval_in_days`, `max_occurrences`; default ogni 2 giorni × 5). Webhook invariati. Staging: impostare env e fare uno smoke su una firma di test.
 
 **Avvio procedura (`startYousignClientAndLaunchProcedure`):**
 

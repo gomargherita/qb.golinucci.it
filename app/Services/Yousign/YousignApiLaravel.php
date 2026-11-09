@@ -227,7 +227,7 @@ class YousignApiLaravel
             }
             $parameters['reminder_settings'] = [
                 'interval_in_days' => $interval,
-                'occurrence' => $occurrence,
+                'max_occurrences' => $occurrence,
             ];
         }
             $conf = array();
