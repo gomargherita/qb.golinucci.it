@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\AddressHasStreetNumber;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -35,13 +36,13 @@ class StoreClientDetailsRequest extends FormRequest
             'gender' => ['required', 'in:M,F', 'max:1'],
             'dob' => ['nullable', 'date'],
             'phone' => ['required', 'max:30', 'phone:IT,mobile'],
-            'address' => ['required', 'max:150'],
+            'address' => ['required', 'max:150', new AddressHasStreetNumber()],
             'city' => ['required', 'max:50'],
             'province' => ['required', 'max:2'],
             'country' => ['required', 'max:2'],
             'postal_code' => ['required', 'max:5'],
-            'contact_ref' => ['nullable', 'max:25'],
-            'varsion_ref' => ['nullable', 'max:25'],
+            'contact_ref' => ['nullable', 'string', 'max:25'],
+            'version_ref' => ['nullable', 'string', 'max:25'],
             'note' => ['nullable'],
             'with_accident' => ['boolean'],
             'flag_prev_2022' => ['boolean'],

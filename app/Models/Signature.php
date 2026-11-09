@@ -17,6 +17,7 @@ class Signature extends Model
         'certificate_id',
         'procedure_id',
         'member_signer_id',
+        'file_id',
         'status',
         'signature_link',
     ];

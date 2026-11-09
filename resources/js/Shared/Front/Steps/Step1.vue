@@ -316,23 +316,61 @@
           class="mt-1 block w-full"
           label="Negli ultimi 3 anni ci sono stati SINISTRI di ammanco di cassa o Responsabilità civile del Bancario che mi hanno coinvolto?"
         >
-        <option :value="null" />
-
-          <option value="si">Sì</option>
+        <option value="" disabled>— Seleziona —</option>
           <option value="no">No</option>
+          <option value="si">Sì</option>
           
         </SelectInput>
         </label>
 
 
-        <div class="md:col-span-2" style="display:none" id="gm1">
+        <div v-if="isGmRenewal" class="md:col-span-2 mt-6">
+          <p class="my-2 font-bold">WARRANTY STATEMENT per rinnovo polizza RC Professionale Giovane Medico</p>
+          <p class="mb-4 text-sm">Si dichiara che:</p>
+          <SelectInput
+            id="confirmation_gmedici1"
+            v-model="form.confirmation_gmedici1"
+            :error="form.errors.confirmation"
+            class="mt-1 block w-full"
+            label="1) Alla data odierna non sono state notificate richieste di risarcimento nei confronti dell'Assicurato."
+          >
+            <option value="" disabled>— Seleziona —</option>
+            <option value="no">Confermo</option>
+            <option value="si">Non confermo</option>
+          </SelectInput>
+          <SelectInput
+            id="confirmation_gmedici2"
+            v-model="form.confirmation_gmedici2"
+            :error="form.errors.confirmation"
+            class="mt-4 block w-full"
+            label="2) L'Assicurato non è a conoscenza di fatti presenti o passati che potrebbero dar luogo a richieste di risarcimento."
+          >
+            <option value="" disabled>— Seleziona —</option>
+            <option value="no">Confermo</option>
+            <option value="si">Non confermo</option>
+          </SelectInput>
+          <SelectInput
+            id="confirmation_gmedici3"
+            v-model="form.confirmation_gmedici3"
+            :error="form.errors.confirmation"
+            class="mt-4 block w-full"
+            :label="'3) Non sono intervenute variazioni rispetto al questionario datato: ' + previousQuestionnaireDate"
+          >
+            <option value="" disabled>— Seleziona —</option>
+            <option value="no">Confermo</option>
+            <option value="si">Non confermo</option>
+          </SelectInput>
+          <p class="mt-2 text-sm text-gray-600">Se non puoi confermare, l’acquisto online non è possibile: scrivi a info@golinucci.it</p>
+        </div>
+
+        <div v-if="!isGmRenewal" class="md:col-span-2" style="display:none" id="gm1">
             <p class="my-4 font-bold">Sinistrosità</p>
           </div>
 
 
           
 
-        <label style="display:none" id="gm2" class="flex items-center mt-6 select-none" for="confirmation-gmedici1">
+        <label v-if="!isGmRenewal" style="display:none" id="gm2" class="flex items-center mt-6 select-none" for="confirmation-gmedici1">
           
 
           <SelectInput
@@ -342,15 +380,14 @@
           class="mt-1 block w-full"
           label="(a). Sono state avanzate richieste di risarcimento o sono state promosse azioni volte ad accertare la responsabilità civile, penale o deontologica nei confronti del proponente negli ultimi 10 anni (salvo quanto precedentemente denunciato all'Assicuratore)?"
         >
-        <option :value="null" />
-
-          <option value="si">Sì</option>
+        <option value="" disabled>— Seleziona —</option>
           <option value="no">No</option>
+          <option value="si">Sì</option>
           
         </SelectInput>
         </label>
 
-        <label style="display:none" id="gm3" class="flex items-center mt-6 select-none" for="confirmation-gmedici2">
+        <label v-if="!isGmRenewal" style="display:none" id="gm3" class="flex items-center mt-6 select-none" for="confirmation-gmedici2">
           <SelectInput
           id="confirmation_gmedici2"
           v-model="form.confirmation_gmedici2"
@@ -358,19 +395,18 @@
           class="mt-1 block w-full"
           label="(b). Il proponente è a conoscenza di azioni, omissioni o fatti dai quali possano derivare richieste di risarcimento o azioni volte all'accertamento di responsabilità civile, penale o deontologica?"
         >
-        <option :value="null" />
-
-          <option value="si">Sì</option>
+        <option value="" disabled>— Seleziona —</option>
           <option value="no">No</option>
+          <option value="si">Sì</option>
           
         </SelectInput>
         </label>
 
         
-        <div class="md:col-span-2" style="display:none" id="gm4">
+        <div v-if="!isGmRenewal" class="md:col-span-2" style="display:none" id="gm4">
             <p class="my-4 font-bold">Condizioni di polizza</p>
           </div>
-        <label style="display:none" id="gm5" class="flex items-center mt-6 select-none" for="confirmation-gmedici3">
+        <label v-if="!isGmRenewal" style="display:none" id="gm5" class="flex items-center mt-6 select-none" for="confirmation-gmedici3">
           
 
           <SelectInput
@@ -380,14 +416,13 @@
           class="mt-1 block w-full"
           label="(c). Società sportive - indicare se il proponente presta servizio per Società sportive agonistiche e di élite"
         >
-        <option :value="null" />
-
-          <option value="si">Sì*</option>
+        <option value="" disabled>— Seleziona —</option>
           <option value="no">No</option>
+          <option value="si">Sì*</option>
           
         </SelectInput>
         </label>
-        <div style="display:none" id="gm6">*Quotazione soggetta ad autorizzazione</div>
+        <div v-if="!isGmRenewal" style="display:none" id="gm6">*Quotazione soggetta ad autorizzazione</div>
 
 
         <label style="display:none" id="gm7" class="flex items-center mt-6 select-none" for="confirmation-gmedici4">
@@ -398,10 +433,9 @@
           class="mt-1 block w-full"
           label="(d). LIBERA PROFESSIONE: Ha mai svolto prima del 2017 attività da libero professionista presso cliniche o in proprio?"
         >
-        <option :value="null" />
-
-          <option value="si">Sì</option>
+        <option value="" disabled>— Seleziona —</option>
           <option value="no">No</option>
+          <option value="si">Sì</option>
           
         </SelectInput>
         </label>
@@ -414,10 +448,9 @@
           class="mt-1 block w-full"
           label="(e). Opera e/o ha mai operato negli ultimi dieci anni in rapporto contrattuale diretto con i suoi pazienti? "
         >
-        <option :value="null" />
-
-          <option value="si">Sì</option>
+        <option value="" disabled>— Seleziona —</option>
           <option value="no">No</option>
+          <option value="si">Sì</option>
           
         </SelectInput>
         </label>
@@ -464,17 +497,28 @@ export default {
       return this.product.conditional_fields.filter(field => {
         return field.field_name != 'retroattivita' && field.field_name != 'massimale';
       });
-  }
-},
+    },
+    isGmRenewal() {
+      if (this.product.id != 5) {
+        return false;
+      }
+      if (this.$page.props.is_gm_renewal === true) {
+        return true;
+      }
+      return this.cart.renewal_date != null;
+    },
+    previousQuestionnaireDate() {
+      return this.$page.props.previous_questionnaire_date || 'questionario precedente';
+    },
+  },
 mounted(){
-  if(this.product.id == 5){
-        document.getElementById('gm1').style.display = 'inline';
-        document.getElementById('gm2').style.display = 'inline';
-        document.getElementById('gm3').style.display = 'inline';
-        document.getElementById('gm4').style.display = 'inline';
-        document.getElementById('gm5').style.display = 'inline';
-        document.getElementById('gm6').style.display = 'inline';
-
+  if(this.product.id == 5 && !this.isGmRenewal){
+        ['gm1','gm2','gm3','gm4','gm5','gm6'].forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.style.display = 'inline';
+          }
+        });
       }
       this.triggerUpdateOnLoad();
 },
@@ -496,12 +540,12 @@ mounted(){
         phone: this.$page.props.clientDetails.phone,
         product_client_details: this.$page.props.clientDetails.product_client_details,
         confirmation: false,
-        confirmation_sinistri: (this.product.id == 4 && this.cart.renewal_date == null) ? null : "no",
-        confirmation_gmedici1: (this.product.id == 5 || this.product.id == 1) ? null : "no",
-        confirmation_gmedici2: (this.product.id == 5 || this.product.id == 1) ? null : "no",
-        confirmation_gmedici3: (this.product.id == 5) ? null : "no",
-        confirmation_gmedici4: (this.product.id == 1) ? null : "no",
-        confirmation_gmedici5: (this.product.id == 1) ? null : "no",
+        confirmation_sinistri: (this.product.id == 4 && this.cart.renewal_date == null) ? "" : "no",
+        confirmation_gmedici1: (this.product.id == 5 || this.product.id == 1) ? "" : "no",
+        confirmation_gmedici2: (this.product.id == 5 || this.product.id == 1) ? "" : "no",
+        confirmation_gmedici3: (this.product.id == 5) ? "" : "no",
+        confirmation_gmedici4: (this.product.id == 1) ? "" : "no",
+        confirmation_gmedici5: (this.product.id == 1) ? "" : "no",
       }),
     };
   },

@@ -35,7 +35,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 md:gap-4">
       <div>
     <label for="total_payable">Importo da pagare (EURO):</label><br>
-    <input type="number" id="total_payable" name="total_payable" step="0.01" v-model="formData.total_payable" style="width:100%" required><br><br>
+    <input type="number" id="total_payable" name="total_payable" step="0.01" v-model="formData.total_payable" style="width:100%" required :readonly="isBound"><br><br>
   </div>
   <div>
     <label for="name">Nome:</label><br>
@@ -48,7 +48,7 @@
     <input type="email" id="email" name="email" v-model="formData.email" style="width:100%" required><br><br>
 </div><div>
     <label for="causale">Causale:</label><br>
-    <input type="text" id="causale" name="causale" v-model="formData.causale" style="width:100%" required><br><br>
+    <input type="text" id="causale" name="causale" v-model="formData.causale" style="width:100%" required :readonly="isBound"><br><br>
 </div>
 <br>
       <buy-loading-button
@@ -77,6 +77,16 @@ export default {
     BuyLoadingButton,
   },
   layout: Layout,
+  props: {
+    causal: String,
+    total_payable: [Number, String],
+    freeamount_id: [Number, String],
+  },
+  computed: {
+    isBound() {
+      return !!this.freeamount_id;
+    },
+  },
   data() {
     return {
       product: 'Pagamento online', // Initialize `product` with a default value
@@ -85,8 +95,9 @@ export default {
         email: "",
         name: "",
         surname: "",
-        total_payable: "",
-        causale: "",
+        total_payable: this.total_payable || "",
+        causale: this.causal || "",
+        freeamount_id: this.freeamount_id || "",
       }),
     };
   },
@@ -100,6 +111,7 @@ export default {
           email: this.formData.email,
           total_payable: this.formData.total_payable,
           causale: this.formData.causale,
+          freeamount_id: this.formData.freeamount_id,
         }),
         {
           preserveScroll: (page) => Object.keys(page.props.errors).length,

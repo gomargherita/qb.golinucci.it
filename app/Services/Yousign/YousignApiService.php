@@ -6,6 +6,7 @@ use App\Models\Signature;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -56,7 +57,7 @@ class YousignApiService
 
         $expiration_date = Carbon::now()->addMonth(6)->format('Y-m-d');
         $procedure_name = 'Polizza Medici Colpa Grave ' . $this->user->clientDetails->first_name . ' ' . $this->user->clientDetails->last_name;
-        $procedure_id = $client->createProcedure($procedure_name, $expiration_date);
+        $procedure_id = $client->createProcedure($procedure_name, $expiration_date, $this->cart->cart_ref);
 
 
 
@@ -74,12 +75,24 @@ class YousignApiService
             }
         }
 
-        $response = $client->addFile('certificate-yousign.pdf', $certificate_pdf, $procedure_id);
-        $rtab = json_decode($response,true);
-        //dd(json_decode($response,true));
-        $file = $rtab['id'];
-
-        $file = $client->addServerStamp(5, "333,113,415,141", $file, $procedure_id);
+        if (App::environment(['local', 'staging'])) {
+            $response = $client->addSignatureRequestDocument('certificate-yousign.pdf', $certificate_pdf, $procedure_id);
+            $rtab = is_string($response) ? json_decode($response, true) : null;
+            $file = is_array($rtab) ? ($rtab['id'] ?? null) : null;
+            if (!$file) {
+                Log::warning('yousign.add_document.failed', [
+                    'cart_ref' => $this->cart->cart_ref,
+                    'head' => substr((string) $response, 0, 300),
+                ]);
+            }
+        } else {
+            $response = $client->addFile('certificate-yousign.pdf', $certificate_pdf, $procedure_id);
+            $rtab = json_decode($response, true);
+            $file = is_array($rtab) ? ($rtab['id'] ?? null) : null;
+            if ($file) {
+                $file = $client->addServerStamp(5, "333,113,415,141", $file, $procedure_id);
+            }
+        }
 
         if ($file == false){
             if ($this->cart) {
@@ -107,7 +120,7 @@ class YousignApiService
 
             
         $client->setProcedureId($procedure_id);
-        $reason_signer = "Signed by " . $this->user->clientDetails->firstname . " " . $this->user->clientDetails->lastname . " (Yousign)";
+        $reason_signer = "Signed by " . $this->user->clientDetails->first_name . " " . $this->user->clientDetails->last_name . " (Yousign)";
 
             // to determine position see https://placeit.yousign.fr/
             switch($this->cart->productOffer->contract->contract_filepath){

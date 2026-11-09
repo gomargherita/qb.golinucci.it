@@ -3,15 +3,11 @@
 
 namespace App\Notifications;
 
-use App\Http\Controllers\SiteBuyProductController;
+use App\Services\EmailTemplateService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use App\Models\RenewalsEmail;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 
@@ -94,29 +90,38 @@ class SaluteSportEmail extends Notification implements ShouldQueue
             'surname' => $this->surname,
         ];
             $cc = "info@golinucci.it";
-            return (new MailMessage)
+            $viewData = [
+                'name' => $this->name,
+                'surname' => $this->surname,
+                'total_payable' => $this->total_payable,
+                'causale' => $this->causale,
+                'profession' => $this->profession,
+                'fiscalcode' => $this->fiscalcode,
+                'dob' => $this->dob,
+                'phone' => $this->phone,
+                'via' => $this->via,
+                'citta' => $this->citta,
+                'cap' => $this->cap,
+                'provincia' => $this->provincia,
+                'morte_da_infortuni' => $this->morte_da_infortuni,
+                'invalidita_permanente_infortuni' => $this->invalidita_permanente_infortuni,
+                'rimborso_infortuni' => $this->rimborso_infortuni,
+                'franchigia1' => $this->franchigia1,
+                'franchigia2' => $this->franchigia2,
+            ];
+            $mail = (new MailMessage)
                 ->bcc("paolo@golinucci.it")
+                ->from([$cc => 'Golinucci SRL']);
+            $applied = app(EmailTemplateService::class)->applyIfPresent($mail, 'salute_sport', $viewData + [
+                'amount' => $this->total_payable,
+            ]);
+            if ($applied) {
+                return $applied->attach($file_path);
+            }
+
+            return $mail
                 ->subject('Conferma adesione programma assicurativo + Sport&Salute')
-                ->view('salutesport', [
-                    'name' => $this->name,
-                    'surname' => $this->surname,
-                    'total_payable' => $this->total_payable,
-                    'causale' => $this->causale,
-                    'profession' => $this->profession,
-                    'fiscalcode' => $this->fiscalcode,
-                    'dob' => $this->dob,
-                    'phone' => $this->phone,
-                    'via' => $this->via,
-                    'citta' => $this->citta,
-                    'cap' => $this->cap,
-                    'provincia' => $this->provincia,
-                    'morte_da_infortuni' => $this->morte_da_infortuni,
-                    'invalidita_permanente_infortuni' => $this->invalidita_permanente_infortuni,
-                    'rimborso_infortuni' => $this->rimborso_infortuni,
-                    'franchigia1' => $this->franchigia1,
-                    'franchigia2' => $this->franchigia2
-                    ])
-                ->from([$cc => 'Golinucci SRL'])
+                ->view('salutesport', $viewData)
                 ->attach($file_path);
     }
 

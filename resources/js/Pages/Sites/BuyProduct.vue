@@ -10,7 +10,7 @@
   <HOne :title="product.name" />
 
   <section id="main-content" class="container mx-auto p-2">
-    <BuyProduct :product="product" :cart="cart" :paypal_client_id="paypal_client_id" :clientDetails="clientDetails"> </BuyProduct>
+    <BuyProduct :product="product" :cart="cart" :paypal_client_id="paypal_client_id" :stripe_enabled="stripe_enabled" :clientDetails="clientDetails"> </BuyProduct>
   </section>
 </template>
 
@@ -27,6 +27,7 @@ export default {
     cart: Object,
     product: Object,
     paypal_client_id: String,
+    stripe_enabled: Boolean,
     clientDetails: Object
   },
 };

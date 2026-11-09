@@ -26,6 +26,7 @@ class Cart extends Model
         'cart_ref',
         'renewal_date',
         'retroactivity',
+        'albo_enrollment_year',
         'total_payable',
         'admin_fee',
         'gross_premium',

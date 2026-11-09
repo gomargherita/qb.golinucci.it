@@ -17,6 +17,11 @@ use App\Http\Controllers\SiteController;
 use App\Http\Controllers\SiteBuyProductController;
 use App\Http\Controllers\YousignController;
 use App\Http\Controllers\ImportoLiberoController;
+use App\Http\Controllers\RenewalChallengeController;
+use App\Http\Controllers\PaypalWebhookController;
+use App\Http\Controllers\StripeWebhookController;
+use App\Http\Controllers\EmailTemplateController;
+use App\Http\Controllers\PlacesController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -27,6 +32,7 @@ use Illuminate\Support\Facades\Route;
 | Here is where you can register web routes for your application. These
 | routes are loaded by the RouteServiceProvider within a group which
 | contains the "web" middleware group. Now create something great!
+| Routes that are prefixed with "admin" are only accessible to authenticated users with the "Superadmin" role.
 |
 */
 
@@ -108,6 +114,13 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'check_role']], func
     Route::put('clientDetails/{client_detail}/restore', [ClientDetailsController::class, 'restore'])
         ->name('clientDetails.restore');
 
+    Route::get('email-templates', [EmailTemplateController::class, 'index'])
+        ->name('emailTemplates');
+    Route::get('email-templates/{email_template}/edit', [EmailTemplateController::class, 'edit'])
+        ->name('emailTemplates.edit');
+    Route::put('email-templates/{email_template}', [EmailTemplateController::class, 'update'])
+        ->name('emailTemplates.update');
+
     Route::get('reports', [ReportsController::class, 'index'])
         ->name('reports');
 
@@ -116,10 +129,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'check_role']], func
 
     Route::get('carts/{product_type}/create', [CartController::class, 'create'])
         ->name('carts.create');
-    
+
     Route::get('carts/{cart}/renew', [CartController::class, 'renew'])
         ->name('carts.renew');
-    
+
     Route::get('carts/{product_type}/create/{user_id}', [CartController::class, 'create'])
         ->name('carts.create.userid');
 
@@ -131,10 +144,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'check_role']], func
 
     Route::post('carts/{product}/store_step2/{cart:cart_ref}', [CartController::class, 'store_step2'])
         ->name('carts.store_step2');
-    
+
     Route::post('carts/{product}/store_step3/{cart:cart_ref}', [CartController::class, 'store_step3'])
         ->name('carts.store_step3');
-    
+
     Route::post('carts/{product}/store_step4/{cart:cart_ref}', [CartController::class, 'store_step4'])
         ->name('carts.store_step4');
 
@@ -143,7 +156,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'check_role']], func
 
     Route::get('carts/{cart}/edit', [CartController::class, 'edit'])
         ->name('carts.edit');
-    
+
         Route::get('carts/{cart}/updatestep6', [CartController::class, 'updateToStep6'])
         ->name('carts.updatetostep6');
 
@@ -238,13 +251,14 @@ Route::controller(SiteController::class)->group(function () {
     Route::get('/benefit/{id?}', 'benefit')->name('front.benefit');
     Route::get('/benefit-virtualhospital/{id?}', 'benefitEVirtualhospital')->name('front.benefitVH');
 
-    
+
     Route::post('/importo_liberoStep2', 'importo_libero_store_step1')->name('front.importoLiberoStep2');
     Route::post('/salutesport_Step2', 'salutesport_store_step1')->name('front.salutesportStep2');
     Route::post('/salutesport_Store2', 'salutesport_store_step2')->name('front.salutesportStore2');
 
 
     Route::post('/importo_libero/pay/{id}', 'importoLiberoPay')->name('front.importoLiberoPay');
+    Route::post('/importo_libero/stripe/{id}', 'importoLiberoStripePay')->name('front.importoLiberoStripePay');
     Route::get('/importo_libero/check_payment/{id}', 'importoLiberoCheckPayment')->name('front.importoLiberoCheckPayment');
     Route::get('/.well-known/apple-developer-merchantid-domain-association', 'applePayAssociationFile')->name('front.applePayAssociationFile');
 
@@ -256,7 +270,37 @@ Route::controller(SiteController::class)->group(function () {
 Route::get('private-files/{file?}', [FileController::class, 'getUser'])->where('file', '(.*)')->name('privateFilesUser')->middleware(['auth']);
 
 
+// KAN-4 + KAN-8: opaque link then email OTP (1h)
+Route::get('/renewal/access/{cart_ref}', [RenewalChallengeController::class, 'start'])
+    ->middleware('throttle:20,1')
+    ->name('front.renewal.access');
+Route::get('/renewal/challenge', [RenewalChallengeController::class, 'show'])
+    ->middleware('throttle:30,1')
+    ->name('front.renewal.challenge');
+Route::post('/renewal/challenge', [RenewalChallengeController::class, 'verify'])
+    ->middleware('throttle:20,1')
+    ->name('front.renewal.challenge.verify');
+Route::post('/renewal/challenge/resend', [RenewalChallengeController::class, 'resend'])
+    ->middleware('throttle:10,1')
+    ->name('front.renewal.challenge.resend');
+
+// KAN-6: PayPal webhook (browser-independent capture completion)
+Route::post('/paypal/webhook', PaypalWebhookController::class)
+    ->middleware('throttle:120,1')
+    ->name('paypal.webhook');
+
+Route::post('/stripe/webhook', StripeWebhookController::class)
+    ->middleware('throttle:120,1')
+    ->name('stripe.webhook');
+
 Route::group(['middleware' => ['auth']], function () {
+    Route::get('/places/autocomplete', [PlacesController::class, 'autocomplete'])
+        ->middleware('throttle:40,1')
+        ->name('places.autocomplete');
+    Route::get('/places/details', [PlacesController::class, 'details'])
+        ->middleware('throttle:40,1')
+        ->name('places.details');
+
     Route::controller(SiteBuyProductController::class)->group(function () {
         Route::get('/paypal_redirect', 'paypal_redirect')->name('front.paypal_redirect');
         Route::scopeBindings()->group(function () {
@@ -265,20 +309,23 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('/products/{product}/store_step1/{cart:cart_ref}', 'store_step1')->name('front.product.store_step1');
             Route::post('/products/{product}/store_step2/{cart:cart_ref}', 'store_step2')->name('front.product.store_step2');
             Route::post('/products/{product}/store_step3/{cart:cart_ref}', 'store_step3')->name('front.product.store_step3');
-            Route::post('/products/{product}/store_step4/{cart:cart_ref}/{gateway}/', 'store_step4')->name('front.product.store_step4');
-            Route::get('/products/{product}/store_step4_paypal/{cart:cart_ref}/{payment_id}/', 'store_step4_paypal_return')->name('front.product.store_step4_paypal_return');
+            Route::post('/products/{product}/store_step4/{cart:cart_ref}/{gateway}', 'store_step4')->name('front.product.store_step4');
+            Route::post('/products/{product}/checkout-stripe/{cart:cart_ref}', 'store_step4_stripe')->name('front.product.checkout_stripe');
+            Route::get('/products/{product}/store_step4_paypal/{cart:cart_ref}/{payment_id}', 'store_step4_paypal_return')->name('front.product.store_step4_paypal_return');
             Route::get('/products/{product}/store_step4_paypal/{cart:cart_ref}/{payment_id}/c', 'store_step4_paypal_cancel')->name('front.product.store_step4_paypal_cancel');
             Route::post('/products/{product}/store_step5/{cart:cart_ref}', 'store_step5')->name('front.product.store_step5');
         });
     });
 });
 
-Route::get('/yousign/member_finished', [YousignController::class, 'yousign_member_finished'])->name('front.yousign.member_finished');
-Route::post('/yousign/procedure_finished', [YousignController::class, 'yousign_procedure_finished'])->name('front.yousign.procedure_finished');
-Route::get('/yousign/procedure_refused', [YousignController::class, 'yousign_procedure_refused'])->name('front.yousign.procedure_refused');
-Route::get('/yousign/procedure_error', [YousignController::class, 'yousign_procedure_error'])->name('front.yousign.procedure_error');
-Route::get('/yousign/procedure_expired', [YousignController::class, 'yousign_procedure_expired'])->name('front.yousign.procedure_expired');
-Route::get('/yousign/server_stamps_finished', [YousignController::class, 'yousign_server_stamps_finished'])->name('front.yousign.server_stamps_finished');
-Route::get('/yousign/server_stamps_error', [YousignController::class, 'yousign_server_stamps_error'])->name('front.yousign.server_stamps_error');
+Route::middleware([\App\Http\Middleware\VerifyYousignWebhook::class])->group(function () {
+    Route::get('/yousign/member_finished', [YousignController::class, 'yousign_member_finished'])->name('front.yousign.member_finished');
+    Route::post('/yousign/procedure_finished', [YousignController::class, 'yousign_procedure_finished'])->name('front.yousign.procedure_finished');
+    Route::get('/yousign/procedure_refused', [YousignController::class, 'yousign_procedure_refused'])->name('front.yousign.procedure_refused');
+    Route::get('/yousign/procedure_error', [YousignController::class, 'yousign_procedure_error'])->name('front.yousign.procedure_error');
+    Route::get('/yousign/procedure_expired', [YousignController::class, 'yousign_procedure_expired'])->name('front.yousign.procedure_expired');
+    Route::get('/yousign/server_stamps_finished', [YousignController::class, 'yousign_server_stamps_finished'])->name('front.yousign.server_stamps_finished');
+    Route::get('/yousign/server_stamps_error', [YousignController::class, 'yousign_server_stamps_error'])->name('front.yousign.server_stamps_error');
+});
 
 require __DIR__ . '/auth.php';

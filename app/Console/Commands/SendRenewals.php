@@ -12,7 +12,6 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
-use Reminders;
 
 class SendRenewals extends Command
 {
@@ -50,8 +49,8 @@ class SendRenewals extends Command
         // grab all carts with renewal_date < 25 days
         // da importare un cron tipo 30  2  1-30  jun  *  php artisan mail:first_send...
         $this->info('#########################' . now() . ': START SCHEDULE');
-        $num_of_days = 30;
-        $num_of_days_past = 60;
+        $num_of_days = (int) config('renewals.invite_days_before', 30);
+        $num_of_days_past = (int) config('renewals.invite_lookback_days', 60);
 
         $target_date = Carbon::now()->addDays($num_of_days)->format('Y-m-d');
         $target_date_past = Carbon::now()->subDays($num_of_days_past)->format('Y-m-d');
@@ -67,12 +66,14 @@ class SendRenewals extends Command
 
         foreach ($carts as $certificate) {
             $user = $certificate->cart->user;
+            $cartRef = $certificate->cart->cart_ref;
 
-            $old_cart_ref = DB::select(DB::raw('SELECT old_cart_ref FROM renewals_email WHERE old_cart_ref = "'.$certificate->cart->cart_ref.'";'));
-            if(empty($old_cart_ref)){
-                //error_log($user);die;
-                Log::debug($user, ['command']);
-                Log::debug($certificate, ['command cart']);//error_log($certificate);die;
+            $alreadyInvited = DB::table('renewals_email')->where('old_cart_ref', $cartRef)->exists();
+            if (!$alreadyInvited) {
+                Log::info('mail.renew.invite', [
+                    'cart_ref' => $cartRef,
+                    'user_id' => $user->id ?? null,
+                ]);
                 $reminder = Reminder::where('cart_id', $certificate->cart->id)->first();
                             if ($reminder == null){
                                 $reminder = Reminder::create([
@@ -81,21 +82,22 @@ class SendRenewals extends Command
                             }
                 $user->notify(new RenewEmail($certificate));
                 $this->info(now() . ': renewal email sent to ' . $user->email);
-                DB::statement('INSERT INTO renewals_email (old_cart_ref) VALUES ("'. $certificate->cart->cart_ref.'");');
+                DB::table('renewals_email')->insert(['old_cart_ref' => $cartRef]);
             }
             else{
-                $newCart = DB::select(DB::raw('SELECT new_cart_ref FROM renewals WHERE old_cart_ref = "'.$certificate->cart->cart_ref.'";'));
-                Log::info($newCart);
-                if(!empty($newCart)){
-                    $newCart2 = Cart::where('cart_ref', $newCart[0]->new_cart_ref)->first();
-                    Log::info($newCart2);
-                }
+                $newCartRef = DB::table('renewals')->where('old_cart_ref', $cartRef)->value('new_cart_ref');
+                $newCart2 = $newCartRef ? Cart::where('cart_ref', $newCartRef)->first() : null;
+                Log::info('mail.renew.followup', [
+                    'cart_ref' => $cartRef,
+                    'new_cart_ref' => $newCartRef,
+                    'new_step' => $newCart2->product_step_id ?? null,
+                ]);
 
                 //si cerca di capire se ha rinnovato già
-                if(empty($newCart) || ($newCart2 != null && $newCart2->product_step_id < 5)){
+                if (!$newCartRef || ($newCart2 != null && $newCart2->product_step_id < 5)) {
 
 
-                $old_cart = Cart::where('cart_ref', $old_cart_ref[0]->old_cart_ref)->first();
+                $old_cart = $certificate->cart;
 
                 if($old_cart->product_id == 1 || $old_cart->product_id == 5){
 
@@ -108,8 +110,10 @@ class SendRenewals extends Command
                     $end = Carbon::createFromTimestamp(strtotime($certificate->end_validity_date));
                     $now = Carbon::now();
                     
+                    $daysBefore = (int) config('renewals.reminder_days_before', 6);
+                    $daysAfter = config('renewals.reminder_days_after', [7, 14, 26]);
                     switch($now->diffInDays($end, false)){
-                        case 6:
+                        case $daysBefore:
                             $reminder = Reminder::where('cart_id', $certificate->cart->id)->first();
                             if ($reminder == null){
                                 $reminder = Reminder::create([
@@ -124,7 +128,7 @@ class SendRenewals extends Command
                             $reminder->save();
                         }
                             break;
-                        case -7:
+                        case -((int) ($daysAfter[0] ?? 7)):
                             $reminder = Reminder::where('cart_id', $certificate->cart->id)->first();
                             if ($reminder == null){
                                 $reminder = Reminder::create([
@@ -139,7 +143,7 @@ class SendRenewals extends Command
                             $reminder->save();
                         }
                         break;
-                        case -14:
+                        case -((int) ($daysAfter[1] ?? 14)):
                             $reminder = Reminder::where('cart_id', $certificate->cart->id)->first();
                             if ($reminder == null){
                                 $reminder = Reminder::create([
@@ -154,7 +158,7 @@ class SendRenewals extends Command
                                 $reminder->save();
                             }
                             break;
-                        case -26:
+                        case -((int) ($daysAfter[2] ?? 26)):
                             $reminder = Reminder::where('cart_id', $certificate->cart->id)->first();
                             if ($reminder == null){
                                 $reminder = Reminder::create([

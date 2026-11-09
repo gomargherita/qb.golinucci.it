@@ -34,7 +34,6 @@ use App\Rules\ProjectDeclarationsRule;
 use App\Services\DeclarationsToPdfService;
 use App\Services\PaymentBankersToPdfService;
 use App\Notifications\FinalEmailWithAttachments;
-use App\Notifications\FinalEmailWithAttachmentsNotPec;
 use App\Models\Certificate;
 use App\Notifications\FirstEmailWithCredentials;
 use Throwable;
@@ -228,76 +227,22 @@ class CartController extends Controller
 
     static public function renew(Cart $cart)
     {
-        if($cart->product_step_id < 6){
+        if ($cart->product_step_id < 6) {
             abort(510);
         }
 
         $product = Product::find($cart->product_id);
         $user_id = $cart->user_id;
 
-        $check = Cart::where('cart_ref', $cart->cart_ref)->first();
-        if(empty($check->cart_ref) || $check->user_id != $user_id){
-            abort(404);
-        }
-
-        DB::statement("UPDATE users SET new_client=0 WHERE id=".$user_id.";");
-
-        $cart_ref = $check->cart_ref;
-
-        $last_prev_certificate = Certificate::query()
-                    ->with('cart')
-                    ->select(['end_validity_date'])->where([
-                        // controllo su product
-                        'product_id' => $cart->product_id,
-                    ])->whereHas('cart', function ($q) use ($user_id) {
-                        $q->where('user_id', $user_id);
-                    })
-                    ->latest()->first();
-
-        $old_cart_end_date = $last_prev_certificate->end_validity_date;
-
-        $end = date_create($old_cart_end_date);
-        $today = date_create(date('d-m-Y'));
-
-        $interval = date_diff($end,$today);
-        $interval = $interval->format("%R%a");
-        if($interval < -30){
-            abort(510);
-        }
-
-        $new_cart_ref = DB::select(DB::raw('SELECT new_cart_ref FROM renewals WHERE old_cart_ref = "'.$cart_ref.'";'));
-        if(!empty($new_cart_ref)){
-            return redirect()->route('carts.continue', ['product' => $product, 'cart' => $new_cart_ref[0]->new_cart_ref]);
-        }
-        
-        $newCart = Cart::create([
-            'user_id' => $user_id,
-            'product_id' => $product->id,
-            'product_offer_id' => $product->product_type_id == 1 ? null : $cart->product_offer_id,
-            'product_step_id' => 1,
-            'expired_at' => $end->modify('+30 day'),
-            'locked' => 'N',
-            'cart_ref' => uniqid()
-        ]);
-        DB::statement('INSERT INTO renewals (old_cart_ref, new_cart_ref) VALUES ("'. $cart->cart_ref.'", "'. $newCart->cart_ref.'");');
+        $newCart = app(\App\Services\Renewals\RenewalCartService::class)
+            ->startOrResumeFromSourceCart($product, $cart, (int) $user_id);
 
         return redirect()->route('carts.continue', ['product' => $product, 'cart' => $newCart]);
     }
 
-    public function isRenewal(Cart $cart){
-        $check = Cart::where('cart_ref', $cart->cart_ref)->first();
-        if(empty($check->cart_ref)){
-            abort(404);
-        }
-        $cart_ref = $check->cart_ref;
-
-        $new_cart_ref = DB::select(DB::raw('SELECT new_cart_ref FROM renewals WHERE new_cart_ref = "'.$cart_ref.'";'));
-        if(!empty($new_cart_ref)){
-            return true;
-        }
-        else{
-            return false;
-        }
+    public function isRenewal(Cart $cart)
+    {
+        return app(\App\Services\Renewals\RenewalCartService::class)->isRenewalCart($cart);
     }
 
     /**
@@ -930,7 +875,7 @@ class CartController extends Controller
                 $yousignMemberSignerId = $yousignClient->startYousignClientAndLaunchProcedure();
                 $signature = Signature::where('certificate_id', $cart->certificate->id)->first();
                 $payment = $cart->payment;
-                //$payment->cart->user->notify(new ConfirmedOfflinePayment($payment));
+                $payment->cart->user->notify(new ConfirmedOfflinePayment($payment));
                 //error_log($yousignMemberSignerId);
             } else {
                 $yousignMemberSignerId = $signature->member_signer_id;
@@ -971,7 +916,6 @@ class CartController extends Controller
     public function sendEmail(Cart $cart){
         try{
             $cart->user->notify(new FinalEmailWithAttachments($cart));
-            $cart->user->notify(new FinalEmailWithAttachmentsNotPec($cart));
             //Notification::mailer('pec')->sendNow($cart->user, new FinalEmailWithAttachments($cart));
 
             //Mail::mailer('pec')->to($cart->user->email)->send(new FinalEmailWithAttachments($cart));
@@ -984,28 +928,39 @@ class CartController extends Controller
 
     public function sendFirstEmail(Cart $cart, $product_id){
         $user_id = $cart->user_id;
+        $targetProductId = (int) $product_id;
+
         $last_prev_certificate = Certificate::query()
-                    ->with('cart')
-                    ->select(['end_validity_date'])->where([
-                        // controllo su product
-                        'product_id' => $cart->product_id,
-                    ])->whereHas('cart', function ($q) use ($user_id) {
-                        $q->where('user_id', $user_id);
-                    })
-                    ->latest()->first();
-        $renewal = (explode(" ", ((string)$last_prev_certificate['end_validity_date']))[0]);
-        //if($cart->renewal_date == null || $cart->product_id == null){
-            $cart->renewal_date = $renewal;
-            $cart->product_id = intval($product_id);
-            $cart->save();
+            ->with('cart')
+            ->select(['end_validity_date'])
+            ->where('product_id', $targetProductId)
+            ->whereHas('cart', function ($q) use ($user_id) {
+                $q->where('user_id', $user_id);
+            })
+            ->latest()
+            ->first();
 
-            //dd($cart);
-            //return $this->sendFirstEmail($cart, $product_id);
-        //}
+        $renewal = null;
+        if ($last_prev_certificate && $last_prev_certificate->end_validity_date) {
+            $renewal = explode(' ', (string) $last_prev_certificate->end_validity_date)[0];
+        } elseif ($cart->renewal_date) {
+            $renewal = $cart->renewal_date->toDateString();
+        } elseif ($cart->custom_end_date) {
+            $renewal = explode(' ', (string) $cart->custom_end_date)[0];
+        } elseif ($cart->expired_at) {
+            $renewal = explode(' ', (string) $cart->expired_at)[0];
+        }
 
-            //dd($cart);
-            //return $this->sendFirstEmail($cart, $product_id);
-        //}
+        if (!$renewal) {
+            return Redirect::back()->with(
+                'error',
+                'Impossibile inviare l\'email rinnovo: manca un certificato precedente e nessuna data di rinnovo sul carrello.'
+            );
+        }
+
+        $cart->renewal_date = $renewal;
+        $cart->product_id = $targetProductId;
+        $cart->save();
 
         try{
             $cart->user->notify(new FirstEmailWithCredentials($cart));

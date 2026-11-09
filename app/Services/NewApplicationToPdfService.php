@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Product;
+use App\Models\Renewal;
+use App\Services\Renewals\RenewalCartService;
 use Illuminate\Support\Facades\Storage;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -134,6 +136,12 @@ class NewApplicationToPdfService
             return $policy_response_folder . '/new-application.pdf';
         }
         else if($this->cart->product->id == 5){
+            $isRenewal = !empty($this->cart->renewal_date)
+                || Renewal::where('new_cart_ref', $this->cart->cart_ref)->exists();
+            $data['ws_rinnovo'] = $isRenewal;
+            $data['previous_questionnaire_date'] = $isRenewal
+                ? app(RenewalCartService::class)->previousQuestionnaireDate($this->cart)
+                : null;
             $pdf = PDF::loadView('template-new-application-giovane-medico', $data);
             $policy_response_folder = 'certificates/user_' . $this->cart->user_id . '/cart_' . $this->cart->id;
             Storage::disk('private')->put($policy_response_folder . '/new-application.pdf', $pdf->stream());

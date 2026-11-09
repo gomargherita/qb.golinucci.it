@@ -13,9 +13,19 @@
   <section id="main-content" class="container mx-auto p-2" >
     
   <h1>Importo totale: {{ this.total_payable }}€</h1><br>
+
+  <p v-if="electronic_capped" class="text-center font-bold mb-6">
+    Per importi superiori a {{ Number(electronic_max_eur).toLocaleString('it-IT') }} €
+    il pagamento elettronico non è disponibile. Procedi con bonifico bancario intestato a Golinucci S.r.l.
+    Per IBAN e causale contatta l’agenzia.
+  </p>
   
+  <div v-if="stripe_enabled && !electronic_capped" class="text-center">
+    <button type="button" class="gol-btn my-8 bg-primary" @click="stripePay">Paga ora (carta / PayPal)</button>
+    <p id="pagamento-stripe" style="color:red; font-weight:bold;"></p>
+  </div>
   
-  <div style="
+  <div v-else-if="!electronic_capped" style="
   margin: auto;
   width: 50%;
   padding: 10px;">
@@ -23,9 +33,9 @@
   <div  id="applepay-container"></div>
   </div>
   
+    <div v-if="!stripe_enabled && !electronic_capped">
     <hr>
-    <p style="text-align: center;">oppure</p>
-    <!-- PayPal Logo --><table border="0" cellpadding="0" cellspacing="0" align="center"><tr><td align="center"></td></tr><tr><td align="center"><a href="https://www.paypal.com/webapps/mpp/paypal-popup" title="How PayPal Works" onclick="javascript:window.open('https://www.paypal.com/webapps/mpp/paypal-popup','WIPaypal','toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=1060, height=700'); return false;"><img src="https://www.paypalobjects.com/webstatic/mktg/logo/AM_mc_vs_dc_ae.jpg" border="0" alt="PayPal Acceptance Mark"></a></td></tr></table><!-- PayPal Logo -->
+    <p style="text-align: center;">oppure paga con carta</p>
 
     <div id="checkout-form">
       <div id="card-name-field-container"></div>
@@ -37,6 +47,7 @@
       </button>
     </div>
     <p id="pagamento-in-corso" style="color:red; font-weight:bold; margin:0; padding:0"></p>
+    </div>
   </section>
 </template>
 
@@ -55,6 +66,9 @@ export default {
     id: String,
     total_payable : Number,
     paypal_client_id: String,
+    stripe_enabled: Boolean,
+    electronic_capped: Boolean,
+    electronic_max_eur: [Number, String],
   },
   data() {
     return {
@@ -62,6 +76,9 @@ export default {
     };
   },
   mounted(){
+    if (this.stripe_enabled || this.electronic_capped) {
+      return;
+    }
     let applePaySDK = document.createElement('script');
     applePaySDK.setAttribute('src', 'https://applepay.cdn-apple.com/jsapi/v1/apple-pay-sdk.js');
 
@@ -414,6 +431,33 @@ export default {
 
     },
     methods: {
+    async stripePay() {
+      const el = document.getElementById("pagamento-stripe");
+      if (el) {
+        el.innerHTML = "Reindirizzamento a Stripe…";
+      }
+      const csrfToken = document.head.querySelector('meta[name="csrf-token"]').content;
+      const response = await fetch("/importo_libero/stripe/" + this.id, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "X-CSRF-TOKEN": csrfToken,
+        },
+      });
+      const data = await response.json();
+      if (data.reload == "reload") {
+        location.reload();
+        return;
+      }
+      if (data.url) {
+        window.location = data.url;
+        return;
+      }
+      if (el) {
+        el.innerHTML = "Pagamento non disponibile. Riprovare.";
+      }
+    },
     resultMessage(message) {
     const container = document.querySelector("#result-message");
     container.innerHTML = message;

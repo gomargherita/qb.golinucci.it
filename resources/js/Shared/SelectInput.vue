@@ -22,7 +22,10 @@ export default {
     },
     error: String,
     label: String,
-    modelValue: [String, Number, Boolean],
+    modelValue: {
+      type: [String, Number, Boolean],
+      default: null,
+    },
   },
   computed: {
     formattedLabel() {
@@ -39,6 +42,11 @@ export default {
     }
   },
   watch: {
+    modelValue(value) {
+      if (this.selected !== value) {
+        this.selected = value
+      }
+    },
     selected(selected) {
       this.$emit('update:modelValue', selected)
     },

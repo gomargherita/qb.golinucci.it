@@ -60,18 +60,21 @@
             type="tel"
           />
           <text-input
+            id="address"
             v-model="form.address"
             :error="form.errors.address"
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Address"
           />
           <text-input
+            id="city"
             v-model="form.city"
             :error="form.errors.city"
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="City"
           />
           <select-input
+            id="province"
             v-model="form.province"
             :error="form.errors.province"
             class="pb-8 pr-6 w-full lg:w-1/2"
@@ -199,10 +202,23 @@
             <option value="IT">Italia</option>
           </select-input>
           <text-input
+            id="postal_code"
             v-model="form.postal_code"
             :error="form.errors.postal_code"
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Postal code"
+          />
+          <text-input
+            v-model="form.contact_ref"
+            :error="form.errors.contact_ref"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="Contact ref"
+          />
+          <text-input
+            v-model="form.version_ref"
+            :error="form.errors.version_ref"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="Version ref"
           />
           <textarea-input
             v-model="form.note"
@@ -246,6 +262,14 @@
             :error="form.errors.field_value"
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Specializzazione"
+          />
+          <text-input
+            v-model="form.retroactivity"
+            :error="form.errors.retroactivity"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="Retroattività"
+            type="date"
+            pattern="\d{4}-\d{2}-\d{2}"
           />
           <h1 class="mb-8 text-3xl font-bold w-full">Bancari</h1>
           <text-input
@@ -440,10 +464,13 @@ export default {
         province: this.client_detail.province,
         country: this.client_detail.country,
         postal_code: this.client_detail.postal_code,
+        contact_ref: this.client_detail.contact_ref,
+        version_ref: this.client_detail.version_ref,
         note: this.client_detail.note,
         with_accident: this.client_detail.with_accident,
         motivo_blocco_invio: this.client_detail.motivo_blocco_invio,
         flag_prev_2022: this.client_detail.flag_prev_2022,
+        retroactivity: this.client_detail.retroactivity,
         client_detail_id: this.client_detail.client_detail_id,
         conditional_field_id: this.client_detail.conditional_field_id,
         selected_field_value: this.client_detail.selected_field_value,

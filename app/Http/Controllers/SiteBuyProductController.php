@@ -19,92 +19,60 @@ use App\Notifications\BankTransferGatewayPayment;
 use App\Notifications\PaypalGatewayPaymentCancel;
 use App\Rules\ProjectDeclarationsRule;
 use App\Services\DatasheetToPdfService;
+use App\Services\LloydsDoprintPipelineService;
 use App\Services\LloydsDoprintService;
 use App\Services\DeclarationsToPdfService;
 use App\Services\NewApplicationToPdfService;
 use App\Services\PaymentCertificateToPdfService;
 use App\Services\PaymentBankersToPdfService;
+use App\Services\Payments\PaypalCaptureService;
+use App\Services\Payments\StripeCheckoutService;
+use App\Services\Renewals\RenewalCartService;
+use App\Services\GiovaneMedicoPremiumService;
 use App\Services\Yousign\YousignApiService;
 use Illuminate\Foundation\Auth\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
-use Srmklive\PayPal\Services\PayPal as PayPalClient;
 use Throwable;
 use App\Notifications\FinalEmailWithAttachments;
-use App\Notifications\FinalEmailWithAttachmentsNotPec;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 
 
 class SiteBuyProductController extends Controller
 {
-    public function isRenewal(Cart $cart){
-        $check = Cart::where('cart_ref', $cart->cart_ref)->first();
-        if(empty($check->cart_ref)){
-            abort(404);
-        }
-        $cart_ref = $check->cart_ref;
-
-        $new_cart_ref = DB::select(DB::raw('SELECT new_cart_ref FROM renewals WHERE new_cart_ref = "'.$cart_ref.'";'));
-        if(!empty($new_cart_ref)){
-            return true;
-        }
-        else{
-            return false;
-        }
+    public function isRenewal(Cart $cart)
+    {
+        return app(RenewalCartService::class)->isRenewalCart($cart);
     }
 
     public function buy(Product $product, Cart $cart = null)
     {
         $user = auth()->user();
+        $renewals = app(RenewalCartService::class);
 
-        //DB::statement("UPDATE users SET new_client=1 WHERE id=".$user->id.";");
         if (!empty($cart)) {
-            if($this->isRenewal($cart)){
-                $expiration_date = date_create($cart->expired_at);
-                $now = date_create(date('d-m-Y'));
-                $interval = date_diff($expiration_date,$now);
-                $interval = $interval->format("%R%a");
-                if($interval > -1){
-                    abort(419);
+            if ($renewals->isRenewalCart($cart)) {
+                $renewals->ensureContinuityDates($cart, $user, $product);
+
+                if (!empty($cart->expired_at) && Carbon::parse($cart->expired_at)->startOfDay()->lt(Carbon::today())) {
+                    abort(419, 'Non si può procedere con il rinnovo, perché sono trascorsi almeno 30 giorni dalla scadenza della polizza.');
                 }
-            }
-            else{
-                // get renewal date if exists in previous cart
-                $last_prev_certificate = Certificate::query()
-                    ->with('cart')
-                    ->select(['end_validity_date'])->where([
-                        // controllo su product
-                        'product_id' => $cart->product_id,
-                    ])->whereHas('cart', function ($q) {
-                        $q->where('user_id', auth()->user()->id);
-                    })
-                    ->latest()->first();
-
-                if($last_prev_certificate != null && $cart->product_step_id < 5){
-                    $scadenza = date_create($last_prev_certificate->end_validity_date);
-                    date_add($scadenza, date_interval_create_from_date_string('30 days'));
-                    $ora = date_create(date('d-m-Y'));
-                    $intervallo = date_diff($scadenza,$ora);
-                    $intervallo = $intervallo->format("%R%a");
-
-                    $cart->renewal_date = null;
-                    $cart->retroactivity = null;
-                    $cart->save();
-
-                    if(!($intervallo > -1) && $product->id == 1){
-                        abort(308);
+            } else {
+                // If this "new" cart sits on a previous policy still in renewal window,
+                // force the ordered renewal path instead of wiping dates / orphaning.
+                $certificate = $renewals->latestCertificateFor($user, $product);
+                if ($certificate && $cart->product_step_id < 5 && $renewals->isInRenewalWindow($certificate)) {
+                    $source = $renewals->sourceCartForCertificate($certificate);
+                    if ($source && $source->cart_ref !== $cart->cart_ref) {
+                        return redirect()->route('front.product.renew', [
+                            'product' => $product,
+                            'cart' => $source,
+                        ]);
                     }
                 }
-
-                //if ($last_prev_certificate) {
-                    ////$cart->renewal_date = Carbon::parse($last_prev_certificate->end_validity_date)->toDateString();
-                    //$cart->renewal_date = null;
-                    //$cart->retroactivity = null;
-                    //$cart->save();
-                //}
             }
 
             $cart = $this->verifyAndGetCartOrRedirect($user, $product, $cart);
@@ -157,73 +125,44 @@ class SiteBuyProductController extends Controller
                         break;
                 }
             }
-        } else {
-            // se cart assente o locked, genero un cart ref e creo il carrello
-            $cart = Cart::create([
-                'user_id' => $user->id,
-                'product_id' => $product->id,
-                'product_step_id' => 1,
-                'expired_at' => now()->addMonths(1),
-                'locked' => 'N',
-                'cart_ref' => uniqid()
-            ]);
 
-            return redirect()->route('front.product.buy', ['product' => $product, 'cart' => $cart]);
-        }
-    }
-
-    static public function renew(Product $product, Cart $cart, $user_id=null)
-    {
-        if($user_id == null){
-            $user_id = auth()->user();
-            $user_id = $user_id->id;
-        }
-
-        $check = Cart::where('cart_ref', $cart->cart_ref)->first();
-        if(empty($check->cart_ref) || $check->user_id != $user_id){
             abort(404);
         }
 
-        DB::statement("UPDATE users SET new_client=0 WHERE id=".$user_id.";");
-
-        $cart_ref = $check->cart_ref;
-
-        $last_prev_certificate = Certificate::query()
-                    ->with('cart')
-                    ->select(['end_validity_date'])->where([
-                        // controllo su product
-                        'product_id' => $cart->product_id,
-                    ])->whereHas('cart', function ($q) {
-                        $q->where('user_id', auth()->user()->id);
-                    })
-                    ->latest()->first();
-
-        $old_cart_end_date = $last_prev_certificate->end_validity_date;
-
-        $end = date_create($old_cart_end_date);
-        $today = date_create(date('d-m-Y'));
-
-        $interval = date_diff($end,$today);
-        $interval = $interval->format("%R%a");
-        if($interval < -30){
-            abort(403);
+        // No cart_ref: resume draft, or enter renewal, or create first purchase — never fork blindly.
+        $entry = $renewals->resolveBuyEntry($user, $product);
+        if ($entry['action'] === 'resume') {
+            return redirect()->route('front.product.buy', [
+                'product' => $product,
+                'cart' => $entry['cart'],
+            ]);
+        }
+        if ($entry['action'] === 'renew') {
+            return redirect()->route('front.product.renew', [
+                'product' => $product,
+                'cart' => $entry['cart'],
+            ]);
         }
 
-        $new_cart_ref = DB::select(DB::raw('SELECT new_cart_ref FROM renewals WHERE old_cart_ref = "'.$cart_ref.'";'));
-        if(!empty($new_cart_ref)){
-            return redirect()->route('front.product.buy', ['product' => $product, 'cart' => $new_cart_ref[0]->new_cart_ref]);
-        }
-        
-        $newCart = Cart::create([
-            'user_id' => $user_id,
+        $cart = Cart::create([
+            'user_id' => $user->id,
             'product_id' => $product->id,
-            'product_offer_id' => $product->product_type_id == 1 ? null : $cart->product_offer_id,
             'product_step_id' => 1,
-            'expired_at' => $end->modify('+30 day'),
+            'expired_at' => now()->addMonths(1),
             'locked' => 'N',
-            'cart_ref' => uniqid()
+            'cart_ref' => uniqid(),
         ]);
-        DB::statement('INSERT INTO renewals (old_cart_ref, new_cart_ref) VALUES ("'. $cart->cart_ref.'", "'. $newCart->cart_ref.'");');
+
+        return redirect()->route('front.product.buy', ['product' => $product, 'cart' => $cart]);
+    }
+
+    static public function renew(Product $product, Cart $cart, $user_id = null)
+    {
+        if ($user_id == null) {
+            $user_id = auth()->user()->id;
+        }
+
+        $newCart = app(RenewalCartService::class)->startOrResumeFromSourceCart($product, $cart, (int) $user_id);
 
         return redirect()->route('front.product.buy', ['product' => $product, 'cart' => $newCart]);
     }
@@ -258,6 +197,11 @@ class SiteBuyProductController extends Controller
         else{
             $redirect = 'Sites/BuyProductBankers';
         }
+
+        $renewals = app(RenewalCartService::class);
+        $isGmRenewal = (int) $product->id === 5
+            && ($renewals->isRenewalCart($cart) || !empty($cart->renewal_date));
+
         return Inertia::render($redirect, [
             'product' => [
                 'id' => $product->id,
@@ -273,7 +217,11 @@ class SiteBuyProductController extends Controller
                 'step' => $product->productSteps[0],
             ],
             'cart' => $cart,
-            'clientDetails' => $clientDetails
+            'clientDetails' => $clientDetails,
+            'is_gm_renewal' => $isGmRenewal,
+            'previous_questionnaire_date' => $isGmRenewal
+                ? $renewals->previousQuestionnaireDate($cart)
+                : null,
         ]);
     }
 
@@ -282,8 +230,40 @@ class SiteBuyProductController extends Controller
         $user = auth()->user();
         $cart = $this->verifyAndGetCartOrRedirect($user, $product, $cart);
         $validated = $request->validated();
+
+        $questionnaireYes = collect([
+            'confirmation_sinistri',
+            'confirmation_gmedici1',
+            'confirmation_gmedici2',
+            'confirmation_gmedici3',
+            'confirmation_gmedici4',
+            'confirmation_gmedici5',
+        ])->filter(function ($key) use ($validated) {
+            return ($validated[$key] ?? null) === 'si';
+        })->values();
+
+        if ($questionnaireYes->isNotEmpty() && in_array((int) $product->id, [1, 5], true)) {
+            $isGmWs = (int) $product->id === 5
+                && (app(RenewalCartService::class)->isRenewalCart($cart) || !empty($cart->renewal_date));
+
+            Log::notice('buy.step1.blocked_questionnaire', [
+                'user_id' => $user->id,
+                'cart_ref' => $cart->cart_ref,
+                'product_id' => $product->id,
+                'gm_ws' => $isGmWs,
+                'fields' => $questionnaireYes->all(),
+            ]);
+
+            $message = $isGmWs
+                ? 'Una o più dichiarazioni del warranty statement non sono confermate. Se non puoi confermare, scrivi a info@golinucci.it'
+                : 'Una o più risposte al questionario (Sì) impediscono l’acquisto online. Scegli No se hai selezionato Sì per errore, altrimenti scrivi a info@golinucci.it';
+
+            return back()->withErrors([
+                'confirmation' => $message,
+            ])->withInput();
+        }
         
-        DB::transaction(function () use ($user, $validated, $cart) {
+        DB::transaction(function () use ($user, $validated, $cart, $questionnaireYes) {
             $clientDetails = ClientDetail::updateOrCreate(['user_id'   => $user->id], $validated);
             $rebuildProductClientDetails = [];
             foreach ($validated['product_client_details'] as $el) {
@@ -294,14 +274,9 @@ class SiteBuyProductController extends Controller
 
             $clientDetails->productClientDetails()->syncWithoutDetaching($rebuildProductClientDetails);
 
-            if($validated['confirmation_sinistri'] == "si" || $validated['confirmation_gmedici1'] == 'si' || $validated['confirmation_gmedici2'] == 'si' || $validated['confirmation_gmedici3'] == 'si' || $validated['confirmation_gmedici4'] == 'si' || $validated['confirmation_gmedici5'] == 'si'){
-                if($cart->product->id == 5 || $cart->product->id == 1){
-                    abort(480);
-                }
-                else{
-                    $clientDetails->with_accident = true;
-                    $clientDetails->save();
-                }
+            if ($questionnaireYes->isNotEmpty()) {
+                $clientDetails->with_accident = true;
+                $clientDetails->save();
             }
 
             $cart->giorno_completamento_step_1 = now();
@@ -389,7 +364,6 @@ class SiteBuyProductController extends Controller
 
                 //facendo in modo che l'utente non possa scegliere una retro diversa
             if($product->id == 5 && $full_cert != null && $full_cert->cart->indemnity_limit_patrimonial == 2){
-                abort(509);
                 $product = $product->load([
                 'productOffers' => function ($query) use ($flag_prev_2022) {
                     $query->with(['conditionalFields', 'contract'])->where('flag_prev_2022', $flag_prev_2022)->whereNull('old')->where('indemnity_limit_patrimonial', 2);
@@ -405,8 +379,11 @@ class SiteBuyProductController extends Controller
             }
             else{
                 $product = $product->load([
-                    'productOffers' => function ($query) use ($flag_prev_2022) {
+                    'productOffers' => function ($query) use ($flag_prev_2022, $product) {
                         $query->with(['conditionalFields', 'contract'])->where('flag_prev_2022', $flag_prev_2022)->whereNull('old');
+                        if ((int) $product->id === GiovaneMedicoPremiumService::PRODUCT_ID) {
+                            $query->where('indemnity_limit_patrimonial', 10);
+                        }
                     }
                 ]);
             }
@@ -470,19 +447,39 @@ class SiteBuyProductController extends Controller
         else{
             $redirect = 'Sites/BuyProductBankers';
         }
+        $conditionalFields = $product->conditionalFields;
+        if ((int) $product->id === GiovaneMedicoPremiumService::PRODUCT_ID) {
+            $conditionalFields = $conditionalFields->filter(function ($field) {
+                return (int) $field->id !== 11;
+            })->values();
+            $offers = $offers->map(function ($offer) {
+                $offer->setRelation(
+                    'conditionalFields',
+                    $offer->conditionalFields->filter(function ($field) {
+                        return (int) $field->id !== 11;
+                    })->values()
+                );
+
+                return $offer;
+            });
+        }
+        $productPayload = [
+            'id' => $product->id,
+            'name' => $product->name,
+            'type' => Str::slug($product->productType->name, '-'),
+            'detailed_description' => $product->detailed_description,
+            'conditions' => $product->conditions,
+            'conditional_fields' => $conditionalFields,
+            'hex_color' => $product->hex_color,
+            'offers' => $offers,
+            'table_elements' => json_decode($product->productOfferTable, true),
+            'steps' => $product->productSteps->count(),
+        ];
+        if ((int) $product->id === GiovaneMedicoPremiumService::PRODUCT_ID) {
+            $productPayload['giovane_medico'] = app(GiovaneMedicoPremiumService::class)->inertiaTariffs();
+        }
         return Inertia::render($redirect, [
-            'product' => [
-                'id' => $product->id,
-                'name' => $product->name,
-                'type' => Str::slug($product->productType->name, '-'),
-                'detailed_description' => $product->detailed_description,
-                'conditions' => $product->conditions,
-                'conditional_fields' => $product->conditionalFields,
-                'hex_color' => $product->hex_color,
-                'offers' => $offers,
-                'table_elements' => json_decode($product->productOfferTable, true),
-                'steps' => $product->productSteps->count(),
-            ],
+            'product' => $productPayload,
             'cart' => $cart,
             'clientDetails' => $clientDetails
         ]);
@@ -493,20 +490,51 @@ class SiteBuyProductController extends Controller
         $user = auth()->user();
         $cart = $this->verifyAndGetCartOrRedirect($user, $product, $cart);
 
-        $validated = $request->validate([
+        $rules = [
             'product_offer_id_selected' => ['required', 'integer'],
-        ]);
+        ];
+        if ((int) $product->id === GiovaneMedicoPremiumService::PRODUCT_ID) {
+            $rules['albo_enrollment_year'] = ['required', 'integer', 'min:1990', 'max:' . date('Y')];
+        }
+        $validated = $request->validate($rules);
 
         $productOffer = ProductOffer::findOrFail($request->product_offer_id_selected);
-        $cart->total_payable = $productOffer->total_payable;
-        $cart->admin_fee = $productOffer->admin_fee;
-        $cart->gross_premium = $productOffer->gross_premium;
-        $cart->tax = $productOffer->tax;
-        $cart->net_premium = $productOffer->net_premium;
-        $cart->accessory = $productOffer->accessory;
-        $cart->net_plus_access_premium = $productOffer->net_plus_access_premium;
-        $cart->indemnity_limit = $productOffer->indemnity_limit;
-        $cart->indemnity_limit_patrimonial = $productOffer->indemnity_limit_patrimonial;
+        if ((int) $productOffer->product_id !== (int) $product->id) {
+            abort(404);
+        }
+        if (
+            (int) $product->id === GiovaneMedicoPremiumService::PRODUCT_ID
+            && !app(RenewalCartService::class)->isRenewalCart($cart)
+            && (int) $productOffer->indemnity_limit_patrimonial !== 10
+        ) {
+            return back()->withErrors([
+                'product_offer_id_selected' => 'Per le nuove polizze Giovane medico la retroattività è 10 anni.',
+            ]);
+        }
+
+        if ((int) $product->id === GiovaneMedicoPremiumService::PRODUCT_ID) {
+            try {
+                app(GiovaneMedicoPremiumService::class)->applyToCart(
+                    $cart,
+                    (int) $validated['albo_enrollment_year'],
+                    $productOffer
+                );
+            } catch (\InvalidArgumentException $e) {
+                return back()->withErrors([
+                    'albo_enrollment_year' => 'Anno di iscrizione all’ordine non valido.',
+                ]);
+            }
+        } else {
+            $cart->total_payable = $productOffer->total_payable;
+            $cart->admin_fee = $productOffer->admin_fee;
+            $cart->gross_premium = $productOffer->gross_premium;
+            $cart->tax = $productOffer->tax;
+            $cart->net_premium = $productOffer->net_premium;
+            $cart->accessory = $productOffer->accessory;
+            $cart->net_plus_access_premium = $productOffer->net_plus_access_premium;
+            $cart->indemnity_limit = $productOffer->indemnity_limit;
+            $cart->indemnity_limit_patrimonial = $productOffer->indemnity_limit_patrimonial;
+        }
         $clientDetails = ClientDetail::query($product)
             ->where([
                 'user_id' => $user->id
@@ -514,7 +542,7 @@ class SiteBuyProductController extends Controller
 
         
         $flag_prev_2022 = $clientDetails->flag_prev_2022;
-        if($flag_prev_2022 == 1){
+        if($flag_prev_2022 == 1 && (int) $product->id === 1){
             $cart->indemnity_limit_patrimonial = 1000000;
             $cart->save();
         }
@@ -591,6 +619,8 @@ class SiteBuyProductController extends Controller
             return redirect()->route('front.product.buy', compact('product', 'cart')); 
         }
         $paypalClientId = config('paypal.' . config('paypal.mode') . '.client_id');
+        $stripeEnabled = app(StripeCheckoutService::class)->enabled();
+        $electronicOk = PaymentGateway::allowsElectronic($cart->total_payable);
         $productObject = [
             'id' => $product->id,
             'name' => $product->name,
@@ -598,10 +628,30 @@ class SiteBuyProductController extends Controller
             'payments_description' => $product->payments_description,
             'hex_color' => $product->hex_color,
             'steps' => $product->productSteps->count(),
+            'electronic_capped' => !$electronicOk,
+            'electronic_max_eur' => PaymentGateway::electronicMaxEur(),
         ];
 
         if (empty($payment)) {
             $payment_gateways = PaymentGateway::where(['public' => 1])->get();
+            if ($stripeEnabled) {
+                app(StripeCheckoutService::class)->gatewayId();
+                $payment_gateways = $payment_gateways
+                    ->filter(function ($gw) {
+                        return $gw->name !== 'Paypal';
+                    })->values();
+            } else {
+                $payment_gateways = $payment_gateways
+                    ->filter(function ($gw) {
+                        return $gw->name !== 'Stripe';
+                    })->values();
+            }
+            if (!$electronicOk) {
+                $payment_gateways = $payment_gateways
+                    ->filter(function ($gw) {
+                        return $gw->name === 'BBM';
+                    })->values();
+            }
             $productObject['payment_gateways'] = $payment_gateways;
 
             if($product->id == 1){
@@ -613,7 +663,8 @@ class SiteBuyProductController extends Controller
             return Inertia::render($redirect, [
                 'product' => $productObject,
                 'cart' => $cart,
-                'paypal_client_id' => $paypalClientId
+                'paypal_client_id' => $paypalClientId,
+                'stripe_enabled' => $stripeEnabled,
             ]);
         } else {
             $payment_data = Payment::query()->where(['cart_id' => $cart->id])->findOrFail($payment);
@@ -628,9 +679,15 @@ class SiteBuyProductController extends Controller
             return Inertia::render($redirect, [
                 'product' => $productObject,
                 'cart' => $cart,
-                'paypal_client_id' => $paypalClientId
+                'paypal_client_id' => $paypalClientId,
+                'stripe_enabled' => $stripeEnabled,
             ]);
         }
+    }
+
+    public function store_step4_stripe(Product $product, Cart $cart, Request $request)
+    {
+        return $this->store_step4($product, $cart, 'stripe', $request);
     }
 
     public function store_step4(Product $product, Cart $cart, String $gateway, Request $request)
@@ -643,12 +700,21 @@ class SiteBuyProductController extends Controller
 
         if($gateway == 'paypal'){
             $gatewayid = 1;
+        } elseif ($gateway == 'stripe') {
+            $gatewayid = app(StripeCheckoutService::class)->gatewayId();
         }
         else{
             $gatewayid = 2;
         }
         $user = auth()->user();
         $cart = $this->verifyAndGetCartOrRedirect($user, $product, $cart);
+
+        if (in_array($gateway, ['paypal', 'stripe'], true) && !PaymentGateway::allowsElectronic($cart->total_payable)) {
+            return response()->json([
+                'error' => 'electronic_capped',
+                'message' => 'Per importi superiori a ' . number_format(PaymentGateway::electronicMaxEur(), 0, ',', '.') . ' € è previsto solo il bonifico.',
+            ], 422);
+        }
 
         $payment = Payment::firstOrCreate(
             [
@@ -664,64 +730,43 @@ class SiteBuyProductController extends Controller
             $payment->save();
         
         if ($gateway == 'paypal') {
-            // paypal
+            $order = app(PaypalCaptureService::class)->createOrReuseOrder($cart, $product, $payment);
 
-            $order = $this->create_order_paypal($cart, $product, $payment);
-            //exec("explorer.exe");
             return response()->json([
                 'order' => $order,
                 'payment_id' => $payment->id,
-            ],200);
-            //return redirect()->route('front.paypal_redirect', ['url' => $url]);
-        } else {
-            // bbm
-            auth()->user()->notify(new BankTransferGatewayPayment($payment));
-            return redirect()->route('front.product.buy', compact('product', 'cart', 'payment'));
+            ], 200);
         }
-    }
 
-    private function create_order_paypal(Cart $cart, Product $product, Payment $payment = null)
-    {
-        $provider = new PayPalClient;
+        if ($gateway == 'stripe') {
+            if (!app(StripeCheckoutService::class)->enabled()) {
+                return response()->json([
+                    'error' => 'stripe_disabled',
+                    'message' => 'Pagamento Stripe non attivo.',
+                ], 503);
+            }
+            try {
+                $session = app(StripeCheckoutService::class)->createCartSession($cart, $payment, $product);
+            } catch (\Throwable $e) {
+                Log::error('stripe.checkout.create_failed', [
+                    'cart_ref' => $cart->cart_ref,
+                    'message' => $e->getMessage(),
+                ]);
 
-        $provider->setApiCredentials(config('paypal'));
-        $token = $provider->getAccessToken();
-        $provider->setAccessToken($token);
+                return response()->json([
+                    'error' => 'stripe_create_failed',
+                    'message' => $e->getMessage(),
+                ], 500);
+            }
 
-        // Prepare Order
-        $order = $provider->createOrder([
-            'intent' => 'CAPTURE',
-            'purchase_units' => [[
-                'reference_id' => 'transaction_id_' . $payment->id,
-                'amount' => [
-                    'currency_code' => 'EUR',
-                    'value' => $cart->total_payable
-                ]
-            ]]
-            /*,
-            'application_context' => [
-                'cancel_url' => route('front.product.store_step4_paypal_cancel', [
-                    'product' => $product,
-                    'cart' => $cart,
-                    'payment_id' => $payment->id
-                ]),
-                'return_url' => route('front.product.store_step4_paypal_return', [
-                    'product' => $product,
-                    'cart' => $cart,
-                    'payment_id' => $payment->id
-                ])
-            ]*/
-        ]);
+            return response()->json([
+                'url' => $session->url,
+                'payment_id' => $payment->id,
+            ], 200);
+        }
 
-        //sleep(10);
-        
-
-        // Store Token so we can retrieve after PayPal sends them back to us
-        $payment->transaction_ref = $order['id'];
-        $payment->save();
-        $paypal_redirect_url = $order['links'][1]['href'];
-
-        return $order;
+        auth()->user()->notify(new BankTransferGatewayPayment($payment));
+        return redirect()->route('front.product.buy', compact('product', 'cart', 'payment'));
     }
     /**
      * Questo metodo mi serve per gestire la redirect esterna verso paypal per il pagamento
@@ -737,105 +782,41 @@ class SiteBuyProductController extends Controller
         abort(404);
     }
 
-    public function store_step4_paypal_return(Product $product, Cart $cart, String $payment_id)
+    public function store_step4_paypal_return(Product $product, Cart $cart, String $payment_id, Request $request, PaypalCaptureService $capture)
     {
-        
-        $p = Payment::find($payment_id);
-        
-        $provider = new PayPalClient;
-        $provider->setApiCredentials(config('paypal'));
-        
-        $provider->getAccessToken();
-        $response = $provider->capturePaymentOrder($p->transaction_ref);
+        try {
+            $orderId = (string) $request->query('order_id', '');
+            $payment = $capture->resolvePayment($cart, $payment_id, $orderId !== '' ? $orderId : null);
 
-        $payment_id = $p->id;
-        Log::info($response);
-        
-        if(isset($response['purchase_units'][0]['payments']['captures'][0]['status']) && $response['purchase_units'][0]['payments']['captures'][0]['status'] == 'COMPLETED'){
-            $payment = Payment::query()->where(['cart_id' => $cart->id])->findOrFail($payment_id);
-            $payment->updatePaymentStatus();
-            $payment->updatePaymentPaymentNo();
-            // genero e salvo il pdf con proforma fattura dell'acquisto
-            
-            if($product->product_type_id == 1){
-                $paymentToPdf = new PaymentCertificateToPdfService($cart);
-                $paymentToPdf->generateAndPersist();
-            }
-            //BANCARI
-            //bancari
-        if($product->product_type_id == 2){
-            
-            if(Carbon::now()->lt("31-12-2025")){
-                $startReal = Carbon::parse('31-12-2025')->format('Y-m-d');
-            }
-            else{
-                $startReal = $cart->payment->paid_at->format('Y-m-d');
-            }
-            if($cart->productOffer->months == 12){
-                $endReal = Carbon::parse('01-12-2026')->endOfYear()->format('Y-m-d');
-            }
-            else if(Carbon::parse($startReal)->addMonths($cart->productOffer->months) > Carbon::parse('01-12-2026')->endOfYear()->format('Y-m-d')) {
-                $endReal = Carbon::parse('01-12-2026')->endOfYear()->format('Y-m-d');
-            }
-            else{
-                $endReal = Carbon::parse($startReal)->addMonths($cart->productOffer->months);
+            if (!$payment) {
+                Log::warning('paypal.return.payment_not_found', [
+                    'cart_ref' => $cart->cart_ref,
+                    'payment_id' => $payment_id,
+                    'order_id' => $orderId,
+                ]);
+
+                return response()->json([
+                    'info_paypal' => 'FAILED',
+                    'reason' => 'payment_not_found',
+                ], 200);
             }
 
-            if(!isset($endReal)){
-                $certificate = Certificate::firstOrCreate(
-                    ['cart_id' => $cart->id],
-                    [
-                        'product_id' => $cart->product_id,
-                        'product_offer_id' => $cart->product_offer_id,
-                        'contract_id' => $cart->productOffer->contract->id,
-                        'start_validity_date' => $startReal,
-                        //'retroactivity' => $cart->retroactivity
-                    ]
-                );
-            }
-            else{
-                $certificate = Certificate::firstOrCreate(
-                    ['cart_id' => $cart->id],
-                    [
-                        'product_id' => $cart->product_id,
-                        'product_offer_id' => $cart->product_offer_id,
-                        'contract_id' => $cart->productOffer->contract->id,
-                        'start_validity_date' => $startReal,
-                        'end_validity_date' => $endReal,
-                        //'retroactivity' => $cart->retroactivity
-                    ]
-                );
-            }
-            $certificate->save();
-            $declarationToPdf = new PaymentBankersToPdfService($cart);
-            $declarationToPdf->generateAndPersist();
+            $result = $capture->captureAndComplete($cart, $payment, $product, 'browser');
 
-            
-
-
-            activity()
-                ->causedBy(auth()->user())
-                ->on($certificate)
-                ->event('certificate_generation')
-                ->log("Completed certificate $certificate->id generation;");
-
-            $cart->user->notify(new FinalEmailWithAttachments($cart));
-            $cart->user->notify(new FinalEmailWithAttachmentsNotPec($cart));
-            //Notification::mailer('pec')->sendNow($cart->user, new FinalEmailWithAttachments($cart));
-
-        }
-        //fine bancari
-            $cart->updateCartStep(5);
-
-
-            
             return response()->json([
-                'info_paypal' => 'SUCCESS'
+                'info_paypal' => $result['info_paypal'],
+                'reason' => $result['reason'],
             ], 200);
-        }
-        else{
+        } catch (\Throwable $e) {
+            Log::error('paypal.return.exception', [
+                'cart_ref' => $cart->cart_ref,
+                'payment_id' => $payment_id,
+                'message' => $e->getMessage(),
+            ]);
+
             return response()->json([
                 'info_paypal' => 'FAILED',
+                'reason' => 'exception',
             ], 200);
         }
     }
@@ -868,6 +849,8 @@ class SiteBuyProductController extends Controller
         else{
             $redirect = 'Sites/BuyProductBankers';
         }
+        $cart->loadMissing('certificate');
+        $doprintStep = optional($cart->certificate)->doprint_current_step;
         return Inertia::render($redirect, [
             'product' => [
                 'id' => $product->id,
@@ -876,7 +859,8 @@ class SiteBuyProductController extends Controller
                 'hex_color' => $product->hex_color,
                 'steps' => $product->productSteps->count(),
                 'documentGenerator' => [],
-                'completedDocumentGenerator' => false,
+                'completedDocumentGenerator' => $doprintStep === 'completed',
+                'doprint_step' => $doprintStep,
             ],
             'cart' => $cart,
         ]);
@@ -918,6 +902,20 @@ class SiteBuyProductController extends Controller
                     break;
                 case 'completed':
                     $response = $this->store_step5_certificate_download($cart);
+                    break;
+                case 'status':
+                    $response = app(LloydsDoprintPipelineService::class)->status($cart);
+                    break;
+                case 'run':
+                    try {
+                        app(LloydsDoprintPipelineService::class)->run($cart);
+                        $response = app(LloydsDoprintPipelineService::class)->status($cart);
+                    } catch (Throwable $e) {
+                        $response = [
+                            'error' => true,
+                            'message' => 'Generazione documenti non riuscita. Attendere o riprovare, oppure contattarci al numero 0547 22351 o via email.',
+                        ];
+                    }
                     break;
             }
 
@@ -1221,7 +1219,13 @@ class SiteBuyProductController extends Controller
         if (!empty($cart)) {
             // recupero il carrello verificando se è ancora attivo
             if (empty($cart->verifyAndGrabCart($user))) {
-                abort(401);
+                Log::notice('cart.verify_denied', [
+                    'user_id' => $user->id,
+                    'cart_ref' => $cart->cart_ref,
+                    'locked' => $cart->locked,
+                    'step' => $cart->product_step_id,
+                ]);
+                abort(403, 'Questo ordine non è più modificabile. Usa il link di rinnovo della polizza più recente.');
             }
         }
 

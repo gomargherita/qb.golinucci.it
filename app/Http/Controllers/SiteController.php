@@ -15,6 +15,9 @@ use App\Models\FreeAmount;
 use App\Models\Cart;
 use App\Models\EhealthBuyer;
 use App\Models\ImportoLiberoBuyer;
+use App\Models\PaymentGateway;
+use App\Services\Payments\StripeCheckoutService;
+use App\Services\GiovaneMedicoPremiumService;
 use App\Models\EhealthCode;
 use Doctrine\DBAL\ArrayParameterType;
 use Inertia\Inertia;
@@ -91,19 +94,11 @@ class SiteController extends Controller
             $interval = $interval->format("%R%a");
             
             $isExpiring[$cart->id] = $interval;
-            $new_cart_ref = DB::select(DB::raw('SELECT new_cart_ref FROM renewals WHERE old_cart_ref = "'.$cart->cart_ref.'";'));
-            if(!empty($new_cart_ref)){
-                $current_step = DB::select(DB::raw('SELECT product_step_id FROM carts WHERE cart_ref = "'.$new_cart_ref[0]->new_cart_ref.'";'));
-                if($current_step[0]->product_step_id == 7){
-                    $isRenewed[$cart->id] = true;
-                }
-                else{
-                    $isRenewed[$cart->id] = false;
-                }
-            }
-            else{
-                $isRenewed[$cart->id] = false;
-            }
+            $renewedRef = DB::table('renewals')->where('old_cart_ref', $cart->cart_ref)->value('new_cart_ref');
+            $renewedStep = $renewedRef
+                ? (int) Cart::where('cart_ref', $renewedRef)->value('product_step_id')
+                : 0;
+            $isRenewed[$cart->id] = ($renewedStep === 7);
         }
         if(count($carts) == 0){
             $noProds = true;
@@ -151,25 +146,40 @@ class SiteController extends Controller
 
     public function product(Product $product)
     {
+        $productId = $product->id;
         $product = $product->load([
-            'productOffers' => function ($query) {
+            'productOffers' => function ($query) use ($productId) {
                 $flag_prev_2022 = 0;
                 $query->with(['conditionalFields', 'contract'])->where('flag_prev_2022', $flag_prev_2022)->whereNull('old');
+                if ((int) $productId === GiovaneMedicoPremiumService::PRODUCT_ID) {
+                    $query->where('indemnity_limit_patrimonial', 10);
+                }
             }
         ]);
 
+        $conditionalFields = $product->conditionalFields;
+        $offers = $product->productOffers;
+        if ((int) $product->id === GiovaneMedicoPremiumService::PRODUCT_ID) {
+            list($conditionalFields, $offers) = app(GiovaneMedicoPremiumService::class)->presentNewBusiness($product);
+        }
+
+        $productPayload = [
+            'id' => $product->id,
+            'name' => $product->name,
+            'type' => Str::slug($product->productType->name, '-'),
+            'detailed_description' => $product->detailed_description,
+            'conditions' => $product->conditions,
+            'conditional_fields' => $conditionalFields,
+            'hex_color' => $product->hex_color,
+            'offers' => $offers,
+            'table_elements' => json_decode($product->productOfferTable, true),
+        ];
+        if ((int) $product->id === GiovaneMedicoPremiumService::PRODUCT_ID) {
+            $productPayload['giovane_medico'] = app(GiovaneMedicoPremiumService::class)->inertiaTariffs();
+        }
+
         return Inertia::render('Sites/Product', [
-            'product' => [
-                'id' => $product->id,
-                'name' => $product->name,
-                'type' => Str::slug($product->productType->name, '-'),
-                'detailed_description' => $product->detailed_description,
-                'conditions' => $product->conditions,
-                'conditional_fields' => $product->conditionalFields,
-                'hex_color' => $product->hex_color,
-                'offers' => $product->productOffers,
-                'table_elements' => json_decode($product->productOfferTable, true),
-            ],
+            'product' => $productPayload,
         ]);
     }
 
@@ -214,7 +224,14 @@ class SiteController extends Controller
             //step 2
             $paypalClientId = config('paypal.' . config('paypal.mode') . '.client_id');
 
-            return Inertia::render('Sites/importo_liberoStep2', ['paypal_client_id' => $paypalClientId, 'id' => $id, 'total_payable' => $buyer->total_payable,], );
+            return Inertia::render('Sites/importo_liberoStep2', [
+                'paypal_client_id' => $paypalClientId,
+                'id' => $id,
+                'total_payable' => $buyer->total_payable,
+                'stripe_enabled' => app(StripeCheckoutService::class)->enabled(),
+                'electronic_capped' => !PaymentGateway::allowsElectronic($buyer->total_payable),
+                'electronic_max_eur' => PaymentGateway::electronicMaxEur(),
+            ]);
         }
     }
 
@@ -277,7 +294,14 @@ class SiteController extends Controller
             //step 2
             $paypalClientId = config('paypal.' . config('paypal.mode') . '.client_id');
 
-            return Inertia::render('Sites/importo_liberoStep2', ['paypal_client_id' => $paypalClientId, 'id' => $id, 'total_payable' => $buyer->total_payable,], );
+            return Inertia::render('Sites/importo_liberoStep2', [
+                'paypal_client_id' => $paypalClientId,
+                'id' => $id,
+                'total_payable' => $buyer->total_payable,
+                'stripe_enabled' => app(StripeCheckoutService::class)->enabled(),
+                'electronic_capped' => !PaymentGateway::allowsElectronic($buyer->total_payable),
+                'electronic_max_eur' => PaymentGateway::electronicMaxEur(),
+            ]);
         }
     }
 
@@ -286,7 +310,11 @@ class SiteController extends Controller
             return Inertia::render('Sites/'.$page);
         }
         else{
-            return Inertia::render('Sites/'.$page, ['causal' => $freeamount->causal, 'total_payable' => $freeamount->total_payable]);
+            return Inertia::render('Sites/'.$page, [
+                'causal' => $freeamount->causal,
+                'total_payable' => $freeamount->total_payable,
+                'freeamount_id' => $freeamount->id,
+            ]);
         }
     }
     public function importo_libero_store_step1(Request $request){
@@ -295,6 +323,13 @@ class SiteController extends Controller
         $surname = $request->input('surname');
         $importo = $request->input('total_payable');
         $causale = $request->input('causale');
+        if ($request->filled('freeamount_id')) {
+            $preset = FreeAmount::find($request->input('freeamount_id'));
+            if ($preset) {
+                $importo = $preset->total_payable;
+                $causale = $preset->causal;
+            }
+        }
 
         if($causale == 'BENEFIT'){
             $fiscalcode = $request->input('fiscalcode');
@@ -440,6 +475,30 @@ class SiteController extends Controller
         return redirect()->route('front.importoLibero', ['id' => $buyer->id, 'page' => "salutesport"]);
     }
 
+    public function importoLiberoStripePay($id, StripeCheckoutService $stripe)
+    {
+        $buyer = ImportoLiberoBuyer::find(intval($id));
+        if (!$buyer) {
+            return response()->json(['error' => 'buyer_missing'], 404);
+        }
+        if ($buyer->paid == 1) {
+            return response()->json(['reload' => 'reload']);
+        }
+        if (!$stripe->enabled()) {
+            return response()->json(['error' => 'stripe_not_configured'], 503);
+        }
+        if (!PaymentGateway::allowsElectronic($buyer->total_payable)) {
+            return response()->json([
+                'error' => 'electronic_capped',
+                'message' => 'Per importi superiori a ' . number_format(PaymentGateway::electronicMaxEur(), 0, ',', '.') . ' € è previsto solo il bonifico.',
+            ], 422);
+        }
+
+        $session = $stripe->createImportoLiberoSession($buyer);
+
+        return response()->json(['url' => $session->url], 200);
+    }
+
     public function importoLiberoPay($id){
         $buyer = ImportoLiberoBuyer::find(intval($id));
 
@@ -448,6 +507,12 @@ class SiteController extends Controller
                 'reload' => 'reload']);
         }
 
+        if (!PaymentGateway::allowsElectronic($buyer->total_payable)) {
+            return response()->json([
+                'error' => 'electronic_capped',
+                'message' => 'Per importi superiori a ' . number_format(PaymentGateway::electronicMaxEur(), 0, ',', '.') . ' € è previsto solo il bonifico.',
+            ], 422);
+        }
 
         $order = $this->create_order_paypal($buyer->total_payable, $id);
       Log::info($order);

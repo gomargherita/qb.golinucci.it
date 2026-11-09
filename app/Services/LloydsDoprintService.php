@@ -63,6 +63,10 @@ class LloydsDoprintService
             // $sessionDuration = $response->SessionDuration;
             // $pwExpiringDays = $response->PwExpiringDays;
         } catch (SoapFault $exception) {
+            Log::warning('doprint.handshake_failed', [
+                'faultcode' => $exception->faultcode ?? null,
+                'faultstring' => $exception->faultstring ?? null,
+            ]);
             throw new \Exception("Exception Thrown $messageType: $exception->faultstring");
         }
     }
@@ -171,7 +175,8 @@ class LloydsDoprintService
         $CertificateDateTimeDetails = $xml->getElementsByTagName('CertificateDateTimeDetails')->item(0);
         $CertificateDateTimeDetails->getElementsByTagName('InceptionDate')->item(0)->textContent = $start_date;
         $CertificateDateTimeDetails->getElementsByTagName('ExpiryDate')->item(0)->textContent = $end_date;
-        $CertificateDateTimeDetails->getElementsByTagName('ProposalDate')->item(0)->textContent = $certificate->cart->giorno_completamento_step_1;
+        $proposalDateXml = $cart->giorno_completamento_step_1 ?: $proposal_date;
+        $CertificateDateTimeDetails->getElementsByTagName('ProposalDate')->item(0)->textContent = (string) $proposalDateXml;
 
         $RiskDetailsLB = $xml->getElementsByTagName('RiskDetailsLB')->item(0);
         $indemnity_limit = number_format(
