@@ -34,7 +34,6 @@ use App\Rules\ProjectDeclarationsRule;
 use App\Services\DeclarationsToPdfService;
 use App\Services\PaymentBankersToPdfService;
 use App\Notifications\FinalEmailWithAttachments;
-use App\Notifications\FinalEmailWithAttachmentsNotPec;
 use App\Models\Certificate;
 use App\Notifications\FirstEmailWithCredentials;
 use Throwable;
@@ -917,7 +916,6 @@ class CartController extends Controller
     public function sendEmail(Cart $cart){
         try{
             $cart->user->notify(new FinalEmailWithAttachments($cart));
-            $cart->user->notify(new FinalEmailWithAttachmentsNotPec($cart));
             //Notification::mailer('pec')->sendNow($cart->user, new FinalEmailWithAttachments($cart));
 
             //Mail::mailer('pec')->to($cart->user->email)->send(new FinalEmailWithAttachments($cart));
@@ -930,28 +928,39 @@ class CartController extends Controller
 
     public function sendFirstEmail(Cart $cart, $product_id){
         $user_id = $cart->user_id;
+        $targetProductId = (int) $product_id;
+
         $last_prev_certificate = Certificate::query()
-                    ->with('cart')
-                    ->select(['end_validity_date'])->where([
-                        // controllo su product
-                        'product_id' => $cart->product_id,
-                    ])->whereHas('cart', function ($q) use ($user_id) {
-                        $q->where('user_id', $user_id);
-                    })
-                    ->latest()->first();
-        $renewal = (explode(" ", ((string)$last_prev_certificate['end_validity_date']))[0]);
-        //if($cart->renewal_date == null || $cart->product_id == null){
-            $cart->renewal_date = $renewal;
-            $cart->product_id = intval($product_id);
-            $cart->save();
+            ->with('cart')
+            ->select(['end_validity_date'])
+            ->where('product_id', $targetProductId)
+            ->whereHas('cart', function ($q) use ($user_id) {
+                $q->where('user_id', $user_id);
+            })
+            ->latest()
+            ->first();
 
-            //dd($cart);
-            //return $this->sendFirstEmail($cart, $product_id);
-        //}
+        $renewal = null;
+        if ($last_prev_certificate && $last_prev_certificate->end_validity_date) {
+            $renewal = explode(' ', (string) $last_prev_certificate->end_validity_date)[0];
+        } elseif ($cart->renewal_date) {
+            $renewal = $cart->renewal_date->toDateString();
+        } elseif ($cart->custom_end_date) {
+            $renewal = explode(' ', (string) $cart->custom_end_date)[0];
+        } elseif ($cart->expired_at) {
+            $renewal = explode(' ', (string) $cart->expired_at)[0];
+        }
 
-            //dd($cart);
-            //return $this->sendFirstEmail($cart, $product_id);
-        //}
+        if (!$renewal) {
+            return Redirect::back()->with(
+                'error',
+                'Impossibile inviare l\'email rinnovo: manca un certificato precedente e nessuna data di rinnovo sul carrello.'
+            );
+        }
+
+        $cart->renewal_date = $renewal;
+        $cart->product_id = $targetProductId;
+        $cart->save();
 
         try{
             $cart->user->notify(new FirstEmailWithCredentials($cart));

@@ -123,10 +123,17 @@ class RenewalChallengeController extends Controller
         $request->session()->regenerate();
         $request->session()->forget(self::SESSION_KEY);
 
-        return redirect()->route('front.product.renew', [
+        $url = route('front.product.renew', [
             'product' => $cart->product_id,
             'cart' => $cart->cart_ref,
         ]);
+
+        // Inertia XHR + session regenerate + auth on /renew: 401, URL stays on /challenge.
+        if ($request->header('X-Inertia')) {
+            return Inertia::location($url);
+        }
+
+        return redirect()->to($url);
     }
 
     public function resend(Request $request, RenewalOtpService $otps)

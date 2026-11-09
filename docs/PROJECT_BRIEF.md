@@ -20,7 +20,7 @@ Sistema gestionale assicurativo **QB** (`https://qb.golinucci.it/`), focus inizi
 ### Dettaglio QB2 produzione (email Vittorio, 28 set 2026)
 - Droplet: Ubuntu 22.04, Apache 2.4, **2 vCPU / 1,9 GB RAM**
 - Laravel 8.83 + PHP 8.1 + Inertia.js
-- Code: `QUEUE_CONNECTION=database` (Supervisor); **niente Redis / RabbitMQ**
+- Code: **produzione** `QUEUE_CONNECTION=database` (Supervisor). **Staging** da 23/10: `QUEUE_CONNECTION=redis` + predis (KAN-10). Prod non toccata.
 - Cache e sessioni: driver **file** locale
 - Node.js v24 (nvm) + Playwright/Chromium sul server
 - Pacchetti: Spatie Permission, Activitylog, Maatwebsite Excel, League Glide

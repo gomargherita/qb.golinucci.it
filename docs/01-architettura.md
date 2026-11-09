@@ -17,7 +17,7 @@
 
 - Droplet DigitalOcean: Ubuntu 22.04, Apache 2.4, 2 vCPU / ~1,9 GB RAM
 - DB: MySQL 8 Managed (separato dal droplet)
-- Code Laravel: `QUEUE_CONNECTION=database` + Supervisor (niente Redis/RabbitMQ)
+- Code Laravel: **staging** `QUEUE_CONNECTION=redis` + `REDIS_CLIENT=predis` + Supervisor **2×** `queue:work redis` (KAN-10, smoke 23/10 OK). **Produzione** ancora `database`. Password Redis solo su `.env` / Tresorit (`docs/redis-staging.txt` gitignored).
 - Cache e sessioni: driver **file**
 - Sul server: Node.js v24 (nvm) + Playwright/Chromium (uso da approfondire; non emerge un job chiaro nel Kernel)
 

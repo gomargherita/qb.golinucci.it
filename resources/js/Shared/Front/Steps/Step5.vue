@@ -4,52 +4,31 @@
   <div class="mt-8">
     <p class="text-center">
       <span style="font-size:27px">Pagamento riuscito.</span><br>
-      Siamo pronti a generare i tuoi documenti.<br>
-      <span class="font-bold text-xl text-red-500">ATTENZIONE</span><br>
-      <span class="font-bold text-lg"
-        >Ci vorranno alcuni secondi, ti preghiamo di attendere e di non abbandonare la
-        pagina fino alla conclusione della procedura.</span>
+      Stiamo generando i tuoi documenti, non serve cliccare nulla.
     </p>
-    <div v-if="product.documentGenerator.length">
-      <ul class="my-4 font-bold text-primary text-center">
-        <li
-          v-for="documentGenerator in product.documentGenerator"
-          v-text="documentGenerator.message"
-        ></li>
-      </ul>
-    </div>
+    <ul class="my-4 font-bold text-primary text-center">
+      <li v-for="(line, index) in lines" :key="index" v-text="line"></li>
+    </ul>
+    <p v-if="error" class="text-center font-bold text-red-500">{{ error }}</p>
     <button
       type="button"
-      id="startGeneration"
-      v-if="!isStartGenerationHidden"
-      @click.once="startGeneration"
+      v-if="error"
+      @click="retry"
       class="gol-btn my-8 bg-primary"
     >
-      {{ __("Start") }}
+      Riprova
     </button>
-    <form @submit.prevent="submit" v-if="!isNextHidden">
-      <buy-loading-button
-        :loading="form.processing"
-        :disabled="form.processing"
-        :class="{ 'opacity-25': form.processing }"
-        class="gol-btn my-8 bg-primary"
-        type="submit"
-        >{{ __("Next") }}</buy-loading-button
-      >
-    </form>
   </div>
 </template>
 
 <script>
 import HTwo from "@/Shared/Front/HTwo";
-import BuyLoadingButton from "@/Shared/BuyLoadingButton";
 import axios from "axios";
 import { Inertia } from "@inertiajs/inertia";
 
 export default {
   components: {
     HTwo,
-    BuyLoadingButton,
   },
   props: {
     cart: Object,
@@ -58,102 +37,101 @@ export default {
   data() {
     return {
       form: this.$inertia.form({}),
-      isStartGenerationHidden: false,
-      isNextHidden: true,
+      lines: ["Preparazione documenti in corso..."],
+      error: null,
+      advanced: false,
+      polls: 0,
+      timer: null,
     };
   },
-
+  mounted() {
+    if (this.product.completedDocumentGenerator || this.cart.product_step_id >= 6) {
+      this.goNext();
+      return;
+    }
+    this.startPipeline();
+  },
+  beforeUnmount() {
+    if (this.timer) {
+      clearTimeout(this.timer);
+    }
+  },
   methods: {
-    doprintRequest: async (params) => {
-      let response = {};
-      let url = route("front.product.store_step5", params);
-
-      await axios
-        .post(url)
-        .then((res) => {
-          if (res.data.error) {
-            throw res.data;
-          }
-          response = res.data;
-        })
-        .catch((err) => {
-          throw err;
-        });
-
-      return response;
+    async postMethod(method) {
+      const url = route("front.product.store_step5", {
+        product: this.product,
+        cart: this.cart,
+        method,
+      });
+      const res = await axios.post(url);
+      return res.data;
     },
-    async startGeneration() {
-      this.isStartGenerationHidden = true;
-      let self = this;
-
-      let params = { product: self.product, cart: self.cart };
-
-      // Prima chiamata
+    async watchProgress() {
       try {
-        params.method = "initialization";
-        // Esegue la chiamata al metodo e con la response POSITIVA aggiorna la prop del componente
-        const res = await this.doprintRequest(params);
-        self.product.documentGenerator.push(res);
+        const status = await this.postMethod("status");
+        if (status.error) {
+          this.error = status.message;
+          return;
+        }
+        if (status.message) {
+          this.lines = [status.message];
+        }
+        if (status.completed || status.cart_step >= 6) {
+          this.goNext();
+          return;
+        }
+        this.polls += 1;
+        if (this.polls > 40) {
+          this.error =
+            "La generazione sta impiegando più del previsto. Puoi riprovare, oppure contattarci al 0547 22351.";
+          return;
+        }
+        this.timer = setTimeout(() => this.watchProgress(), 2500);
       } catch (err) {
-        // Con la response NEGATIVA aggiorna la prop del componente
-        self.product.documentGenerator.push(err);
-        // Non esegue la chiamata successiva
-        return false;
+        this.error =
+          (err && err.message) ||
+          "Generazione documenti non riuscita. Riprova oppure contattaci al 0547 22351.";
       }
-
-      // Seconda chiamata
-      try {
-        params.method = "handshake";
-        const res = await this.doprintRequest(params);
-        self.product.documentGenerator.push(res);
-      } catch (err) {
-        self.product.documentGenerator.push(err);
-        return false;
-      }
-
-      // Terza chiamata
-      try {
-        params.method = "validation";
-        const res = await this.doprintRequest(params);
-        self.product.documentGenerator.push(res);
-      } catch (err) {
-        self.product.documentGenerator.push(err);
-        return false;
-      }
-
-      // Quarta chiamata
-      try {
-        params.method = "upload";
-        const res = await this.doprintRequest(params);
-        self.product.documentGenerator.push(res);
-      } catch (err) {
-        self.product.documentGenerator.push(err);
-        return false;
-      }
-
-      // Quinta chiamata
-      try {
-        params.method = "transaction";
-        const res = await this.doprintRequest(params);
-        self.product.documentGenerator.push(res);
-      } catch (err) {
-        self.product.documentGenerator.push(err);
-        return false;
-      }
-
-      // Sesta chiamata
-      try {
-        params.method = "download";
-        const res = await this.doprintRequest(params);
-        self.product.documentGenerator.push(res);
-      } catch (err) {
-        self.product.documentGenerator.push(err);
-        return false;
-      }
-
-      this.isNextHidden = false;
     },
-    submit() {
+    async startPipeline() {
+      this.error = null;
+      this.polls = 0;
+      this.lines = ["Preparazione documenti in corso..."];
+      try {
+        const res = await this.postMethod("run");
+        if (res && res.error) {
+          this.error = res.message;
+          return;
+        }
+        if (res && (res.completed || res.cart_step >= 6)) {
+          this.goNext();
+          return;
+        }
+      } catch (e) {
+        this.error =
+          "Generazione documenti non riuscita. Riprova oppure contattaci al 0547 22351.";
+        return;
+      }
+      this.watchProgress();
+    },
+    async retry() {
+      this.lines = ["Nuovo tentativo in corso..."];
+      await this.startPipeline();
+    },
+    goNext() {
+      if (this.advanced) {
+        return;
+      }
+      this.advanced = true;
+      if (this.cart.product_step_id >= 6) {
+        Inertia.visit(
+          this.route("front.product.buy", {
+            product: this.product.id,
+            cart: this.cart.cart_ref,
+          })
+        );
+        return;
+      }
       this.form.post(
         this.route("front.product.store_step5", {
           product: this.product.id,

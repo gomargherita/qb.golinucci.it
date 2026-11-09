@@ -174,7 +174,13 @@ flowchart LR
 
 - qb1 / firma / GolSign (stack PHP diversi) — deploy separato se mai toccati
 - Sync DB staging ← prod (refresh dati): procedura a parte, non nel deploy app
-- Stripe / Redis: quando arrivano, solo variabili `.env` + eventuale service Supervisor
+- Stripe: codice in repo, **spento** (KAN-36). Redis: **attivo su staging** (KAN-10, `QUEUE_CONNECTION=redis` + 2 worker); produzione ancora `database` (chiesto a Vittorio 28/10). Segreti solo `.env` / Tresorit.
+
+---
+
+## 9. DigitalOcean MySQL 8.0 → 8.4 (EOL 30/10/2026)
+
+Audit 28/10 (staging + prod `8.0.45`, Laravel 8 / PHP 8.1): basso rischio applicativo (`caching_sha2_password`, niente FLOAT AUTO_INCREMENT, niente identifier reserved 8.4). DO forza l’upgrade nella **maintenance window** del cluster. Mail a Vittorio: window in fascia morta IT, check plugin user, staging prima di prod. Dettaglio su **KAN-28**.
 
 ---
 

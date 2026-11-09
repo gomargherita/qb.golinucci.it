@@ -45,6 +45,7 @@ class RenewalCartService
 
     /**
      * Open (incomplete) renewal cart for this user+product, if any.
+     * Paid carts (Bancari stay on step 5) are not drafts (KAN-40).
      */
     public function findOpenRenewalDraft(User $user, Product $product): ?Cart
     {
@@ -52,8 +53,11 @@ class RenewalCartService
             ->where('user_id', $user->id)
             ->where('product_id', $product->id)
             ->where('locked', 'N')
-            ->where('product_step_id', '<', 7)
+            ->where('product_step_id', '<', 5)
             ->whereIn('cart_ref', Renewal::query()->select('new_cart_ref'))
+            ->whereDoesntHave('payment', function ($q) {
+                $q->where('paid', 1);
+            })
             ->latest('id')
             ->first();
     }
@@ -72,13 +76,28 @@ class RenewalCartService
             ->where('user_id', $user->id)
             ->where('product_id', $product->id)
             ->where('locked', 'N')
-            ->where('product_step_id', '<', 7)
+            ->where('product_step_id', '<', 5)
             ->where(function ($q) {
                 $q->whereNull('expired_at')
                     ->orWhere('expired_at', '>', now());
             })
+            ->whereDoesntHave('payment', function ($q) {
+                $q->where('paid', 1);
+            })
             ->latest('id')
             ->first();
+    }
+
+    /**
+     * Paid or locked carts are finished: do not resume them as an open draft (avoids 401 on buy).
+     */
+    public function isFinishedCart(Cart $cart): bool
+    {
+        if ($cart->locked === 'Y') {
+            return true;
+        }
+
+        return $cart->payment()->where('paid', 1)->exists();
     }
 
     public function isInRenewalWindow(Certificate $certificate, ?Carbon $today = null): bool
@@ -104,14 +123,25 @@ class RenewalCartService
 
         $user = User::findOrFail($userId);
 
-        $existingLink = Renewal::where('old_cart_ref', $sourceCart->cart_ref)->first();
-        if ($existingLink) {
+        $cursor = $sourceCart;
+        $walkedFinished = false;
+        for ($guard = 0; $guard < 10; $guard++) {
+            $existingLink = Renewal::where('old_cart_ref', $cursor->cart_ref)->first();
+            if (!$existingLink) {
+                break;
+            }
             $existingNew = Cart::where('cart_ref', $existingLink->new_cart_ref)->first();
-            if ($existingNew) {
+            if (!$existingNew) {
+                break;
+            }
+            if (!$this->isFinishedCart($existingNew)) {
                 $this->ensureContinuityDates($existingNew, $user, $product);
                 return $existingNew;
             }
+            $cursor = $existingNew;
+            $walkedFinished = true;
         }
+        $sourceCart = $cursor;
 
         // One open renewal draft per user+product: resume instead of forking.
         $openDraft = $this->findOpenRenewalDraft($user, $product);
@@ -141,7 +171,9 @@ class RenewalCartService
 
         $end = Carbon::parse($certificate->end_validity_date)->startOfDay();
         $today = Carbon::today();
-        if ($today->lt($end->copy()->subDays(self::RENEWAL_WINDOW_DAYS_BEFORE))) {
+        // Access link on an already-renewed cart: continue the chain even if the
+        // latest paid cart's certificate is still far from its own window.
+        if (!$walkedFinished && $today->lt($end->copy()->subDays(self::RENEWAL_WINDOW_DAYS_BEFORE))) {
             abort(403, 'Renewal window not open yet');
         }
 
@@ -150,7 +182,7 @@ class RenewalCartService
             $link = Renewal::where('old_cart_ref', $sourceCart->cart_ref)->lockForUpdate()->first();
             if ($link) {
                 $cart = Cart::where('cart_ref', $link->new_cart_ref)->first();
-                if ($cart) {
+                if ($cart && !$this->isFinishedCart($cart)) {
                     return $cart;
                 }
             }
@@ -160,16 +192,22 @@ class RenewalCartService
                 ? Carbon::parse($certificate->retroactivity)->toDateString()
                 : null;
 
+            $graceEnd = $end->copy()->addDays(self::RENEWAL_CART_GRACE_DAYS_AFTER_END);
+            $expiredAt = $graceEnd->greaterThan(now())
+                ? $graceEnd
+                : now()->addDays(self::RENEWAL_CART_GRACE_DAYS_AFTER_END);
+
             $newCart = Cart::create([
                 'user_id' => $userId,
                 'product_id' => $product->id,
                 'product_offer_id' => $product->product_type_id == 1 ? null : $sourceCart->product_offer_id,
                 'product_step_id' => 1,
-                'expired_at' => $end->copy()->addDays(self::RENEWAL_CART_GRACE_DAYS_AFTER_END),
+                'expired_at' => $expiredAt,
                 'locked' => 'N',
                 'cart_ref' => uniqid(),
                 'renewal_date' => $renewalDate,
                 'retroactivity' => $retroactivity,
+                'albo_enrollment_year' => $sourceCart->albo_enrollment_year,
             ]);
 
             Renewal::create([
@@ -190,6 +228,51 @@ class RenewalCartService
 
             return $newCart;
         });
+    }
+
+    /**
+     * Date of the previous adhesion questionnaire, for GM warranty statement (KAN-34).
+     * Prefer giorno_completamento_step_1 on the source cart; else previous certificate start.
+     */
+    public function previousQuestionnaireDate(Cart $cart): ?string
+    {
+        $oldCart = null;
+        $link = Renewal::where('new_cart_ref', $cart->cart_ref)->first();
+        if ($link) {
+            $oldCart = Cart::where('cart_ref', $link->old_cart_ref)->first();
+        }
+
+        if (!$oldCart) {
+            $oldCart = Cart::query()
+                ->where('user_id', $cart->user_id)
+                ->where('product_id', $cart->product_id)
+                ->where('id', '!=', $cart->id)
+                ->whereNotNull('giorno_completamento_step_1')
+                ->latest('id')
+                ->first();
+        }
+
+        $raw = $oldCart ? $oldCart->giorno_completamento_step_1 : null;
+
+        if (!$raw && $oldCart) {
+            $oldCart->loadMissing('certificate');
+            $raw = optional($oldCart->certificate)->start_validity_date;
+        }
+
+        if (!$raw && $cart->user && $cart->product) {
+            $cert = $this->latestCertificateFor($cart->user, $cart->product);
+            $raw = $cert->start_validity_date ?? null;
+        }
+
+        if (!$raw) {
+            return null;
+        }
+
+        try {
+            return Carbon::parse($raw)->format('d/m/Y');
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     /**

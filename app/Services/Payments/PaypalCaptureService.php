@@ -62,9 +62,7 @@ class PaypalCaptureService
 
             if ($locked->paid) {
                 $this->event($locked, $source, 'already_paid', $locked->transaction_ref, 'COMPLETED');
-                if ((int) $cart->product_step_id < 5) {
-                    $this->completer->complete($cart, $locked, $product);
-                }
+                $this->completer->dispatchAfterPaid($cart, $locked, $product);
 
                 return ['ok' => true, 'info_paypal' => 'SUCCESS', 'reason' => 'already_paid'];
             }
@@ -130,10 +128,7 @@ class PaypalCaptureService
             $locked->save();
             $this->event($locked, $source, 'capture_completed', $locked->transaction_ref, 'COMPLETED', $debugId);
 
-            $result = $this->completer->complete($cart->fresh(), $locked->fresh(), $product);
-            if (!$result['ok']) {
-                return ['ok' => false, 'info_paypal' => 'FAILED', 'reason' => $result['reason']];
-            }
+            $this->completer->dispatchAfterPaid($cart->fresh(), $locked->fresh(), $product);
 
             return ['ok' => true, 'info_paypal' => 'SUCCESS', 'reason' => 'captured'];
         });

@@ -6,6 +6,12 @@
       <div class="text-center">
         <p>Seleziona una delle offerte disponibili nella tabella sottostante.</p>
       </div>
+      <GiovaneMedicoAlboYear
+        v-if="product.id == 5 && product.giovane_medico"
+        v-model="form.albo_enrollment_year"
+        :current-year="product.giovane_medico.current_year"
+        :min-year="product.giovane_medico.min_year"
+      />
       <form @submit.prevent="submit">
         <div class="overflow-x-auto p-1 w-full">
           <table
@@ -57,7 +63,7 @@
                 <td class="p-4 border border-primary">Zero</td>
                 <td
                   class="p-4 border border-primary"
-                  v-text="$filters.formatPrice(parseFloat(offer.total_payable))"
+                  v-text="displayPayable(offer)"
                 ></td>
                 <td class="p-4 border border-primary" style="text-align: center;  text-transform: none;">
                   <a
@@ -186,6 +192,7 @@
 <script>
 import HTwo from "@/Shared/Front/HTwo";
 import Offers from "@/Shared/Front/Offers";
+import GiovaneMedicoAlboYear from "@/Shared/Front/GiovaneMedicoAlboYear.vue";
 import BuyLoadingButton from "@/Shared/BuyLoadingButton";
 import isEqual from "lodash/isEqual";
 import BreezeValidationErrors from "@/Shared/ValidationErrors.vue";
@@ -195,6 +202,7 @@ export default {
     BuyLoadingButton,
     HTwo,
     Offers,
+    GiovaneMedicoAlboYear,
     BreezeValidationErrors,
   },
   props: {
@@ -211,6 +219,7 @@ export default {
       objectToCompare: {},
       form: this.$inertia.form({
         product_offer_id_selected: (this.cart.product_offer_id) ? this.cart.product_offer_id : null,
+        albo_enrollment_year: this.cart.albo_enrollment_year || null,
       }),
     };
   },
@@ -232,6 +241,25 @@ export default {
   methods: {
     offerSelected: function (evt) {
       this.form.product_offer_id_selected = evt.target.dataset.offer_id;
+    },
+    displayPayable(offer) {
+      if (this.product.id != 5 || !this.form.albo_enrollment_year || !this.product.giovane_medico) {
+        return this.product.id == 5 ? "—" : this.$filters.formatPrice(parseFloat(offer.total_payable));
+      }
+      const year = Number(this.form.albo_enrollment_year);
+      const current = this.product.giovane_medico.current_year;
+      let row = current - year;
+      if (row < 0) {
+        return "—";
+      }
+      if (row > 10) {
+        row = 10;
+      }
+      const table = this.product.giovane_medico.limits[String(parseInt(offer.indemnity_limit, 10))];
+      if (!table || !table[row]) {
+        return "—";
+      }
+      return this.$filters.formatPrice(parseFloat(table[row].total_payable));
     },
     submit() {
       this.form.post(

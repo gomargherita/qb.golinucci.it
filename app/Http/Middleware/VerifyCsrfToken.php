@@ -16,6 +16,10 @@ class VerifyCsrfToken extends Middleware
         'yousign/*',
         // PayPal server-to-server webhooks (KAN-6).
         'paypal/webhook',
+        'stripe/webhook',
+        // PayPal JS SDK createOrder is a same-origin fetch; Inertia CSRF meta
+        // can be stale after OTP/session regenerate (419, no order id).
+        'products/*/store_step4/*/paypal',
     ];
 }
 

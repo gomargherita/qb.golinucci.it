@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\AddressHasStreetNumber;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -36,7 +37,7 @@ class UpdateClientDetailsRequest extends FormRequest
                 'gender' => ['nullable', 'in:M,F', 'max:1'],
                 'dob' => ['nullable', 'date'],
                 'phone' => ['nullable', 'max:30'],
-                'address' => ['nullable', 'max:150'],
+                'address' => ['nullable', 'max:150', new AddressHasStreetNumber()],
                 'city' => ['nullable', 'max:50'],
                 'province' => ['nullable', 'max:2'],
                 'country' => ['nullable', 'max:2'],
@@ -46,6 +47,7 @@ class UpdateClientDetailsRequest extends FormRequest
                 'note' => ['nullable'],
                 'with_accident' => ['boolean'],
                 'flag_prev_2022' => ['boolean'],
+                'retroactivity' => ['nullable', 'date'],
             ];
         }
 
@@ -56,7 +58,7 @@ class UpdateClientDetailsRequest extends FormRequest
             'gender' => ['required', 'in:M,F', 'max:1'],
             'dob' => ['nullable', 'date'],
             'phone' => ['required', 'max:30', 'phone:IT,mobile'],
-            'address' => ['required', 'max:150'],
+            'address' => ['required', 'max:150', new AddressHasStreetNumber()],
             'city' => ['required', 'max:50'],
             'province' => ['required', 'max:2'],
             'country' => ['required', 'max:2'],
@@ -66,6 +68,7 @@ class UpdateClientDetailsRequest extends FormRequest
             'note' => ['nullable'],
             'with_accident' => ['boolean'],
             'flag_prev_2022' => ['boolean'],
+            'retroactivity' => ['nullable', 'date'],
         ];
     }
 }

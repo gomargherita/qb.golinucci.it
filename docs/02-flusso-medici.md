@@ -2,6 +2,13 @@
 
 Il carrello (`carts`) è l’oggetto centrale. Lo step corrente è `product_step_id` (FK su `product_steps`).
 
+## Giovane medico — questionari (KAN-34)
+
+Prodotto 5. Step 1:
+
+- **1° anno** (nessun `renewal_date` / riga `renewals`): modulo di adesione — sinistrosità 10 anni, fatti noti, società sportive. Sì blocca l’acquisto online.
+- **Dal 2° anno** (rinnovo): warranty statement (PDF WS rinnovo) — tre conferme (nessun sinistro notificato, nessun fatto noto, nessuna variazione rispetto al questionario precedente, con data). “Non confermo” blocca come il Sì del modulo adesione. Il PDF `new-application.pdf` segue lo stesso split.
+
 ## Step tipici (product_type Medici = 1)
 
 | Step | Cosa fa l’utente | Dove nel codice |
@@ -36,7 +43,7 @@ Servizio: `App\Services\Renewals\RenewalCartService`
 
 1. Verifica ownership e finestra (−30g rispetto a `end_validity_date`)
 2. Se esiste già `renewals.old_cart_ref` → riprende il `new_cart_ref`
-3. Se esiste bozza rinnovo aperta per user+product → riprende quella (no fork)
+3. Se esiste bozza rinnovo aperta per user+product → riprende quella (no fork). **Bozza aperta** = stesso user+prodotto, `product_step_id < 5` **e** senza `payments.paid=1` (KAN-40). I Bancari restano a step 5 dopo il pagamento: senza questo filtro l’OTP riapre l’ordine già pagato (stesso cliente, non mescola clienti).
 4. Altrimenti crea carrello con date copiate dal certificato precedente e link `renewals`
 
 ```text
@@ -65,7 +72,9 @@ Campi data rilevanti:
    - genera PDF certificato di pagamento (Medici)
    - porta il carrello allo **step 5**
 
-**Fragilità:** se il browser non chiama il return (chiusura pagina, errore rete, sessione), QB resta con ordine PayPal creato e `paid = 0`. Non c’è webhook PayPal evidente nel codice per riconciliare.
+**Chiusura pagamento (KAN-6):** capture idempotente + webhook `POST /paypal/webhook` + `paypal:reconcile-unpaid` se il browser non torna. Post-pagamento in coda (`CompletePaidCartJob`, Redis su staging).
+
+**KAN-39:** dopo OTP, `createOrder` può 419 (CSRF Inertia). Staging: route `products/*/store_step4/*/paypal` esclusa da CSRF. La pagina `errors/419` parla sempre di scadenza 30 giorni: è fuorviante per i 419 CSRF.
 
 Cancel: `store_step4_paypal_cancel` fa solo redirect allo step pagamento (email di cancel commentata).
 

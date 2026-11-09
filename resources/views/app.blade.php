@@ -17,6 +17,12 @@
     <script src="{{ mix('js/manifest.js') }}" defer></script>
     <script src="{{ mix('js/vendor.js') }}" defer></script>
     <script src="{{ mix('js/app.js') }}" defer></script>
+    <script src="/js/address-autocomplete.js?v=20261027a" defer></script>
+    <script src="/js/email-template-editor.js" defer></script>
+    @if (config('services.whatsapp.enabled') && config('services.whatsapp.number'))
+    <script>window.QB_WHATSAPP = @json(config('services.whatsapp.number'));</script>
+    <script src="/js/whatsapp-widget.js" defer></script>
+    @endif
 </head>
 
 <body class="font-light text-customgray antialiased">

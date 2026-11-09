@@ -3,15 +3,11 @@
 
 namespace App\Notifications;
 
-use App\Http\Controllers\SiteBuyProductController;
+use App\Services\EmailTemplateService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use App\Models\RenewalsEmail;
-use Illuminate\Support\Facades\DB;
 
 
 class EhealthEmail extends Notification implements ShouldQueue
@@ -64,15 +60,25 @@ class EhealthEmail extends Notification implements ShouldQueue
             'code' => $this->code
         ];
             $cc = "info@golinucci.it";
-            return (new MailMessage)
+            $mail = (new MailMessage)
                 ->bcc($cc)
+                ->from([$cc => 'Golinucci SRL']);
+            $applied = app(EmailTemplateService::class)->applyIfPresent($mail, 'ehealth', [
+                'name' => $this->name,
+                'surname' => $this->surname,
+                'code' => $this->code,
+            ]);
+            if ($applied) {
+                return $applied;
+            }
+
+            return $mail
                 ->subject('CARTA VIRTUALHOSPITAL.BLUE')
                 ->view('ehealth', [
                     'name' => $this->name,
                     'surname' => $this->surname,
-                    'code' => $this->code
-                    ])
-                ->from([$cc => 'Golinucci SRL']);;
+                    'code' => $this->code,
+                ]);
         }
 
     /**

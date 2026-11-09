@@ -30,4 +30,15 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    // KAN-14: Places Autocomplete (server key; restrict by server IP, not HTTP referrer)
+    'google' => [
+        'places_key' => env('GOOGLE_PLACES_API_KEY'),
+    ],
+
+    // KAN-15: widget WhatsApp sul front (non in /admin)
+    'whatsapp' => [
+        'enabled' => env('WHATSAPP_ENABLED', true),
+        'number' => env('WHATSAPP_NUMBER', '393923626336'),
+    ],
+
 ];

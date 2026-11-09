@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreClientDetailsRequest;
 use App\Http\Requests\UpdateClientDetailsRequest;
+use App\Models\Cart;
+use App\Models\Certificate;
 use App\Models\ClientDetail;
 use App\Models\ProductClientDetail;
 use App\Models\User;
@@ -113,6 +115,7 @@ class ClientDetailsController extends Controller
                 'with_accident' => $client_detail->with_accident,
                 'motivo_blocco_invio' => $motivo_blocco,
                 'flag_prev_2022' => $client_detail->flag_prev_2022,
+                'retroactivity' => $this->latestMediciRetroactivity($client_detail),
                 'deleted_at' => $client_detail->deleted_at,
                 'client_detail_id' => $client_detail_id,
                 'conditional_field_id' => $conditional_field_id,
@@ -169,6 +172,10 @@ class ClientDetailsController extends Controller
             ]);*/
         }
 
+        if ($request->filled('retroactivity')) {
+            $this->syncMediciRetroactivity($client_detail, $request->input('retroactivity'));
+        }
+
         return Redirect::back()->with('success', 'ClientDetail updated.');
     }
 
@@ -184,5 +191,58 @@ class ClientDetailsController extends Controller
         $client_detail->restore();
 
         return Redirect::back()->with('success', 'ClientDetail restored.');
+    }
+
+    private function latestMediciRetroactivity(ClientDetail $client_detail): ?string
+    {
+        if (!$client_detail->user_id) {
+            return null;
+        }
+
+        $cart = Cart::query()
+            ->where('user_id', $client_detail->user_id)
+            ->whereIn('product_id', [1, 5])
+            ->whereNotNull('retroactivity')
+            ->latest('id')
+            ->first();
+        if ($cart && $cart->retroactivity) {
+            return Carbon::parse($cart->retroactivity)->toDateString();
+        }
+
+        $certificate = Certificate::query()
+            ->whereIn('product_id', [1, 5])
+            ->whereHas('cart', function ($q) use ($client_detail) {
+                $q->where('user_id', $client_detail->user_id);
+            })
+            ->whereNotNull('retroactivity')
+            ->latest('id')
+            ->first();
+
+        return $certificate && $certificate->retroactivity
+            ? Carbon::parse($certificate->retroactivity)->toDateString()
+            : null;
+    }
+
+    private function syncMediciRetroactivity(ClientDetail $client_detail, string $date): void
+    {
+        if (!$client_detail->user_id) {
+            return;
+        }
+
+        $parsed = Carbon::parse($date)->toDateString();
+        $carts = Cart::query()
+            ->where('user_id', $client_detail->user_id)
+            ->whereIn('product_id', [1, 5])
+            ->get();
+
+        foreach ($carts as $cart) {
+            $cart->retroactivity = $parsed;
+            $cart->save();
+            $certificate = Certificate::query()->where('cart_id', $cart->id)->first();
+            if ($certificate) {
+                $certificate->retroactivity = $parsed;
+                $certificate->save();
+            }
+        }
     }
 }

@@ -2,10 +2,10 @@
 
 namespace App\Notifications;
 
+use App\Services\EmailTemplateService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Facades\App;
 
 class ConfirmedOfflinePayment extends Notification
 {
@@ -13,69 +13,52 @@ class ConfirmedOfflinePayment extends Notification
 
     protected $payment;
 
-    /**
-     * Create a new notification instance.
-     *
-     * @return void
-     */
     public function __construct($payment)
     {
         $this->payment = $payment;
     }
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
     public function via($notifiable)
     {
         return ['mail'];
     }
 
-    /**
-     * Get the mail representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
-     */
     public function toMail($notifiable)
     {
         $user = $this->payment->cart->user;
+        $productId = (int) $this->payment->cart->product->id;
         $url = route('front.product.buy', [$this->payment->cart->product->id, $this->payment->cart->cart_ref]);
+        $from = ($productId === 1 || $productId === 5)
+            ? ['sanitari@golinucci.it' => 'Q&B Golinucci']
+            : ['bancari@golinucci.it' => 'Q&B Golinucci'];
 
-        if($this->payment->cart->product->id == 1 || $this->payment->cart->product->id == 5){
-            return (new MailMessage)
-                ->subject('Q&B Golinucci - Conferma pagamento tramite bonifico bancario')
-                ->greeting("Gentile $user->name")
-                ->line('Abbiamo appena confermato il pagamento del tuo prodotto.')
-                ->line('Per procedere e firmare la tua polizza per procedere e firmare la polizza ti basta cliccare sul pulsante sottostante e seguire le istruzioni.')
-                ->action('Clicca per procedere', $url)
-                ->salutation('Grazie per aver scelto i prodotti Golinucci!')->from(['sanitari@golinucci.it' => 'Q&B Golinucci']);
+        if (!in_array($productId, [1, 2, 3, 4, 5], true)) {
+            return;
         }
-        else if($this->payment->cart->product->id == 2 || $this->payment->cart->product->id == 3 || $this->payment->cart->product->id == 4){
-            return (new MailMessage)
-                ->subject('Q&B Golinucci - Conferma pagamento tramite bonifico bancario')
-                ->greeting("Gentile $user->name")
-                ->line('Abbiamo appena confermato il pagamento del tuo prodotto.')
-                ->line('Per procedere e firmare la tua polizza per procedere e firmare la polizza ti basta cliccare sul pulsante sottostante e seguire le istruzioni.')
-                ->action('Clicca per procedere', $url)
-                ->salutation('Grazie per aver scelto i prodotti Golinucci!')->from(['bancari@golinucci.it' => 'Q&B Golinucci']);
-            
+
+        $mail = (new MailMessage)->from($from);
+        $applied = app(EmailTemplateService::class)->applyIfPresent($mail, 'bank_transfer_confirmed', [
+            'name' => $user->name ?? '',
+            'url' => $url,
+        ], [
+            'action_text' => 'Clicca per procedere',
+            'action_url' => $url,
+        ]);
+        if ($applied) {
+            return $applied;
         }
+
+        return $mail
+            ->subject('Q&B Golinucci - Conferma pagamento tramite bonifico bancario')
+            ->greeting("Gentile $user->name")
+            ->line('Abbiamo appena confermato il pagamento del tuo prodotto.')
+            ->line('Per procedere e firmare la tua polizza per procedere e firmare la polizza ti basta cliccare sul pulsante sottostante e seguire le istruzioni.')
+            ->action('Clicca per procedere', $url)
+            ->salutation('Grazie per aver scelto i prodotti Golinucci!');
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
     public function toArray($notifiable)
     {
-        return [
-            //
-        ];
+        return [];
     }
 }

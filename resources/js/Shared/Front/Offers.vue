@@ -1,5 +1,11 @@
 <template>
   <div class="mt-8">
+    <GiovaneMedicoAlboYear
+      v-if="product.id == 5 && product.giovane_medico"
+      v-model="alboYear"
+      :current-year="product.giovane_medico.current_year"
+      :min-year="product.giovane_medico.min_year"
+    />
     <div v-if="product.conditional_fields.length">
       <div v-if="product.id == 1 || product.id == 5" class="text-center">{{ __("Filtra tra le nostre offerte di polizza") }}</div>
       <div class="offer-filters grid grid-cols-1 mx-auto text-center gap-4 mt-8">
@@ -70,7 +76,7 @@
             <td class="p-4 border border-primary">Zero</td>
             <td
               class="p-4 border border-primary"
-              v-text="$filters.formatPrice(parseFloat(offer.total_payable))"
+              v-text="displayPayable(offer)"
             ></td>
             <td class="p-4 border border-primary" style="text-align: center; text-transform: none;">
               <a
@@ -162,8 +168,10 @@
 
 <script>
 import isEqual from "lodash/isEqual";
+import GiovaneMedicoAlboYear from "@/Shared/Front/GiovaneMedicoAlboYear.vue";
 
 export default {
+  components: { GiovaneMedicoAlboYear },
   props: {
     product: Object,
   },
@@ -173,6 +181,7 @@ export default {
       offers_flags: {},
       filter_conditions: {},
       objectToCompare: {},
+      alboYear: null,
     };
   },
   computed: {
@@ -219,6 +228,32 @@ export default {
     },
     change: function (evt) {
       this.$emit("change", evt);
+    },
+    displayPayable(offer) {
+      const quoted = this.quotedPayable(offer);
+      if (quoted == null) {
+        return this.product.id == 5 ? "—" : this.$filters.formatPrice(parseFloat(offer.total_payable));
+      }
+      return this.$filters.formatPrice(parseFloat(quoted));
+    },
+    quotedPayable(offer) {
+      if (this.product.id != 5 || !this.alboYear || !this.product.giovane_medico) {
+        return this.product.id == 5 ? null : offer.total_payable;
+      }
+      const year = Number(this.alboYear);
+      const current = this.product.giovane_medico.current_year;
+      let row = current - year;
+      if (row < 0) {
+        return null;
+      }
+      if (row > 10) {
+        row = 10;
+      }
+      const table = this.product.giovane_medico.limits[String(parseInt(offer.indemnity_limit, 10))];
+      if (!table || !table[row]) {
+        return null;
+      }
+      return table[row].total_payable;
     },
   },
 };

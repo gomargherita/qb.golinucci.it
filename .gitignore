@@ -22,6 +22,22 @@ docs/riccardo_staging.dat
 docs/.passphare
 docs/**/*.pem
 docs/**/*_staging
+docs/my.txt
+docs/weblymcp-qb-golinucci
+docs/weblymcp-qb-golinucci.pub
+docs/stripe-stg.env
+docs/redis-staging.txt
+docs/redis_prod_pwd.txt
+docs/redis_prod*.txt
+docs/WS_passwd.txt
+docs/email-Prod.txt
+docs/xml_documento*
+docs/stripe-chunks/
+docs/App Golinucci/
+docs/google-places-key
+docs/stripe-deploy.zip
+docs/stripe-deploy.b64
+scripts/_pack_stripe_env.py
 **/.ssh/
 
 # Laravel
@@ -29,6 +45,7 @@ docs/**/*_staging
 /storage/pail
 /public/hot
 /public/storage
+/public/qb.golinucci.it.zip
 /public/css/app.css
 /public/js/*
 !/public/js/.gitkeep

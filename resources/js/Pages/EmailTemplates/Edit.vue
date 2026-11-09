@@ -41,6 +41,21 @@
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="BCC (optional)"
           />
+          <text-input
+            v-model="form.from_email"
+            :error="form.errors.from_email"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="From email (vuoto = mittente nel codice)"
+          />
+          <text-input
+            v-model="form.from_name"
+            :error="form.errors.from_name"
+            class="pb-8 pr-6 w-full lg:w-1/2"
+            label="From name"
+          />
+          <p class="pb-8 pr-6 w-full text-sm text-gray-500">
+            La PEC bancari (canale pec, bancari@pec.golinucci.it) resta nel codice: non va cambiata da qui.
+          </p>
           <checkbox-input
             v-model="form.is_active"
             :error="form.errors.is_active"
@@ -84,6 +99,8 @@ export default {
         subject: this.template.subject,
         body: this.template.body,
         bcc: this.template.bcc,
+        from_email: this.template.from_email,
+        from_name: this.template.from_name,
         is_active: this.template.is_active,
       }),
     };

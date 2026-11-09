@@ -56,18 +56,21 @@
             type="tel"
           />
           <text-input
+            id="address"
             v-model="form.address"
             :error="form.errors.address"
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="Address"
           />
           <text-input
+            id="city"
             v-model="form.city"
             :error="form.errors.city"
             class="pb-8 pr-6 w-full lg:w-1/2"
             label="City"
           />
           <select-input
+            id="province"
             v-model="form.province"
             :error="form.errors.province"
             class="pb-8 pr-6 w-full lg:w-1/2"
@@ -195,6 +198,7 @@
             <option value="IT">Italia</option>
           </select-input>
           <text-input
+            id="postal_code"
             v-model="form.postal_code"
             :error="form.errors.postal_code"
             class="pb-8 pr-6 w-full lg:w-1/2"

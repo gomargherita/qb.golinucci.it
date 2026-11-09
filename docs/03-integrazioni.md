@@ -18,7 +18,11 @@ Config in `config/paypal.php`, `config/doprint.php`, `config/yousign.php`. Segre
 6. Recovery: `php artisan paypal:reconcile-unpaid` / `--apply`
 7. Audit append-only: tabella `payment_events` + `payments.paypal_status`
 
-**Gateway DB:** tabella `payment_gateways` (paypal=1, bonifico=2).
+**Gateway DB:** tabella `payment_gateways` (paypal=1, bonifico=2; Stripe presente ma **spento**, KAN-36). Tetto €1000: sopra solo bonifico.
+
+**CSRF createOrder (KAN-39):** `VerifyCsrfToken` except include `products/*/store_step4/*/paypal`. Senza except, dopo OTP Inertia la `createOrder` risponde 419 (testo pagina = «rinnovo scaduto»). JS locale (`Step4.vue`) rinvia CSRF/XSRF; mix staging ancora da caricare.
+
+**Post-pagamento:** `CompletePaidCartService` dispatcha `CompletePaidCartJob` (unique per cart). Staging Redis 23/10: Bancari 26BKN-2, PDF + email OK. Medici type 1 → pipeline DoPrint (KAN-38).
 
 ---
 
@@ -26,7 +30,7 @@ Config in `config/paypal.php`, `config/doprint.php`, `config/yousign.php`. Segre
 
 **Service:** `app/Services/LloydsDoprintService.php`
 
-**Config:** sandbox vs live in base a `App::environment(['local','staging'])`.
+**Config:** sandbox vs live in base a `App::environment(['local','staging'])`. Staging SOAP `sandboxdoprint.lloyds.com`. **Blocco 23/10 (KAN-38):** handshake **s:020** — manca utente sandbox per Riccardo (coverholder 115647 XKT; Margherita → Mauro Carini / Sistemi; `uatsecure.lloyds.com`). I Bancari non passano da DoPrint.
 
 **Pipeline** (persistita su `certificates`):
 
@@ -46,7 +50,8 @@ Orchestrazione principalmente in `CartController` (metodi generazione Lloyds / s
 - Template XML su disk `private` (non nel DB)
 - Scelta template legata a `product_id` (1 vs 5); ramo “renew XML” presente ma di fatto bypassato (`if (true)`)
 - Numerazione certificato: `doprint_certificate_no` + contatori `doprint_counters`
-- Errori SOAP → eccezioni; recovery parziale (si riparte dallo step salvato), ma pratiche possono restare intermedie
+- Errori SOAP → eccezioni; recovery parziale (si riparte dallo step salvato)
+- Post-pagamento: handshake DoPrint **non** fa fallire `CompletePaidCartJob` (PDF locale resta). Retry: job orario `ReconcileDoprintStuckJob` (coda Redis) / CLI `php artisan doprint:reconcile-stuck --apply`
 
 ---
 
@@ -54,6 +59,8 @@ Orchestrazione principalmente in `CartController` (metodi generazione Lloyds / s
 
 **Service:** `YousignApiService` + client HTTP `YousignApiLaravel`  
 **Config:** `YOUSIGN_KEY`, `YOUSIGN_API_URL` (default `https://api.yousign.app/v3/`), URL app, email/telefono staging.
+
+**Solleciti firma (KAN-31):** l’API v3 accetta `reminder_settings` (ogni 1/2/7/14 giorni, 1–10 volte), come la console. Oggi QB crea la request con `delivery_mode=none` e usa solo `signature_link` in pagina: Yousign **non** manda email, quindi i reminder automatici non partono. Con `YOUSIGN_REMINDERS=true` (`.env`) QB passa `delivery_mode=email` + reminder (default ogni 2 giorni × 5). Webhook invariati. Staging: impostare env e fare uno smoke su una firma di test.
 
 **Avvio procedura (`startYousignClientAndLaunchProcedure`):**
 
@@ -80,6 +87,8 @@ Orchestrazione principalmente in `CartController` (metodi generazione Lloyds / s
 - Completion centralizzata in `YousignProcedureCompletionService` (idempotente)
 - Lookup cart per `cart_ref` **o** `procedure_id` / payload v3 `data.signature_request.id`
 - Recovery: `php artisan yousign:reconcile-stuck` (dry-run) / `--apply`
+- Completamento `procedure.finished` in coda Redis (`ProcessYousignProcedureFinishedJob`); retry orario `ReconcileYousignStuckJob`
+- Registrazione webhook workspace `signature_request.done` → `YOUSIGN_WEBHOOK_URL` (default `APP_URL/yousign/procedure_finished`); `external_id` = `cart_ref`
 
 ---
 

@@ -2,12 +2,13 @@
 
 namespace App\Services\Payments;
 
+use App\Jobs\CompletePaidCartJob;
 use App\Models\Cart;
 use App\Models\Certificate;
 use App\Models\Payment;
 use App\Models\Product;
 use App\Notifications\FinalEmailWithAttachments;
-use App\Notifications\FinalEmailWithAttachmentsNotPec;
+use App\Services\LloydsDoprintPipelineService;
 use App\Services\PaymentBankersToPdfService;
 use App\Services\PaymentCertificateToPdfService;
 use Carbon\Carbon;
@@ -24,6 +25,16 @@ class CompletePaidCartService
      */
     public function complete(Cart $cart, Payment $payment, Product $product): array
     {
+        $this->finalizePaid($cart, $payment);
+
+        return $this->processSideEffects($cart, $payment, $product);
+    }
+
+    /**
+     * Mark paid, assign payment_no, advance to step 5. Safe to call in the HTTP request.
+     */
+    public function finalizePaid(Cart $cart, Payment $payment): void
+    {
         $cart->loadMissing(['user', 'productOffer.contract', 'payment']);
 
         if (!$payment->paid) {
@@ -32,17 +43,46 @@ class CompletePaidCartService
 
         $payment->updatePaymentPaymentNo();
 
+        if ((int) $cart->product_step_id < 5) {
+            $cart->updateCartStep(5);
+        }
+    }
+
+    /**
+     * Queue PDF/certificate/emails so the browser return does not wait on them (KAN-10).
+     */
+    public function dispatchAfterPaid(Cart $cart, Payment $payment, Product $product): void
+    {
+        $this->finalizePaid($cart, $payment);
+        CompletePaidCartJob::dispatch($cart->id, $payment->id, $product->id);
+    }
+
+    /**
+     * @return array{ok: bool, reason: string}
+     */
+    public function processSideEffects(Cart $cart, Payment $payment, Product $product): array
+    {
+        $cart->loadMissing(['user', 'productOffer.contract', 'payment']);
+
         try {
             if ((int) $product->product_type_id === 1) {
                 (new PaymentCertificateToPdfService($cart))->generateAndPersist();
+                try {
+                    app(LloydsDoprintPipelineService::class)->run($cart);
+                } catch (\Throwable $doprintError) {
+                    // Payment and local PDF stay; DoPrint is retried by doprint:reconcile-stuck.
+                    Log::warning('payment.complete_cart.doprint_pending', [
+                        'cart_ref' => $cart->cart_ref,
+                        'payment_id' => $payment->id,
+                        'message' => $doprintError->getMessage(),
+                    ]);
+
+                    return ['ok' => true, 'reason' => 'doprint_pending'];
+                }
             }
 
             if ((int) $product->product_type_id === 2) {
                 $this->completeBankersFlow($cart, $payment);
-            }
-
-            if ((int) $cart->product_step_id < 5) {
-                $cart->updateCartStep(5);
             }
 
             return ['ok' => true, 'reason' => 'completed'];
@@ -53,7 +93,7 @@ class CompletePaidCartService
                 'message' => $e->getMessage(),
             ]);
 
-            return ['ok' => false, 'reason' => 'post_payment_failed'];
+            throw $e;
         }
     }
 
@@ -95,8 +135,8 @@ class CompletePaidCartService
         (new PaymentBankersToPdfService($cart))->generateAndPersist();
 
         if ($cart->user) {
+            // KAN-37: both classes go to the same users.email — the NotPec twin is a duplicate.
             $cart->user->notify(new FinalEmailWithAttachments($cart));
-            $cart->user->notify(new FinalEmailWithAttachmentsNotPec($cart));
         }
     }
 }

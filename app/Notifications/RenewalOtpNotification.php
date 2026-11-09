@@ -37,29 +37,18 @@ class RenewalOtpNotification extends Notification implements ShouldQueue
             'ttl_minutes' => $this->ttlMinutes,
         ]);
 
+        $fromAddress = config('mail.from.address') ?: 'posta@golinucci.it';
+        $fromName = 'Q&B Golinucci';
+
         if ($rendered) {
-            $mail = (new MailMessage)
-                ->subject($rendered['subject'])
-                ->greeting('')
-                ->salutation('');
+            $mail = (new MailMessage)->from($fromAddress, $fromName);
 
-            foreach (preg_split("/\r\n|\n|\r/", $rendered['body']) as $line) {
-                if (trim($line) === '') {
-                    $mail->line(' ');
-                } else {
-                    $mail->line($line);
-                }
-            }
-
-            if (!empty($rendered['bcc'])) {
-                $mail->bcc($rendered['bcc']);
-            }
-
-            return $mail;
+            return app(EmailTemplateService::class)->applyToMail($mail, $rendered);
         }
 
         // Fallback if template missing / inactive
         return (new MailMessage)
+            ->from($fromAddress, $fromName)
             ->subject('Q&B Golinucci - Codice di accesso al rinnovo')
             ->greeting('Gentile ' . ($notifiable->name ?? ''))
             ->line('Per continuare il rinnovo della polizza inserisci questo codice:')

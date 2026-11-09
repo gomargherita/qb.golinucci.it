@@ -19,7 +19,9 @@ use App\Http\Controllers\YousignController;
 use App\Http\Controllers\ImportoLiberoController;
 use App\Http\Controllers\RenewalChallengeController;
 use App\Http\Controllers\PaypalWebhookController;
+use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\EmailTemplateController;
+use App\Http\Controllers\PlacesController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -256,6 +258,7 @@ Route::controller(SiteController::class)->group(function () {
 
 
     Route::post('/importo_libero/pay/{id}', 'importoLiberoPay')->name('front.importoLiberoPay');
+    Route::post('/importo_libero/stripe/{id}', 'importoLiberoStripePay')->name('front.importoLiberoStripePay');
     Route::get('/importo_libero/check_payment/{id}', 'importoLiberoCheckPayment')->name('front.importoLiberoCheckPayment');
     Route::get('/.well-known/apple-developer-merchantid-domain-association', 'applePayAssociationFile')->name('front.applePayAssociationFile');
 
@@ -286,7 +289,18 @@ Route::post('/paypal/webhook', PaypalWebhookController::class)
     ->middleware('throttle:120,1')
     ->name('paypal.webhook');
 
+Route::post('/stripe/webhook', StripeWebhookController::class)
+    ->middleware('throttle:120,1')
+    ->name('stripe.webhook');
+
 Route::group(['middleware' => ['auth']], function () {
+    Route::get('/places/autocomplete', [PlacesController::class, 'autocomplete'])
+        ->middleware('throttle:40,1')
+        ->name('places.autocomplete');
+    Route::get('/places/details', [PlacesController::class, 'details'])
+        ->middleware('throttle:40,1')
+        ->name('places.details');
+
     Route::controller(SiteBuyProductController::class)->group(function () {
         Route::get('/paypal_redirect', 'paypal_redirect')->name('front.paypal_redirect');
         Route::scopeBindings()->group(function () {
@@ -295,8 +309,9 @@ Route::group(['middleware' => ['auth']], function () {
             Route::post('/products/{product}/store_step1/{cart:cart_ref}', 'store_step1')->name('front.product.store_step1');
             Route::post('/products/{product}/store_step2/{cart:cart_ref}', 'store_step2')->name('front.product.store_step2');
             Route::post('/products/{product}/store_step3/{cart:cart_ref}', 'store_step3')->name('front.product.store_step3');
-            Route::post('/products/{product}/store_step4/{cart:cart_ref}/{gateway}/', 'store_step4')->name('front.product.store_step4');
-            Route::get('/products/{product}/store_step4_paypal/{cart:cart_ref}/{payment_id}/', 'store_step4_paypal_return')->name('front.product.store_step4_paypal_return');
+            Route::post('/products/{product}/store_step4/{cart:cart_ref}/{gateway}', 'store_step4')->name('front.product.store_step4');
+            Route::post('/products/{product}/checkout-stripe/{cart:cart_ref}', 'store_step4_stripe')->name('front.product.checkout_stripe');
+            Route::get('/products/{product}/store_step4_paypal/{cart:cart_ref}/{payment_id}', 'store_step4_paypal_return')->name('front.product.store_step4_paypal_return');
             Route::get('/products/{product}/store_step4_paypal/{cart:cart_ref}/{payment_id}/c', 'store_step4_paypal_cancel')->name('front.product.store_step4_paypal_cancel');
             Route::post('/products/{product}/store_step5/{cart:cart_ref}', 'store_step5')->name('front.product.store_step5');
         });

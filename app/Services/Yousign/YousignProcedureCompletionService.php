@@ -5,6 +5,7 @@ namespace App\Services\Yousign;
 use App\Models\Cart;
 use App\Models\Signature;
 use App\Notifications\FinalEmailWithAttachments;
+use App\Services\DeclarationsToPdfService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -23,7 +24,13 @@ class YousignProcedureCompletionService
     {
         $cart->loadMissing(['signature', 'user', 'payment']);
 
-        $signature = $cart->signature;
+        $signature = null;
+        if ($signatureRequestId) {
+            $signature = Signature::where('procedure_id', $signatureRequestId)->first();
+        }
+        if (!$signature) {
+            $signature = $cart->signature;
+        }
         if (!$signature) {
             return ['ok' => false, 'reason' => 'missing_signature', 'cart_ref' => $cart->cart_ref];
         }
@@ -37,8 +44,13 @@ class YousignProcedureCompletionService
             return ['ok' => false, 'reason' => 'procedure_id_mismatch', 'cart_ref' => $cart->cart_ref];
         }
 
-        // Idempotent: already closed
+        // Idempotent: already closed. Still generate declarations + final email if the PDF was missing.
         if ($signature->status === self::STATUS_DONE && (int) $cart->product_step_id >= 7) {
+            if ($this->ensureDeclarationsPdf($cart) && $cart->user) {
+                $cart->user->notify(new FinalEmailWithAttachments($cart));
+                return ['ok' => true, 'reason' => 'completed_email_retry', 'cart_ref' => $cart->cart_ref];
+            }
+
             return ['ok' => true, 'reason' => 'already_completed', 'cart_ref' => $cart->cart_ref];
         }
 
@@ -71,6 +83,8 @@ class YousignProcedureCompletionService
             if ((int) $cart->product_step_id < 7) {
                 $cart->updateCartStep(7);
             }
+
+            $this->ensureDeclarationsPdf($cart);
 
             if ($cart->user) {
                 $cart->user->notify(new FinalEmailWithAttachments($cart));
@@ -109,5 +123,20 @@ class YousignProcedureCompletionService
         }
 
         return null;
+    }
+
+    /**
+     * @return bool true if the PDF was created now
+     */
+    private function ensureDeclarationsPdf(Cart $cart): bool
+    {
+        $path = 'certificates/user_' . $cart->user_id . '/cart_' . $cart->id . '/declarations.pdf';
+        if (Storage::disk('private')->exists($path)) {
+            return false;
+        }
+
+        (new DeclarationsToPdfService($cart))->generateAndPersist();
+
+        return Storage::disk('private')->exists($path);
     }
 }

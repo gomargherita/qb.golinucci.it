@@ -3,110 +3,107 @@
 namespace App\Notifications;
 
 use App\Models\Cart;
+use App\Notifications\Concerns\IssuesRenewalAccess;
+use App\Services\EmailTemplateService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\Str;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\Facades\Log;
 
+/**
+ * Manual / BO “first renewal” email (ER/RI buttons). KAN-8: access link + OTP, no temp password.
+ */
 class FirstEmailWithCredentials extends Notification implements ShouldQueue
 {
     use Queueable;
+    use IssuesRenewalAccess;
 
     protected $cart;
 
-    /**
-     * Create a new notification instance.
-     *
-     * @return void
-     */
+    /** @var \App\Models\Reminder|null Set by {@see IssuesRenewalAccess::ensureReminder()} */
+    protected $reminder;
+
     public function __construct(Cart $cart)
     {
         $this->cart = $cart;
     }
 
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
     public function via($notifiable)
     {
         return ['mail'];
     }
 
-    /**
-     * Get the mail representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return \Illuminate\Notifications\Messages\MailMessage
-     */
     public function toMail($notifiable)
     {
         try {
-            if($this->cart->product_id == 1  || $this->cart->product_id == 5){
-                $cc = "sanitari@golinucci.it";
-            }
-            else{
-                $cc = "bancari@golinucci.it";
-            }
+            $cc = $this->renewalCcAddress();
             $user = $notifiable;
-            $cart = $this->cart;
-            Log::debug($user, ['notification']);
-            Log::debug($cart, ['notification cart']);
-            // generate a new password, hash and save it 
-            $uncrypted_password = Str::random(10);
-            $user->password = $uncrypted_password;
-            $user->email_verified_at = now();
-            $user->save();
-            $url = route('front.product.buy', [$cart->product->id, $cart->cart_ref]);
-            $renewal_date = $cart->renewal_date->format('d/m/Y');
+            $url = $this->renewalAccessUrl();
+            $this->markRenewalEmailSent();
 
-            if($this->cart->product_id == 1){
-                return (new MailMessage)
-                    ->bcc($cc)
+            $renewal_date = $this->cart->renewal_date
+                ? $this->cart->renewal_date->format('d/m/Y')
+                : now()->format('d/m/Y');
+
+            $isMedici = in_array((int) $this->cart->product_id, [1, 5], true);
+            $key = $isMedici ? 'renewal_invite_medici' : 'renewal_invite';
+            $rendered = app(EmailTemplateService::class)->render($key, [
+                'name' => $user->name ?? '',
+                'renewal_date' => $renewal_date,
+                'email' => $user->email ?? '',
+                'url' => $url,
+            ]);
+
+            $mail = (new MailMessage)
+                ->bcc($cc)
+                ->from([$cc => 'Q&B Golinucci']);
+
+            if ($rendered) {
+                return app(EmailTemplateService::class)->applyToMail($mail, $rendered, [
+                    'action_text' => 'Rinnova la tua polizza',
+                    'action_url' => $url,
+                ]);
+            }
+
+            if ($isMedici) {
+                return $mail
                     ->subject('Q&B Golinucci - Rinnova la tua polizza')
                     ->greeting("Gentile $user->name")
                     ->line("Il $renewal_date scadrà la tua polizza di Responsabilita’ Civile Professionale.")
-                    ->line("Per procedere al rinnovo ed ottenere la nuova polizza online ti basta accedere al nostro sito con le seguenti credenziali:")
-                    ->line("Email: $user->email")
-                    ->line("Password: $uncrypted_password")
-                    ->line("Clicca sul pulsante sottostante per iniziare la procedura di rinnovo.")
+                    ->line("NOVITA’ 2026:")
+                    ->line("Nelle condizioni di polizza è stato aggiunto l’art. 26:")
+                    ->line("Articolo 26 OBBLIGO FORMATIVO (ECM)")
+                    ->line("In caso di sinistro, se l'assicurato non è in regola con l'obbligo formativo di cui all'art. 38-bis DL 152/2021, convertito con L. 233/2021, l'assicurazione è operante a condizione che l'assicurato completi il credito formativo richiesto dalla legge, entro due mesi dalla data del sinistro.")
+                    ->line("La clausola offre quindi un margine temporale per sanare l’eventuale inadempimento formativo, considerato che a partire dal triennio 2023-2025 l’efficacia delle polizze assicurative di responsabilità civile viene subordinata al rispetto dell’obbligo formativo individuale: in concreto, perché la polizza sia efficace il professionista sanitario deve aver completato almeno il 70% dell’obbligo di formazione continua in medicina (ECM) dell’ultimo triennio utile.")
+                    ->line("Nessuna inefficacia della polizza, pertanto, se il professionista completa il credito formativo mancante entro il termine di due mesi dalla data della denuncia del sinistro.")
+                    ->line("Per procedere al rinnovo ed ottenere la nuova polizza online usa il pulsante qui sotto (link personale, senza password temporanea).")
+                    ->line("Email di riferimento: $user->email")
                     ->action('Rinnova la tua polizza', $url)
                     ->line("Se hai altre polizze in scadenza (tutela legale, infortuni, responsabilità civile vita privata, ecc..) riceverai un'altra separata email per il loro rinnovo.")
-                    ->salutation('Grazie per aver scelto i prodotti Golinucci!')->from(['sanitari@golinucci.it' => 'Q&B Golinucci']);
+                    ->salutation('Grazie per aver scelto i prodotti Golinucci!');
             }
-            else{
-                return (new MailMessage)
-                    ->bcc($cc)
-                    ->subject('Q&B Golinucci - Rinnova la tua polizza')
-                    ->greeting("Gentile $user->name")
-                    ->line("Il $renewal_date scadrà la tua polizza di Responsabilita’ Civile Professionale.")
-                    ->line("Per procedere al rinnovo ed ottenere la nuova polizza online ti basta accedere al nostro sito con le seguenti credenziali:")
-                    ->line("Email: $user->email")
-                    ->line("Password: $uncrypted_password")
-                    ->line("Clicca sul pulsante sottostante per iniziare la procedura di rinnovo.")
-                    ->action('Rinnova la tua polizza', $url)
-                    ->line("Se hai altre polizze in scadenza (tutela legale, infortuni, responsabilità civile vita privata, ecc..) riceverai un'altra separata email per il loro rinnovo.")
-                    ->salutation('Grazie per aver scelto i prodotti Golinucci!')->from(['bancari@golinucci.it' => 'Q&B Golinucci']);
-            }
+
+            return $mail
+                ->subject('Q&B Golinucci - Rinnova la tua polizza')
+                ->greeting("Gentile $user->name")
+                ->line("Il $renewal_date scadrà la tua polizza di Responsabilita’ Civile Professionale.")
+                ->line("Per procedere al rinnovo ed ottenere la nuova polizza online usa il pulsante qui sotto (link personale, senza password temporanea).")
+                ->line("Email di riferimento: $user->email")
+                ->action('Rinnova la tua polizza', $url)
+                ->line("Se hai altre polizze in scadenza (tutela legale, infortuni, responsabilità civile vita privata, ecc..) riceverai un'altra separata email per il loro rinnovo.")
+                ->salutation('Grazie per aver scelto i prodotti Golinucci!');
         } catch (\Exception $e) {
-            abort(500);
+            Log::error('FirstEmailWithCredentials failed', [
+                'cart_ref' => $this->cart->cart_ref ?? null,
+                'message' => $e->getMessage(),
+            ]);
+            throw $e;
         }
     }
 
-    /**
-     * Get the array representation of the notification.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
     public function toArray($notifiable)
     {
-        return [
-            //
-        ];
+        return [];
     }
 }

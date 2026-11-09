@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\ProcessYousignProcedureFinishedJob;
 use App\Services\Yousign\YousignProcedureCompletionService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -25,11 +26,18 @@ class YousignController extends Controller
             return response()->json(['ok' => false, 'reason' => 'cart_not_found'], 404);
         }
 
-        $result = $completion->complete($cart, $signatureRequestId);
+        ProcessYousignProcedureFinishedJob::dispatch($cart->id, $signatureRequestId);
 
-        Log::info('yousign.webhook.procedure_finished', $result);
+        Log::info('yousign.webhook.procedure_finished_queued', [
+            'cart_ref' => $cart->cart_ref,
+            'signature_request_id' => $signatureRequestId,
+        ]);
 
-        return response()->json($result, $result['ok'] ? 200 : 422);
+        return response()->json([
+            'ok' => true,
+            'reason' => 'queued',
+            'cart_ref' => $cart->cart_ref,
+        ]);
     }
 
     // procedure.error

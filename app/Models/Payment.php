@@ -47,32 +47,55 @@ class Payment extends Model
     }
 
     public function updatePaymentPaymentNo(){
-        if($this->cart->product_id == 5){
-            if(empty($this->payment_no) && $this->paid == 1){
-                $productCounter = ProductCounter::where([
-                    'product_id' => 1,
+        if (empty($this->payment_no) && $this->paid == 1) {
+            $productId = $this->cart->product_id == 5 ? 1 : $this->cart->product_id;
+            $productCounter = $this->resolveProductCounter($productId);
+            if (!$productCounter) {
+                \Illuminate\Support\Facades\Log::error('payment.counter_missing', [
+                    'payment_id' => $this->id,
+                    'product_id' => $productId,
                     'payment_gateway_id' => $this->payment_gateway_id,
-                    'year' => date("Y")
-                ])->firstOrFail();
-                $productCounter->counter = $productCounter->counter + 1;
-                $productCounter->save();
-                $this->payment_no = $productCounter->prefix . $productCounter->counter;
+                    'year' => date('Y'),
+                ]);
+                $this->payment_no = 'TMP-' . $this->id;
                 $this->save();
+                return;
             }
+            $productCounter->counter = $productCounter->counter + 1;
+            $productCounter->save();
+            $this->payment_no = $productCounter->prefix . $productCounter->counter;
+            $this->save();
         }
-        else{
-            if(empty($this->payment_no) && $this->paid == 1){
-                $productCounter = ProductCounter::where([
-                    'product_id' => $this->cart->product_id,
-                    'payment_gateway_id' => $this->payment_gateway_id,
-                    'year' => date("Y")
-                ])->firstOrFail();
-                $productCounter->counter = $productCounter->counter + 1;
-                $productCounter->save();
-                $this->payment_no = $productCounter->prefix . $productCounter->counter;
-                $this->save();
-            }
+    }
+
+    private function resolveProductCounter(int $productId): ?ProductCounter
+    {
+        $year = date('Y');
+        $counter = ProductCounter::where([
+            'product_id' => $productId,
+            'payment_gateway_id' => $this->payment_gateway_id,
+            'year' => $year,
+        ])->first();
+        if ($counter) {
+            return $counter;
         }
+
+        $previous = ProductCounter::where([
+            'product_id' => $productId,
+            'payment_gateway_id' => $this->payment_gateway_id,
+        ])->orderByDesc('year')->first();
+
+        $counter = new ProductCounter();
+        $counter->product_id = $productId;
+        $counter->payment_gateway_id = $this->payment_gateway_id;
+        $counter->year = $year;
+        $counter->prefix = $previous
+            ? preg_replace('/^\d{2}/', date('y'), (string) $previous->prefix)
+            : ('QB' . $productId . '-');
+        $counter->counter = 0;
+        $counter->save();
+
+        return $counter;
     }
 
     public function updatePaymentStatus()

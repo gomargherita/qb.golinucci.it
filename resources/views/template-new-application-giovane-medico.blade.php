@@ -60,6 +60,37 @@
         </p>
     </footer>
     <main>
+        @if(!empty($ws_rinnovo))
+        <div>
+            <div>
+                <h1 style="text-align: center;">Polizza Responsabilità Civile Professionale Giovani Medici</h1>
+                <h2 style="text-align: center;">WARRANTY STATEMENT per RINNOVO POLIZZA</h2>
+            </div>
+            <div style="margin:15px 0;">
+                <table style="border-collapse: collapse;">
+                    <tr>
+                        <td>Assicurato</td>
+                        <td><b>{{ $fullname }}</b></td>
+                    </tr>
+                    <tr>
+                        <td>Mail</td>
+                        <td><b>{{ $email }}</b></td>
+                    </tr>
+                </table>
+            </div>
+            <p>Si dichiara che:</p>
+            <ol>
+                <li>Alla data odierna non sono state notificate richieste di risarcimento nei confronti dell'Assicurato.</li>
+                <li>L'Assicurato non è a conoscenza di fatti presenti o passati che potrebbero dar luogo a richieste di risarcimento.</li>
+                <li>Non sono intervenute variazioni rispetto al questionario datato: <b>{{ $previous_questionnaire_date ?? '—' }}</b></li>
+            </ol>
+            <p style="text-align:right;">CONFERMO</p>
+            <p style="text-align:right;">
+                <br>
+                Data: <span style="font-size:16px;font-style:italic;">{{ $data_modulo_proposta }}</span><br>
+            </p>
+        </div>
+        @else
         <div>
             <div>
                 <h1 style="text-align: center;">{{ $title }}</h1>
@@ -218,6 +249,7 @@
                 </p>
             </div>
             <br>
+        @endif
     </main>
 </body>
 

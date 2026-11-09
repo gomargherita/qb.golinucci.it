@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\AddressHasStreetNumber;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -33,7 +34,7 @@ class UpdateBackClientDetailsRequest extends FormRequest
             'gender' => ['nullable', 'in:M,F', 'max:1'],
             'dob' => ['nullable'],
             'phone' => ['nullable', 'max:30'],
-            'address' => ['nullable', 'max:150'],
+            'address' => ['nullable', 'max:150', new AddressHasStreetNumber()],
             'city' => ['nullable', 'max:50'],
             'province' => ['nullable', 'max:3'],
             'country' => ['nullable', 'max:2'],

@@ -192,17 +192,44 @@ class YousignApiLaravel
      * @return mixed
      */
 
-    public function createProcedure($name, $expiration_date, $webhook = false,$webhookMethod = '',$webhookUrl = '',$webhookHeader = '')
+    public function createProcedure($name, $expiration_date, $externalId = null, $webhook = false,$webhookMethod = '',$webhookUrl = '',$webhookHeader = '')
     {
+        $this->ensureWorkspaceWebhook();
+
         $custom_experience_id = env('YOUSIGN_CUSTOM_EXPERIENCE');
+        $reminders = config('yousign.reminders', []);
+        $delivery = config('yousign.delivery_mode', 'none');
+        if (!empty($reminders['enabled'])) {
+            $delivery = 'email';
+        }
         $parameters = array('name'=> $name,
         'expiration_date' => $expiration_date,
-        'delivery_mode'=> "none",
+        'delivery_mode'=> $delivery,
         'ordered_signers'=> false,
         'timezone'=> "Europe/Paris",
         'custom_experience_id'=> $custom_experience_id,
         //'workspace_id'=> $this->workspaceID,
-        'external_id'=> '96');
+        );
+        if (is_string($externalId) && $externalId !== '') {
+            $parameters['external_id'] = $externalId;
+        }
+        if (!empty($reminders['enabled'])) {
+            $interval = (int) ($reminders['interval_in_days'] ?? 2);
+            if (!in_array($interval, [1, 2, 7, 14], true)) {
+                $interval = 2;
+            }
+            $occurrence = (int) ($reminders['occurrence'] ?? 5);
+            if ($occurrence < 1) {
+                $occurrence = 1;
+            }
+            if ($occurrence > 10) {
+                $occurrence = 10;
+            }
+            $parameters['reminder_settings'] = [
+                'interval_in_days' => $interval,
+                'occurrence' => $occurrence,
+            ];
+        }
             $conf = array();
 
             if($webhook == true){
@@ -324,6 +351,44 @@ class YousignApiLaravel
         }
     }
 
+    /**
+     * Attach a PDF to a v3 signature request (no electronic seal).
+     * Staging/sandbox: the prod seal image_id is missing.
+     */
+    public function addSignatureRequestDocument($name, $filepath, $procedureId)
+    {
+        $curlFile = new \CURLFILE($filepath, 'application/pdf', $name);
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => $this->apiBaseUrl . 'signature_requests/' . $procedureId . '/documents',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => array(
+                'file' => $curlFile,
+                'nature' => 'signable_document',
+            ),
+            CURLOPT_HTTPHEADER => array(
+                'Authorization: Bearer ' . $this->getapiKey(),
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+
+        if ($err) {
+            Log::warning('yousign.addSignatureDocument.curl', ['err' => $err]);
+            return false;
+        }
+
+        return $response;
+    }
+
     public function addServerStamp($page, $position, $idfile, $procedure_id)
     {
         $fieldPosition = explode(",", $position);
@@ -399,15 +464,23 @@ class YousignApiLaravel
             curl_close($curl);
 
             if ($err) {
-                echo "cURL Error #:" . $err;
-            } else {
-                $rtab = json_decode($response2,true);
-                //$this->idfile = $rtab['id'];
-                //print($response);
-                return $rtab['id'];
+                Log::warning('yousign.addServerStamp.curl', ['err' => $err]);
+                return false;
             }
+
+            $rtab = json_decode($response2, true);
+            if (!is_array($rtab) || empty($rtab['id'])) {
+                Log::warning('yousign.addServerStamp.attach_failed', [
+                    'seal_head' => substr((string) $response, 0, 300),
+                    'attach_head' => substr((string) $response2, 0, 300),
+                ]);
+                return false;
+            }
+
+            return $rtab['id'];
         }
         catch (\Exception $e){
+            Log::warning('yousign.addServerStamp.exception', ['message' => $e->getMessage()]);
             return false;
         }
     }
@@ -680,6 +753,84 @@ class YousignApiLaravel
 
             return null;
         }
+    }
+
+    /**
+     * Register workspace webhook for signature_request.done if missing (KAN-5).
+     */
+    public function ensureWorkspaceWebhook(): bool
+    {
+        $endpoint = rtrim((string) config('yousign.webhook_url'), '/');
+        if ($endpoint === '' || strpos($endpoint, 'http') !== 0) {
+            Log::warning('yousign.webhook.missing_url');
+            return false;
+        }
+
+        $listed = $this->yousignJson('GET', 'webhooks');
+        $rows = is_array($listed) ? ($listed['data'] ?? $listed) : [];
+        if (is_array($rows)) {
+            foreach ($rows as $row) {
+                if (!is_array($row)) {
+                    continue;
+                }
+                $existing = rtrim((string) ($row['endpoint'] ?? ''), '/');
+                if (strcasecmp($existing, $endpoint) === 0) {
+                    Log::info('yousign.webhook.already_registered');
+                    return true;
+                }
+            }
+        }
+
+        $payload = [
+            'endpoint' => $endpoint,
+            'subscribed_events' => ['signature_request.done'],
+            'sandbox' => \Illuminate\Support\Facades\App::environment(['local', 'staging']),
+            'enabled' => true,
+            'auto_retry' => true,
+            'scopes' => ['app'],
+        ];
+        $created = $this->yousignJson('POST', 'webhooks', $payload);
+
+        $ok = is_array($created) && !empty($created['id']);
+        Log::info('yousign.webhook.register', [
+            'ok' => $ok,
+            'type' => is_array($created) ? ($created['type'] ?? null) : null,
+            'detail' => is_array($created) ? ($created['detail'] ?? null) : null,
+            'invalid_params' => is_array($created) ? ($created['invalid_params'] ?? null) : null,
+        ]);
+
+        return $ok;
+    }
+
+    private function yousignJson(string $method, string $path, ?array $body = null): ?array
+    {
+        $curl = curl_init();
+        $headers = [
+            'Accept: application/json',
+            'Authorization: Bearer ' . $this->getapiKey(),
+        ];
+        $opts = [
+            CURLOPT_URL => $this->apiBaseUrl . ltrim($path, '/'),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => $method,
+            CURLOPT_HTTPHEADER => $headers,
+        ];
+        if ($body !== null) {
+            $headers[] = 'Content-Type: application/json';
+            $opts[CURLOPT_HTTPHEADER] = $headers;
+            $opts[CURLOPT_POSTFIELDS] = json_encode($body);
+        }
+        curl_setopt_array($curl, $opts);
+        $raw = curl_exec($curl);
+        $err = curl_error($curl);
+        curl_close($curl);
+        if ($err) {
+            Log::warning('yousign.http.curl', ['path' => $path, 'err' => $err]);
+            return null;
+        }
+
+        $decoded = json_decode((string) $raw, true);
+        return is_array($decoded) ? $decoded : null;
     }
 
     public function getFile($filedId)

@@ -2,12 +2,17 @@
 
 ## Scheduler (`app/Console/Kernel.php`)
 
-| Comando | Quando | Log |
-|---------|--------|-----|
-| `mail:renew` | ogni giorno 08:00 | `renew_email.log` + email on failure |
-| `mail:first_send` | **commentato** | era previsto daily 08:00 |
+Il cron è solo l’orologio (`* * * * * php artisan schedule:run`). Il lavoro va in **coda** (Redis staging / `database` prod finché Vittorio non installa Redis).
 
-Implementazione: `app/Console/Commands/SendRenewals.php`.
+| Tick scheduler | Job Redis | Quando |
+|----------------|-----------|--------|
+| `SendRenewalsJob` | `php artisan mail:renew` | ogni giorno 08:00 |
+| `ReconcileDoprintStuckJob` | `doprint:reconcile-stuck --apply` | ogni ora |
+| `mail:first_send` | — | **commentato** |
+
+Serve crontab `www-data` (chiesto a Vittorio, KAN-10). Comandi CLI restano per dry-run manuale.
+
+Implementazione: `app/Console/Commands/SendRenewals.php`, `app/Jobs/SendRenewalsJob.php`, `app/Jobs/ReconcileDoprintStuckJob.php`.
 
 Logica (sintesi):
 
@@ -35,20 +40,26 @@ Per renderle gestibili serve una feature dedicata (template + variabili + audit)
 - CTA email → `GET /renewal/access/{cart_ref}?token=…` → login sessione → redirect al rinnovo
 - nessuna password in email; `users.password` non viene più toccato dalle mail di rinnovo
 - migration `2026_10_05_120000_secure_reminder_access_tokens` azzera gli storici `pw`
-- prossima evoluzione: OTP 1h sul link (KAN-8)
+- OTP 1h sul link (KAN-8). Smoke 23/10: OTP ok; qualche template ha ancora From «Laravel» (KAN-12).
 
 ### 2. CSRF sui webhook Yousign — **risolto (KAN-5)**
 
 `yousign/*` escluso da CSRF; completion idempotente + `yousign:reconcile-stuck` per pratiche ferme.  
 Vedi [03-integrazioni.md](03-integrazioni.md).
 
+**CSRF PayPal createOrder (KAN-39):** dopo OTP, `POST .../store_step4/{cart}/paypal` 419. Except staging attivo; JS `Step4.vue` locale non ancora mixato. `errors/419.blade.php` usa sempre il testo «30 giorni» (fuorviante).
+
+**Coda post-pagamento (KAN-10):** `CompletePaidCartJob` (`tries=5`, timeout 180, unique `complete-paid-cart-{cartId}`). Staging Redis 23/10 OK. Produzione ancora `database`.
+
+**KAN-37:** sui Bancari partono due email identiche «Polizza e documenti» (PEC + non PEC). Confermato smoke 26BKN-2. Non è un doppio job Redis.
+
 ### 3. Logging
 
 Capture PayPal e altri oggetti vengono loggati (`Log::info`). In produzione il log può crescere e contenere dati sensibili (come già notato da FMP).
 
-### 4. SQL grezzo
+### 4. SQL grezzo — **parziale (KAN-12, 28/10)**
 
-Vari punti usano `DB::raw` / `DB::statement` con concatenazione di `cart_ref` (rinnovi, renewals_email). Rischio injection se i ref non fossero sempre generati internamente; comunque fragile e da sostituire con query builder/Eloquent.
+`mail:renew` e area utente (`SiteController` rinnovo già fatto) usano query builder su `renewals` / `renewals_email`. Restano altri `DB::raw` (select elenco colonne, DATE_FORMAT) senza concatenazione di input.
 
 ### 5. Refuso backoffice `contact_ref` / `version_ref` — **risolto (KAN-13)**
 

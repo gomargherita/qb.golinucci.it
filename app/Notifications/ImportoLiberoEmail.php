@@ -3,16 +3,11 @@
 
 namespace App\Notifications;
 
-use App\Http\Controllers\SiteBuyProductController;
+use App\Services\EmailTemplateService;
 use Illuminate\Bus\Queueable;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use App\Models\RenewalsEmail;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
 
 
 
@@ -63,17 +58,27 @@ class ImportoLiberoEmail extends Notification implements ShouldQueue
             'surname' => $this->surname,
         ];
             $cc = "info@golinucci.it";
-            return (new MailMessage)
+            $mail = (new MailMessage)
                 ->bcc("paolo@golinucci.it")
+                ->from([$cc => 'Golinucci SRL']);
+            $applied = app(EmailTemplateService::class)->applyIfPresent($mail, 'importo_libero', [
+                'name' => $this->name,
+                'surname' => $this->surname,
+                'amount' => $this->total_payable,
+                'causale' => $this->causale,
+            ]);
+            if ($applied) {
+                return $applied;
+            }
+
+            return $mail
                 ->subject('Conferma acquisto')
                 ->view('importolibero', [
                     'name' => $this->name,
                     'surname' => $this->surname,
                     'total_payable' => $this->total_payable,
                     'causale' => $this->causale,
-
-                    ])
-                ->from([$cc => 'Golinucci SRL']);
+                ]);
     }
 
     /**

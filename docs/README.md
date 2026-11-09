@@ -19,11 +19,12 @@ Documentazione ricostruita dal codice sorgente (snapshot 28/09/2026) e dallo sch
 ## Sintesi operativa (per chi interviene)
 
 1. **Non rifare la piattaforma**: i flussi sono in `SiteBuyProductController` + `CartController` + servizi DoPrint/Yousign.
-2. **Pagamenti**: cattura PayPal guidata dal browser (`store_step4_paypal_return`); un solo record `payments` per carrello; niente storico tentativi.
-3. **Rinnovi**: tabella `renewals` (old→new `cart_ref`); se si apre un buy senza `cart_ref` si crea un **nuovo** carrello.
-4. **DoPrint**: macchina a stati su `certificates.doprint_current_step` (handshake → validation → upload → transaction → download → completed).
+2. **Pagamenti**: PayPal only (Stripe spento, KAN-36). Capture idempotente + webhook + reconcile (KAN-6). Post-pagamento in coda: `CompletePaidCartJob` (KAN-10). Tetto €1000: sopra solo bonifico.
+3. **Rinnovi**: `RenewalCartService` riprende **una** bozza aperta per user+prodotto; bozza aperta = step &lt; 5 **e** senza payment paid (KAN-40). Max 1 carrello/anno.
+4. **DoPrint**: macchina a stati su `certificates.doprint_current_step`. Staging Medici bloccato su sandbox Lloyd’s (KAN-38, handshake s:020). I Bancari non usano DoPrint.
 5. **Yousign**: API v3; webhook hardening KAN-5 (CSRF except + completion service + `yousign:reconcile-stuck`).
-6. **Sicurezza / pagamenti P0**: KAN-4 token rinnovi; KAN-5 Yousign; KAN-6 PayPal capture idempotente + webhook + reconcile.
+6. **Code**: staging `QUEUE_CONNECTION=redis` (predis, 2 worker Supervisor). Produzione ancora `database`. CSRF: `yousign/*`, `paypal/webhook`, `products/*/store_step4/*/paypal` (KAN-39).
+7. **Sicurezza P0**: KAN-4 token rinnovi; KAN-8 OTP 1h; KAN-5 Yousign; KAN-6 PayPal.
 
 ## Cosa non è in questo snapshot
 
@@ -33,4 +34,4 @@ Documentazione ricostruita dal codice sorgente (snapshot 28/09/2026) e dallo sch
 
 ## Knowledge base WeblyRAG
 
-Dossier MCP agent_id: **`golinucci`** (titolo: Golinucci QB — Fractional Tech Lead). Contiene brief, proposte, docs tecnici 01–06, sintesi FMP, stakeholder/budget, infra Vittorio.
+Dossier MCP agent_id: **`golinucci`** (titolo: Golinucci QB — Fractional Tech Lead). Contiene brief, proposte, docs tecnici 01–06, sintesi FMP, stakeholder/budget, infra Vittorio, **stato-operativo-2026-10** (smoke Redis/PayPal 23/10).

@@ -17,6 +17,8 @@ class EmailTemplate extends Model
         'subject',
         'body',
         'bcc',
+        'from_email',
+        'from_name',
         'is_active',
         'updated_by',
     ];
@@ -33,6 +35,6 @@ class EmailTemplate extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['key', 'name', 'subject', 'body', 'bcc', 'is_active', 'updated_by']);
+            ->logOnly(['key', 'name', 'subject', 'body', 'bcc', 'from_email', 'from_name', 'is_active', 'updated_by']);
     }
 }
