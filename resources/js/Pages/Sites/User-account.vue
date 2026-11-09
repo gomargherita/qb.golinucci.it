@@ -62,7 +62,7 @@
                 </tr>
                 
                 <tr v-if="user.certificates[cart.id][0] !== undefined">
-                  <td style="font-weight: bold">Numero di certificato:</td>
+                  <td style="font-weight: bold">Numero di polizza:</td>
                   <td style="padding-left:10px;">{{ user.certificates[cart.id][0].doprint_certificate_no }}</td>
                 </tr>
                 <tr v-if="user.certificates[cart.id][0] !== undefined">
@@ -75,7 +75,7 @@
                 </tr>
                 <div v-else>
                   <tr>
-                    <td style="font-weight: bold">Numero di certificato:</td>
+                    <td style="font-weight: bold">Numero di polizza:</td>
                     <td style="padding-left:10px;">Non presente.</td>
                   </tr>
                   <tr>
@@ -123,7 +123,7 @@
               :href="user.documents[cart.id]['certificate_final']"
               target="_blank"
               class="btn-gol-primary" style="color:white"
-              >Polizza</a
+              >{{ policyLabel(cart) }}</a
             >
           </div>
           
@@ -167,6 +167,13 @@ export default {
   },
   props: {
     user: Object,
+  },
+  methods: {
+    policyLabel(cart) {
+      if (cart.product_id == 1) return "Polizza RC colpa grave";
+      if (cart.product_id == 5) return "Polizza RC Giovane medico";
+      return "Polizza";
+    },
   },
 };
 </script>

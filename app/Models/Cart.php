@@ -88,6 +88,21 @@ class Cart extends Model
         return $this->save();
     }
 
+    /**
+     * Customer-facing PDF name (KAN-41). Storage stays certificate-final.pdf.
+     */
+    public function policyDocumentName(): string
+    {
+        if ((int) $this->product_id === 1) {
+            return 'Polizza RC colpa grave.pdf';
+        }
+        if ((int) $this->product_id === 5) {
+            return 'Polizza RC Giovane medico.pdf';
+        }
+
+        return 'Polizza.pdf';
+    }
+
     public function verifyAndGrabCart(User $user)
     {
         return Cart::query()

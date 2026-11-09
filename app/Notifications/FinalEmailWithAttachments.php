@@ -65,7 +65,10 @@ class FinalEmailWithAttachments extends Notification
             foreach (['certificate-final.pdf', 'declarations.pdf', 'payment-certificate.pdf'] as $name) {
                 $full = $file_path . '/' . $name;
                 if (is_file($full)) {
-                    $mail->attach($full);
+                    $mail->attach($full, [
+                        'as' => $name === 'certificate-final.pdf' ? $this->cart->policyDocumentName() : $name,
+                        'mime' => 'application/pdf',
+                    ]);
                 }
             }
 
@@ -102,7 +105,10 @@ class FinalEmailWithAttachments extends Notification
                     });
 
                     return $mail
-                        ->attach($file_path . '/certificate-final.pdf')
+                        ->attach($file_path . '/certificate-final.pdf', [
+                            'as' => $this->cart->policyDocumentName(),
+                            'mime' => 'application/pdf',
+                        ])
                         ->attach($file_path . '/declarations.pdf')
                         ->attach(Storage::disk('public')->getAdapter()->getPathPrefix()."/contracts/RC-Rischi-diversi_DIP_e_DIPAGG.pdf")
                         ->attach($mup)
@@ -138,7 +144,10 @@ class FinalEmailWithAttachments extends Notification
             });
 
             return $mail
-                ->attach($file_path . '/certificate-final.pdf')
+                ->attach($file_path . '/certificate-final.pdf', [
+                    'as' => $this->cart->policyDocumentName(),
+                    'mime' => 'application/pdf',
+                ])
                 ->attach($wording);
         }
     }

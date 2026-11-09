@@ -60,7 +60,10 @@ class FinalEmailWithAttachmentsNotPec extends Notification
                         E-mail: bancari@golinucci.it
                         Broker di Assicurazioni Iscrizione RUI n. B000070946 del 19/03/2007 intermediario soggetto al controllo dell'Ivass")
             ->salutation('Grazie per aver scelto i prodotti Golinucci!')
-            ->attach($file_path . '/certificate-final.pdf')
+            ->attach($file_path . '/certificate-final.pdf', [
+                'as' => $this->cart->policyDocumentName(),
+                'mime' => 'application/pdf',
+            ])
             ->attach($file_path . '/declarations.pdf')
             ->attach($public . '/contracts/RC-Rischi-diversi_DIP_e_DIPAGG.pdf')
             ->attach($mup)
