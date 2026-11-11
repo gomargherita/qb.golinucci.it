@@ -155,6 +155,28 @@
       </Link>
     </div>
     <div class="mb-4">
+      <Link class="group flex items-center py-3" :href="route('customEmissions')">
+        <icon
+          name="office"
+          class="mr-2 w-4 h-4"
+          :class="
+            isUrl(false, 'admin/emissioni-doprint')
+              ? 'fill-primary'
+              : 'fill-gray-900 group-hover:fill-primary'
+          "
+        />
+        <div
+          :class="
+            isUrl(false, 'admin/emissioni-doprint')
+              ? 'text-primary'
+              : 'text-gray-900 group-hover:text-primary'
+          "
+        >
+          Emissione personalizzata
+        </div>
+      </Link>
+    </div>
+    <div class="mb-4">
       <Link class="group flex items-center py-3" :href="route('carts', 2)">
         <icon
           name="cart"

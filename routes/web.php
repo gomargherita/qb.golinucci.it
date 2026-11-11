@@ -21,6 +21,7 @@ use App\Http\Controllers\RenewalChallengeController;
 use App\Http\Controllers\PaypalWebhookController;
 use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\EmailTemplateController;
+use App\Http\Controllers\CustomDoprintEmissionController;
 use App\Http\Controllers\PlacesController;
 use Illuminate\Support\Facades\Route;
 
@@ -123,6 +124,15 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'check_role']], func
 
     Route::get('reports', [ReportsController::class, 'index'])
         ->name('reports');
+
+    Route::get('emissioni-doprint', [CustomDoprintEmissionController::class, 'index'])
+        ->name('customEmissions');
+    Route::get('emissioni-doprint/create', [CustomDoprintEmissionController::class, 'create'])
+        ->name('customEmissions.create');
+    Route::post('emissioni-doprint', [CustomDoprintEmissionController::class, 'store'])
+        ->name('customEmissions.store');
+    Route::get('emissioni-doprint/{emission}', [CustomDoprintEmissionController::class, 'show'])
+        ->name('customEmissions.show');
 
     Route::get('carts/{product_type}', [CartController::class, 'index'])
         ->name('carts');
