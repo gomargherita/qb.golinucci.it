@@ -1,0 +1,56 @@
+name: Prova token di deploy
+
+on:
+  workflow_dispatch:
+
+jobs:
+  ssh-prod:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prova Access su produzione
+        env:
+          TUNNEL_SERVICE_TOKEN_ID: ${{ secrets.QB_DEPLOY_ACCESS_CLIENT_ID }}
+          TUNNEL_SERVICE_TOKEN_SECRET: ${{ secrets.QB_DEPLOY_ACCESS_CLIENT_SECRET }}
+        run: |
+          set -euo pipefail
+          if [ -z "${TUNNEL_SERVICE_TOKEN_ID}" ] || [ -z "${TUNNEL_SERVICE_TOKEN_SECRET}" ]; then
+            echo "esito=secret-mancante"
+            exit 1
+          fi
+          curl -fsSL -o cloudflared https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
+          chmod +x cloudflared
+          ./cloudflared access tcp --hostname ssh-prod.golinucci.it --url 127.0.0.1:2222 --loglevel info --logfile /tmp/cf.log &
+          cf_pid=$!
+          trap 'kill "$cf_pid" >/dev/null 2>&1 || true' EXIT
+          ready=0
+          for _ in 1 2 3 4 5 6 7 8 9 10; do
+            if grep -q "Start Websocket listener" /tmp/cf.log; then
+              ready=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$ready" -ne 1 ]; then
+            echo "esito=proxy-non-partito"
+            exit 1
+          fi
+          set +e
+          ssh -p 2222 \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=no \
+            -o UserKnownHostsFile=/dev/null \
+            -o ConnectTimeout=20 \
+            -o PreferredAuthentications=publickey \
+            riccardo@127.0.0.1 "echo ok" >/tmp/ssh.out 2>/tmp/ssh.err
+          code=$?
+          set -e
+          if [ "$code" -eq 0 ]; then
+            echo "esito=entrato"
+            exit 0
+          fi
+          if grep -q "Permission denied" /tmp/ssh.err; then
+            echo "esito=access-ok-chiave-non-autorizzata"
+            exit 0
+          fi
+          echo "esito=access-rifiutato"
+          exit 1
