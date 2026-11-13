@@ -20,9 +20,9 @@ class CustomDoprintEmissionController extends Controller
                     'id' => $emission->id,
                     'product_name' => $emission->product_name,
                     'holder' => $emission->first_name . ' ' . $emission->last_name,
-                    'start_date' => optional($emission->start_date)->toDateString(),
-                    'end_date' => optional($emission->end_date)->toDateString(),
-                    'status' => $emission->status,
+                    'start_date' => $this->dateLabel($emission->start_date),
+                    'end_date' => $this->dateLabel($emission->end_date),
+                    'status' => $this->statusLabel($emission->status),
                 ];
             });
 
@@ -105,7 +105,7 @@ class CustomDoprintEmissionController extends Controller
         return Inertia::render('CustomEmissions/Show', [
             'emission' => [
                 'id' => $emission->id,
-                'status' => $emission->status,
+                'status' => $this->statusLabel($emission->status),
                 'coverholder_ref' => $emission->coverholder_ref,
                 'contract_type' => $emission->contract_type,
                 'product_name' => $emission->product_name,
@@ -114,19 +114,19 @@ class CustomDoprintEmissionController extends Controller
                 'last_name' => $emission->last_name,
                 'fiscal_code' => $emission->fiscal_code,
                 'gender' => $emission->gender,
-                'dob' => optional($emission->dob)->toDateString(),
+                'dob' => $this->dateLabel($emission->dob),
                 'phone' => $emission->phone,
                 'address' => $emission->address,
                 'city' => $emission->city,
                 'province' => $emission->province,
                 'country' => $emission->country,
                 'postal_code' => $emission->postal_code,
-                'start_date' => optional($emission->start_date)->toDateString(),
-                'end_date' => optional($emission->end_date)->toDateString(),
-                'premium_net' => $emission->premium_net,
-                'premium_accessories' => $emission->premium_accessories,
-                'premium_tax' => $emission->premium_tax,
-                'premium_gross' => $emission->premium_gross,
+                'start_date' => $this->dateLabel($emission->start_date),
+                'end_date' => $this->dateLabel($emission->end_date),
+                'premium_net' => (float) $emission->premium_net,
+                'premium_accessories' => (float) $emission->premium_accessories,
+                'premium_tax' => (float) $emission->premium_tax,
+                'premium_gross' => (float) $emission->premium_gross,
                 'files' => [
                     ['label' => 'Scheda di polizza', 'url' => route('privateFiles', $emission->policy_schedule_path)],
                     ['label' => 'Condizioni', 'url' => route('privateFiles', $emission->wording_path)],
@@ -135,5 +135,23 @@ class CustomDoprintEmissionController extends Controller
                 ],
             ],
         ]);
+    }
+
+    private function statusLabel(string $status): string
+    {
+        if ($status === 'draft') {
+            return 'Bozza';
+        }
+
+        return $status;
+    }
+
+    private function dateLabel($date): ?string
+    {
+        if (!$date) {
+            return null;
+        }
+
+        return $date->format('d/m/Y');
     }
 }
