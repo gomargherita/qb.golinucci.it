@@ -121,27 +121,27 @@ class LloydsDoprintService
         // VALE PER TUTTI GLI ENV
         // VERIFICARE CHE IN SANDBOX ESISTA UN BINDER CON GLI STESSI DATI DI PROD
         //if(true){
-        if($certificate->start_validity_date->format('Y-m-d') <= "2025-11-07"){
-            $BindingAuthorityDetails = $xml->getElementsByTagName('BindingAuthorityDetails')->item(0);
+        $binderStart = $certificate->start_validity_date->format('Y-m-d');
+        $BindingAuthorityDetails = $xml->getElementsByTagName('BindingAuthorityDetails')->item(0);
+        $BindingAuthorityDetails->getElementsByTagName('BAPseudonym')->item(0)->textContent = 'GMB';
+        $BindingAuthorityDetails->getElementsByTagName('BANumber')->item(0)->textContent = '1732';
+        $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin1')->item(0)->textContent = '115647';
+        $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin2')->item(0)->textContent = 'XKT';
+        if ($binderStart <= "2025-11-07") {
             $BindingAuthorityDetails->getElementsByTagName('BARefDate')->item(0)->textContent = '2024-11-19';
             $BindingAuthorityDetails->getElementsByTagName('BARefNo')->item(0)->textContent = '27';
             $BindingAuthorityDetails->getElementsByTagName('BABrokersRef')->item(0)->textContent = 'CPG129824';
-            $BindingAuthorityDetails->getElementsByTagName('BAPseudonym')->item(0)->textContent = 'GMB';
-            $BindingAuthorityDetails->getElementsByTagName('BANumber')->item(0)->textContent = '1732';
-            $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin1')->item(0)->textContent = '115647';
-            $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin2')->item(0)->textContent = 'XKT';
             $BindingAuthorityDetails->getElementsByTagName('BAUniqueMarketReference')->item(0)->textContent = 'B1732CPG129824';
-        }
-        else{
-            $BindingAuthorityDetails = $xml->getElementsByTagName('BindingAuthorityDetails')->item(0);
+        } elseif ($binderStart <= "2026-11-07") {
             $BindingAuthorityDetails->getElementsByTagName('BARefDate')->item(0)->textContent = '2025-11-18';
             $BindingAuthorityDetails->getElementsByTagName('BARefNo')->item(0)->textContent = '6';
             $BindingAuthorityDetails->getElementsByTagName('BABrokersRef')->item(0)->textContent = 'CPG129825';
-            $BindingAuthorityDetails->getElementsByTagName('BAPseudonym')->item(0)->textContent = 'GMB';
-            $BindingAuthorityDetails->getElementsByTagName('BANumber')->item(0)->textContent = '1732';
-            $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin1')->item(0)->textContent = '115647';
-            $BindingAuthorityDetails->getElementsByTagName('BAcorr_Pin2')->item(0)->textContent = 'XKT';
             $BindingAuthorityDetails->getElementsByTagName('BAUniqueMarketReference')->item(0)->textContent = 'B1732CPG129825';
+        } else {
+            $BindingAuthorityDetails->getElementsByTagName('BARefDate')->item(0)->textContent = '2026-11-10';
+            $BindingAuthorityDetails->getElementsByTagName('BARefNo')->item(0)->textContent = '39';
+            $BindingAuthorityDetails->getElementsByTagName('BABrokersRef')->item(0)->textContent = 'CPG129826';
+            $BindingAuthorityDetails->getElementsByTagName('BAUniqueMarketReference')->item(0)->textContent = 'B1732CPG129826';
         }
 
         // Certificate Number

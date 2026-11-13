@@ -288,7 +288,28 @@
             <td></td>
             <td>Golinucci SRL</td>
             <td>115647XKT</td>
-            <td>B1732CPG129823</td>
+            <td>
+                @php
+                    $binderDay = $payment->renewal_date ?: $payment->paid_at;
+                    $binderDay = $binderDay ? date('Y-m-d', strtotime($binderDay)) : null;
+                    $yearOfAccount = null;
+                    if ($binderDay) {
+                        $yearOfAccount = (int) substr($binderDay, 0, 4);
+                        if (substr($binderDay, 5) <= '11-07') {
+                            $yearOfAccount -= 1;
+                        }
+                    }
+                @endphp
+                @if(!$binderDay || $binderDay <= '2024-11-07')
+                    B1732CPG129823
+                @elseif($binderDay <= '2025-11-07')
+                    B1732CPG129824
+                @elseif($binderDay <= '2026-11-07')
+                    B1732CPG129825
+                @else
+                    B1732CPG129826
+                @endif
+            </td>
             <td></td>
             <td>
                 @if ($payment->paid_at)
@@ -314,21 +335,7 @@
             <td>GQ</td>
             <td>Direct</td>
             <td>B1732</td>
-            <td>
-                @if($payment->renewal_date)
-                @if((explode("/", date('d/m/Y', strtotime($payment->renewal_date)))[1] < 11) ||(explode("/", date('d/m/Y', strtotime($payment->renewal_date)))[0] <= 7 && explode("/", date('d/m/Y', strtotime($payment->renewal_date)))[1] <= 11))
-                    {{ date('Y', strtotime("-12 months", strtotime($payment->renewal_date))) }}
-                @else
-                {{ date('Y', strtotime($payment->renewal_date)) }}
-                @endif
-                @elseif($payment->paid_at)
-                @if((explode("/", date('d/m/Y', strtotime($payment->paid_at)))[1] < 11) ||(explode("/", date('d/m/Y', strtotime($payment->paid_at)))[0] <= 7 && explode("/", date('d/m/Y', strtotime($payment->paid_at)))[1] <= 11))
-                    {{ date('Y', strtotime("-12 months", strtotime($payment->paid_at))) }}
-                @else
-                {{ date('Y', strtotime($payment->paid_at)) }}
-                @endif
-                @endif
-            </td>
+            <td>{{ $yearOfAccount }}</td>
             <td>{{ $payment->doprint_certificate_no }}</td>
             <td></td>
             <td>{{ $payment->last_name }} {{ $payment->first_name }}</td>
